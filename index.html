@@ -2280,7 +2280,7 @@ function dlHTML(){
     return `<tr>
       <td style="padding:7px 10px;text-align:center;font-weight:700;color:#888;">${i+1}</td>
       <td style="padding:7px 10px;font-weight:700;">${d.cat}</td>
-      <td style="padding:7px 10px;text-align:center;"><span style="background:${statusBg[d.status]};color:${statusFg[d.status]};border:1px solid ${statusBd[d.status]};padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;">${statusLabel[d.status]||d.status}</span></td>
+      <td style="padding:7px 10px;text-align:center;white-space:nowrap;"><span style="background:${statusBg[d.status]};color:${statusFg[d.status]};border:1px solid ${statusBd[d.status]};padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap;display:inline-block;">${statusLabel[d.status]||d.status}</span></td>
       <td style="padding:7px 10px;font-size:12px;color:#333;">${actionText(d)}</td>
       <td style="padding:7px 10px;text-align:center;font-size:12px;">${d.comp.length}권</td>
       <td style="padding:7px 10px;font-size:11px;color:#555;">${compTop?compTop.title.slice(0,22)+(compTop.title.length>22?'…':''):'-'}${age?`<br><span style="color:${Number(age)>=4?'#c0392b':'#c07a00'};font-size:10px;">${age}년 경과</span>`:''}</td>
@@ -2299,11 +2299,11 @@ function dlHTML(){
       return `<div style="font-size:11px;color:#444;margin:2px 0;line-height:1.4;">${b.rank}위 <span style="color:#333;">${b.title.slice(0,22)+(b.title.length>22?'…':'')}</span> <span style="color:#888;font-size:10px;">${b.pub||''}${b.year>2000?' · '+b.year+'년':''}</span>${a>=4?`<span style="color:#c0392b;font-size:9px;font-weight:700;margin-left:3px;">${a}년 경과</span>`:''}</div>`;
     }).join('');
     const mineBooks=d.mine.slice(0,3).map(b=>`<div style="font-size:11px;color:#1a6b3c;margin:2px 0;">${b.rank}위 ${b.title.slice(0,22)+(b.title.length>22?'…':'')}</div>`).join('');
-    const planBooks=d.planned.slice(0,3).map(p=>`<div style="font-size:11px;margin:2px 0;"><span style="color:${isPlanning(p.status)?'#c07a00':'#5b2d8e'};">${isPlanning(p.status)?'◇기획':'●출간'}</span> <span style="color:#333;">${p.title.slice(0,18)+(p.title.length>18?'…':'')}</span>${p.team?`<span style="color:#888;font-size:10px;"> ${p.team}</span>`:''}</div>`).join('');
+    const planBooks=d.planned.slice(0,3).map(p=>`<div style="font-size:11px;margin:2px 0;"><span style="color:${isPlanning(p.status)?'#c07a00':'#5b2d8e'};">${isPlanning(p.status)?'◇기획예정':'●출간예정'}</span> <span style="color:#333;">${p.title.slice(0,18)+(p.title.length>18?'…':'')}</span>${p.team?`<span style="color:#888;font-size:10px;"> ${p.team}</span>`:''}</div>`).join('');
     const lecInfo=d.lecture.length?`<div style="font-size:11px;font-weight:700;color:#1a4f8a;">${d.lecture.length}개</div>${totalP?`<div style="font-size:10px;color:#888;">${totalP.toLocaleString()}명</div>`:''}`:'-';
     return `<tr style="border-bottom:1px solid #f0f0f0;">
       <td style="padding:8px 10px;font-weight:700;font-size:12px;background:${statusBg[d.status]};border-left:3px solid ${statusFg[d.status]};">${d.cat}</td>
-      <td style="padding:8px 6px;text-align:center;background:${statusBg[d.status]};"><span style="background:${statusBg[d.status]};color:${statusFg[d.status]};font-size:10px;font-weight:700;padding:2px 5px;border-radius:3px;border:1px solid ${statusBd[d.status]};">${statusLabel[d.status]||d.status}</span></td>
+      <td style="padding:8px 6px;text-align:center;white-space:nowrap;background:${statusBg[d.status]};"><span style="background:${statusBg[d.status]};color:${statusFg[d.status]};font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;border:1px solid ${statusBd[d.status]};white-space:nowrap;display:inline-block;">${statusLabel[d.status]||d.status}</span></td>
       <td style="padding:8px 10px;font-size:11px;color:#555;">${actionText(d)}</td>
       <td style="padding:8px 10px;">${compBooks||'<span style="color:#bbb;font-size:11px;">없음</span>'}</td>
       <td style="padding:8px 10px;">${mineBooks||'<span style="color:#bbb;font-size:11px;">없음</span>'}</td>
@@ -2361,7 +2361,7 @@ function dlHTML(){
       <thead><tr>
         <th style="width:30px;">#</th>
         <th style="width:130px;">카테고리</th>
-        <th style="width:55px;">상태</th>
+        <th style="width:70px;white-space:nowrap;">상태</th>
         <th>전략 액션</th>
         <th style="width:55px;">경쟁사</th>
         <th>경쟁 1위 도서</th>
@@ -2377,7 +2377,7 @@ function dlHTML(){
     <table>
       <thead><tr>
         <th style="width:130px;">카테고리</th>
-        <th style="width:50px;">상태</th>
+        <th style="width:70px;white-space:nowrap;">상태</th>
         <th style="width:160px;">전략 액션</th>
         <th>경쟁사 도서 (상위 3)</th>
         <th>${myName} 도서 (상위 3)</th>
