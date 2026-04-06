@@ -2369,12 +2369,12 @@ function dlHTML(){
     const compTop=d.comp[0];
     const age=compTop&&compTop.year>2000?curY-compTop.year:-1;
     const totalP=d.lecture.reduce((s,l)=>s+(l.pop||0),0);
-    const compBooks=d.comp.slice(0,3).map(b=>{
+    const compBooks=d.comp.map(b=>{
       const a=b.year>2000?curY-b.year:-1;
       return `<div style="font-size:11px;color:#444;margin:2px 0;line-height:1.4;">${b.rank}위 <span style="color:#333;">${b.title.slice(0,22)+(b.title.length>22?'…':'')}</span> <span style="color:#888;font-size:10px;">${b.pub||''}${b.year>2000?' · '+b.year+'년':''}</span>${a>=4?`<span style="color:#c0392b;font-size:9px;font-weight:700;margin-left:3px;">${a}년 경과</span>`:''}</div>`;
     }).join('');
-    const mineBooks=d.mine.slice(0,3).map(b=>`<div style="font-size:11px;color:#1a6b3c;margin:2px 0;">${b.rank}위 ${b.title.slice(0,22)+(b.title.length>22?'…':'')}</div>`).join('');
-    const planBooks=d.planned.slice(0,3).map(p=>`<div style="font-size:11px;margin:2px 0;"><span style="color:${isPlanning(p.status)?'#c07a00':'#5b2d8e'};">${isPlanning(p.status)?'◇기획예정':'●출간예정'}</span> <span style="color:#333;">${p.title.slice(0,18)+(p.title.length>18?'…':'')}</span>${p.team?`<span style="color:#888;font-size:10px;"> ${p.team}</span>`:''}</div>`).join('');
+    const mineBooks=d.mine.map(b=>`<div style="font-size:11px;color:#1a6b3c;margin:2px 0;">${b.rank}위 ${b.title.slice(0,22)+(b.title.length>22?'…':'')}</div>`).join('');
+    const planBooks=d.planned.map(p=>`<div style="font-size:11px;margin:2px 0;"><span style="color:${isPlanning(p.status)?'#c07a00':'#5b2d8e'};">${isPlanning(p.status)?'◇기획예정':'●출간예정'}</span> <span style="color:#333;">${p.title.slice(0,18)+(p.title.length>18?'…':'')}</span>${p.team?`<span style="color:#888;font-size:10px;"> ${p.team}</span>`:''}</div>`).join('');
     const lecInfo=d.lecture.length?`<div style="font-size:11px;font-weight:700;color:#1a4f8a;">${d.lecture.length}개</div>${totalP?`<div style="font-size:10px;color:#888;">${totalP.toLocaleString()}명</div>`:''}`:'-';
     return `<tr style="border-bottom:1px solid #f0f0f0;">
       <td style="padding:8px 10px;font-weight:700;font-size:12px;background:${statusBg[d.status]};border-left:3px solid ${statusFg[d.status]};">${d.cat}</td>
