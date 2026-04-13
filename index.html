@@ -3,36 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>출판 도우미 v1.6.2 업데이트 날짜 2026-04-13</title>
+<title>출판 도우미 v1.7.2 업데이트 날짜 2026-04-13</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 <style>
 :root{
-  --bg:#f5f5f3; --surface:#ffffff; --surface2:#f0efe9; --border:#e2e0d8; --border2:#cccac0;
-  --text:#1a1a18; --muted:#6b6960; --muted2:#9b9890;
-  --green:#1a6b3c; --green-bg:#e8f5ee; --green-bd:#b0d8be;
-  --red:#c0392b; --red-bg:#fdf0ee; --red-bd:#f0c0bc;
-  --yellow:#c07a00; --yellow-bg:#fdf5e0; --yellow-bd:#f0d890;
-  --blue:#1a4f8a; --blue-bg:#e8f0f9; --blue-bd:#b0c8e8;
-  --purple:#5b2d8e; --purple-bg:#f0eaf9; --purple-bd:#c8a8e8;
-  --teal:#1a7a5e; --teal-bg:#e6f4f0; --teal-bd:#9fd3c2;
-  --gray-bg:#f0efe9;
+  /* 배경 */
+  --bg:#F7F7F5; --surface:#FFFFFF; --surface2:#F0EFE8;
+  /* 텍스트 */
+  --text:#1C1C1A; --muted:#6B6860; --muted2:#9B9890;
+  /* 테두리 */
+  --border:#E4E2D8; --border2:#CCCAB8;
+  /* 브랜드 액센트 — 딥 인디고 */
+  --accent:#3B3F8C; --accent-light:#ECEDF8; --accent-hover:#2D3170;
+  /* 시맨틱 */
+  --green:#1A6B3C; --green-bg:#E8F5EE; --green-bd:#B0D8BE;
+  --red:#C0392B; --red-bg:#FDF0EE; --red-bd:#F0C0BC;
+  --yellow:#B07000; --yellow-bg:#FDF5E0; --yellow-bd:#F0D890;
+  --blue:#1A4F8A; --blue-bg:#E8F0F9; --blue-bd:#B0C8E8;
+  --purple:#5B2D8E; --purple-bg:#F0EAF9; --purple-bd:#C8A8E8;
+  --teal:#1A7A5E; --teal-bg:#E6F4F0; --teal-bd:#9FD3C2;
+  --gray-bg:#F0EFE8;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:14px;}
+body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
 /* 타이포그래피 계층 */
-.panel h2,.form-header h2,.meet-form-header span,.prop-form-header span{font-size:18px;font-weight:700;}
-.fgroup-title,.meet-section-title,.prop-section-title{font-size:14px;font-weight:600;}
-.ffields label,.meet-field label,.prop-field label{font-size:13px;font-weight:500;}
+.panel h2,.form-header h2,.meet-form-header span,.prop-form-header span{font-size:20px;font-weight:700;letter-spacing:-.01em;}
+.fgroup-title,.meet-section-title,.prop-section-title{font-size:13px;font-weight:600;letter-spacing:.04em;}
+.ffields label,.meet-field label,.prop-field label{font-size:12px;font-weight:500;}
 .ffields input,.ffields textarea,.ffields select,.meet-field input,.meet-field textarea,.meet-field select,.prop-field input,.prop-field textarea,.prop-field select{font-size:14px;font-weight:400;}
 
 /* 헤더 */
-.hdr{padding:1.5rem 2rem 1.2rem;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;flex-shrink:0;}
+.hdr{padding:1rem 2rem;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;flex-shrink:0;}
 .hdr-left .tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;}
 .hdr-left h1{font-size:1.4rem;font-weight:700;margin-top:.2rem;}
-.hdr-left h1 span{color:var(--green);}
+.hdr-left h1 span{color:var(--accent);}
 .hdr-right{display:flex;gap:.5rem;flex-wrap:wrap;}
 
 /* 탭 */
@@ -40,22 +47,24 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .tab{padding:.7rem 1.2rem;font-size:.85rem;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;}
 .tab:hover{color:var(--text);}
 .tab.active{color:var(--green);border-bottom-color:var(--green);font-weight:700;}
-.panel{display:none;padding:1.5rem 2rem;overflow-y:auto;}
+.panel{display:none;padding:1.5rem 2rem;overflow-y:auto;animation:panelFadeIn .2s ease;}
+@keyframes panelFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 .panel.active{display:block;flex:1;min-height:0;overflow-y:auto;}
 /* 풀스크린 패널 (저자 제안서·미팅·기획서) */
 .panel.panel-fullscreen.active{display:flex;flex-direction:column;padding:0;overflow:hidden;flex:1;min-height:0;}
 .main-content{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;margin-left:var(--sb-w,0);}
 
 /* 업로드 */
-.upload-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:1rem;}
+.upload-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:1rem;}
 @media(max-width:800px){.upload-row{grid-template-columns:1fr;}}
-.upload-label{display:block;border:1.5px dashed var(--border2);border-radius:10px;padding:1.2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);}
-.upload-label:hover,.upload-label.drag{border-color:var(--green);background:var(--green-bg);}
+.upload-label{display:block;border:1.5px solid var(--border);border-radius:12px;padding:1.5rem 1.2rem;text-align:center;cursor:pointer;transition:all .2s ease;background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.upload-label:hover,.upload-label.drag{border-color:var(--accent);background:var(--accent-light);box-shadow:0 4px 12px rgba(59,63,140,.1);}
 .upload-label input{display:none;}
-.upload-label .ico{font-size:1.4rem;display:block;margin-bottom:.3rem;color:var(--muted);}
-.upload-label .ttl{font-size:.82rem;font-weight:600;display:block;margin-bottom:.15rem;}
-.upload-label .sub{font-size:.72rem;color:var(--muted);display:block;}
-.upload-status{display:none;background:var(--surface);border:1.5px solid var(--green);border-radius:10px;padding:.7rem 1rem;margin-bottom:.8rem;}
+.upload-label .ico{font-size:1.8rem;display:block;margin-bottom:.5rem;color:var(--muted);}
+.upload-label .ttl{font-size:.86rem;font-weight:700;display:block;margin-bottom:.2rem;}
+.upload-label .sub{font-size:.73rem;color:var(--muted);display:block;}
+.upload-status{display:none;background:var(--surface);border:1.5px solid var(--green);border-radius:12px;padding:.8rem 1rem;margin-bottom:.8rem;box-shadow:0 1px 4px rgba(0,0,0,.06);}
 .upload-status.show{display:block;}
 .us-row{display:flex;align-items:center;gap:.6rem;}
 .us-info{flex:1;}
@@ -67,33 +76,35 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 /* 설정 */
 .cfg-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem;}
 @media(max-width:600px){.cfg-row{grid-template-columns:1fr;}}
-.cfg-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;}
+.cfg-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:all .18s ease;}
+.cfg-card:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 .cfg-card label{display:block;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem;}
-.cfg-card select{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.35rem .6rem;border-radius:6px;font-size:.82rem;font-family:inherit;}
+.cfg-card select{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.42rem .7rem;border-radius:8px;font-size:.82rem;font-family:inherit;transition:border-color .15s;}
+.cfg-card select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 
 /* 실행 버튼 */
-.run-btn{width:100%;background:var(--green);color:#fff;border:none;padding:.7rem;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:1.2rem;}
-.run-btn:hover{opacity:.88;}
-.run-btn:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed;}
+.run-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:.75rem;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:1.2rem;transition:background .15s ease,transform .1s ease;box-shadow:0 2px 8px rgba(59,63,140,.2);}
+.run-btn:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,63,140,.25);}
+.run-btn:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed;box-shadow:none;transform:none;}
 
 /* 통계 */
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-bottom:1rem;}
 @media(max-width:700px){.stats{grid-template-columns:repeat(3,1fr);}}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.7rem .8rem;transition:all .15s;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem;transition:all .18s ease;box-shadow:0 1px 4px rgba(0,0,0,.06);}
 .stat.clickable{cursor:pointer;}
-.stat.clickable:hover{border-color:var(--green);background:var(--green-bg);transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.stat.clickable:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-2px);box-shadow:0 4px 12px rgba(59,63,140,.1);}
 .stat .n{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700;line-height:1;margin-bottom:.2rem;}
 .stat .l{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
 .n.green{color:var(--green);} .n.red{color:var(--red);} .n.yellow{color:var(--yellow);} .n.blue{color:var(--blue);} .n.purple{color:var(--purple);}
 
 /* 접기/펼치기 섹션 */
-.collapsible-hdr:hover{background:var(--surface2);}
+.collapsible-hdr:hover{background:var(--surface2);border-radius:8px;}
 .collapsible-section-closed .collapsible-body{display:none;}
 .collapsible-section-closed .sec-chevron{transform:rotate(-90deg);}
 
 /* 카테고리 액션 버튼 */
-.cat-action-btn{font-size:.62rem;padding:2px 7px;border-radius:4px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .12s;white-space:nowrap;flex-shrink:0;}
-.cat-action-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-bg);}
+.cat-action-btn{font-size:.62rem;padding:3px 8px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.cat-action-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
 .cat-action-btn.proposal:hover{border-color:var(--green);color:var(--green);background:var(--green-bg);}
 .cat-author-panel{padding:.65rem 1rem;background:var(--purple-bg);border-top:1px solid var(--purple-bd);}
 /* AI 버튼 */
@@ -109,8 +120,8 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 /* ── 미팅 탭 컨텍스트 바 ── */
 .meet-ctx-bar{padding:.5rem .9rem;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0;}
 .meet-ctx-btns{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.35rem;}
-.meet-ctx-link-btn{display:flex;align-items:center;gap:.3rem;font-size:.72rem;padding:.28rem .6rem;border-radius:5px;border:1px dashed var(--border2);background:var(--surface);cursor:pointer;color:var(--muted);font-family:inherit;transition:all .12s;white-space:nowrap;}
-.meet-ctx-link-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);border-style:solid;}
+.meet-ctx-link-btn{display:flex;align-items:center;gap:.3rem;font-size:.72rem;padding:.28rem .6rem;border-radius:6px;border:1px dashed var(--border2);background:var(--surface);cursor:pointer;color:var(--muted);font-family:inherit;transition:all .12s;white-space:nowrap;}
+.meet-ctx-link-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);border-style:solid;}
 .meet-ctx-tags{display:flex;gap:.38rem;flex-wrap:wrap;align-items:center;}
 .meet-ctx-tag{display:flex;align-items:center;gap:.28rem;font-size:.73rem;padding:.22rem .52rem;border-radius:5px;background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green);font-weight:600;}
 .meet-ctx-tag .ctag-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.78rem;padding:0 0 0 .1rem;line-height:1;transition:color .12s;}
@@ -119,7 +130,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .meet-ctx-hint a{color:var(--blue);cursor:pointer;text-decoration:underline;}
 /* ── AI 사전 설정 마법사 모달 ── */
 .ai-wiz-overlay{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:9990;display:flex;align-items:center;justify-content:center;padding:1rem;}
-.ai-wiz-dialog{background:var(--surface);border-radius:14px;box-shadow:0 24px 64px rgba(0,0,0,.38);width:100%;max-width:460px;max-height:90vh;overflow-y:auto;animation:wiz-in .18s ease;}
+.ai-wiz-dialog{background:var(--surface);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.32);width:100%;max-width:460px;max-height:90vh;overflow-y:auto;animation:wiz-in .2s ease;}
 @keyframes wiz-in{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:none}}
 .ai-wiz-hdr{padding:1rem 1.25rem .8rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
 .ai-wiz-hdr h3{font-size:.9rem;font-weight:700;margin:0;flex:1;}
@@ -147,12 +158,12 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .ai-wiz-footer{padding:.8rem 1.25rem 1rem;border-top:1px solid var(--border);display:flex;gap:.55rem;justify-content:flex-end;}
 .ai-wiz-cancel{padding:.42rem .9rem;font-size:.78rem;border:1px solid var(--border);border-radius:7px;background:var(--surface2);cursor:pointer;color:var(--text);font-family:inherit;transition:background .12s;}
 .ai-wiz-cancel:hover{background:var(--border2);}
-.ai-wiz-start{padding:.42rem 1.15rem;font-size:.8rem;font-weight:700;border:none;border-radius:7px;background:linear-gradient(135deg,#f0c040,#e8a000);color:#fff;cursor:pointer;font-family:inherit;transition:opacity .15s;}
+.ai-wiz-start{padding:.42rem 1.15rem;font-size:.8rem;font-weight:700;border:none;border-radius:8px;background:linear-gradient(135deg,#f0c040,#e8a000);color:#fff;cursor:pointer;font-family:inherit;transition:opacity .15s;}
 .ai-wiz-start:hover{opacity:.88;}
 .ai-wiz-start:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed;opacity:1;}
 /* 워크로드 섹션 */
 .workload-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.6rem;}
-.workload-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem;}
+.workload-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem;box-shadow:0 1px 4px rgba(0,0,0,.06);}
 .workload-card.overload{border-color:var(--red-bd);background:var(--red-bg);}
 .workload-card.busy{border-color:var(--yellow-bd);background:var(--yellow-bg);}
 .wk-name{font-size:.78rem;font-weight:700;margin-bottom:.45rem;}
@@ -164,19 +175,20 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .wk-count.warn{color:var(--yellow);}
 
 /* 필터탭 */
-.ftabs{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.8rem;}
+.ftabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem;}
 .tab.locked{opacity:.45;cursor:not-allowed;pointer-events:none;}
 .tab.locked:hover{border-color:var(--border2);color:var(--muted);}
 
-.ftab{padding:.28rem .8rem;border-radius:20px;font-size:.75rem;font-weight:500;cursor:pointer;border:1.5px solid var(--border2);background:var(--surface);color:var(--muted);font-family:inherit;transition:all .15s;}
-.ftab:hover{border-color:var(--text);color:var(--text);}
-.ftab.active{background:var(--text);color:#fff;border-color:var(--text);}
-.ftab .badge{display:inline-block;background:rgba(255,255,255,.2);border-radius:10px;padding:0 4px;font-size:.65rem;margin-left:2px;}
+.ftab{padding:.32rem .85rem;border-radius:20px;font-size:.75rem;font-weight:500;cursor:pointer;border:1.5px solid var(--border2);background:var(--surface);color:var(--muted);font-family:inherit;transition:all .15s;}
+.ftab:hover{border-color:var(--accent);color:var(--accent);}
+.ftab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.ftab .badge{display:inline-block;background:rgba(255,255,255,.25);border-radius:10px;padding:0 5px;font-size:.65rem;margin-left:2px;}
 
 /* 카테고리 블록 - 통합 뷰 핵심 */
-.cat-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:.5rem;overflow:hidden;}
-.cat-hdr{padding:.65rem 1rem;display:flex;align-items:center;gap:.6rem;cursor:pointer;user-select:none;background:var(--surface2);border-bottom:1px solid var(--border);}
-.cat-hdr:hover{background:#eae8e0;}
+.cat-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:.6rem;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .18s ease;}
+.cat-block:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.cat-hdr{padding:.7rem 1rem;display:flex;align-items:center;gap:.6rem;cursor:pointer;user-select:none;background:var(--surface2);border-bottom:1px solid var(--border);transition:background .15s ease;}
+.cat-hdr:hover{background:#E8E7DF;}
 .cat-name{font-size:.85rem;font-weight:700;color:var(--text);flex:1;}
 .cat-body{display:none;}
 .cat-block.open .cat-body{display:block;}
@@ -214,7 +226,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .empty-col.gap{color:var(--red);background:var(--red-bg);border-radius:6px;padding:1rem;}
 
 /* 배지 */
-.badge{font-size:.63rem;font-weight:700;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;font-family:'DM Mono',monospace;white-space:nowrap;}
+.badge{font-size:.63rem;font-weight:700;padding:2px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:.04em;font-family:'DM Mono',monospace;white-space:nowrap;}
 .badge-gap{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
 .badge-behind{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-bd);}
 .badge-leading{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
@@ -224,31 +236,31 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 
 /* 다운로드 */
 .dl-bar{display:flex;gap:.5rem;margin-top:1rem;}
-.dl-btn{padding:.4rem .85rem;border-radius:6px;font-size:.75rem;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:inherit;transition:all .15s;}
-.dl-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
+.dl-btn{padding:.45rem .9rem;border-radius:8px;font-size:.75rem;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:inherit;transition:all .15s;}
+.dl-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
 
 /* 힌트 */
-.hint{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;padding:.7rem 1rem;margin-bottom:.8rem;font-size:.78rem;line-height:1.7;color:var(--muted);}
-.hint code{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--green);background:var(--green-bg);padding:1px 4px;border-radius:3px;}
+.hint{background:var(--accent-light);border:1px solid rgba(59,63,140,.15);border-left:4px solid var(--accent);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:1rem;font-size:.8rem;line-height:1.75;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.hint code{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--accent);background:var(--accent-light);padding:1px 5px;border-radius:4px;}
 
 /* ══ 차트 & 공백 분석 섹션 ══ */
-.chart-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.8rem;}
+.chart-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
 .chart-section-title{font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;}
-.chart-section-title::before{content:'';display:inline-block;width:3px;height:14px;background:var(--green);border-radius:2px;}
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem;}
+.chart-section-title::before{content:'';display:inline-block;width:3px;height:14px;background:var(--accent);border-radius:2px;}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
 @media(max-width:800px){.chart-grid{grid-template-columns:1fr;}}
-.chart-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;}
+.chart-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 20px;}
 .chart-box-title{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem;}
 .chart-canvas-wrap{position:relative;height:240px;}
 
 .chart-toggle{display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap;}
-.ct-btn{padding:.22rem .65rem;border-radius:4px;font-size:.68rem;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--muted);font-family:inherit;transition:all .12s;}
-.ct-btn.active{background:var(--green);color:#fff;border-color:var(--green);}
+.ct-btn{padding:.25rem .7rem;border-radius:6px;font-size:.68rem;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--muted);font-family:inherit;transition:all .15s;}
+.ct-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 .insight-box{margin-top:.8rem;}
 .insight-box .ib-title{font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
 .insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
 @media(max-width:1000px){.insight-grid{grid-template-columns:1fr;}}
-.ic{border-radius:8px;padding:.75rem .9rem;border:1px solid;}
+.ic{border-radius:12px;padding:.8rem 1rem;border:1px solid;box-shadow:0 1px 4px rgba(0,0,0,.06);}
 .ic-red{background:var(--red-bg);border-color:var(--red-bd);}
 .ic-yellow{background:var(--yellow-bg);border-color:var(--yellow-bd);}
 .ic-green{background:var(--green-bg);border-color:var(--green-bd);}
@@ -284,46 +296,46 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .ic-plan-book{font-size:.7rem;color:var(--muted);line-height:1.7;}
 
 
-.section-title{font-size:.95rem;font-weight:700;color:var(--text);margin:1.5rem 0 .8rem;padding-bottom:.5rem;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:.5rem;}
+.section-title{font-size:.95rem;font-weight:700;color:var(--text);margin:1.5rem 0 .8rem;padding-bottom:.5rem;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:.5rem;letter-spacing:-.01em;}
 .section-title span{font-size:.75rem;color:var(--muted);font-weight:400;}
 
 /* ══ 기획서 생성기 전용 ══ */
 .editor-wrap{display:grid;grid-template-columns:370px 1fr;gap:0;flex:1;min-height:0;overflow:hidden;}
 @media(max-width:900px){.editor-wrap{grid-template-columns:1fr;}}
 .form-panel{background:var(--surface);border-right:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;min-height:0;}
-.form-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);background:var(--black);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.form-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);background:#1C1C2E;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .form-header h2{font-size:.9rem;font-weight:700;}
-.form-header .ftag{font-size:.62rem;background:#E8401C;color:#fff;padding:2px 7px;border-radius:3px;font-weight:700;}
+.form-header .ftag{font-size:.62rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;}
 .form-body{padding:1.2rem 1.2rem;display:block;flex:1;min-height:0;overflow-y:auto;}
-.fgroup{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.4rem;}
+.fgroup{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.4rem;}
 .fgroup:last-child{margin-bottom:0;}
 .fgroup-title{background:var(--surface2);padding:.6rem .85rem;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border);}
 .ffields{padding:1rem .85rem;display:flex;flex-direction:column;gap:.9rem;}
 .ffields label{display:block;font-size:.7rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;}
-.ffields input[type=text],.ffields textarea,.ffields select{width:100%;border:1px solid var(--border);border-radius:6px;padding:.55rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:var(--surface);resize:vertical;}
-.ffields input[type=text]:focus,.ffields textarea:focus{outline:none;border-color:#E8401C;}
+.ffields input[type=text],.ffields textarea,.ffields select{width:100%;border:1px solid var(--border);border-radius:8px;padding:.55rem .7rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;resize:vertical;transition:border-color .15s,box-shadow .15s;}
+.ffields input[type=text]:focus,.ffields textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 .ffields textarea{min-height:64px;line-height:1.6;}
 .toc-row-p{display:flex;gap:.35rem;align-items:flex-start;margin-bottom:.35rem;}
 .toc-row-p input.pch-num{width:48px;flex-shrink:0;}
 .toc-row-p input.pch-title{flex:1;}
 .toc-row-p input.pch-sub{flex:1.4;}
 .toc-row-p .pdel{background:none;border:1px solid #ddd;border-radius:4px;padding:3px 6px;cursor:pointer;color:var(--muted);font-size:.75rem;flex-shrink:0;}
-.toc-row-p .pdel:hover{border-color:#E8401C;color:#E8401C;}
-.padd-btn{width:100%;border:1px dashed var(--border);border-radius:6px;padding:.4rem;font-size:.75rem;color:var(--muted);cursor:pointer;background:none;font-family:inherit;}
-.padd-btn:hover{border-color:#E8401C;color:#E8401C;}
+.toc-row-p .pdel:hover{border-color:var(--red);color:var(--red);}
+.padd-btn{width:100%;border:1px dashed var(--border);border-radius:8px;padding:.4rem;font-size:.75rem;color:var(--muted);cursor:pointer;background:none;font-family:inherit;transition:all .15s;}
+.padd-btn:hover{border-color:var(--accent);color:var(--accent);}
 .pcolor-row{display:flex;gap:.5rem;flex-wrap:wrap;padding:.3rem 0;}
 .pcolor-opt{display:flex;flex-direction:column;align-items:center;gap:.25rem;cursor:pointer;}
 .pcolor-opt input[type=radio]{display:none;}
 .pcolor-swatch{width:26px;height:26px;border-radius:50%;border:3px solid transparent;transition:all .15s;}
 .pcolor-opt input:checked + .pcolor-swatch{border-color:#fff;box-shadow:0 0 0 2px #0f0f0f;}
 .form-action{padding:.65rem 1.2rem;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;background:var(--surface);flex-shrink:0;}
-.form-action .ai-gen-btn{height:40px;padding:0 18px;font-size:14px;border-radius:7px;}
-.form-action .btn-pdf{flex:1;height:40px;background:#E8401C;color:#fff;border:none;border-radius:7px;padding:0 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
-.form-action .btn-pdf:hover{opacity:.88;}
-.form-action .btn-meeting{flex:0 0 auto;height:40px;padding:0 18px;font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--text);cursor:pointer;font-family:inherit;transition:all .15s;}
-.form-action .btn-meeting:hover{border-color:var(--green);color:var(--green);}
+.form-action .ai-gen-btn{height:40px;padding:0 18px;font-size:14px;border-radius:8px;}
+.form-action .btn-pdf{flex:1;height:40px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:0 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;}
+.form-action .btn-pdf:hover{background:var(--accent-hover);}
+.form-action .btn-meeting{flex:0 0 auto;height:40px;padding:0 18px;font-size:13px;font-weight:600;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit;transition:all .15s;}
+.form-action .btn-meeting:hover{border-color:var(--accent);color:var(--accent);}
 /* 프리뷰 영역 */
-.proposal-preview{background:#e8e6e1;padding:1.5rem;overflow-y:auto;}
+.proposal-preview{background:#EEEDEA;padding:1.5rem;overflow-y:auto;}
 .preview-hint{text-align:center;font-size:.72rem;color:#999;margin-bottom:.8rem;letter-spacing:.04em;}
 /* A4 기획서 본문 */
 .proposal-doc{background:#fff;width:210mm;min-height:297mm;margin:0 auto;box-shadow:0 4px 24px rgba(0,0,0,.15);font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:13px;line-height:1.6;color:#0f0f0f;}
@@ -373,14 +385,14 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .pd-discuss-body{flex:1;}
 .pd-discuss-title{font-size:11.5px;font-weight:600;color:#0f0f0f;margin-bottom:3px;}
 .pd-discuss-desc{font-size:10.5px;color:#666;line-height:1.7;}
-.discuss-row-p{border:1px solid var(--border);border-radius:6px;padding:.65rem;margin-bottom:.4rem;}
+.discuss-row-p{border:1px solid var(--border);border-radius:8px;padding:.65rem;margin-bottom:.4rem;}
 @media print{
   @page{size:A4;margin:0;}
 }
 
 /* ===== 출판 프로세스 가이드 (panel4) ===== */
-.guide-wrap{background:#D4D8DE;padding:2rem 1rem;min-height:60vh;}
-.guide-color-bar{display:flex;align-items:center;gap:.6rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.55rem 1rem;margin-bottom:1.2rem;flex-wrap:wrap;}
+.guide-wrap{background:#EEEDEA;padding:2rem 1rem;min-height:60vh;}
+.guide-color-bar{display:flex;align-items:center;gap:.6rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.6rem 1rem;margin-bottom:1.2rem;flex-wrap:wrap;box-shadow:0 1px 4px rgba(0,0,0,.06);}
 .guide-color-bar span{font-size:.72rem;font-weight:600;color:var(--muted);white-space:nowrap;}
 .gcp{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .12s,border-color .12s;flex-shrink:0;}
 .gcp:hover,.gcp.active{border-color:#222;transform:scale(1.15);}
@@ -456,16 +468,16 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 
 /* ── 변수 추가 ── */
 :root {
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.09), 0 2px 4px rgba(0,0,0,.05);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.03);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
   --shadow-lg: 0 8px 24px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.06);
   --transition: all .18s cubic-bezier(.4,0,.2,1);
 }
 
 /* ── 스크롤바 ── */
-::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
 ::-webkit-scrollbar-thumb:hover{background:var(--muted2);}
 
 /* ── 헤더 ── */
@@ -473,33 +485,33 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 1rem 2rem;
+  padding: .85rem 2rem;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  border-top: 3px solid var(--green);
+  border-top: 3px solid var(--accent);
 }
 .hdr-left .tag {
   font-size: 9px;
-  background: var(--green-bg);
-  color: var(--green);
-  border: 1px solid var(--green-bd);
-  border-radius: 4px;
-  padding: 2px 8px;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid rgba(59,63,140,.2);
+  border-radius: 6px;
+  padding: 2px 9px;
   display: inline-block;
   letter-spacing: .12em;
   font-weight: 600;
   text-transform: uppercase;
 }
 .hdr-left h1 {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 800;
-  margin-top: .3rem;
+  margin-top: .25rem;
   letter-spacing: -.02em;
 }
 
 /* ── 사이드바 ── */
-:root { --hdr-h: 84px; --sb-w: 200px; } /* hdr-h는 JS에서 동적으로 갱신됨 */
+:root { --hdr-h: 84px; --sb-w: 210px; } /* hdr-h는 JS에서 동적으로 갱신됨 */
 .tabs { display: none; }
 .sidebar {
   position: fixed;
@@ -507,55 +519,66 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
   left: 0;
   width: var(--sb-w);
   height: calc(100vh - var(--hdr-h));
-  background: var(--surface);
-  border-right: 1px solid var(--border);
+  background: #1C1C2E;
+  border-right: none;
   overflow-y: auto;
   z-index: 90;
-  padding: .75rem 0 1.5rem;
-  box-shadow: var(--shadow-sm);
+  padding: 1rem 0 1.5rem;
+  box-shadow: 2px 0 12px rgba(0,0,0,.1);
 }
 .nav-section {
-  font-size: .67rem;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  padding: .9rem 1rem .25rem;
+  font-size: .62rem;
+  font-weight: 600;
+  color: #9090A8;
+  text-transform: lowercase;
+  letter-spacing: .08em;
+  padding: 1.1rem 1.15rem .35rem;
 }
 .nav-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: .55rem;
   width: 100%;
   text-align: left;
-  padding: .55rem 1rem;
+  padding: .6rem 1.15rem;
   font-size: .82rem;
   font-weight: 500;
-  color: var(--text);
+  color: #E8E8F0;
   border: none;
   border-left: 3px solid transparent;
   background: none;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all .15s ease;
   line-height: 1.3;
 }
+.nav-item[data-icon]::before {
+  content: attr(data-icon);
+  font-size: .95rem;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
 .nav-item:hover:not(.locked) {
-  color: var(--green);
-  background: var(--green-bg);
+  color: #FFFFFF;
+  background: rgba(59,63,140,.35);
 }
 .nav-item.active {
-  color: var(--green);
-  background: var(--green-bg);
+  color: #FFFFFF;
+  background: var(--accent);
   font-weight: 700;
-  border-left-color: var(--green);
+  border-left-color: #FFFFFF;
+  border-radius: 0 8px 8px 0;
+  margin-right: 6px;
 }
-.nav-item.locked { opacity: .38; cursor: default; }
+.nav-item.locked { opacity: .45; cursor: default; }
 
 /* ── 힌트 박스 ── */
 .hint {
-  background: var(--blue-bg);
-  border: 1px solid var(--blue-bd);
-  border-left: 4px solid var(--blue);
-  border-radius: 8px;
-  padding: .85rem 1.1rem;
+  background: var(--accent-light);
+  border: 1px solid rgba(59,63,140,.15);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  padding: .9rem 1.2rem;
   font-size: .8rem;
   color: var(--text);
   line-height: 1.75;
@@ -565,63 +588,64 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 /* ── 업로드 카드 ── */
 .upload-label {
   border-radius: 12px;
-  padding: 1.6rem 1rem;
-  border: 2px dashed var(--border2);
+  padding: 1.5rem 1.2rem;
+  border: 1.5px solid var(--border);
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }
 .upload-label:hover, .upload-label.drag {
-  border-color: var(--green);
-  background: var(--green-bg);
+  border-color: var(--accent);
+  background: var(--accent-light);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
-.upload-label .ico { font-size: 1.8rem; margin-bottom: .5rem; }
+.upload-label .ico { font-size: 2rem; margin-bottom: .5rem; }
 .upload-label .ttl { font-size: .86rem; font-weight: 700; }
 .upload-label .sub { font-size: .73rem; margin-top: .2rem; }
-.upload-status { border-radius: 10px; box-shadow: var(--shadow-sm); }
+.upload-status { border-radius: 12px; box-shadow: var(--shadow-sm); }
 
 /* ── 설정 카드 ── */
 .cfg-card {
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }
 .cfg-card:focus-within {
-  box-shadow: var(--shadow-md);
-  border-color: var(--green-bd);
+  box-shadow: 0 0 0 3px var(--accent-light);
+  border-color: var(--accent);
 }
 .cfg-card select {
-  border-radius: 7px;
+  border-radius: 8px;
   padding: .42rem .7rem;
   transition: var(--transition);
 }
 .cfg-card select:focus {
   outline: none;
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(26,107,60,.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
 }
 
 /* ── 실행 버튼 ── */
 .run-btn {
-  background: linear-gradient(135deg, #22864e, var(--green));
-  border-radius: 10px;
+  background: var(--accent);
+  border-radius: 8px;
   padding: .8rem;
   font-size: .9rem;
   letter-spacing: .02em;
-  box-shadow: 0 3px 10px rgba(26,107,60,.25);
+  box-shadow: 0 2px 8px rgba(59,63,140,.2);
   transition: var(--transition);
 }
 .run-btn:hover:not(:disabled) {
   opacity: 1;
+  background: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 5px 16px rgba(26,107,60,.35);
+  box-shadow: 0 4px 14px rgba(59,63,140,.3);
 }
 .run-btn:active:not(:disabled) { transform: translateY(0); }
 
 /* ── 통계 카드 ── */
 .stat {
-  border-radius: 10px;
+  border-radius: 12px;
   padding: .9rem 1rem;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
@@ -634,7 +658,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .stat:has(.n.purple){ border-top-color: var(--purple); }
 .stat .n { font-size: 1.65rem; margin-bottom: .3rem; }
 .stat .l  { font-size: .68rem; letter-spacing: .06em; }
-.stat.clickable:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.stat.clickable:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent); background: var(--accent-light); }
 
 /* ── 카테고리 블록 ── */
 .cat-block {
@@ -649,19 +673,19 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 
 /* ── 차트 섹션 ── */
 .chart-section { border-radius: 12px; box-shadow: var(--shadow-sm); }
-.chart-box { border-radius: 10px; }
+.chart-box { border-radius: 12px; }
 
 /* ── 워크로드 카드 ── */
 .workload-card {
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }
 .workload-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
 /* ── 다운로드 버튼 ── */
-.dl-btn { border-radius: 7px; transition: var(--transition); }
-.dl-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.dl-btn { border-radius: 8px; transition: var(--transition); }
+.dl-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); border-color: var(--accent); color: var(--accent); }
 
 /* ── 섹션 타이틀 ── */
 .section-title {
@@ -669,12 +693,12 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
   font-weight: 800;
   letter-spacing: -.01em;
   padding-left: .7rem;
-  border-left: 4px solid var(--green);
+  border-left: 4px solid var(--accent);
   border-bottom: none;
 }
 
 /* ── 인사이트 카드 ── */
-.ic { border-radius: 10px; box-shadow: var(--shadow-sm); transition: var(--transition); }
+.ic { border-radius: 12px; box-shadow: var(--shadow-sm); transition: var(--transition); }
 .ic:hover { box-shadow: var(--shadow-md); }
 
 /* ── AI 버튼 ── */
@@ -693,7 +717,24 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 /* ── 필터 탭 ── */
 .ftab { border-radius: 20px; transition: var(--transition); }
 .ftab:hover { transform: translateY(-1px); }
-.ftab.active { box-shadow: var(--shadow-sm); }
+.ftab.active { box-shadow: var(--shadow-sm); background: var(--accent); border-color: var(--accent); }
+
+/* ── 전역 테이블 스타일 ── */
+.panel table { border-collapse: collapse; width: 100%; }
+.panel table th { background: var(--surface2); font-weight: 600; font-size: .75rem; color: var(--muted); padding: .55rem .7rem; text-align: left; border-bottom: 2px solid var(--border); letter-spacing: .03em; }
+.panel table td { padding: .5rem .7rem; font-size: .8rem; border-bottom: 1px solid var(--border); }
+.panel table tr:hover td { background: var(--accent-light); }
+
+/* ── 전역 input/textarea/select 포커스 ── */
+input[type=text]:focus, input[type=date]:focus, input[type=password]:focus,
+textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-light) !important;
+}
+
+/* ── 전역 버튼 기본 ── */
+button { font-family: inherit; }
 
 /* ── 기획서 폼 패널 ── */
 .form-panel { box-shadow: var(--shadow-md); }
@@ -713,7 +754,7 @@ const ACCESS_PW='hanbit2026';  // ← 비밀번호 변경 시 여기만 수정
 
 <div class="hdr">
   <div class="hdr-left">
-    <div class="tag">출판 도우미 v1.7.0 업데이트 날짜 2026-04-13</div>
+    <div class="tag">출판 도우미 v1.7.2 업데이트 날짜 2026-04-13</div>
     <h1>출판 <span>도우미</span></h1>
   </div>
   <div class="hdr-right" style="display:flex;gap:.5rem;align-items:center;">
@@ -724,15 +765,15 @@ const ACCESS_PW='hanbit2026';  // ← 비밀번호 변경 시 여기만 수정
 
 <div class="tabs"></div>
 <nav class="sidebar">
-  <div class="nav-section">분석</div>
-  <button class="nav-item active" onclick="switchTab(0,this)">데이터 업로드</button>
-  <button class="nav-item locked" id="tab1" onclick="switchTab(1,this)">통합 현황 🔒</button>
-  <button class="nav-item locked" id="tab2" onclick="switchTab(2,this)">저자풀 🔒</button>
-  <button class="nav-item locked" id="tab3" onclick="switchTab(3,this)">저자 제안서 🔒</button>
-  <div class="nav-section">출력</div>
-  <button class="nav-item locked" id="tab4" onclick="switchTab(4,this)">출판 프로세스 🔒</button>
-  <button class="nav-item locked" id="tab6" onclick="switchTab(6,this)">저자 미팅 🔒</button>
-  <button class="nav-item locked" id="tab5" onclick="switchTab(5,this)">출판 기획서 🔒</button>
+  <div class="nav-section">analytics</div>
+  <button class="nav-item active" data-icon="📊" onclick="switchTab(0,this)">데이터 업로드</button>
+  <button class="nav-item locked" data-icon="📈" id="tab1" onclick="switchTab(1,this)">통합 현황 🔒</button>
+  <button class="nav-item locked" data-icon="👥" id="tab2" onclick="switchTab(2,this)">저자풀 🔒</button>
+  <button class="nav-item locked" data-icon="📝" id="tab3" onclick="switchTab(3,this)">저자 제안서 🔒</button>
+  <div class="nav-section">outputs</div>
+  <button class="nav-item locked" data-icon="🔄" id="tab4" onclick="switchTab(4,this)">출판 프로세스 🔒</button>
+  <button class="nav-item locked" data-icon="🤝" id="tab6" onclick="switchTab(6,this)">저자 미팅 🔒</button>
+  <button class="nav-item locked" data-icon="📋" id="tab5" onclick="switchTab(5,this)">출판 기획서 🔒</button>
 </nav>
 <main class="main-content">
 
@@ -745,16 +786,25 @@ const ACCESS_PW='hanbit2026';  // ← 비밀번호 변경 시 여기만 수정
   </div>
 
   <div class="upload-row">
-    <!-- 베스트셀러 -->
+    <!-- 베스트셀러 (Google Sheets 또는 파일 업로드) -->
     <div>
-      <label class="upload-label" id="zone1" for="fi1">
-        <input type="file" id="fi1" accept=".xlsx,.xls">
+      <div class="upload-label" id="zone1" style="cursor:default;">
         <span class="ico">📊</span>
         <span class="ttl">베스트셀러 데이터</span>
-        <span class="sub">알라딘 / 예스24 / 교보문고</span>
-      </label>
+        <span class="sub">예스24 · Google Sheets 또는 파일</span>
+        <div style="width:100%;margin-top:10px;display:flex;gap:6px;align-items:center;">
+          <input type="text" id="gs-url-best" placeholder="웹에 게시 URL 또는 공유 URL 붙여넣기" style="flex:1;min-width:0;padding:5px 8px;border:1px solid #d1d5db;border-radius:5px;font-size:11px;font-family:inherit;color:#222;background:#fff;">
+          <button id="gs-btn-best" onclick="loadGoogleSheet('best')" style="padding:5px 11px;background:#2563eb;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;font-family:inherit;">불러오기</button>
+        </div>
+        <div style="font-size:9.5px;color:#aaa;margin-top:5px;line-height:1.4;display:flex;align-items:center;gap:8px;">
+          <span>파일 → 공유 → 웹에 게시 → CSV → pubhtml URL 복사</span>
+          <span style="color:#ccc;">|</span>
+          <span onclick="document.getElementById('fi1').click()" style="color:#2563eb;cursor:pointer;text-decoration:underline;white-space:nowrap;">파일로 업로드</span>
+          <input type="file" id="fi1" accept=".xlsx,.xls" style="display:none" onchange="handleBestFile(this)">
+        </div>
+      </div>
       <div class="upload-status" id="us1">
-        <div class="us-row"><span>✅</span><div class="us-info"><div class="us-name" id="us1n"></div><div class="us-meta" id="us1m"></div></div><span class="us-change" onclick="document.getElementById('fi1').click()">변경</span></div>
+        <div class="us-row"><span>✅</span><div class="us-info"><div class="us-name" id="us1n"></div><div class="us-meta" id="us1m"></div></div><span class="us-change" onclick="changeGsSource('best')">변경</span></div>
         <div class="us-bar"></div>
       </div>
     </div>
@@ -772,16 +822,25 @@ const ACCESS_PW='hanbit2026';  // ← 비밀번호 변경 시 여기만 수정
       </div>
 
     </div>
-    <!-- 패스트캠퍼스 -->
+    <!-- 패스트캠퍼스 강의 (Google Sheets 또는 파일 업로드) -->
     <div>
-      <label class="upload-label" id="zone3" for="fi3">
-        <input type="file" id="fi3" accept=".xlsx,.xls">
+      <div class="upload-label" id="zone3" style="cursor:default;">
         <span class="ico">🎓</span>
         <span class="ttl">강의 플랫폼 데이터</span>
-        <span class="sub">패스트캠퍼스 / 인프런 / 클래스101 등</span>
-      </label>
+        <span class="sub">패스트캠퍼스 · Google Sheets 또는 파일</span>
+        <div style="width:100%;margin-top:10px;display:flex;gap:6px;align-items:center;">
+          <input type="text" id="gs-url-lecture" placeholder="웹에 게시 URL 또는 공유 URL 붙여넣기" style="flex:1;min-width:0;padding:5px 8px;border:1px solid #d1d5db;border-radius:5px;font-size:11px;font-family:inherit;color:#222;background:#fff;">
+          <button id="gs-btn-lecture" onclick="loadGoogleSheet('lecture')" style="padding:5px 11px;background:#2563eb;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;font-family:inherit;">불러오기</button>
+        </div>
+        <div style="font-size:9.5px;color:#aaa;margin-top:5px;line-height:1.4;display:flex;align-items:center;gap:8px;">
+          <span>파일 → 공유 → 웹에 게시 → CSV → pubhtml URL 복사</span>
+          <span style="color:#ccc;">|</span>
+          <span onclick="document.getElementById('fi3').click()" style="color:#2563eb;cursor:pointer;text-decoration:underline;white-space:nowrap;">파일로 업로드</span>
+          <input type="file" id="fi3" accept=".xlsx,.xls" style="display:none" onchange="handleLectureFile(this)">
+        </div>
+      </div>
       <div class="upload-status" id="us3">
-        <div class="us-row"><span>✅</span><div class="us-info"><div class="us-name" id="us3n"></div><div class="us-meta" id="us3m"></div></div><span class="us-change" onclick="document.getElementById('fi3').click()">변경</span></div>
+        <div class="us-row"><span>✅</span><div class="us-info"><div class="us-name" id="us3n"></div><div class="us-meta" id="us3m"></div></div><span class="us-change" onclick="changeGsSource('lecture')">변경</span></div>
         <div class="us-bar"></div>
       </div>
     </div>
@@ -1172,26 +1231,28 @@ function readFile(file){
   });
 }
 
-// ── 드래그&드롭 ──
-['1','2'].forEach(n=>{
-  const z=document.getElementById('zone'+n);
-  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag');});
-  z.addEventListener('dragleave',()=>z.classList.remove('drag'));
-  z.addEventListener('drop',e=>{
-    e.preventDefault();z.classList.remove('drag');
-    const f=e.dataTransfer.files[0];
-    if(f){n==='1'?handleBest(f):handlePlanned(f);}
-  });
-});
-
-// ── 베스트셀러 업로드 ──
-document.getElementById('fi1').addEventListener('change',e=>{if(e.target.files[0])handleBest(e.target.files[0]);});
+// ── 드래그&드롭 (출간 예정 파일만) ──
+{
+  const z=document.getElementById('zone2');
+  if(z){
+    z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag');});
+    z.addEventListener('dragleave',()=>z.classList.remove('drag'));
+    z.addEventListener('drop',e=>{
+      e.preventDefault();z.classList.remove('drag');
+      const f=e.dataTransfer.files[0];
+      if(f) handlePlanned(f);
+    });
+  }
+}
 
 async function handleBest(file){
   const b64=await fileToB64(file);
   saveToLS(LS_KEYS.best, b64, file.name);
   const data=readB64(b64);
   await handleBestData(data, file.name);
+}
+async function handleBestFile(input){
+  if(input.files[0]) await handleBest(input.files[0]);
 }
 
 async function handleBestData(data, fname){
@@ -1224,13 +1285,14 @@ async function handleBestData(data, fname){
 }
 
 // ── 강의 플랫폼 업로드 ──
-document.getElementById('fi3').addEventListener('change',e=>{if(e.target.files[0])handleLecture(e.target.files[0]);});
-
 async function handleLecture(file){
   const b64=await fileToB64(file);
   saveToLS(LS_KEYS.lecture, b64, file.name);
   const data=readB64(b64);
   await handleLectureData(data, file.name);
+}
+async function handleLectureFile(input){
+  if(input.files[0]) await handleLecture(input.files[0]);
 }
 
 async function handleLectureData(data, fname){
@@ -1376,14 +1438,137 @@ function fileToB64(file){
   });
 }
 
+// ── Google Sheets 연동 ──
+function parseGoogleSheetsId(url) {
+  // 웹 게시 URL: /spreadsheets/d/e/{pubId}/pub...
+  const pubM = url.match(/\/spreadsheets\/d\/e\/([^/?#]+)/);
+  if (pubM) {
+    const gidM = url.match(/[#?&]gid=(\d+)/);
+    return { id: pubM[1], gid: gidM ? gidM[1] : '0', published: true };
+  }
+  // 일반 공유 URL: /spreadsheets/d/{id}
+  const m = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (!m) throw new Error('올바른 Google Sheets URL이 아닙니다.');
+  const gidM = url.match(/[#?&]gid=(\d+)/);
+  return { id: m[1], gid: gidM ? gidM[1] : '0', published: false };
+}
+
+// CSV 텍스트 직접 파싱 — SheetJS type:'string'은 한글 깨짐 발생
+function parseCsvText(text) {
+  const rows = [];
+  const clean = text.replace(/^\uFEFF/, ''); // BOM 제거
+  const lines = clean.split(/\r?\n/);
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cells = [];
+    let i = 0;
+    while (i < line.length) {
+      if (line[i] === '"') {
+        let val = '', j = i + 1;
+        while (j < line.length) {
+          if (line[j] === '"' && line[j+1] === '"') { val += '"'; j += 2; }
+          else if (line[j] === '"') { j++; break; }
+          else val += line[j++];
+        }
+        cells.push(val);
+        i = j;
+        if (i < line.length && line[i] === ',') i++;
+      } else {
+        const end = line.indexOf(',', i);
+        if (end === -1) { cells.push(line.slice(i)); break; }
+        cells.push(line.slice(i, end));
+        i = end + 1;
+      }
+    }
+    rows.push(cells);
+  }
+  return rows;
+}
+
+async function fetchSheetAsCsv(url) {
+  const { id, gid, published } = parseGoogleSheetsId(url);
+
+  if (published) {
+    // 웹 게시 URL → pub?output=csv (CORS 완전 지원, 가장 안정적)
+    const csvUrl = `https://docs.google.com/spreadsheets/d/e/${id}/pub?output=csv&gid=${gid}`;
+    const resp = await fetch(csvUrl, { cache: 'no-store' });
+    if (!resp.ok) throw new Error(`불러오기 실패(${resp.status})`);
+    const text = await resp.text();
+    if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+      throw new Error('게시된 시트에 접근할 수 없습니다.');
+    }
+    return parseCsvText(text);
+  }
+
+  // 일반 공유 URL → gviz/tq → export 순서로 시도
+  const endpoints = [
+    `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`,
+    `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`,
+  ];
+  let lastMsg = '알 수 없는 오류';
+  for (const csvUrl of endpoints) {
+    try {
+      const resp = await fetch(csvUrl, { cache: 'no-store' });
+      if (!resp.ok) { lastMsg = `HTTP ${resp.status}`; continue; }
+      const text = await resp.text();
+      if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+        lastMsg = '접근 권한 없음'; continue;
+      }
+      if (!text.trim()) { lastMsg = '빈 응답'; continue; }
+      return parseCsvText(text);
+    } catch(e) { lastMsg = e.message; }
+  }
+  throw new Error(lastMsg);
+}
+
+async function loadGoogleSheet(type) {
+  const urlInputId = type === 'best' ? 'gs-url-best' : 'gs-url-lecture';
+  const btnId      = type === 'best' ? 'gs-btn-best'  : 'gs-btn-lecture';
+  const url = (document.getElementById(urlInputId)?.value || '').trim();
+  if (!url) { showToast('Google Sheets URL을 입력해주세요.', 'red'); return; }
+  const btn = document.getElementById(btnId);
+  if (btn) { btn.disabled = true; btn.textContent = '불러오는 중…'; }
+  try {
+    const data = await fetchSheetAsCsv(url);
+    if (type === 'best') {
+      await handleBestData(data, 'Google Sheets (베스트셀러)');
+      localStorage.setItem(LS_KEYS.bestSheetUrl, url);
+    } else {
+      await handleLectureData(data, 'Google Sheets (강의 플랫폼)');
+      localStorage.setItem(LS_KEYS.lectureSheetUrl, url);
+    }
+    showToast('✅ Google Sheets 데이터를 불러왔습니다.', 'green');
+  } catch(e) {
+    showToast('❌ ' + e.message, 'red');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '불러오기'; }
+  }
+}
+
+function changeGsSource(type) {
+  const zoneId = type === 'best' ? 'zone1' : 'zone3';
+  const usId   = type === 'best' ? 'us1'   : 'us3';
+  const urlKey = type === 'best' ? LS_KEYS.bestSheetUrl : LS_KEYS.lectureSheetUrl;
+  document.getElementById(zoneId).style.display = '';
+  document.getElementById(usId).classList.remove('show');
+  // URL 유지 (변경 후 재편집 가능)
+  setTimeout(() => document.getElementById(type === 'best' ? 'gs-url-best' : 'gs-url-lecture')?.focus(), 80);
+}
+
+// Google Sheets 기본 URL — 웹에 게시(pubhtml) 형식 사용
+const DEFAULT_SHEET_URLS = {
+  best:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQz0or85CuCfmkvxyPBSaHjFKdkD-Sc2uH0mIyfaLEGBazTZDmZ7VNQdvIXtYpgCQ/pubhtml',
+  lecture: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSbXZPfzAapoHvq3wXa6nyGlNK3W1hQ7l5Yb1Iu1DretOYO_beVZnXU3W6f_1euXw/pubhtml'
+};
+
 // localStorage 키
-const LS_KEYS={best:'ub_best',lecture:'ub_lecture',planned:'ub_planned'};
+const LS_KEYS={best:'ub_best',lecture:'ub_lecture',planned:'ub_planned',bestSheetUrl:'ub_best_gs',lectureSheetUrl:'ub_lecture_gs'};
 // 내장 파일 버전 — 기본 파일 교체 시 자동으로 localStorage 무효화
 const LS_VERSION_KEY='ub_version';
 const CURRENT_VERSION=DEFAULT_FILES.best.name+'|'+DEFAULT_FILES.lecture.name;
 
 function resetDefaults(){
-  if(!confirm('저장된 파일 캐시를 초기화하고 내장 기본 파일로 재시작할까요?')) return;
+  if(!confirm('저장된 파일 캐시와 Google Sheets URL을 초기화하고 내장 기본 파일로 재시작할까요?')) return;
   try{
     Object.values(LS_KEYS).forEach(k=>localStorage.removeItem(k));
     localStorage.removeItem(LS_VERSION_KEY);
@@ -1416,11 +1601,50 @@ function loadFromLS(key){
 
 async function loadDefaults(){
   checkLSVersion();
-  const srcBest    = loadFromLS(LS_KEYS.best)    || {b64: DEFAULT_FILES.best.b64,    name: DEFAULT_FILES.best.name};
-  const srcLecture = loadFromLS(LS_KEYS.lecture)  || {b64: DEFAULT_FILES.lecture.b64, name: DEFAULT_FILES.lecture.name};
 
-  await handleBestData(readB64(srcBest.b64), srcBest.name);
-  await handleLectureData(readB64(srcLecture.b64), srcLecture.name);
+  // 버튼 로딩 상태
+  const setLoading = (type, loading) => {
+    const btn = document.getElementById(type === 'best' ? 'gs-btn-best' : 'gs-btn-lecture');
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.textContent = loading ? '로딩 중…' : '불러오기';
+  };
+
+  // 베스트셀러: 저장된 URL → 기본 URL → localStorage → 내장 기본
+  const bestUrl = localStorage.getItem(LS_KEYS.bestSheetUrl) || DEFAULT_SHEET_URLS.best;
+  const urlBestEl = document.getElementById('gs-url-best');
+  if (urlBestEl) urlBestEl.value = bestUrl;
+  setLoading('best', true);
+  try {
+    const data = await fetchSheetAsCsv(bestUrl);
+    await handleBestData(data, 'Google Sheets (베스트셀러)');
+    localStorage.setItem(LS_KEYS.bestSheetUrl, bestUrl);
+  } catch(e) {
+    console.warn('GS 베스트셀러 로드 실패:', e);
+    showToast('⚠️ 베스트셀러 시트 불러오기 실패 — 내장 데이터 사용 중\n(' + e.message + ')', 'red');
+    const src = loadFromLS(LS_KEYS.best) || {b64: DEFAULT_FILES.best.b64, name: DEFAULT_FILES.best.name};
+    await handleBestData(readB64(src.b64), src.name);
+  } finally {
+    setLoading('best', false);
+  }
+
+  // 강의 플랫폼: 저장된 URL → 기본 URL → localStorage → 내장 기본
+  const lectureUrl = localStorage.getItem(LS_KEYS.lectureSheetUrl) || DEFAULT_SHEET_URLS.lecture;
+  const urlLectureEl = document.getElementById('gs-url-lecture');
+  if (urlLectureEl) urlLectureEl.value = lectureUrl;
+  setLoading('lecture', true);
+  try {
+    const data = await fetchSheetAsCsv(lectureUrl);
+    await handleLectureData(data, 'Google Sheets (강의 플랫폼)');
+    localStorage.setItem(LS_KEYS.lectureSheetUrl, lectureUrl);
+  } catch(e) {
+    console.warn('GS 강의 로드 실패:', e);
+    showToast('⚠️ 강의 시트 불러오기 실패 — 내장 데이터 사용 중\n(' + e.message + ')', 'red');
+    const src = loadFromLS(LS_KEYS.lecture) || {b64: DEFAULT_FILES.lecture.b64, name: DEFAULT_FILES.lecture.name};
+    await handleLectureData(readB64(src.b64), src.name);
+  } finally {
+    setLoading('lecture', false);
+  }
 
   // 출판사 선택 — 데이터 로드 완료 후 실행
   const myPubSel=document.getElementById('myPub');
@@ -1432,7 +1656,11 @@ async function loadDefaults(){
   }
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{ loadDefaults(); });
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadDefaults();
+  meetInitDefaults('brief');
+  meetRender();
+});
 
 
 function onMyPubChange(){
@@ -2583,10 +2811,11 @@ ${ctx}
 // 토스트 알림
 function showToast(msg,color='blue'){
   const t=document.createElement('div');
-  t.style.cssText=`position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:${color==='green'?'var(--green)':'var(--blue)'};color:#fff;padding:.6rem 1.2rem;border-radius:8px;font-size:.8rem;z-index:9998;box-shadow:0 4px 16px rgba(0,0,0,.2);max-width:90vw;text-align:center;`;
+  const bg = color==='green'?'var(--green)':color==='red'?'var(--red)':color==='yellow'?'var(--yellow)':'var(--accent)';
+  t.style.cssText=`position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:${bg};color:#fff;padding:.7rem 1.4rem;border-radius:12px;font-size:.8rem;z-index:9998;box-shadow:0 4px 20px rgba(0,0,0,.18);max-width:90vw;text-align:center;backdrop-filter:blur(8px);animation:toastIn .25s ease;`;
   t.textContent=msg;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(),3500);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},3200);
 }
 
 function toggleSection(id){
@@ -3860,49 +4089,49 @@ document.querySelectorAll('.nav-item').forEach((btn, i) => {
 .prop-wrap{display:grid;grid-template-columns:400px 1fr;flex:1;min-height:0;overflow:hidden;}
 @media(max-width:900px){.prop-wrap{grid-template-columns:1fr;}}
 .prop-form-panel{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
-.prop-form-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);background:#1a1a18;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.prop-form-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);background:#1C1C2E;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .prop-form-header span{font-size:.9rem;font-weight:700;}
-.prop-form-tag{font-size:.62rem;background:#e8401c;color:#fff;padding:2px 8px;border-radius:3px;font-weight:700;}
+.prop-form-tag{font-size:.62rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;}
 .prop-form-body{flex:1;min-height:0;overflow-y:auto;padding:1rem 1.1rem;display:block;}
 .prop-section{margin-bottom:.9rem;}
-.prop-section-title{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);}
+.prop-section-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
 .prop-field{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.4rem;}
 .prop-field label{font-size:.68rem;font-weight:600;color:var(--muted);}
-.prop-field input[type=text],.prop-field input[type=date],.prop-field textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:.38rem .6rem;font-size:.8rem;font-family:inherit;color:var(--text);background:var(--surface);resize:vertical;transition:border-color .15s;}
-.prop-field input:focus,.prop-field textarea:focus{outline:none;border-color:var(--green);}
+.prop-field input[type=text],.prop-field input[type=date],.prop-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;resize:vertical;transition:border-color .15s,box-shadow .15s;}
+.prop-field input:focus,.prop-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 .prop-field-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.4rem;}
 .prop-form-action{padding:.85rem 1.1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;flex-shrink:0;background:var(--surface);}
-.prop-dl-btn{flex:1;background:linear-gradient(135deg,#22864e,var(--green));color:#fff;border:none;border-radius:8px;padding:.6rem;font-size:.83rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 3px 10px rgba(26,107,60,.25);transition:all .18s;}
-.prop-dl-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(26,107,60,.35);}
+.prop-dl-btn{flex:1;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.6rem;font-size:.83rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(59,63,140,.2);transition:all .18s;}
+.prop-dl-btn:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 14px rgba(59,63,140,.3);}
 .prop-reset-btn{background:none;border:1.5px solid var(--border2);border-radius:8px;padding:.6rem .9rem;font-size:.8rem;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;}
 .prop-reset-btn:hover{border-color:var(--red);color:var(--red);}
 
 /* 빠른 AI 생성 패널 */
-.prop-quick-wrap{background:linear-gradient(135deg,#f0f9f4,#e6f3eb);border:1.5px solid var(--green-bd);border-radius:10px;padding:.85rem 1rem;margin-bottom:.5rem;}
-.prop-quick-title{font-size:.7rem;font-weight:700;color:var(--green);margin-bottom:.6rem;letter-spacing:.04em;display:flex;align-items:center;gap:.35rem;}
+.prop-quick-wrap{background:linear-gradient(135deg,#f2f2fa,#ecedf8);border:1.5px solid rgba(59,63,140,.2);border-radius:12px;padding:.85rem 1rem;margin-bottom:.5rem;}
+.prop-quick-title{font-size:.7rem;font-weight:700;color:var(--accent);margin-bottom:.6rem;letter-spacing:.04em;display:flex;align-items:center;gap:.35rem;}
 .prop-quick-row{display:flex;gap:.45rem;margin-bottom:.45rem;align-items:flex-end;}
 .prop-quick-row .pq-field{display:flex;flex-direction:column;gap:.18rem;flex:1;}
 .prop-quick-row .pq-field label{font-size:.63rem;font-weight:700;color:var(--muted);letter-spacing:.03em;}
 .prop-quick-row .pq-field select,.prop-quick-row .pq-field input{border:1px solid var(--border);border-radius:6px;padding:.38rem .55rem;font-size:.78rem;font-family:inherit;color:var(--text);background:var(--surface);width:100%;}
-.prop-quick-row .pq-field select:focus,.prop-quick-row .pq-field input:focus{outline:none;border-color:var(--green);}
+.prop-quick-row .pq-field select:focus,.prop-quick-row .pq-field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 .prop-quick-row .pq-author-btn{font-size:.65rem;padding:.3rem .55rem;border:1px solid var(--border2);border-radius:5px;background:var(--surface);cursor:pointer;color:var(--muted);white-space:nowrap;height:fit-content;font-family:inherit;transition:all .12s;}
-.prop-quick-row .pq-author-btn:hover{border-color:var(--blue);color:var(--blue);}
-.prop-quick-gen-btn{width:100%;background:linear-gradient(135deg,#22864e,var(--green));color:#fff;border:none;border-radius:8px;padding:.58rem;font-size:.84rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;letter-spacing:.02em;}
-.prop-quick-gen-btn:hover{opacity:.88;}
-.prop-quick-gen-btn:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed;opacity:1;}
+.prop-quick-row .pq-author-btn:hover{border-color:var(--accent);color:var(--accent);}
+.prop-quick-gen-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.58rem;font-size:.84rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;letter-spacing:.02em;}
+.prop-quick-gen-btn:hover{background:var(--accent-hover);}
+.prop-quick-gen-btn:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed;}
 .prop-quick-hint{font-size:.68rem;color:var(--green);margin-top:.38rem;opacity:.75;}
 .prop-file-label{display:flex;align-items:center;gap:.4rem;border:1.5px dashed var(--border2);border-radius:7px;padding:.38rem .6rem;cursor:pointer;font-size:.75rem;transition:border-color .15s;}
-.prop-file-label:hover{border-color:var(--green);}
+.prop-file-label:hover{border-color:var(--accent);}
 #prop-file-name{flex:1;color:var(--muted);font-size:.73rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .prop-file-btn{font-size:.65rem;background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:.18rem .5rem;color:var(--text);white-space:nowrap;flex-shrink:0;}
 /* 카테고리 목록 */
 .prop-cats-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;}
-.prop-cats-toggle{font-size:.65rem;color:var(--blue);cursor:pointer;text-decoration:underline;}
+.prop-cats-toggle{font-size:.65rem;color:var(--accent);cursor:pointer;text-decoration:underline;}
 /* 카테고리 선택 */
 .prop-cats{display:flex;flex-direction:column;gap:.35rem;}
-.prop-cat-item{display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;background:var(--surface);}
-.prop-cat-item:hover{border-color:var(--green);background:var(--green-bg);}
-.prop-cat-item.selected{border-color:var(--green);background:var(--green-bg);}
+.prop-cat-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;background:var(--surface);}
+.prop-cat-item:hover{border-color:var(--accent);background:var(--accent-light);}
+.prop-cat-item.selected{border-color:var(--accent);background:var(--accent-light);}
 .prop-cat-badge{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
 .prop-cat-name{font-size:.8rem;font-weight:600;flex:1;}
 .prop-cat-meta{font-size:.68rem;color:var(--muted);}
@@ -3910,30 +4139,30 @@ document.querySelectorAll('.nav-item').forEach((btn, i) => {
 /* 기획 목표 체크박스 */
 .prop-goals{display:flex;flex-wrap:wrap;gap:.4rem;}
 .prop-goal-item{display:flex;align-items:center;gap:.3rem;font-size:.75rem;cursor:pointer;}
-.prop-goal-item input[type=checkbox]{accent-color:var(--green);width:14px;height:14px;}
+.prop-goal-item input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;}
 
 /* 핵심 포인트 */
 .prop-kp-row{border:1px solid var(--border);border-radius:7px;padding:.6rem;margin-bottom:.4rem;}
 .prop-kp-row input{width:100%;border:1px solid var(--border);border-radius:5px;padding:.3rem .5rem;font-size:.78rem;font-family:inherit;margin-bottom:.3rem;}
 .prop-kp-row textarea{width:100%;border:1px solid var(--border);border-radius:5px;padding:.3rem .5rem;font-size:.76rem;font-family:inherit;resize:vertical;min-height:44px;}
-.prop-kp-row input:focus,.prop-kp-row textarea:focus{outline:none;border-color:var(--green);}
+.prop-kp-row input:focus,.prop-kp-row textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 
 /* 경쟁 분석 행 */
 .prop-comp-row{display:flex;gap:.4rem;align-items:flex-start;margin-bottom:.4rem;}
 .prop-comp-row input{flex:1;border:1px solid var(--border);border-radius:5px;padding:.32rem .5rem;font-size:.76rem;font-family:inherit;}
-.prop-comp-row input:focus{outline:none;border-color:var(--blue);}
+.prop-comp-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 .prop-comp-del{background:none;border:1px solid var(--border2);border-radius:4px;padding:3px 7px;cursor:pointer;color:var(--muted);font-size:.75rem;flex-shrink:0;}
 .prop-comp-del:hover{border-color:var(--red);color:var(--red);}
-.prop-add-btn{width:100%;border:1.5px dashed var(--border2);border-radius:7px;padding:.38rem;font-size:.75rem;color:var(--muted);cursor:pointer;background:none;font-family:inherit;transition:all .15s;}
-.prop-add-btn:hover{border-color:var(--blue);color:var(--blue);}
+.prop-add-btn{width:100%;border:1.5px dashed var(--border2);border-radius:8px;padding:.38rem;font-size:.75rem;color:var(--muted);cursor:pointer;background:none;font-family:inherit;transition:all .15s;}
+.prop-add-btn:hover{border-color:var(--accent);color:var(--accent);}
 
 /* 미리보기 영역 */
-.prop-preview-area{background:#e8e6e1;padding:1.5rem;overflow-y:auto;height:100%;}
+.prop-preview-area{background:#EEEDEA;padding:1.5rem;overflow-y:auto;height:100%;}
 .prop-preview-hint{text-align:center;font-size:.72rem;color:#999;margin-bottom:.8rem;letter-spacing:.04em;}
 
 /* A4 기획서 문서 */
 .prop-doc{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.16);font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:12.5px;line-height:1.65;color:#1a1a18;}
-.pd2-header{background:#1a1a18;padding:28px 44px 22px;display:flex;justify-content:space-between;align-items:flex-end;}
+.pd2-header{background:#1C1C2E;padding:28px 44px 22px;display:flex;justify-content:space-between;align-items:flex-end;}
 .pd2-header-title{font-size:20px;font-weight:300;color:#fff;letter-spacing:.06em;}
 .pd2-header-sub{font-size:9.5px;color:rgba(255,255,255,.5);letter-spacing:.15em;margin-bottom:4px;}
 .pd2-header-right{text-align:right;}
@@ -3962,7 +4191,7 @@ document.querySelectorAll('.nav-item').forEach((btn, i) => {
 .pd2-kp-title{font-size:12px;font-weight:700;color:#1a1a18;margin-bottom:2px;}
 .pd2-kp-desc{font-size:10.5px;color:#666;line-height:1.65;}
 .pd2-comp-table{width:100%;border-collapse:collapse;font-size:11px;}
-.pd2-comp-table th{background:#1a1a18;color:#fff;padding:6px 10px;font-size:9.5px;font-weight:600;letter-spacing:.06em;}
+.pd2-comp-table th{background:#1C1C2E;color:#fff;padding:6px 10px;font-size:9.5px;font-weight:600;letter-spacing:.06em;}
 .pd2-comp-table td{padding:6px 10px;border-bottom:1px solid #e8e8e8;}
 .pd2-comp-table tr:last-child td{border-bottom:none;}
 .pd2-comp-table tr:nth-child(even) td{background:#fafaf8;}
@@ -4753,18 +4982,21 @@ function zipStore(files) {
       </div>
       <div class="meet-form-body">
 
-        <div class="meet-section">
+        <div class="meet-section" data-modes="brief,discuss,notes,summary">
           <div class="meet-section-title">미팅 기본</div>
           <div class="meet-field"><label>미팅 유형</label><select id="m-type" class="meet-select" onchange="meetRender()"><option value="초기 미팅">초기 미팅</option><option value="기획 심층 논의">기획 심층 논의</option><option value="계약 전 최종 협의">계약 전 최종 협의</option></select></div>
           <div class="meet-field-row">
             <div class="meet-field"><label>미팅 일시</label><input type="date" id="m-date" oninput="meetRender()"></div>
             <div class="meet-field"><label>담당 편집자</label><input type="text" id="m-editor" placeholder="김편집" oninput="meetRender()"></div>
           </div>
-          <div class="meet-field"><label>미팅 장소</label><input type="text" id="m-place" placeholder="한빛미디어 회의실 A" oninput="meetRender()"></div>
+          <div class="meet-field">
+            <label>미팅 장소 <span style="font-size:9.5px;font-weight:400;color:#888;">— 입력하면 우측 지도에 반영</span></label>
+            <input type="text" id="m-place" placeholder="서울 서대문구 연희로2길 62" oninput="meetRender()">
+          </div>
           <div class="meet-field"><label>미팅 아젠다</label><textarea id="m-agenda" rows="4" placeholder="1. 시장 현황 및 출판 기회 공유&#10;2. 제안 도서 방향 논의&#10;3. 저자님 관심 분야·집필 여건 확인&#10;4. 목차 가안 함께 검토&#10;5. 출판 조건 및 다음 단계 협의" oninput="meetRender()"></textarea></div>
         </div>
 
-        <div class="meet-section">
+        <div class="meet-section" data-modes="brief">
           <div class="meet-section-title">저자 프로파일</div>
           <div class="meet-field"><label>저자명</label><input type="text" id="m-author" placeholder="홍길동" oninput="meetRender()"></div>
           <div class="meet-field"><label>소속 / 직함</label><input type="text" id="m-affil" placeholder="(주)회사 / 수석 엔지니어" oninput="meetRender()"></div>
@@ -4773,7 +5005,7 @@ function zipStore(files) {
           <div class="meet-field"><label>강의·채널 영향력</label><input type="text" id="m-influence" placeholder="인프런 수강생 12,000명 / 유튜브 구독자 8,500명" oninput="meetRender()"></div>
         </div>
 
-        <div class="meet-section">
+        <div class="meet-section" data-modes="brief">
           <div class="meet-section-title">제안 도서</div>
           <div class="meet-field"><label>도서 제목(안)</label><input type="text" id="m-title" placeholder="이것이 LLM 에이전트다" oninput="meetRender()"></div>
           <div class="meet-field"><label>부제</label><input type="text" id="m-subtitle" placeholder="실전 멀티에이전트 개발 완벽 가이드" oninput="meetRender()"></div>
@@ -4785,18 +5017,18 @@ function zipStore(files) {
           </div>
         </div>
 
-        <div class="meet-section">
+        <div class="meet-section" data-modes="brief">
           <div class="meet-section-title">시장 근거</div>
           <div class="meet-field"><label>경쟁서 현황</label><textarea id="m-market" rows="3" placeholder="- 경쟁서 X권 출간, 최신작 Y년 → Z년 공백&#10;- 이 분야 강의 수강생 N명" oninput="meetRender()"></textarea></div>
           <div class="meet-field"><label>차별화 포인트</label><textarea id="m-diff" rows="2" placeholder="기존 LLM 입문서와 달리 에이전트 아키텍처 설계에 집중" oninput="meetRender()"></textarea></div>
         </div>
 
-        <div class="meet-section">
+        <div class="meet-section" data-modes="brief">
           <div class="meet-section-title">함께 검토할 목차 가안</div>
           <div class="meet-field"><label>주요 목차 (번호. 제목 형식)</label><textarea id="m-toc" rows="7" placeholder="1. LLM 에이전트 개요&#10;2. 툴 사용과 함수 호출&#10;3. 멀티에이전트 설계&#10;4. 실전 프로젝트" oninput="meetRender()"></textarea></div>
         </div>
 
-        <div class="meet-section">
+        <div class="meet-section" data-modes="brief">
           <div class="meet-section-title">출판사 제안 조건</div>
           <div class="meet-field-row">
             <div class="meet-field"><label>인세율</label><select id="m-royalty" class="meet-select" onchange="meetRender()"><option value="협의">협의</option><option value="8%">8%</option><option value="10%">10%</option><option value="12%">12%</option></select></div>
@@ -4806,10 +5038,7 @@ function zipStore(files) {
           <div class="meet-field"><label>원고 제출 일정(안)</label><input type="text" id="m-schedule" placeholder="2026년 8월 샘플 챕터, 2026년 12월 전고 제출" oninput="meetRender()"></div>
         </div>
 
-        <div style="padding:.4rem .6rem;background:#f0f7ff;border-left:3px solid #2563eb;border-radius:0 4px 4px 0;font-size:.7rem;color:#2563eb;margin-bottom:.5rem;">
-          📋 편집자 준비 시트는 미팅 전 작성 → 📄 미팅 결과 요약은 미팅 후 저자 발송
-        </div>
-        <div class="meet-section">
+        <div class="meet-section" data-modes="discuss,notes">
           <div class="meet-section-title">함께 확인 체크리스트</div>
           <div class="meet-checklist">
             <div class="meet-check-row"><input type="checkbox" id="mc-exp" onchange="meetRender()"><label for="mc-exp">집필 경험 있음</label><input type="text" id="mc-exp-note" placeholder="첫 집필 / 기존 N권" oninput="meetRender()"></div>
@@ -4819,16 +5048,32 @@ function zipStore(files) {
           </div>
         </div>
 
-        <div class="meet-section">
+        <div class="meet-section" data-modes="discuss">
+          <div class="meet-section-title">미팅 진행 가이드</div>
+          <div class="meet-field"><label>핵심 논의 포인트</label><textarea id="m-discuss" rows="4" placeholder="1. 저자님의 이 분야 독보적 경험&#10;2. 기획 방향 함께 구체화&#10;3. 출판 조건 협의" oninput="meetRender()"></textarea></div>
+          <div class="meet-field"><label>저자에게 할 질문</label><textarea id="m-questions" rows="4" placeholder="- 현재 다른 집필 계획이 있으신가요?&#10;- 목차를 어떻게 더 발전시킬 수 있을까요?" oninput="meetRender()"></textarea></div>
+          <div class="meet-field"><label>탐색할 방향 (기획 확장·전환 가능성)</label><textarea id="m-explore" rows="3" placeholder="- 시리즈 가능성&#10;- 독자층 확장 방향&#10;- 콘텐츠 포맷 변형 (워크북 등)" oninput="meetRender()"></textarea></div>
+        </div>
+
+        <div class="meet-section" data-modes="notes">
           <div class="meet-section-title">미팅 중 논의 기록</div>
+          <div class="meet-field"><label>방향 변경 / 새로 발견된 사항</label><textarea id="m-direction-shift" rows="3" placeholder="초기 기획과 달라진 방향, 저자님이 제안한 새 아이디어 등" oninput="meetRender()"></textarea></div>
+          <div class="meet-field"><label>이슈 / 우려사항</label><textarea id="m-issues" rows="2" placeholder="집필 시간 부족 우려, 경쟁서 출간 예정 등" oninput="meetRender()"></textarea></div>
           <div class="meet-field"><label>미팅 중 논의된 내용</label><textarea id="m-reaction" rows="3" placeholder="함께 논의한 주요 내용, 관심사, 우려 사항" oninput="meetRender()"></textarea></div>
           <div class="meet-field"><label>주요 합의 사항</label><textarea id="m-agreement" rows="2" placeholder="샘플 챕터 N월 제출 합의, 인세 X% 합의 등" oninput="meetRender()"></textarea></div>
           <div class="meet-field"><label>다음 단계</label><textarea id="m-action" rows="2" placeholder="다음 미팅 일정, 계약서 검토, 샘플 챕터 발송 등" oninput="meetRender()"></textarea></div>
+          <div class="meet-field"><label>편집자 판단·메모 (내부용)</label><textarea id="m-editor-assess" rows="3" placeholder="저자 역량, 진행 가능성, 추천 여부, 향후 전략 등" oninput="meetRender()"></textarea></div>
+        </div>
+
+        <div class="meet-section" data-modes="summary">
+          <div class="meet-section-title">자동 생성 설정</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:.5rem;">미팅 진행 + 편집자 정리 내용을 바탕으로 저자 발송용 요약을 자동 작성합니다.</div>
+          <button class="meet-act-primary" style="width:100%;background:#2563eb;color:#fff;border:none;height:40px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;" onclick="generateMeetingSummary()">✨ 요약 자동 생성</button>
         </div>
 
         <div class="meet-action-bar">
           <button class="ai-gen-btn meet-act-primary" id="meet-ai-btn" onclick="openAIMeetingWizard()" title="AI로 미팅 자료 내용 자동 완성">✨ AI 자동 완성</button>
-          <button class="meet-act-primary meet-act-dl" onclick="meetDownloadDocx()" id="meet-dl-btn">📋 문서 다운로드</button>
+          <button class="meet-act-primary meet-act-dl" onclick="meetDownloadPdf()" id="meet-dl-btn">📋 PDF 다운로드</button>
           <button class="meet-act-secondary" onclick="meetReset()">초기화</button>
         </div>
       </div>
@@ -4837,10 +5082,14 @@ function zipStore(files) {
     <!-- 오른쪽: A4 미리보기 -->
     <div class="meet-preview-area">
       <div class="meet-doc-mode-bar">
-        <button class="meet-mode-btn active" id="meet-mode-prep" onclick="setMeetDocMode('prep')">📋 편집자 준비 시트</button>
+        <button class="meet-mode-btn active" id="meet-mode-brief" onclick="setMeetDocMode('brief')">📋 사전 안내</button>
+        <button class="meet-mode-btn" id="meet-mode-discuss" onclick="setMeetDocMode('discuss')">📌 미팅 진행</button>
+        <button class="meet-mode-btn" id="meet-mode-notes" onclick="setMeetDocMode('notes')">📝 편집자 정리</button>
         <button class="meet-mode-btn" id="meet-mode-summary" onclick="setMeetDocMode('summary')">📄 미팅 결과 요약</button>
-        <span class="meet-mode-hint" id="meet-mode-hint-prep">미팅 전 내부용 — 시장근거·체크리스트·아젠다</span>
-        <span class="meet-mode-hint" id="meet-mode-hint-summary" style="display:none;">미팅 후 저자 발송용 — 합의사항·다음 단계 정리</span>
+        <span class="meet-mode-hint" id="meet-mode-hint-brief">미팅 전 저자 발송 — 제안 도서·아젠다·출판 조건</span>
+        <span class="meet-mode-hint" id="meet-mode-hint-discuss" style="display:none;">미팅 중 편집자 내부용 — 진행 포인트·질문·탐색 방향</span>
+        <span class="meet-mode-hint" id="meet-mode-hint-notes" style="display:none;">미팅 후 편집자 정리 — 논의 내용·합의·다음 단계</span>
+        <span class="meet-mode-hint" id="meet-mode-hint-summary" style="display:none;">저자 발송용 자동 생성 — discuss + notes 기반</span>
       </div>
       <div class="meet-doc" id="meet-doc">
         <!-- JS로 렌더링 -->
@@ -4870,34 +5119,34 @@ function zipStore(files) {
 .meet-wrap{display:grid;grid-template-columns:380px 1fr;flex:1;min-height:0;overflow:hidden;}
 @media(max-width:900px){.meet-wrap{grid-template-columns:1fr;}}
 .meet-form-panel{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
-.meet-form-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);background:#1a1a18;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.meet-form-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);background:#1C1C2E;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .meet-form-header span{font-size:.9rem;font-weight:700;}
-.meet-form-tag{font-size:.62rem;background:#2563eb;color:#fff;padding:2px 8px;border-radius:3px;font-weight:700;}
+.meet-form-tag{font-size:.62rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;}
 .meet-form-body{flex:1;min-height:0;overflow-y:auto;padding:1rem 1.1rem;display:block;}
 .meet-section{margin-bottom:.9rem;}
-.meet-section-title{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);}
+.meet-section-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
 .meet-field{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.4rem;}
 .meet-field label{font-size:.68rem;font-weight:600;color:var(--muted);}
-.meet-field input[type=text],.meet-field input[type=date],.meet-field textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:.38rem .6rem;font-size:.8rem;font-family:inherit;color:var(--text);background:var(--surface);resize:vertical;transition:border-color .15s;}
-.meet-field input:focus,.meet-field textarea:focus{outline:none;border-color:var(--green);}
+.meet-field input[type=text],.meet-field input[type=date],.meet-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;resize:vertical;transition:border-color .15s,box-shadow .15s;}
+.meet-field input:focus,.meet-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 .meet-field-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.4rem;}
 /* 미리보기 */
-.meet-preview-area{background:#e8e6e1;padding:1.5rem;overflow-y:auto;height:100%;}
+.meet-preview-area{background:#EEEDEA;padding:1.5rem;overflow-y:auto;height:100%;}
 .meet-preview-hint{text-align:center;font-size:.72rem;color:#999;margin-bottom:.8rem;letter-spacing:.04em;}
-.meet-doc-mode-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:.6rem 1.2rem;background:#f0f0ee;border-bottom:1px solid #ddd;margin-bottom:.5rem;border-radius:8px;}
-.meet-mode-btn{height:36px;padding:0 14px;font-size:13px;font-weight:600;border:1.5px solid var(--border2);border-radius:6px;background:var(--surface);cursor:pointer;transition:all .15s;font-family:inherit;color:var(--muted);}
-.meet-mode-btn.active{background:#1a1a18;color:#fff;border-color:#1a1a18;}
+.meet-doc-mode-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:.6rem 1.2rem;background:var(--surface2);border-bottom:1px solid var(--border);margin-bottom:.5rem;border-radius:12px;}
+.meet-mode-btn{height:36px;padding:0 14px;font-size:13px;font-weight:600;border:1.5px solid var(--border2);border-radius:8px;background:var(--surface);cursor:pointer;transition:all .15s;font-family:inherit;color:var(--muted);}
+.meet-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 /* 미팅 액션 버튼 바 */
 .meet-action-bar{display:flex;gap:8px;align-items:center;padding:.5rem 0 1rem;}
-.meet-act-primary{height:40px;padding:0 18px;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s;}
-.meet-act-dl{flex:1;background:var(--green);color:#fff;}
-.meet-act-dl:hover{opacity:.88;}
-.meet-act-secondary{height:36px;padding:0 18px;font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;}
+.meet-act-primary{height:40px;padding:0 20px;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.meet-act-dl{flex:1;background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(59,63,140,.2);}
+.meet-act-dl:hover{background:var(--accent-hover);box-shadow:0 4px 12px rgba(59,63,140,.25);}
+.meet-act-secondary{height:36px;padding:0 18px;font-size:13px;font-weight:500;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;}
 .meet-act-secondary:hover{border-color:var(--red);color:var(--red);}
 .meet-mode-hint{font-size:.68rem;color:#999;flex:1;}
 /* A4 미팅 문서 */
 .meet-doc{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.16);font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:12.5px;line-height:1.65;color:#1a1a18;}
-.md-header{background:#1a1a18;padding:28px 44px 22px;display:flex;justify-content:space-between;align-items:flex-end;}
+.md-header{background:#1C1C2E;padding:28px 44px 22px;display:flex;justify-content:space-between;align-items:flex-end;}
 .md-header-left .md-title{font-size:20px;font-weight:300;color:#fff;letter-spacing:.05em;}
 .md-header-left .md-sub{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.15em;margin-bottom:4px;text-transform:uppercase;}
 .md-header-right{text-align:right;font-size:9px;color:rgba(255,255,255,.55);line-height:1.8;}
@@ -4918,10 +5167,10 @@ function zipStore(files) {
 .md-footer{margin-top:auto;border-top:1px solid #e8e8e8;padding:16px 44px;display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#bbb;}
 .meet-checklist{display:flex;flex-direction:column;gap:.45rem;}
 .meet-check-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
-.meet-check-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--green);flex-shrink:0;cursor:pointer;}
+.meet-check-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);flex-shrink:0;cursor:pointer;}
 .meet-check-row label{font-size:.76rem;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;}
 .meet-check-row input[type=text]{flex:1;min-width:0;border:1px solid var(--border);border-radius:5px;padding:.25rem .5rem;font-size:.73rem;font-family:inherit;background:var(--surface);color:var(--text);}
-.meet-select{width:100%;border:1px solid var(--border);border-radius:6px;padding:.38rem .6rem;font-size:.8rem;font-family:inherit;color:var(--text);background:var(--surface);cursor:pointer;}
+.meet-select{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
 .md-agenda-item{padding:4px 10px;font-size:11.5px;border-left:3px solid #2563eb;margin-bottom:3px;background:#f0f7ff;}
 .md-check-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11.5px;}
 .md-check-item .check-icon{font-size:13px;flex-shrink:0;}
@@ -4996,10 +5245,22 @@ function meetRender(){
 
   const hasFieldNotes = reaction || agreement || action;
 
-  const d = {type,agenda,author,affil,career,books,influence,title,sub,concept,pages,period,reader,date,editor,place,market,diff,tocRaw,royalty,print_,support,schedule,reaction,agreement,action,dateStr,tocItems,careerItems,agendaHtml,ctxCat,ctxBand,mcExp,mcExcl,mcSample,mcTime,mcExpNote,mcExclNote,mcSampleNote,mcTimeNote,checkItem,hasFieldNotes};
+  // 새 필드들
+  const discuss      = meetVal('m-discuss');
+  const questions    = meetVal('m-questions');
+  const explore      = meetVal('m-explore');
+  const directionShift = meetVal('m-direction-shift');
+  const issues       = meetVal('m-issues');
+  const editorAssess = meetVal('m-editor-assess');
+
+  const d = {type,agenda,author,affil,career,books,influence,title,sub,concept,pages,period,reader,date,editor,place,market,diff,tocRaw,royalty,print_,support,schedule,reaction,agreement,action,dateStr,tocItems,careerItems,agendaHtml,ctxCat,ctxBand,mcExp,mcExcl,mcSample,mcTime,mcExpNote,mcExclNote,mcSampleNote,mcTimeNote,checkItem,hasFieldNotes,discuss,questions,explore,directionShift,issues,editorAssess};
 
   if (_meetDocMode === 'summary') {
     _renderMeetSummary(d);
+  } else if (_meetDocMode === 'notes') {
+    _renderMeetEditorNotes(d);
+  } else if (_meetDocMode === 'discuss') {
+    _renderMeetDiscuss(d);
   } else {
     _renderMeetPrep(d);
   }
@@ -5007,12 +5268,15 @@ function meetRender(){
 
 function _renderMeetPrep(d){
   const {type,author,affil,career,books,influence,title,sub,concept,pages,period,reader,editor,place,market,diff,royalty,print_,support,schedule,reaction,agreement,action,dateStr,tocItems,careerItems,agendaHtml,ctxBand,mcExp,mcExcl,mcSample,mcTime,mcExpNote,mcExclNote,mcSampleNote,mcTimeNote,checkItem,hasFieldNotes} = d;
+  const mapQ = encodeURIComponent(place || '');
+  const mapIframe = place ? `<iframe src="https://maps.google.com/maps?q=${mapQ}&output=embed&z=17&hl=ko" width="100%" height="200" style="border:1px solid #e2e8f0;border-radius:6px;display:block;margin-top:8px;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div style="margin-top:5px;font-size:9px;color:#555;display:flex;align-items:center;gap:6px;">📍 <span>${place}</span> <a href="https://maps.google.com/?q=${mapQ}" target="_blank" style="color:#2563eb;text-decoration:none;margin-left:auto;flex-shrink:0;">지도 앱에서 열기 ↗</a></div>` : '';
 
+  const authorName = author && author !== '저자명' ? author : '저자';
   document.getElementById('meet-doc').innerHTML = `
 <div class="md-header">
   <div class="md-header-left">
-    <div class="md-sub">Editor Prep Sheet</div>
-    <div class="md-title">편집자 준비 시트</div>
+    <div class="md-sub">Pre-Meeting Brief</div>
+    <div class="md-title">저자 사전 안내문</div>
   </div>
   <div class="md-header-right">
     <div>${dateStr}</div>
@@ -5024,26 +5288,20 @@ function _renderMeetPrep(d){
 ${ctxBand}
 <div class="md-body">
 
-  <div class="md-block">
-    <div class="md-block-title" style="color:#2563eb;">미팅 개요</div>
-    <div class="md-info-grid">
-      <div class="md-info-item"><span class="lbl">유형</span><span class="val">${type}</span></div>
-      <div class="md-info-item"><span class="lbl">일시</span><span class="val">${dateStr}</span></div>
-      <div class="md-info-item"><span class="lbl">장소</span><span class="val">${place||'—'}</span></div>
-      <div class="md-info-item"><span class="lbl">편집자</span><span class="val">${editor}</span></div>
-    </div>
-    ${agendaHtml ? `<div style="margin-top:10px;"><div style="font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;margin-bottom:6px;">AGENDA</div>${agendaHtml}</div>` : ''}
+  <div style="background:#f0f7ff;border-left:4px solid #2563eb;padding:11px 15px;margin-bottom:18px;font-size:11.5px;line-height:1.75;border-radius:0 6px 6px 0;color:#1a1a18;">
+    안녕하세요, <strong>${authorName}님</strong>.<br>
+    이번 미팅에서 함께 나눌 내용을 미리 안내드립니다. 편하게 검토하신 후 궁금한 점은 미팅 때 편하게 말씀해 주세요.
   </div>
 
   <div class="md-block">
-    <div class="md-block-title" style="color:#1a6b3c;">저자 프로파일</div>
+    <div class="md-block-title" style="color:#2563eb;">미팅 일정</div>
     <div class="md-info-grid">
-      <div class="md-info-item"><span class="lbl">이름</span><span class="val">${author}</span></div>
-      <div class="md-info-item"><span class="lbl">소속 / 직함</span><span class="val">${affil||'—'}</span></div>
-      ${influence ? `<div class="md-info-item" style="grid-column:1/-1;"><span class="lbl">영향력</span><span class="val">${influence}</span></div>` : ''}
+      <div class="md-info-item"><span class="lbl">유형</span><span class="val">${type}</span></div>
+      <div class="md-info-item"><span class="lbl">일시</span><span class="val">${dateStr}</span></div>
+      <div class="md-info-item"><span class="lbl">담당 편집자</span><span class="val">${editor}</span></div>
     </div>
-    ${careerItems ? `<div style="margin-top:10px;font-size:11px;"><div style="font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;margin-bottom:4px;">경력</div><ul style="padding-left:1.2em;margin:0;color:#444;">${careerItems}</ul></div>` : ''}
-    ${books ? `<div style="margin-top:8px;font-size:11px;"><span style="font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;">기존 저서</span> <span style="color:#444;">${books}</span></div>` : ''}
+    ${mapIframe}
+    ${agendaHtml ? `<div style="margin-top:10px;"><div style="font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;margin-bottom:6px;">AGENDA — 미팅에서 다룰 주제</div>${agendaHtml}</div>` : ''}
   </div>
 
   <div class="md-block">
@@ -5062,7 +5320,7 @@ ${ctxBand}
 
   ${market || diff ? `
   <div class="md-block">
-    <div class="md-block-title" style="color:#b45309;">시장 근거</div>
+    <div class="md-block-title" style="color:#b45309;">이 책이 필요한 이유</div>
     ${market ? `<div class="md-market-box">${market.replace(/\n/g,'<br>')}</div>` : ''}
     ${diff ? `<div class="md-diff-box" style="margin-top:8px;">${diff.replace(/\n/g,'<br>')}</div>` : ''}
   </div>` : ''}
@@ -5070,6 +5328,7 @@ ${ctxBand}
   ${tocItems ? `
   <div class="md-block">
     <div class="md-block-title" style="color:#1a6b3c;">함께 검토할 목차 가안</div>
+    <div style="font-size:10px;color:#888;margin-bottom:8px;">미팅 전에 한 번 살펴봐 주시면 좋습니다. 수정·추가 의견을 편하게 말씀해 주세요.</div>
     <ul class="md-toc-list">${tocItems}</ul>
   </div>` : ''}
 
@@ -5086,29 +5345,191 @@ ${ctxBand}
   </div>
 
   <div class="md-block">
-    <div class="md-block-title" style="color:#6b21a8;">함께 확인 체크리스트</div>
+    <div class="md-block-title" style="color:#6b21a8;">미팅 전 생각해 오시면 좋을 점</div>
+    <div style="font-size:10px;color:#888;margin-bottom:8px;">아래 항목을 미리 생각해 오시면 미팅이 더욱 풍성해집니다.</div>
+    <div class="md-check-item"><span class="check-icon">📝</span><span>집필 경험이 있으신가요? (첫 집필 / 기존 저서 수)</span></div>
+    <div class="md-check-item"><span class="check-icon">🤝</span><span>현재 다른 출판사와 이야기 중이신 부분이 있으신가요?</span></div>
+    <div class="md-check-item"><span class="check-icon">📄</span><span>샘플 챕터(1~2장)를 미리 작성해 보실 수 있으신가요?</span></div>
+    <div class="md-check-item"><span class="check-icon">⏰</span><span>월 평균 집필 시간을 어느 정도 확보하실 수 있으신가요?</span></div>
+  </div>
+
+</div>
+<div class="md-footer">
+  <span>한빛미디어 출판기획팀</span>
+  <span>${authorName}님 전달용 — 미팅 전 검토 부탁드립니다</span>
+</div>`;
+}
+
+function _renderMeetDiscuss(d){
+  const {type,author,affil,title,editor,place,dateStr,ctxBand,discuss,questions,explore,mcExp,mcExcl,mcSample,mcTime,mcExpNote,mcExclNote,mcSampleNote,mcTimeNote,checkItem} = d;
+
+  function listFromText(text) {
+    if (!text) return '';
+    const items = text.split('\n').filter(l=>l.trim());
+    if (!items.length) return '';
+    return items.map((l,i) => {
+      const cleaned = l.replace(/^\d+\.\s*/, '').replace(/^[-·]\s*/, '');
+      return `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
+        <span style="background:#1e3a5f;color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px;white-space:nowrap;flex-shrink:0;">${i+1}</span>
+        <span style="font-size:11.5px;">${cleaned}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function bulletFromText(text) {
+    if (!text) return '';
+    return text.split('\n').filter(l=>l.trim()).map(l => {
+      const cleaned = l.replace(/^[-·]\s*/, '');
+      return `<div style="padding:3px 0;font-size:11px;color:#333;">• ${cleaned}</div>`;
+    }).join('');
+  }
+
+  document.getElementById('meet-doc').innerHTML = `
+<div class="md-header" style="background:#1e3a5f;">
+  <div class="md-header-left">
+    <div class="md-sub">On-Site Discussion</div>
+    <div class="md-title">미팅 진행 시트</div>
+  </div>
+  <div class="md-header-right">
+    <div>${dateStr}</div>
+    <div>${place||'장소 미정'}</div>
+    <div>담당: ${editor}</div>
+    <div style="margin-top:4px;">
+      <span style="background:#c53030;color:#fff;padding:2px 8px;border-radius:3px;font-size:8.5px;font-weight:700;letter-spacing:.05em;">INTERNAL</span>
+      <span style="background:#2d3748;color:#fff;padding:2px 8px;border-radius:3px;font-size:8.5px;font-weight:700;letter-spacing:.05em;margin-left:4px;">${type}</span>
+    </div>
+  </div>
+</div>
+${ctxBand}
+<div class="md-body">
+
+  <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;">
+    <div style="font-size:11px;"><span style="font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px;">저자</span><strong>${author}</strong>${affil ? ' · <span style="color:#666;">'+affil+'</span>' : ''}</div>
+    <div style="font-size:11px;"><span style="font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px;">도서(안)</span><strong>${title}</strong></div>
+  </div>
+
+  <div class="md-block">
+    <div class="md-block-title" style="color:#2563eb;">핵심 논의 포인트</div>
+    ${discuss ? listFromText(discuss) : '<div style="color:#aaa;font-size:11px;padding:6px;">논의 포인트를 입력하면 번호 목록으로 표시됩니다.</div>'}
+  </div>
+
+  <div class="md-block">
+    <div class="md-block-title" style="color:#b45309;">저자에게 할 질문</div>
+    ${questions ? bulletFromText(questions) : '<div style="color:#aaa;font-size:11px;padding:6px;">질문을 입력하면 목록으로 표시됩니다.</div>'}
+  </div>
+
+  <div class="md-block">
+    <div class="md-block-title" style="color:#1a6b3c;">탐색할 방향</div>
+    ${explore ? bulletFromText(explore) : '<div style="color:#aaa;font-size:11px;padding:6px;">탐색 방향을 입력하면 목록으로 표시됩니다.</div>'}
+  </div>
+
+  <div class="md-block">
+    <div class="md-block-title" style="color:#6b21a8;">미팅 중 확인 체크리스트</div>
     ${checkItem(mcExp, '집필 경험 있음', mcExpNote)}
     ${checkItem(mcExcl, '타 출판사 미접촉', mcExclNote)}
     ${checkItem(mcSample, '샘플 챕터 제출 가능', mcSampleNote)}
     ${checkItem(mcTime, '집필 시간 확보됨', mcTimeNote)}
   </div>
 
+
+</div>
+<div class="md-footer">
+  <span>한빛미디어 출판기획팀 — 내부용</span>
+  <span>${editor}</span>
+</div>`;
+}
+
+function _renderMeetEditorNotes(d){
+  const {type,author,affil,title,editor,place,dateStr,ctxBand,reaction,agreement,action,directionShift,issues,editorAssess} = d;
+
+  const emptyPlaceholder = `<div style="padding:10px;text-align:center;color:#bbb;font-size:11px;border:1.5px dashed #e0e0e0;border-radius:6px;">미팅 후 작성해주세요</div>`;
+
+  function textBlock(text) {
+    return text ? `<div style="font-size:11.5px;color:#1a1a18;line-height:1.7;">${text.replace(/\n/g,'<br>')}</div>` : emptyPlaceholder;
+  }
+
+  document.getElementById('meet-doc').innerHTML = `
+<div class="md-header" style="background:#1e3a5f;">
+  <div class="md-header-left">
+    <div class="md-sub">Editor Notes</div>
+    <div class="md-title">편집자 정리 노트</div>
+  </div>
+  <div class="md-header-right">
+    <div>${dateStr}</div>
+    <div>${place||'장소 미정'}</div>
+    <div>담당: ${editor}</div>
+    <div style="margin-top:4px;">
+      <span style="background:#c53030;color:#fff;padding:2px 8px;border-radius:3px;font-size:8.5px;font-weight:700;letter-spacing:.05em;">INTERNAL</span>
+      <span style="background:#2d3748;color:#fff;padding:2px 8px;border-radius:3px;font-size:8.5px;font-weight:700;letter-spacing:.05em;margin-left:4px;">${type}</span>
+    </div>
+  </div>
+</div>
+${ctxBand}
+<div class="md-body">
+
+  <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;">
+    <div style="font-size:11px;"><span style="font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px;">저자</span><strong>${author}</strong>${affil ? ' · <span style="color:#666;">'+affil+'</span>' : ''}</div>
+    <div style="font-size:11px;"><span style="font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px;">도서(안)</span><strong>${title}</strong></div>
+  </div>
+
   <div class="md-block">
-    <div class="md-block-title" style="color:#dc2626;">미팅 중 논의 기록</div>
-    <div class="md-notes-box">${hasFieldNotes ? `${reaction ? '<strong>논의 내용:</strong> '+reaction.replace(/\n/g,'<br>')+'<br><br>' : ''}${agreement ? '<strong>주요 합의:</strong> '+agreement.replace(/\n/g,'<br>')+'<br><br>' : ''}${action ? '<strong>다음 단계:</strong> '+action.replace(/\n/g,'<br>') : ''}` : '<span style="color:#aaa;">미팅 중 함께 기록하세요</span>'}</div>
+    <div class="md-block-title" style="color:#2563eb;">논의된 내용</div>
+    ${textBlock(reaction)}
+  </div>
+
+  <div class="md-block">
+    <div class="md-block-title" style="color:#b45309;">방향 변경 / 새로 발견된 사항</div>
+    ${textBlock(directionShift)}
+  </div>
+
+  <div class="md-block">
+    <div class="md-block-title" style="color:#dc2626;">이슈 / 우려사항</div>
+    ${textBlock(issues)}
+  </div>
+
+  <div class="md-block">
+    <div class="md-block-title" style="color:#6b21a8;">편집자 판단·메모 <span style="background:#c53030;color:#fff;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:700;letter-spacing:.05em;margin-left:6px;">INTERNAL</span></div>
+    ${textBlock(editorAssess)}
+  </div>
+
+  <div class="md-block">
+    <div class="md-block-title" style="color:#1a6b3c;">합의 사항</div>
+    <div style="background:#f0f7ff;border:1px solid #d0e3ff;border-radius:8px;padding:14px 16px;">
+      ${textBlock(agreement)}
+    </div>
+  </div>
+
+  <div class="md-block">
+    <div class="md-block-title" style="color:#1a6b3c;">다음 단계</div>
+    <div style="background:#f0faf0;border:1px solid #c6e6c6;border-radius:8px;padding:14px 16px;">
+      ${textBlock(action)}
+    </div>
   </div>
 
 </div>
 <div class="md-footer">
-  <span>한빛미디어 출판기획팀</span>
-  <span>본 자료는 내부 업무용입니다</span>
+  <span>한빛미디어 출판기획팀 — 내부용</span>
+  <span>${editor}</span>
 </div>`;
 }
 
 function _renderMeetSummary(d){
-  const {type,author,affil,title,sub,concept,pages,period,reader,editor,place,schedule,agreement,action,dateStr,tocItems} = d;
+  const {type,author,affil,title,sub,concept,pages,period,reader,editor,place,schedule,agreement,action,dateStr,tocItems,reaction,discuss,directionShift} = d;
 
   const emptyPlaceholder = `<div style="padding:12px;text-align:center;color:#bbb;font-size:11px;border:1.5px dashed #e0e0e0;border-radius:6px;">미팅 후 작성해주세요</div>`;
+
+  // _generatedSummary 우선 사용, 없으면 폼 필드 직접 사용
+  const gs = _generatedSummary;
+  const isAI = !!gs;
+
+  const aiBadge = isAI ? `<span style="background:#7c3aed;color:#fff;padding:2px 8px;border-radius:3px;font-size:8.5px;font-weight:700;letter-spacing:.05em;margin-left:6px;">✨ AI 자동 생성</span>` : '';
+
+  const openingHtml = isAI && gs.opening ? `<div style="background:#f0f7ff;border-left:4px solid #2563eb;padding:11px 15px;margin-bottom:18px;font-size:11.5px;line-height:1.75;border-radius:0 6px 6px 0;color:#1a1a18;">${gs.opening.replace(/\n/g,'<br>')}</div>` : '';
+
+  const summaryText = isAI && gs.summary ? gs.summary : (reaction || discuss || '');
+  const agreementsText = isAI && gs.agreements ? gs.agreements : (agreement || '');
+  const nextStepsText = isAI && gs.next_steps ? gs.next_steps : (action || '');
+  const closingHtml = isAI && gs.closing ? `<div style="background:#f9fafb;border-left:4px solid #1a6b3c;padding:11px 15px;margin-top:18px;font-size:11.5px;line-height:1.75;border-radius:0 6px 6px 0;color:#1a1a18;">${gs.closing.replace(/\n/g,'<br>')}</div>` : '';
 
   document.getElementById('meet-doc').innerHTML = `
 <div class="md-header">
@@ -5119,10 +5540,12 @@ function _renderMeetSummary(d){
   <div class="md-header-right">
     <div>${dateStr}</div>
     <div>담당: ${editor}</div>
-    <div style="margin-top:4px;"><span style="background:#2563eb;color:#fff;padding:2px 8px;border-radius:3px;font-size:8.5px;font-weight:700;letter-spacing:.05em;">결과 요약</span></div>
+    <div style="margin-top:4px;"><span style="background:#2563eb;color:#fff;padding:2px 8px;border-radius:3px;font-size:8.5px;font-weight:700;letter-spacing:.05em;">결과 요약</span>${aiBadge}</div>
   </div>
 </div>
 <div class="md-body">
+
+  ${openingHtml}
 
   <div class="md-block">
     <div class="md-block-title" style="color:#2563eb;">미팅 참석자</div>
@@ -5157,19 +5580,36 @@ function _renderMeetSummary(d){
   </div>` : ''}
 
   <div class="md-block">
+    <div class="md-block-title" style="color:#2563eb;">논의 내용 요약</div>
+    <div style="background:#f9fafb;border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;">
+      ${summaryText ? `<div style="font-size:11.5px;color:#1a1a18;line-height:1.7;">${summaryText.replace(/\n/g,'<br>')}</div>` : emptyPlaceholder}
+    </div>
+  </div>
+
+  ${directionShift ? `
+  <div class="md-block">
+    <div class="md-block-title" style="color:#b45309;">방향 확정 사항</div>
+    <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11.5px;color:#1a1a18;line-height:1.7;">${directionShift.replace(/\n/g,'<br>')}</div>
+    </div>
+  </div>` : ''}
+
+  <div class="md-block">
     <div class="md-block-title" style="color:#2563eb;">합의 사항</div>
     <div style="background:#f0f7ff;border:1px solid #d0e3ff;border-radius:8px;padding:14px 16px;">
-      ${agreement ? `<div style="font-size:11.5px;color:#1a1a18;line-height:1.7;">${agreement.replace(/\n/g,'<br>')}</div>` : emptyPlaceholder}
+      ${agreementsText ? `<div style="font-size:11.5px;color:#1a1a18;line-height:1.7;">${agreementsText.replace(/\n/g,'<br>')}</div>` : emptyPlaceholder}
     </div>
   </div>
 
   <div class="md-block">
     <div class="md-block-title" style="color:#1a6b3c;">다음 단계</div>
     <div style="background:#f0faf0;border:1px solid #c6e6c6;border-radius:8px;padding:14px 16px;">
-      ${action ? `<div style="font-size:11.5px;color:#1a1a18;line-height:1.7;">${action.replace(/\n/g,'<br>')}</div>` : emptyPlaceholder}
+      ${nextStepsText ? `<div style="font-size:11.5px;color:#1a1a18;line-height:1.7;">${nextStepsText.replace(/\n/g,'<br>')}</div>` : emptyPlaceholder}
       ${schedule ? `<div style="margin-top:10px;padding-top:8px;border-top:1px solid #c6e6c6;"><span style="font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;">원고 일정 제안</span><div style="font-size:11px;margin-top:2px;color:#444;">${schedule}</div></div>` : ''}
     </div>
   </div>
+
+  ${closingHtml}
 
 </div>
 <div class="md-footer">
@@ -5178,13 +5618,113 @@ function _renderMeetSummary(d){
 </div>`;
 }
 
+async function generateMeetingSummary(){
+  const author   = meetVal('m-author') || '저자명';
+  const title    = meetVal('m-title') || '도서 제목(안)';
+  const date     = meetVal('m-date');
+  const dateStr  = date ? new Date(date).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '미팅 일시';
+  const reaction = meetVal('m-reaction');
+  const agreement= meetVal('m-agreement');
+  const action   = meetVal('m-action');
+  const dirShift = meetVal('m-direction-shift');
+  const discuss  = meetVal('m-discuss');
+
+  // API 키 확인
+  let apiKey = '';
+  try { apiKey = (await loadApiKey()).trim(); } catch(e) {}
+
+  if (apiKey) {
+    // AI 경로
+    const btn = document.querySelector('.meet-section[data-modes="summary"] button');
+    if (btn) { btn.disabled = true; btn.textContent = '생성 중…'; }
+    try {
+      const prompt = `당신은 IT 도서 편집자입니다. 아래 미팅 기록을 바탕으로 저자에게 발송할 미팅 결과 요약을 작성해주세요.
+
+[저자]: ${author}
+[도서(안)]: ${title}
+[미팅 일시]: ${dateStr}
+
+[현장 논의 내용]: ${reaction || '(없음)'}
+[합의 사항]: ${agreement || '(없음)'}
+[다음 단계]: ${action || '(없음)'}
+[방향 변경]: ${dirShift || '(없음)'}
+[논의 포인트]: ${discuss || '(없음)'}
+
+아래 JSON 형식으로만 응답하세요:
+{
+  "opening": "안부 인사 + 미팅 감사 인사 (2~3문장)",
+  "summary": "핵심 논의 내용 요약 (3~5문장)",
+  "agreements": "합의된 주요 사항 (bullet points, \\n으로 구분)",
+  "next_steps": "다음 단계 액션 아이템 (bullet points, \\n으로 구분)",
+  "closing": "마무리 인사 (1~2문장)"
+}`;
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:2000,
+          messages:[{role:'user',content:prompt}]
+        })
+      });
+      const data = await resp.json();
+      const text = data.content?.[0]?.text || '';
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        _generatedSummary = JSON.parse(jsonMatch[0]);
+        showToast('미팅 결과 요약이 AI로 생성되었습니다.', 'green');
+      } else {
+        throw new Error('JSON 파싱 실패');
+      }
+    } catch(e) {
+      console.error('AI summary error:', e);
+      showToast('AI 생성 실패. 규칙 기반으로 생성합니다.', 'yellow');
+      _generateRuleBasedSummary(author, title, dateStr, reaction, agreement, action, dirShift, discuss);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '✨ 요약 자동 생성'; }
+    }
+  } else {
+    // 규칙 기반 경로
+    _generateRuleBasedSummary(author, title, dateStr, reaction, agreement, action, dirShift, discuss);
+    showToast('규칙 기반으로 미팅 결과 요약을 생성했습니다. (API 키 설정 시 AI 생성 가능)', 'green');
+  }
+  meetRender();
+}
+
+function _generateRuleBasedSummary(author, title, dateStr, reaction, agreement, action, dirShift, discuss) {
+  const authorName = author && author !== '저자명' ? author : '저자';
+
+  const opening = `${authorName}님, 안녕하세요.\n${dateStr}에 진행한 『${title}』 관련 미팅에 참석해 주셔서 감사합니다. 함께 나눈 이야기를 아래와 같이 정리해 드립니다.`;
+
+  let summaryParts = [];
+  if (reaction) summaryParts.push(reaction);
+  if (discuss) summaryParts.push(discuss);
+  if (dirShift) summaryParts.push('방향 확정: ' + dirShift);
+  const summary = summaryParts.join('\n') || '미팅에서 논의된 내용을 정리 중입니다.';
+
+  const agreements = agreement || '합의 사항을 정리 중입니다.';
+  const next_steps = action || '다음 단계를 정리 중입니다.';
+
+  const closing = `궁금하신 점이나 추가 논의가 필요한 사항이 있으시면 언제든 편하게 말씀해 주세요.\n감사합니다.`;
+
+  _generatedSummary = { opening, summary, agreements, next_steps, closing };
+}
+
 function meetReset(){
   ['m-author','m-affil','m-career','m-books','m-influence',
    'm-type','m-title','m-subtitle','m-concept','m-pages','m-period','m-reader',
    'm-date','m-editor','m-place','m-agenda',
    'm-market','m-diff','m-toc',
    'm-royalty','m-print','m-support','m-schedule',
-   'm-reaction','m-agreement','m-action'].forEach(id=>{
+   'm-reaction','m-agreement','m-action',
+   'm-discuss','m-questions','m-explore',
+   'm-direction-shift','m-issues','m-editor-assess'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.value = el.tagName==='SELECT' ? el.options[0].value : '';
   });
@@ -5196,155 +5736,57 @@ function meetReset(){
     const el=document.getElementById(id);
     if(el) el.value='';
   });
+  _generatedSummary = null;
   meetRender();
 }
 
-function meetDownloadDocx(){
-  const type    = meetVal('m-type') || '초기 미팅';
-  const agenda  = meetVal('m-agenda');
-  const author  = meetVal('m-author') || '저자명';
-  const affil   = meetVal('m-affil');
-  const career  = meetVal('m-career');
-  const books   = meetVal('m-books');
-  const influence = meetVal('m-influence');
-  const title   = meetVal('m-title') || '도서 제목';
-  const sub     = meetVal('m-subtitle');
-  const concept = meetVal('m-concept');
-  const pages   = meetVal('m-pages');
-  const period  = meetVal('m-period');
-  const reader  = meetVal('m-reader');
-  const date    = meetVal('m-date');
-  const editor  = meetVal('m-editor');
-  const place   = meetVal('m-place');
-  const market  = meetVal('m-market');
-  const diff    = meetVal('m-diff');
-  const toc     = meetVal('m-toc');
-  const royalty = meetVal('m-royalty') || '협의';
-  const print_  = meetVal('m-print') || '협의';
-  const support = meetVal('m-support');
-  const schedule= meetVal('m-schedule');
-  const reaction= meetVal('m-reaction');
-  const agreement=meetVal('m-agreement');
-  const action  = meetVal('m-action');
+function meetDownloadPdf(){
+  const docEl = document.getElementById('meet-doc');
+  if (!docEl) return;
 
-  const mcExp = document.getElementById('mc-exp')?.checked ? '✅' : '⬜';
-  const mcExcl = document.getElementById('mc-excl')?.checked ? '✅' : '⬜';
-  const mcSample = document.getElementById('mc-sample')?.checked ? '✅' : '⬜';
-  const mcTime = document.getElementById('mc-time')?.checked ? '✅' : '⬜';
-  const mcExpNote = (document.getElementById('mc-exp-note')||{}).value||'';
-  const mcExclNote = (document.getElementById('mc-excl-note')||{}).value||'';
-  const mcSampleNote = (document.getElementById('mc-sample-note')||{}).value||'';
-  const mcTimeNote = (document.getElementById('mc-time-note')||{}).value||'';
+  const author = meetVal('m-author') || '저자';
+  const title  = meetVal('m-title')  || '도서제목';
+  const mode   = {'brief':'사전안내','discuss':'미팅진행','notes':'편집자정리','summary':'미팅결과요약'}[_meetDocMode] || '미팅자료';
+  const docTitle = `${mode}_${author}_${title}`;
 
-  function para(text, style='Normal', size=22, bold=false){
-    return `<w:p><w:pPr><w:pStyle w:val="${style}"/></w:pPr><w:r><w:rPr>${bold?'<w:b/>':''}<w:sz w:val="${size}"/></w:rPr><w:t xml:space="preserve">${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</w:t></w:r></w:p>`;
-  }
-  function heading(text){ return para(text,'Heading1',28,true); }
-  function row(label, val){ return para(`${label}: ${val}`,'Normal',20); }
-  function blank(){ return '<w:p/>'; }
+  // 현재 페이지의 인라인 스타일 전체 수집
+  const styles = Array.from(document.querySelectorAll('style'))
+    .map(s => s.textContent).join('\n');
 
-  let tocParas = '';
-  toc.split('\n').filter(l=>l.trim()).forEach(l=>{ tocParas += para('  '+l,'Normal',20); });
+  const html = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>${docTitle.replace(/[<>&"]/g,'')}</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+${styles}
+*, *::before, *::after { box-sizing: border-box; }
+@page { size: A4; margin: 0; }
+@media print {
+  html, body { margin: 0; padding: 0; background: #fff !important; }
+  .meet-doc { box-shadow: none !important; margin: 0 auto !important; width: 210mm !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+  iframe { display: none !important; }
+}
+body { background: #e8e6e1; padding: 24px; margin: 0;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif; }
+</style>
+</head>
+<body>
+${docEl.outerHTML}
+<script>
+window.addEventListener('load', function() {
+  setTimeout(function() { window.print(); }, 500);
+});
+<\/script>
+</body>
+</html>`;
 
-  let agendaParas = '';
-  if(agenda) agenda.split('\n').filter(l=>l.trim()).forEach(l=>{ agendaParas += para('  '+l,'Normal',20); });
-
-  let xml, fileName;
-
-  if (_meetDocMode === 'summary') {
-    fileName = `미팅요약_${author}_${title}.docx`;
-    xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
-  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-<w:body>
-${heading('출판 기획 미팅 결과 요약')}
-${blank()}
-${heading('1. 미팅 참석자')}
-${row('저자', author)}
-${affil ? row('소속', affil) : ''}
-${row('편집자', editor || '담당 편집자')}
-${row('출판사', '한빛미디어')}
-${date ? row('일시', date) : ''}
-${place ? row('장소', place) : ''}
-${blank()}
-${heading('2. 논의 도서')}
-${row('제목(안)', title)}
-${sub ? row('부제', sub) : ''}
-${concept ? row('한줄 콘셉트', concept) : ''}
-${reader ? row('대상 독자', reader) : ''}
-${pages ? row('예상 분량', pages+'쪽') : ''}
-${period ? row('집필 기간', period) : ''}
-${blank()}
-${toc ? heading('3. 목차 가안') + tocParas + blank() : ''}
-${heading('4. 합의 사항')}
-${agreement ? para(agreement.replace(/\n/g,' / '),'Normal',20) : para('(미팅 후 작성)','Normal',20)}
-${blank()}
-${heading('5. 다음 단계')}
-${action ? para(action.replace(/\n/g,' / '),'Normal',20) : para('(미팅 후 작성)','Normal',20)}
-${schedule ? row('원고 일정 제안', schedule) : ''}
-<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1080" w:bottom="1440" w:left="1080"/></w:sectPr>
-</w:body></w:document>`;
-  } else {
-    fileName = `저자미팅준비_${author}_${title}.docx`;
-    xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
-  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-<w:body>
-${heading('편집자 준비 시트')}
-${blank()}
-${heading('1. 미팅 개요')}
-${row('미팅 유형', type)}
-${date ? row('일시', date) : ''}
-${place ? row('장소', place) : ''}
-${editor ? row('담당 편집자', editor) : ''}
-${agendaParas ? para('아젠다:','Normal',20,true) + agendaParas : ''}
-${blank()}
-${heading('2. 저자 프로파일')}
-${row('이름', author)}
-${affil ? row('소속/직함', affil) : ''}
-${career ? row('경력', career.replace(/\n/g,' / ')) : ''}
-${books ? row('기존 저서', books) : ''}
-${influence ? row('영향력', influence) : ''}
-${blank()}
-${heading('3. 제안 도서 개요')}
-${row('제목(안)', title)}
-${sub ? row('부제', sub) : ''}
-${concept ? row('한줄 콘셉트', concept) : ''}
-${reader ? row('대상 독자', reader) : ''}
-${pages ? row('예상 분량', pages+'쪽') : ''}
-${period ? row('집필 기간', period) : ''}
-${blank()}
-${market || diff ? heading('4. 시장 근거') : ''}
-${market ? para(market,'Normal',20) : ''}
-${diff ? para('차별화: '+diff,'Normal',20) : ''}
-${market || diff ? blank() : ''}
-${toc ? heading('5. 목차 가안') + tocParas + blank() : ''}
-${heading('6. 출판사 제안 조건')}
-${row('인세율', royalty)}
-${row('초판 부수', print_)}
-${support ? row('마케팅·편집 지원', support.replace(/\n/g,' / ')) : ''}
-${schedule ? row('원고 일정(안)', schedule) : ''}
-${blank()}
-${heading('7. 함께 확인 체크리스트')}
-${para(`${mcExp} 집필 경험 있음${mcExpNote ? ' — '+mcExpNote : ''}`,'Normal',20)}
-${para(`${mcExcl} 타 출판사 미접촉${mcExclNote ? ' — '+mcExclNote : ''}`,'Normal',20)}
-${para(`${mcSample} 샘플 챕터 제출 가능${mcSampleNote ? ' — '+mcSampleNote : ''}`,'Normal',20)}
-${para(`${mcTime} 집필 시간 확보됨${mcTimeNote ? ' — '+mcTimeNote : ''}`,'Normal',20)}
-${blank()}
-${heading('8. 미팅 중 논의 기록')}
-${reaction ? row('논의 내용', reaction.replace(/\n/g,' / ')) : para('(미팅 중 함께 기록)','Normal',20)}
-${agreement ? row('주요 합의', agreement.replace(/\n/g,' / ')) : ''}
-${action ? row('다음 단계', action.replace(/\n/g,' / ')) : ''}
-<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1080" w:bottom="1440" w:left="1080"/></w:sectPr>
-</w:body></w:document>`;
-  }
-
-  const zip = buildDocxZip(xml);
-  const blob = new Blob([zip],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = fileName;
-  a.click();
+  const win = window.open('', '_blank', 'width=960,height=840');
+  if (!win) { showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.', 'red'); return; }
+  win.document.write(html);
+  win.document.close();
 }
 
 async function generateMeetingWithAI() {
@@ -5446,15 +5888,50 @@ ${analysisCtx ? '분석 데이터: '+analysisCtx : ''}
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 let _meetCtxAuthor = '';
 let _meetCtxCat = '';
-let _meetDocMode = 'prep'; // 'prep' | 'summary'
+let _meetDocMode = 'brief'; // 'brief' | 'discuss' | 'notes' | 'summary'
+let _generatedSummary = null; // { opening, summary, agreements, next_steps, closing } | null
 function setMeetDocMode(mode) {
   _meetDocMode = mode;
+  // 탭 버튼 active 처리
   document.querySelectorAll('.meet-mode-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('meet-mode-' + mode)?.classList.add('active');
-  const hints = document.querySelectorAll('.meet-mode-hint');
-  hints.forEach(h => h.style.display = 'none');
-  document.getElementById('meet-mode-hint-' + mode).style.display = '';
+  // 힌트 텍스트
+  document.querySelectorAll('.meet-mode-hint').forEach(h => h.style.display = 'none');
+  const hintEl = document.getElementById('meet-mode-hint-' + mode);
+  if (hintEl) hintEl.style.display = '';
+  // 왼쪽 폼 섹션 show/hide
+  document.querySelectorAll('.meet-form-body .meet-section[data-modes]').forEach(sec => {
+    const modes = sec.getAttribute('data-modes').split(',');
+    sec.style.display = modes.includes(mode) ? '' : 'none';
+  });
+  // 액션바 AI 버튼: brief 모드에서만 표시
+  const aiBtn = document.getElementById('meet-ai-btn');
+  if (aiBtn) aiBtn.style.display = mode === 'brief' ? '' : 'none';
+  // 기본값 채우기 (빈 필드만)
+  meetInitDefaults(mode);
+  // 미리보기 렌더링
   meetRender();
+}
+
+function meetInitDefaults(mode) {
+  const dflt = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && !el.value.trim()) el.value = val;
+  };
+  if (mode === 'brief') {
+    dflt('m-place', '서울 서대문구 연희로2길 62');
+    dflt('m-title', '가제: 미정');
+    dflt('m-agenda',
+      '1. 시장 현황 및 출판 기회 공유\n2. 제안 도서 방향 함께 논의\n3. 저자님 관심 분야 및 집필 여건 확인\n4. 목차 가안 함께 검토\n5. 출판 조건 및 향후 일정 협의');
+  } else if (mode === 'discuss') {
+    dflt('m-discuss',
+      '1. 저자님의 이 분야 독보적 경험과 강점 확인\n2. 제안 도서 방향을 함께 구체화\n3. 목차 가안 피드백 및 개선 방향 논의\n4. 집필 여건(시간·일정) 실질 확인\n5. 출판 조건 및 계약 방향 협의');
+    dflt('m-questions',
+      '- 현재 이 주제로 다른 집필 계획이 있으신가요?\n- 독자에게 가장 강조하고 싶은 핵심 메시지는 무엇인가요?\n- 샘플 챕터 제출이 언제쯤 가능하실 것 같으신가요?\n- 집필에 월 몇 시간 정도 투자 가능하신지요?\n- 목차에서 가장 자신 있는 파트와 보완이 필요한 파트가 있다면?');
+    dflt('m-explore',
+      '- 시리즈 확장 가능성 (2권, 실습편 등)\n- 독자층 확장 방향 (입문자 → 실무자 등)\n- 콘텐츠 포맷 변형 (워크북, 강의 연계)\n- 주제 심화 또는 인접 분야 연계');
+  }
+  // notes, summary: 빈 상태로 시작 (미팅 중 실시간 기록 / 자동 생성)
 }
 
 function openMeetingFromAuthor(authorName) {
@@ -5777,7 +6254,7 @@ switchTab = function(i, btn) {
 const _origSwitchTab6 = switchTab;
 switchTab = function(i, btn){
   _origSwitchTab6(i, btn);
-  if(i === 6){ meetRender(); updateMeetCtxBar(); }
+  if(i === 6){ setMeetDocMode('brief'); updateMeetCtxBar(); }
 };
 </script>
 
