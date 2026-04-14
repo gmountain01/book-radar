@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>출판 도우미 v1.7.3 업데이트 날짜 2026-04-14</title>
+<title>출판 도우미 v1.8.0 업데이트 날짜 2026-04-15</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -54,17 +54,20 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 /* 풀스크린 패널 (저자 제안서·미팅·기획서) */
 .panel.panel-fullscreen.active{display:flex;flex-direction:column;padding:0;overflow:hidden;flex:1;min-height:0;}
 .main-content{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;margin-left:var(--sb-w,0);}
+/* panel7(유튜버 분석)은 main 밖에 있으므로 fixed로 직접 배치 */
+#panel7{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;overflow:hidden;background:#F8F9FC;}
+#panel7.active{display:block;flex:unset;min-height:unset;overflow:hidden;}
 
 /* 업로드 */
 .upload-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:1rem;}
 @media(max-width:800px){.upload-row{grid-template-columns:1fr;}}
-.upload-label{display:block;border:1.5px solid var(--border);border-radius:12px;padding:1.5rem 1.2rem;text-align:center;cursor:pointer;transition:all .2s ease;background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.upload-label{display:block;border:1.5px solid var(--border);border-radius:12px;padding:1.5rem 1.2rem;text-align:center;cursor:pointer;transition:all .2s ease;background:var(--surface);box-shadow:var(--shadow-sm);}
 .upload-label:hover,.upload-label.drag{border-color:var(--accent);background:var(--accent-light);box-shadow:0 4px 12px rgba(59,63,140,.1);}
 .upload-label input{display:none;}
 .upload-label .ico{font-size:1.8rem;display:block;margin-bottom:.5rem;color:var(--muted);}
 .upload-label .ttl{font-size:.86rem;font-weight:700;display:block;margin-bottom:.2rem;}
 .upload-label .sub{font-size:.73rem;color:var(--muted);display:block;}
-.upload-status{display:none;background:var(--surface);border:1.5px solid var(--green);border-radius:12px;padding:.8rem 1rem;margin-bottom:.8rem;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.upload-status{display:none;background:var(--surface);border:1.5px solid var(--green);border-radius:12px;padding:.8rem 1rem;margin-bottom:.8rem;box-shadow:var(--shadow-sm);}
 .upload-status.show{display:block;}
 .us-row{display:flex;align-items:center;gap:.6rem;}
 .us-info{flex:1;}
@@ -76,21 +79,21 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 /* 설정 */
 .cfg-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem;}
 @media(max-width:600px){.cfg-row{grid-template-columns:1fr;}}
-.cfg-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:all .18s ease;}
+.cfg-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;box-shadow:var(--shadow-sm);transition:all .18s ease;}
 .cfg-card:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 .cfg-card label{display:block;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem;}
 .cfg-card select{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.42rem .7rem;border-radius:8px;font-size:.82rem;font-family:inherit;transition:border-color .15s;}
 .cfg-card select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 
 /* 실행 버튼 */
-.run-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:.75rem;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:1.2rem;transition:background .15s ease,transform .1s ease;box-shadow:0 2px 8px rgba(59,63,140,.2);}
+.run-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:.75rem;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:1.2rem;transition:background .15s ease,transform .1s ease;box-shadow:var(--accent-shadow);}
 .run-btn:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,63,140,.25);}
 .run-btn:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed;box-shadow:none;transform:none;}
 
 /* 통계 */
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-bottom:1rem;}
 @media(max-width:700px){.stats{grid-template-columns:repeat(3,1fr);}}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem;transition:all .18s ease;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem;transition:all .18s ease;box-shadow:var(--shadow-sm);}
 .stat.clickable{cursor:pointer;}
 .stat.clickable:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-2px);box-shadow:0 4px 12px rgba(59,63,140,.1);}
 .stat .n{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700;line-height:1;margin-bottom:.2rem;}
@@ -163,7 +166,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .ai-wiz-start:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed;opacity:1;}
 /* 워크로드 섹션 */
 .workload-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.6rem;}
-.workload-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.workload-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem;box-shadow:var(--shadow-sm);}
 .workload-card.overload{border-color:var(--red-bd);background:var(--red-bg);}
 .workload-card.busy{border-color:var(--yellow-bd);background:var(--yellow-bg);}
 .wk-name{font-size:.78rem;font-weight:700;margin-bottom:.45rem;}
@@ -185,7 +188,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .ftab .badge{display:inline-block;background:rgba(255,255,255,.25);border-radius:10px;padding:0 5px;font-size:.65rem;margin-left:2px;}
 
 /* 카테고리 블록 - 통합 뷰 핵심 */
-.cat-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:.6rem;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .18s ease;}
+.cat-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:.6rem;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow .18s ease;}
 .cat-block:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);}
 .cat-hdr{padding:.7rem 1rem;display:flex;align-items:center;gap:.6rem;cursor:pointer;user-select:none;background:var(--surface2);border-bottom:1px solid var(--border);transition:background .15s ease;}
 .cat-hdr:hover{background:#E8E7DF;}
@@ -240,11 +243,11 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .dl-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
 
 /* 힌트 */
-.hint{background:var(--accent-light);border:1px solid rgba(59,63,140,.15);border-left:4px solid var(--accent);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:1rem;font-size:.8rem;line-height:1.75;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.hint{background:var(--accent-light);border:1px solid var(--accent-border);border-left:4px solid var(--accent);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:1rem;font-size:.8rem;line-height:1.75;color:var(--text);box-shadow:var(--shadow-sm);}
 .hint code{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--accent);background:var(--accent-light);padding:1px 5px;border-radius:4px;}
 
 /* ══ 차트 & 공백 분석 섹션 ══ */
-.chart-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.chart-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px;box-shadow:var(--shadow-sm);}
 .chart-section-title{font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;}
 .chart-section-title::before{content:'';display:inline-block;width:3px;height:14px;background:var(--accent);border-radius:2px;}
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
@@ -260,7 +263,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .insight-box .ib-title{font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
 .insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
 @media(max-width:1000px){.insight-grid{grid-template-columns:1fr;}}
-.ic{border-radius:12px;padding:.8rem 1rem;border:1px solid;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.ic{border-radius:12px;padding:.8rem 1rem;border:1px solid;box-shadow:var(--shadow-sm);}
 .ic-red{background:var(--red-bg);border-color:var(--red-bd);}
 .ic-yellow{background:var(--yellow-bg);border-color:var(--yellow-bd);}
 .ic-green{background:var(--green-bg);border-color:var(--green-bd);}
@@ -303,7 +306,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .editor-wrap{display:grid;grid-template-columns:370px 1fr;gap:0;flex:1;min-height:0;overflow:hidden;}
 @media(max-width:900px){.editor-wrap{grid-template-columns:1fr;}}
 .form-panel{background:var(--surface);border-right:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;min-height:0;}
-.form-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);background:#1C1C2E;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.form-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);background:var(--sidebar-dark);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .form-header h2{font-size:.9rem;font-weight:700;}
 .form-header .ftag{font-size:.62rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;}
 .form-body{padding:1.2rem 1.2rem;display:block;flex:1;min-height:0;overflow-y:auto;}
@@ -392,7 +395,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 
 /* ===== 출판 프로세스 가이드 (panel4) ===== */
 .guide-wrap{background:#EEEDEA;padding:2rem 1rem;min-height:60vh;}
-.guide-color-bar{display:flex;align-items:center;gap:.6rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.6rem 1rem;margin-bottom:1.2rem;flex-wrap:wrap;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.guide-color-bar{display:flex;align-items:center;gap:.6rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.6rem 1rem;margin-bottom:1.2rem;flex-wrap:wrap;box-shadow:var(--shadow-sm);}
 .guide-color-bar span{font-size:.72rem;font-weight:600;color:var(--muted);white-space:nowrap;}
 .gcp{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .12s,border-color .12s;flex-shrink:0;}
 .gcp:hover,.gcp.active{border-color:#222;transform:scale(1.15);}
@@ -472,6 +475,14 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
   --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
   --shadow-lg: 0 8px 24px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.06);
   --transition: all .18s cubic-bezier(.4,0,.2,1);
+  /* 공통 다크 배경 (사이드바·문서 헤더) */
+  --sidebar-dark: #1C1C2E;
+  /* 액센트 그림자 */
+  --accent-shadow: 0 2px 8px rgba(59,63,140,.2);
+  --accent-shadow-lg: 0 4px 14px rgba(59,63,140,.3);
+  /* 액센트 반투명 */
+  --accent-border: rgba(59,63,140,.15);
+  --accent-hover-bg: rgba(59,63,140,.35);
 }
 
 /* ── 스크롤바 ── */
@@ -519,13 +530,52 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
   left: 0;
   width: var(--sb-w);
   height: calc(100vh - var(--hdr-h));
-  background: #1C1C2E;
+  background: var(--sidebar-dark);
   border-right: none;
-  overflow-y: auto;
+  overflow: hidden;
   z-index: 90;
   padding: 1rem 0 1.5rem;
   box-shadow: 2px 0 12px rgba(0,0,0,.1);
+  transition: width .22s cubic-bezier(.4,0,.2,1);
 }
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: .3rem .7rem .5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+.sidebar-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: #9090A8;
+  font-size: .95rem;
+  transition: background .15s, color .15s, transform .22s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-toggle:hover .sidebar-toggle-icon { background: rgba(255,255,255,.08); color: #fff; }
+.sidebar.collapsed .sidebar-toggle-icon { transform: rotate(180deg); }
+.sidebar.collapsed { width: 52px; }
+.sidebar.collapsed .nav-section { opacity: 0; pointer-events: none; }
+.sidebar.collapsed .nav-label { display: none; }
+.sidebar.collapsed .nav-item {
+  padding: .6rem 0;
+  justify-content: center;
+  gap: 0;
+  margin-right: 0 !important;
+  border-radius: 8px;
+  margin: 1px 4px;
+  border-left-color: transparent !important;
+}
+.sidebar.collapsed .nav-item.active { border-left-color: transparent !important; }
+.nav-label { white-space: nowrap; overflow: hidden; transition: opacity .15s; }
+.main-content { transition: margin-left .22s cubic-bezier(.4,0,.2,1); }
 .nav-section {
   font-size: .62rem;
   font-weight: 600;
@@ -560,7 +610,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 }
 .nav-item:hover:not(.locked) {
   color: #FFFFFF;
-  background: rgba(59,63,140,.35);
+  background: var(--accent-hover-bg);
 }
 .nav-item.active {
   color: #FFFFFF;
@@ -575,7 +625,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 /* ── 힌트 박스 ── */
 .hint {
   background: var(--accent-light);
-  border: 1px solid rgba(59,63,140,.15);
+  border: 1px solid var(--accent-border);
   border-left: 4px solid var(--accent);
   border-radius: 12px;
   padding: .9rem 1.2rem;
@@ -632,14 +682,14 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
   padding: .8rem;
   font-size: .9rem;
   letter-spacing: .02em;
-  box-shadow: 0 2px 8px rgba(59,63,140,.2);
+  box-shadow: var(--accent-shadow);
   transition: var(--transition);
 }
 .run-btn:hover:not(:disabled) {
   opacity: 1;
   background: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(59,63,140,.3);
+  box-shadow: var(--accent-shadow-lg);
 }
 .run-btn:active:not(:disabled) { transform: translateY(0); }
 
@@ -739,6 +789,889 @@ button { font-family: inherit; }
 /* ── 기획서 폼 패널 ── */
 .form-panel { box-shadow: var(--shadow-md); }
 
+
+/* ═══════ 유튜버 분석 (scoped under .yt-scope) ═══════ */
+
+    *, *::before, *::after{ box-sizing: border-box; margin: 0; padding: 0; }
+    .yt-scope{
+      --sidebar-bg: #1C1C2E;
+      --accent: #3B3F8C;
+      --accent-light: #5C63C2;
+      --bg: #F8F9FC;
+      --card-bg: #FFFFFF;
+      --text: #1A1A2E;
+      --text-muted: #6B7280;
+      --border: #E5E7EB;
+      --radius: 12px;
+      --danger: #EF4444;
+      --success: #10B981;
+      --warning: #F59E0B;
+    }
+    .yt-scope{
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100%;
+      overflow: hidden;
+      font-size: 14px;
+    }
+    .yt-scope #app{ display: flex; height: 100%; }
+
+    /* ── Sidebar ── */
+    .yt-scope #sidebar{
+      width: 240px;
+      min-width: 240px;
+      background: #3b3f8c;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+    .yt-scope .logo{
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .yt-scope .logo h1{ font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+    .yt-scope .logo span{ font-size: 11px; color: rgba(255,255,255,0.35); }
+    .yt-scope .nav-list{ padding: 12px 0; flex: 1; }
+    .yt-scope .nav-item{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.5);
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+      user-select: none;
+    }
+    .yt-scope .nav-item:hover{ color: #fff; background: rgba(255,255,255,0.06); }
+    .yt-scope .nav-item.active{ color: #fff; background: rgba(255,255,255,0.1); border-left-color: #6C72FF; }
+    .yt-scope .nav-item .icon{ font-size: 16px; width: 20px; text-align: center; }
+    .yt-scope .sidebar-footer{
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .yt-scope .api-key-btn{
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.55);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+    .yt-scope .api-key-btn:hover{ background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* ── Main ── */
+    .yt-scope #main{ flex: 1; overflow-y: auto; padding: 32px; }
+    .yt-scope .yt-panel{ display: none; }
+    .yt-scope .yt-panel.active{ display: block; }
+    .yt-scope .panel-header{ margin-bottom: 24px; }
+    .yt-scope .panel-header h2{ font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .yt-scope .panel-header p{ font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .yt-scope .panel-header-row{
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    /* ── Cards ── */
+    .yt-scope .card{
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 20px;
+    }
+
+    /* ── Buttons ── */
+    .yt-scope .btn{
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      font-size: 13.5px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .yt-scope .btn:disabled{ opacity: 0.6; cursor: not-allowed; }
+    .yt-scope .btn-primary{ background: var(--accent); color: #fff; }
+    .yt-scope .btn-primary:hover:not(:disabled){ background: var(--accent-light); transform: translateY(-1px); }
+    .yt-scope .btn-secondary{ background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+    .yt-scope .btn-secondary:hover:not(:disabled){ background: var(--bg); }
+    .yt-scope .btn-danger{ background: var(--danger); color: #fff; }
+    .yt-scope .btn-danger:hover:not(:disabled){ background: #DC2626; }
+    .yt-scope .btn-sm{ padding: 7px 14px; font-size: 13px; border-radius: 10px; }
+    .yt-scope .btn-xs{ padding: 5px 10px; font-size: 12px; border-radius: 8px; }
+
+    /* ── Trend Keywords ── */
+    .yt-scope .trend-section{ margin-bottom: 18px; padding: 14px 16px; background: var(--card-bg); border-radius: var(--radius); border: 1px solid #E5E7EB; }
+    .yt-scope .trend-header{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .yt-scope .trend-label{ font-size: 12px; font-weight: 700; color: #374151; }
+    .yt-scope .trend-refresh{ font-size: 11px; color: #6B7280; background: none; border: 1px solid #E5E7EB; border-radius: 6px; padding: 3px 8px; cursor: pointer; transition: background 0.1s; }
+    .yt-scope .trend-refresh:hover{ background: var(--bg); color: var(--accent); }
+    .yt-scope .kw-chips-wrap{ display: flex; flex-wrap: wrap; gap: 7px; min-height: 28px; }
+    .yt-scope .kw-chip{
+      background: #EEF2FF;
+      color: #3730A3;
+      border: 1px solid #C7D2FE;
+      border-radius: 20px;
+      padding: 4px 13px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      white-space: nowrap;
+    }
+    .yt-scope .kw-chip:hover{ background: var(--accent); color: #fff; border-color: var(--accent); }
+    .yt-scope .kw-loading{ font-size: 12px; color: #9CA3AF; align-self: center; }
+
+    /* ── Search ── */
+    .yt-scope .search-bar{ display: flex; gap: 10px; margin-bottom: 24px; }
+    .yt-scope .search-input{
+      flex: 1;
+      padding: 11px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .yt-scope .search-input:focus{
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,63,140,0.1);
+    }
+
+    /* ── Channel Grid ── */
+    .yt-scope .channel-grid{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .yt-scope .channel-card{ padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+    .yt-scope .channel-card-top{ display: flex; align-items: center; gap: 12px; }
+    .yt-scope .ch-thumb{
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+    .yt-scope .ch-name{ font-size: 14px; font-weight: 600; }
+    .yt-scope .ch-id{ font-size: 11px; color: var(--text-muted); margin-top: 2px; word-break: break-all; }
+    .yt-scope .ch-desc{
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* ── Stats ── */
+    .yt-scope .stats-grid{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .yt-scope .stat-card{ padding: 18px; text-align: center; }
+    .yt-scope .stat-card .lbl{ font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
+    .yt-scope .stat-card .val{ font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .yt-scope .stat-card .sub{ font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── Channel Header ── */
+    .yt-scope .ch-header{
+      padding: 22px 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+    .yt-scope .ch-header img{ width: 68px; height: 68px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .yt-scope .ch-header .ch-info h2{ font-size: 18px; font-weight: 700; }
+    .yt-scope .ch-header .ch-info p{ font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+    .yt-scope .ch-header .ch-actions{ margin-left: auto; display: flex; gap: 8px; flex-shrink: 0; }
+
+    /* ── Score ── */
+    .yt-scope .score-section{ padding: 22px 24px; margin-bottom: 18px; }
+    .yt-scope .score-header{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .yt-scope .score-header .title{ font-size: 14px; font-weight: 700; }
+    .yt-scope .score-bar-row{ display: flex; align-items: center; gap: 12px; }
+    .yt-scope .score-bar{ flex: 1; height: 10px; background: var(--bg); border-radius: 5px; overflow: hidden; }
+    .yt-scope .score-bar-fill{ height: 100%; border-radius: 5px; transition: width 0.7s ease; }
+    .yt-scope .score-num{ font-size: 20px; font-weight: 800; min-width: 48px; text-align: right; }
+    .yt-scope .score-breakdown{
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 14px;
+    }
+    .yt-scope .score-item{ margin-bottom: 10px; }
+    .yt-scope .score-item:last-child{ margin-bottom: 0; }
+    .yt-scope .score-row{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .yt-scope .score-row:last-child{ border-bottom: none; }
+    .yt-scope .score-pts{ font-weight: 700; color: var(--accent); }
+    .yt-scope .score-reason{
+      font-size: 12px;
+      color: #6B7280;
+      margin-top: 3px;
+      padding-left: 4px;
+      border-left: 2px solid #E5E7EB;
+      line-height: 1.5;
+    }
+    .yt-scope .score-summary{
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.6;
+      border-left: 3px solid var(--accent-light);
+    }
+
+    /* ── Table ── */
+    .yt-scope .table-wrap{ overflow-x: auto; }
+    .yt-scope table{ width: 100%; border-collapse: collapse; }
+    .yt-scope th{
+      background: var(--bg);
+      padding: 9px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .yt-scope td{ padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .yt-scope tr:last-child td{ border-bottom: none; }
+    .yt-scope tr:hover td{ background: rgba(59,63,140,0.02); }
+    .yt-scope .vid-thumb{ width: 80px; height: 45px; border-radius: 6px; object-fit: cover; background: var(--bg); }
+    .yt-scope .vid-title{ max-width: 220px; }
+    .yt-scope .vid-title a{
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .yt-scope .vid-title a:hover{ color: var(--accent); }
+    .yt-scope .mini-bar{ height: 3px; background: var(--bg); border-radius: 2px; margin-top: 5px; }
+    .yt-scope .mini-bar-fill{ height: 100%; border-radius: 2px; background: var(--accent); }
+
+    /* ── Compare ── */
+    .yt-scope .compare-chips{ display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+    .yt-scope .compare-chip{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .yt-scope .compare-chip img{ width: 22px; height: 22px; border-radius: 50%; }
+    .yt-scope .chip-remove{ cursor: pointer; color: var(--text-muted); font-size: 17px; line-height: 1; margin-left: 2px; }
+    .yt-scope .chip-remove:hover{ color: var(--danger); }
+
+    /* ── Saved ── */
+    .yt-scope .saved-list{ display: flex; flex-direction: column; gap: 12px; }
+    .yt-scope .saved-card{ padding: 14px 20px; display: flex; align-items: center; gap: 14px; }
+    .yt-scope .saved-card img{ width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; }
+    .yt-scope .saved-card .s-info{ flex: 1; min-width: 0; }
+    .yt-scope .saved-card .s-info h4{ font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .yt-scope .saved-card .s-info p{ font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .yt-scope .memo-input{
+      width: 180px;
+      height: 34px;
+      resize: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 6px 10px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .yt-scope .memo-input:focus{ border-color: var(--accent); }
+
+    /* ── Tags ── */
+    .yt-scope .tag{
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .yt-scope .tag-green{ background: #D1FAE5; color: #065F46; }
+    .yt-scope .tag-blue{ background: #DBEAFE; color: #1E40AF; }
+    .yt-scope .tag-yellow{ background: #FEF3C7; color: #92400E; }
+    .yt-scope .tag-red{ background: #FEE2E2; color: #991B1B; }
+
+    /* ── Modal ── */
+    .yt-scope .modal-overlay{
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .yt-scope .modal-overlay.open{ display: flex; }
+    .yt-scope .modal{
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      width: 460px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+    }
+    .yt-scope .modal h3{ font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .yt-scope .modal .modal-desc{ font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+    .yt-scope .modal-input{
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .yt-scope .modal-input:focus{ border-color: var(--accent); }
+    .yt-scope .modal-footer{ display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── Toast ── */
+    .yt-scope #toast{
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1A1A2E;
+      color: #fff;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 500;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
+      max-width: 300px;
+      pointer-events: none;
+    }
+    .yt-scope #toast.show{ transform: translateY(0); opacity: 1; }
+
+    /* ── Loaders ── */
+    .yt-scope .spinner{
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(59,63,140,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .yt-scope .loading-box{
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .yt-scope .loading-box .spinner{ width: 30px; height: 30px; border-width: 3px; display: block; margin: 0 auto 12px; }
+    .yt-scope .empty-state{ text-align: center; padding: 72px 20px; color: var(--text-muted); }
+    .yt-scope .empty-state .icon{ font-size: 44px; margin-bottom: 12px; }
+    .yt-scope .empty-state p{ font-size: 14px; line-height: 1.6; }
+
+    /* ── Chart ── */
+    .yt-scope .chart-wrap{ padding: 20px 24px 24px; position: relative; height: 260px; }
+    .yt-scope .section-label{
+      padding: 16px 24px 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Sort Bar ── */
+    .yt-scope .sort-bar{
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .yt-scope .sort-label{
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+    .yt-scope .sort-btn{
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text-muted);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .yt-scope .sort-btn:hover{ border-color: var(--accent); color: var(--accent); }
+    .yt-scope .sort-btn.active{
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .yt-scope .sort-count{
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    /* ── Channel Card Stats ── */
+    .yt-scope .ch-country{ font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+    .yt-scope .ch-match-badges{ display: flex; gap: 6px; flex-wrap: wrap; }
+    .yt-scope .match-badge{
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .yt-scope .match-name{ background: #EDE9FE; color: #5B21B6; }
+    .yt-scope .match-video{ background: #DCFCE7; color: #166534; }
+    .yt-scope .match-content{ background: #FEF3C7; color: #92400E; }
+    .yt-scope .kr-highlight{
+      border: 2px solid #3B3F8C;
+      box-shadow: 0 0 0 3px rgba(59,63,140,0.12);
+    }
+
+    /* 콘텐츠 품질 신호 */
+    .yt-scope .quality-score-header{ display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .yt-scope .quality-total-wrap{ display: flex; align-items: baseline; gap: 3px; flex-shrink: 0; }
+    .yt-scope .quality-total-num{ font-size: 32px; font-weight: 800; line-height: 1; }
+    .yt-scope .quality-total-label{ font-size: 14px; color: #9CA3AF; }
+    .yt-scope .quality-bar-outer{ flex: 1; height: 8px; background: #E5E7EB; border-radius: 4px; overflow: hidden; }
+    .yt-scope .quality-bar-inner{ height: 100%; border-radius: 4px; transition: width 0.7s ease; }
+    .yt-scope .quality-breakdown{ display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .yt-scope .quality-item{
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+    }
+    .yt-scope .quality-row{ display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+    .yt-scope .quality-mini-bar{ height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+    .yt-scope .quality-mini-bar-inner{ height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+    .yt-scope .quality-analyst-note{
+      margin-top: 4px;
+      padding: 10px 14px;
+      background: #F0F4FF;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.6;
+      border-left: 3px solid var(--accent);
+    }
+    .yt-scope .quality-analyst-label{
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* 비슷한 채널 랭킹 */
+    .yt-scope .similar-list{ display: flex; flex-direction: column; gap: 10px; }
+    .yt-scope .similar-row{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--bg);
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+    .yt-scope .similar-row:hover{ background: #EEEEF8; box-shadow: 0 2px 8px rgba(59,63,140,0.12); }
+    .yt-scope .sim-rank{
+      font-size: 18px;
+      font-weight: 800;
+      min-width: 28px;
+      text-align: center;
+    }
+    .yt-scope .sim-thumb{
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .yt-scope .sim-thumb-empty{
+      background: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      border: 1px solid #E5E7EB;
+    }
+    .yt-scope .sim-info{ flex: 1; min-width: 0; }
+    .yt-scope .sim-name{
+      font-weight: 600;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .yt-scope .sim-meta{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 12px;
+      color: #6B7280;
+    }
+    .yt-scope .sim-score-wrap{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      min-width: 110px;
+    }
+    .yt-scope .sim-score-bar{
+      width: 100%;
+      height: 6px;
+      background: #E5E7EB;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .yt-scope .sim-score-fill{ height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+    .yt-scope .sim-score-num{ font-size: 13px; font-weight: 700; }
+    .yt-scope .sim-score-wrap .tag{ font-size: 10px; padding: 2px 7px; }
+
+    /* 슈퍼 루키 */
+    .yt-scope .rookie-info-bar{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #6B7280;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border-radius: 8px;
+    }
+    .yt-scope .rookie-grid{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .yt-scope .rookie-card{
+      background: var(--card-bg);
+      border: 1px solid #E5E7EB;
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      position: relative;
+    }
+    .yt-scope .rookie-card:hover{ box-shadow: 0 4px 16px rgba(59,63,140,0.15); border-color: var(--accent-light); }
+    .yt-scope .rookie-card.kr-highlight{ border: 2px solid #3B3F8C; box-shadow: 0 0 0 3px rgba(59,63,140,0.12); }
+    .yt-scope .rookie-card.kr-highlight:hover{ border-color: #3B3F8C; box-shadow: 0 0 0 3px rgba(59,63,140,0.18), 0 4px 16px rgba(59,63,140,0.15); }
+    .yt-scope .rookie-rank{
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--accent-light);
+    }
+    .yt-scope .rookie-thumb{
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+    .yt-scope .rookie-thumb-empty{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      background: var(--bg);
+      border: 1px solid #E5E7EB;
+    }
+    .yt-scope .rookie-info{}
+    .yt-scope .rookie-name{
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 32px;
+    }
+    .yt-scope .rookie-meta{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 12px;
+      color: #6B7280;
+      margin-bottom: 8px;
+    }
+    .yt-scope .kr-badge{ color: #1d4ed8; font-weight: 600; }
+    .yt-scope .rookie-score-row{ display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .yt-scope .rookie-label{ font-size: 11px; color: #9CA3AF; white-space: nowrap; }
+    .yt-scope .rookie-bar-wrap{ display: flex; align-items: center; gap: 6px; flex: 1; }
+    .yt-scope .rookie-bar{ flex: 1; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden; }
+    .yt-scope .rookie-bar-fill{ height: 100%; border-radius: 3px; transition: width 0.7s ease; }
+    .yt-scope .rookie-score-num{ font-size: 12px; font-weight: 700; color: #374151; white-space: nowrap; }
+    .yt-scope .ch-stat-row{
+      display: flex;
+      gap: 14px;
+      padding: 8px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .yt-scope .ch-stat-item{ display: flex; flex-direction: column; gap: 2px; }
+    .yt-scope .ch-stat-lbl{ font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+    .yt-scope .ch-stat-val{ font-size: 14px; font-weight: 700; color: var(--text); }
+
+    /* ── Misc ── */
+    .yt-scope .divider{ height: 1px; background: var(--border); margin: 0; }
+    .yt-scope .info-chips{ display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+    .yt-scope .info-chip{ font-size: 12px; color: var(--text-muted); }
+    .yt-scope .info-chip strong{ color: var(--text); }
+  
+/* ═══════ 유튜버 분석 끝 ═══════ */
+
+/* ===== 기획서 작성 탭 전용 스타일 ===== */
+/* ===== 기획서 작성 탭 전용 스타일 ===== */
+.prop-wrap{display:grid;grid-template-columns:400px 1fr;flex:1;min-height:0;overflow:hidden;}
+@media(max-width:900px){.prop-wrap{grid-template-columns:1fr;}}
+.prop-form-panel{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.prop-form-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);background:#3b3f8c;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.prop-form-header span{font-size:.7rem;font-weight:700;}
+.prop-form-tag{font-size:.62rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;}
+.prop-form-body{flex:1;min-height:0;overflow-y:auto;padding:1rem 1.1rem;display:block;}
+.prop-section{margin-bottom:.9rem;}
+.prop-section-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+.prop-field{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.4rem;}
+.prop-field label{font-size:.68rem;font-weight:600;color:var(--muted);}
+.prop-field input[type=text],.prop-field input[type=date],.prop-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;resize:vertical;transition:border-color .15s,box-shadow .15s;}
+.prop-field input:focus,.prop-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.prop-field-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.4rem;}
+.prop-form-action{padding:.85rem 1.1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;flex-shrink:0;background:var(--surface);}
+.prop-dl-btn{flex:1;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.6rem;font-size:.83rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:var(--accent-shadow);transition:all .18s;}
+.prop-dl-btn:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:var(--accent-shadow-lg);}
+.prop-reset-btn{background:none;border:1.5px solid var(--border2);border-radius:8px;padding:.6rem .9rem;font-size:.8rem;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;}
+.prop-reset-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* 빠른 AI 생성 패널 */
+.prop-quick-wrap{background:linear-gradient(135deg,#f2f2fa,#ecedf8);border:1.5px solid var(--accent-border);border-radius:12px;padding:.85rem 1rem;margin-bottom:.5rem;}
+.prop-quick-title{font-size:.7rem;font-weight:700;color:var(--accent);margin-bottom:.6rem;letter-spacing:.04em;display:flex;align-items:center;gap:.35rem;}
+.prop-quick-row{display:flex;gap:.45rem;margin-bottom:.45rem;align-items:flex-end;}
+.prop-quick-row .pq-field{display:flex;flex-direction:column;gap:.18rem;flex:1;}
+.prop-quick-row .pq-field label{font-size:.63rem;font-weight:700;color:var(--muted);letter-spacing:.03em;}
+.prop-quick-row .pq-field select,.prop-quick-row .pq-field input{border:1px solid var(--border);border-radius:6px;padding:.38rem .55rem;font-size:.78rem;font-family:inherit;color:var(--text);background:var(--surface);width:100%;}
+.prop-quick-row .pq-field select:focus,.prop-quick-row .pq-field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.prop-quick-row .pq-author-btn{font-size:.65rem;padding:.3rem .55rem;border:1px solid var(--border2);border-radius:5px;background:var(--surface);cursor:pointer;color:var(--muted);white-space:nowrap;height:fit-content;font-family:inherit;transition:all .12s;}
+.prop-quick-row .pq-author-btn:hover{border-color:var(--accent);color:var(--accent);}
+.prop-quick-gen-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.58rem;font-size:.84rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;letter-spacing:.02em;}
+.prop-quick-gen-btn:hover{background:var(--accent-hover);}
+.prop-quick-gen-btn:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed;}
+.prop-quick-hint{font-size:.68rem;color:var(--green);margin-top:.38rem;opacity:.75;}
+.prop-file-label{display:flex;align-items:center;gap:.4rem;border:1.5px dashed var(--border2);border-radius:7px;padding:.38rem .6rem;cursor:pointer;font-size:.75rem;transition:border-color .15s;}
+.prop-file-label:hover{border-color:var(--accent);}
+#prop-file-name{flex:1;color:var(--muted);font-size:.73rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.prop-file-btn{font-size:.65rem;background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:.18rem .5rem;color:var(--text);white-space:nowrap;flex-shrink:0;}
+/* 카테고리 목록 */
+.prop-cats-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;}
+.prop-cats-toggle{font-size:.65rem;color:var(--accent);cursor:pointer;text-decoration:underline;}
+/* 카테고리 선택 */
+.prop-cats{display:flex;flex-direction:column;gap:.35rem;}
+.prop-cat-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;background:var(--surface);}
+.prop-cat-item:hover{border-color:var(--accent);background:var(--accent-light);}
+.prop-cat-item.selected{border-color:var(--accent);background:var(--accent-light);}
+.prop-cat-badge{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+.prop-cat-name{font-size:.8rem;font-weight:600;flex:1;}
+.prop-cat-meta{font-size:.68rem;color:var(--muted);}
+
+/* 기획 목표 체크박스 */
+.prop-goals{display:flex;flex-wrap:wrap;gap:.4rem;}
+.prop-goal-item{display:flex;align-items:center;gap:.3rem;font-size:.75rem;cursor:pointer;}
+.prop-goal-item input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;}
+
+/* 핵심 포인트 */
+.prop-kp-row{border:1px solid var(--border);border-radius:7px;padding:.6rem;margin-bottom:.4rem;}
+.prop-kp-row input{width:100%;border:1px solid var(--border);border-radius:5px;padding:.3rem .5rem;font-size:.78rem;font-family:inherit;margin-bottom:.3rem;}
+.prop-kp-row textarea{width:100%;border:1px solid var(--border);border-radius:5px;padding:.3rem .5rem;font-size:.76rem;font-family:inherit;resize:vertical;min-height:44px;}
+.prop-kp-row input:focus,.prop-kp-row textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+
+/* 경쟁 분석 행 */
+.prop-comp-row{display:flex;gap:.4rem;align-items:flex-start;margin-bottom:.4rem;}
+.prop-comp-row input{flex:1;border:1px solid var(--border);border-radius:5px;padding:.32rem .5rem;font-size:.76rem;font-family:inherit;}
+.prop-comp-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.prop-comp-del{background:none;border:1px solid var(--border2);border-radius:4px;padding:3px 7px;cursor:pointer;color:var(--muted);font-size:.75rem;flex-shrink:0;}
+.prop-comp-del:hover{border-color:var(--red);color:var(--red);}
+.prop-add-btn{width:100%;border:1.5px dashed var(--border2);border-radius:8px;padding:.38rem;font-size:.75rem;color:var(--muted);cursor:pointer;background:none;font-family:inherit;transition:all .15s;}
+.prop-add-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* 미리보기 영역 */
+.prop-preview-area{background:#EEEDEA;padding:1.5rem;overflow-y:auto;height:100%;}
+.prop-preview-hint{text-align:center;font-size:.72rem;color:#999;margin-bottom:.8rem;letter-spacing:.04em;}
+
+/* A4 기획서 문서 */
+.prop-doc{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.16);font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:12.5px;line-height:1.65;color:#1a1a18;}
+.pd2-header{background:#3b3f8c;padding:28px 44px 22px;display:flex;justify-content:space-between;align-items:flex-end;}
+.pd2-header-title{font-size:20px;font-weight:300;color:#fff;letter-spacing:.06em;}
+.pd2-header-sub{font-size:9.5px;color:rgba(255,255,255,.5);letter-spacing:.15em;margin-bottom:4px;}
+.pd2-header-right{text-align:right;}
+.pd2-header-dept{font-size:9.5px;color:rgba(255,255,255,.55);line-height:1.7;}
+.pd2-body{padding:24px 44px;}
+.pd2-block{margin-bottom:20px;}
+.pd2-block-title{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--green,#1a6b3c);display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.pd2-block-title::after{content:'';flex:1;height:1px;background:#e8e8e8;}
+.pd2-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.pd2-table th{background:#f5f5f3;font-weight:600;font-size:10px;padding:7px 10px;text-align:left;border:1px solid #e0e0d8;color:#555;}
+.pd2-table td{padding:7px 10px;border:1px solid #e0e0d8;vertical-align:top;}
+.pd2-table td.label{background:#fafaf8;font-weight:600;font-size:10px;color:#666;white-space:nowrap;width:80px;}
+.pd2-concept{background:#f5f5f3;border-left:3px solid var(--green,#1a6b3c);padding:12px 16px;border-radius:4px;font-size:12px;line-height:1.75;}
+.pd2-goals{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:2px;}
+.pd2-goal-chip{font-size:10.5px;padding:3px 9px;border-radius:3px;font-weight:500;}
+.pd2-goal-on{background:#e8f5ee;color:#1a6b3c;border:1px solid #b0d8be;}
+.pd2-goal-off{background:#f5f5f3;color:#bbb;border:1px solid #e0e0d8;}
+.pd2-reader-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pd2-reader-card{background:#f5f5f3;border-radius:5px;padding:10px 13px;}
+.pd2-reader-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:4px;}
+.pd2-reader-val{font-size:11.5px;color:#1a1a18;line-height:1.6;}
+.pd2-kp-list{display:flex;flex-direction:column;gap:7px;}
+.pd2-kp-item{display:flex;gap:10px;align-items:flex-start;background:#f5f5f3;border-radius:5px;padding:10px 13px;}
+.pd2-kp-num{font-size:11px;font-weight:700;color:#fff;width:22px;height:22px;background:var(--green,#1a6b3c);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.pd2-kp-body{flex:1;}
+.pd2-kp-title{font-size:12px;font-weight:700;color:#1a1a18;margin-bottom:2px;}
+.pd2-kp-desc{font-size:10.5px;color:#666;line-height:1.65;}
+.pd2-comp-table{width:100%;border-collapse:collapse;font-size:11px;}
+.pd2-comp-table th{background:#3b3f8c;color:#fff;padding:6px 10px;font-size:9.5px;font-weight:600;letter-spacing:.06em;}
+.pd2-comp-table td{padding:6px 10px;border-bottom:1px solid #e8e8e8;}
+.pd2-comp-table tr:last-child td{border-bottom:none;}
+.pd2-comp-table tr:nth-child(even) td{background:#fafaf8;}
+.pd2-footer{padding:12px 44px;border-top:1px solid #e8e8e8;display:flex;justify-content:space-between;align-items:center;background:#fafaf8;}
+.pd2-footer-l{font-size:9px;color:#aaa;line-height:1.6;}
+.pd2-footer-r{font-size:10px;font-weight:700;color:#1a1a18;letter-spacing:.06em;}
+
+/* ===== 저자 미팅 자료 탭 전용 스타일 ===== */
+/* ===== 저자 미팅 자료 탭 전용 스타일 ===== */
+.meet-wrap{display:grid;grid-template-columns:380px 1fr;flex:1;min-height:0;overflow:hidden;}
+@media(max-width:900px){.meet-wrap{grid-template-columns:1fr;}}
+.meet-form-panel{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.meet-form-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);background:var(--sidebar-dark);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.meet-form-header span{font-size:.7rem;font-weight:700;}
+.meet-form-tag{font-size:.62rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;}
+.meet-form-body{flex:1;min-height:0;overflow-y:auto;padding:1rem 1.1rem;display:block;}
+.meet-section{margin-bottom:.9rem;}
+.meet-section-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+.meet-field{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.4rem;}
+.meet-field label{font-size:.68rem;font-weight:600;color:var(--muted);}
+.meet-field input[type=text],.meet-field input[type=date],.meet-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;resize:vertical;transition:border-color .15s,box-shadow .15s;}
+.meet-field input:focus,.meet-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.meet-field-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.4rem;}
+/* 미리보기 */
+.meet-preview-area{background:#EEEDEA;padding:1.5rem;overflow-y:auto;height:100%;}
+.meet-preview-hint{text-align:center;font-size:.72rem;color:#999;margin-bottom:.8rem;letter-spacing:.04em;}
+.meet-doc-mode-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:.6rem 1.2rem;background:var(--surface2);border-bottom:1px solid var(--border);margin-bottom:.5rem;border-radius:12px;}
+.meet-mode-btn{height:36px;padding:0 14px;font-size:13px;font-weight:600;border:1.5px solid var(--border2);border-radius:8px;background:var(--surface);cursor:pointer;transition:all .15s;font-family:inherit;color:var(--muted);}
+.meet-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+/* 미팅 액션 버튼 바 */
+.meet-action-bar{display:flex;gap:8px;align-items:center;padding:.5rem 0 1rem;}
+.meet-act-primary{height:40px;padding:0 20px;font-size:10px;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.meet-act-dl{flex:1;background:var(--accent);color:#fff;box-shadow:var(--accent-shadow);}
+.meet-act-dl:hover{background:var(--accent-hover);box-shadow:0 4px 12px rgba(59,63,140,.25);}
+.meet-act-secondary{height:36px;padding:0 18px;font-size:13px;font-weight:500;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;}
+.meet-act-secondary:hover{border-color:var(--red);color:var(--red);}
+.meet-mode-hint{font-size:.68rem;color:#999;flex:1;}
+/* A4 미팅 문서 */
+.meet-doc{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.16);font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:12.5px;line-height:1.65;color:#1a1a18;}
+.md-header{background:var(--sidebar-dark);padding:28px 44px 22px;display:flex;justify-content:space-between;align-items:flex-end;}
+.md-header-left .md-title{font-size:20px;font-weight:300;color:#fff;letter-spacing:.05em;}
+.md-header-left .md-sub{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.15em;margin-bottom:4px;text-transform:uppercase;}
+.md-header-right{text-align:right;font-size:9px;color:rgba(255,255,255,.55);line-height:1.8;}
+.md-body{padding:28px 44px;}
+.md-block{margin-bottom:22px;}
+.md-block-title{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#1a6b3c;display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.md-block-title::after{content:'';flex:1;height:1px;background:#e8e8e8;}
+.md-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;}
+.md-info-item{font-size:11.5px;line-height:1.5;}
+.md-info-item .lbl{font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:1px;}
+.md-info-item .val{color:#1a1a18;}
+.md-toc-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;}
+.md-toc-item{display:flex;align-items:baseline;gap:8px;font-size:11.5px;padding:5px 10px;border-left:3px solid #e8e8e8;}
+.md-toc-item:nth-child(odd){background:#fafafa;}
+.md-toc-num{font-size:9px;font-weight:700;color:#1a6b3c;min-width:16px;}
+.md-diff-box{background:#f8f9fa;border-left:3px solid #1a6b3c;padding:10px 14px;font-size:11.5px;line-height:1.7;}
+.md-memo-box{background:#fffbf0;border:1px solid #f0e6c0;border-radius:6px;padding:12px 16px;font-size:11.5px;line-height:1.8;white-space:pre-line;}
+.md-footer{margin-top:auto;border-top:1px solid #e8e8e8;padding:16px 44px;display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#bbb;}
+.meet-checklist{display:flex;flex-direction:column;gap:.45rem;}
+.meet-check-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.meet-check-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);flex-shrink:0;cursor:pointer;}
+.meet-check-row label{font-size:.76rem;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;}
+.meet-check-row input[type=text]{flex:1;min-width:0;border:1px solid var(--border);border-radius:5px;padding:.25rem .5rem;font-size:.73rem;font-family:inherit;background:var(--surface);color:var(--text);}
+.meet-select{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
+.md-agenda-item{padding:4px 10px;font-size:11.5px;border-left:3px solid #2563eb;margin-bottom:3px;background:#f0f7ff;}
+.md-check-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11.5px;}
+.md-check-item .check-icon{font-size:13px;flex-shrink:0;}
+.md-notes-box{background:#fafafa;border:1.5px dashed #ccc;border-radius:6px;padding:12px 16px;font-size:11.5px;line-height:1.8;white-space:pre-line;min-height:52px;}
+.md-market-box{background:#fffbf0;border-left:3px solid #b45309;padding:10px 14px;font-size:11px;line-height:1.7;white-space:pre-line;}
+.md-terms-box{background:#f0fdf4;border-left:3px solid #1a6b3c;padding:10px 14px;font-size:11px;line-height:1.7;}
+.md-terms-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;}
+.md-concept-box{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:8px 12px;font-size:11.5px;font-style:italic;color:#444;margin:6px 0;}
 </style>
 <script id="default-data">
 const DEFAULT_FILES={
@@ -754,7 +1687,7 @@ const ACCESS_PW='hanbit2026';  // ← 비밀번호 변경 시 여기만 수정
 
 <div class="hdr">
   <div class="hdr-left">
-    <div class="tag">출판 도우미 v1.7.3 업데이트 날짜 2026-04-14</div>
+    <div class="tag">출판 도우미 v1.8.0 업데이트 날짜 2026-04-15</div>
     <h1>출판 <span>도우미</span></h1>
   </div>
   <div class="hdr-right" style="display:flex;gap:.5rem;align-items:center;">
@@ -764,16 +1697,20 @@ const ACCESS_PW='hanbit2026';  // ← 비밀번호 변경 시 여기만 수정
 </div>
 
 <div class="tabs"></div>
-<nav class="sidebar">
+<nav class="sidebar" id="mainSidebar">
+  <button class="sidebar-toggle" onclick="toggleSidebar()" title="사이드바 접기/펼치기">
+    <span class="sidebar-toggle-icon">«</span>
+  </button>
   <div class="nav-section">analytics</div>
-  <button class="nav-item active" data-icon="📊" onclick="switchTab(0,this)">데이터 업로드</button>
-  <button class="nav-item locked" data-icon="📈" id="tab1" onclick="switchTab(1,this)">통합 현황 🔒</button>
-  <button class="nav-item locked" data-icon="👥" id="tab2" onclick="switchTab(2,this)">저자풀 🔒</button>
-  <button class="nav-item locked" data-icon="📝" id="tab3" onclick="switchTab(3,this)">저자 제안서 🔒</button>
+  <button class="nav-item active" data-icon="📊" onclick="switchTab(0,this)"><span class="nav-label">데이터 업로드</span></button>
+  <button class="nav-item locked" data-icon="📈" id="tab1" onclick="switchTab(1,this)"><span class="nav-label">통합 현황 🔒</span></button>
+  <button class="nav-item locked" data-icon="👥" id="tab2" onclick="switchTab(2,this)"><span class="nav-label">저자풀 🔒</span></button>
+  <button class="nav-item locked" data-icon="📺" id="tab7" onclick="switchTab(7,this)"><span class="nav-label">유튜버 분석 🔒</span></button>
+  <button class="nav-item locked" data-icon="📝" id="tab3" onclick="switchTab(3,this)"><span class="nav-label">저자 제안서 🔒</span></button>
   <div class="nav-section">outputs</div>
-  <button class="nav-item locked" data-icon="🔄" id="tab4" onclick="switchTab(4,this)">출판 프로세스 🔒</button>
-  <button class="nav-item locked" data-icon="🤝" id="tab6" onclick="switchTab(6,this)">저자 미팅 🔒</button>
-  <button class="nav-item locked" data-icon="📋" id="tab5" onclick="switchTab(5,this)">출판 기획서 🔒</button>
+  <button class="nav-item locked" data-icon="🔄" id="tab4" onclick="switchTab(4,this)"><span class="nav-label">출판 프로세스 🔒</span></button>
+  <button class="nav-item locked" data-icon="🤝" id="tab6" onclick="switchTab(6,this)"><span class="nav-label">저자 미팅 🔒</span></button>
+  <button class="nav-item locked" data-icon="📋" id="tab5" onclick="switchTab(5,this)"><span class="nav-label">출판 기획서 🔒</span></button>
 </nav>
 <main class="main-content">
 
@@ -871,7 +1808,6 @@ const ACCESS_PW='hanbit2026';  // ← 비밀번호 변경 시 여기만 수정
 <div class="panel" id="panel1">
   <!-- 다운로드 버튼 바 -->
   <div id="panel1-dl-bar" style="display:none;justify-content:flex-end;gap:.5rem;margin-bottom:.8rem;">
-    <button class="dl-btn" onclick="dlExcel()">📥 엑셀 저장</button>
     <button class="dl-btn" onclick="dlHTML()">📄 HTML 저장</button>
   </div>
 
@@ -1221,11 +2157,18 @@ let analysisData=[];
 // ── 탭 전환 ──
 function switchTab(i,btn){
   if(btn.classList.contains('locked'))return;
-  document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#mainSidebar .nav-item').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('panel'+i).classList.add('active');
   if(i===2 && typeof AUTHOR_DATA !== 'undefined') filterAuthors();
+}
+
+function toggleSidebar(){
+  const sb = document.getElementById('mainSidebar');
+  const collapsed = sb.classList.toggle('collapsed');
+  const w = collapsed ? '52px' : '210px';
+  document.documentElement.style.setProperty('--sb-w', w);
 }
 
 // ── 파일 읽기 ──
@@ -1422,7 +2365,10 @@ function unlockTabs(){
     const btn = document.getElementById(id);
     if(!btn) return;
     btn.classList.remove('locked');
-    btn.textContent = btn.textContent.replace(' 🔒','');
+    // nav-label span만 업데이트 — textContent 직접 교체 시 span이 사라져 축소 시 텍스트 노출됨
+    const label = btn.querySelector('.nav-label');
+    if(label) label.textContent = label.textContent.replace(' 🔒','');
+    else btn.textContent = btn.textContent.replace(' 🔒','');
   });
 }
 
@@ -2976,180 +3922,6 @@ function tog(id){
 }
 
 // ── 다운로드 ──
-function dlExcel(){
-  if(!analysisData.length)return;
-  const wb=XLSX.utils.book_new();
-  const curY=new Date().getFullYear();
-  const statusMap={'gap':'공백','behind':'열세','leading':'우위','plan-only':'준비만'};
-
-  const sorted=[...analysisData].sort((a,b)=>{
-    const o={gap:0,behind:1,'plan-only':2,leading:3};
-    return (o[a.status]??9)-(o[b.status]??9)||(a.compBest||9999)-(b.compBest||9999);
-  });
-
-  // 우선순위 점수 계산 (분석용)
-  function priority(d){
-    const totalPop=d.lecture.reduce((s,l)=>s+(l.pop||0),0);
-    const compTop=d.comp[0];
-    const age=compTop&&compTop.year>2000?curY-compTop.year:-1;
-    let score=0;
-    if(d.status==='gap')score+=40;
-    else if(d.status==='behind')score+=20;
-    score+=Math.min(d.comp.length*2,20);       // 경쟁사 권수 (최대 20)
-    score+=Math.min(d.lecture.length*3,15);     // 강의 수 (최대 15)
-    score+=Math.min(Math.floor(totalPop/1000),10); // 수강생 (최대 10)
-    if(age>=4)score+=10;                        // 노후 도서
-    if(d.planned.length>0)score+=5;             // 준비 진행 중
-    return score;
-  }
-
-  function actionText(d){
-    const compTop=d.comp[0];
-    const age=compTop&&compTop.year>2000?curY-compTop.year:-1;
-    const hasPlan=d.planned.length>0;
-    const hasLec=d.lecture.length>=2;
-    if(d.status==='gap'){
-      if(hasPlan)return '출간 준비 중 — 출간 시기 조율로 선점 가능';
-      if(hasLec)return '강의 수요 검증됨 — 도서화 즉시 검토';
-      return '경쟁사 선점 시장 — 신규 기획 필요';
-    }
-    if(d.status==='behind'){
-      if(age>=4)return `경쟁 1위 ${age}년 경과 — 개정판으로 역전 타이밍`;
-      return '순위 격차 좁히기 — 개정 또는 마케팅 강화';
-    }
-    if(d.status==='leading')return '우위 유지 — 개정판·후속 시리즈로 선점 강화';
-    if(d.status==='plan-only')return '강의→도서 전환 검토 — 독자 수요 확인 후 진행';
-    return '';
-  }
-
-  // ━━━ 시트1: 통합현황 (우선순위·전략액션 포함) ━━━
-  const rows=[['우선순위','카테고리','상태','전략 액션','경쟁사 권수','경쟁사 최고순위','경쟁 1위 도서','경쟁 1위 출판사','경쟁 1위 연도','노후도(년)','우리 권수','우리 최고순위','우리 1위 도서','준비 도서수','강의 수','강의 수강생 합계']];
-  const withScore=sorted.map(d=>({d,s:priority(d)})).sort((a,b)=>b.s-a.s);
-  withScore.forEach(({d,s},idx)=>{
-    const compTop=d.comp[0];
-    const mineTop=d.mine[0];
-    const age=compTop&&compTop.year>2000?curY-compTop.year:'';
-    const totalPop=d.lecture.reduce((sum,l)=>sum+(l.pop||0),0);
-    rows.push([
-      idx+1,
-      d.cat,
-      statusMap[d.status]||d.status,
-      actionText(d),
-      d.comp.length,
-      d.comp.length?d.compBest:'',
-      compTop?compTop.title:'',
-      compTop?compTop.pub||'':'',
-      compTop&&compTop.year>2000?compTop.year:'',
-      age,
-      d.mine.length,
-      d.mine.length?d.mineBest:'',
-      mineTop?mineTop.title:'',
-      d.planned.length,
-      d.lecture.length,
-      totalPop||'',
-    ]);
-  });
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'① 통합현황(우선순위)');
-
-  // ━━━ 시트2: 즉시 액션 리스트 (공백·열세만) ━━━
-  const action=[['우선순위','카테고리','상태','전략 액션','경쟁사 권수','경쟁 1위 도서','경쟁 1위 연도','노후도','강의 수','수강생 합계','준비 중 도서','담당팀']];
-  withScore.filter(({d})=>d.status==='gap'||d.status==='behind').forEach(({d,s},idx)=>{
-    const compTop=d.comp[0];
-    const age=compTop&&compTop.year>2000?curY-compTop.year:'';
-    const totalPop=d.lecture.reduce((sum,l)=>sum+(l.pop||0),0);
-    const planTitles=d.planned.map(p=>p.title).join(' / ')||'없음';
-    const planTeams=[...new Set(d.planned.map(p=>p.team).filter(Boolean))].join(', ')||'';
-    action.push([
-      idx+1,d.cat,statusMap[d.status]||d.status,actionText(d),
-      d.comp.length,
-      compTop?compTop.title:'',
-      compTop&&compTop.year>2000?compTop.year:'',
-      age,
-      d.lecture.length,totalPop||'',planTitles,planTeams,
-    ]);
-  });
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(action),'② 즉시 액션 리스트');
-
-  // ━━━ 시트3: 카테고리별 도서 상세 ━━━
-  const det=[['카테고리','상태','구분','출판사/팀','순위','도서명','출간연도','노후도(년)','출간월(준비)','진행상태']];
-  for(const d of sorted){
-    const st=statusMap[d.status]||d.status;
-    for(const b of d.comp){
-      const age=b.year>2000?curY-b.year:'';
-      det.push([d.cat,st,'경쟁사',b.pub||'',b.rank,b.title,b.year>2000?b.year:'',age,'','']);
-    }
-    for(const b of d.mine){
-      const age=b.year>2000?curY-b.year:'';
-      det.push([d.cat,st,'우리','',b.rank,b.title,b.year>2000?b.year:'',age,'','']);
-    }
-    for(const p of d.planned)
-      det.push([d.cat,st,isPlanning(p.status)?'기획예정':'출간예정',p.team||'','',p.title,'','',p.month||'',p.status||'']);
-    if(d.comp.length||d.mine.length||d.planned.length)det.push(Array(10).fill(''));
-  }
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(det),'③ 도서 상세');
-
-  // ━━━ 시트4: 강의 수요 ━━━
-  const lec=[['카테고리','카테고리 상태','강의명','서비스','수강생','비고']];
-  for(const d of sorted){
-    const st=statusMap[d.status]||d.status;
-    const byPop=[...d.lecture].sort((a,b)=>(b.pop||0)-(a.pop||0));
-    byPop.forEach((l,i)=>lec.push([d.cat,st,l.title,l.service||'',l.pop||'',i===0?'대표강의':'']));
-  }
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(lec),'④ 강의 수요');
-
-  // ━━━ 시트5: 담당자별 출간 부하 ━━━
-  const allPlanned=analysisData.flatMap(d=>d.planned.map(p=>({...p,cat:d.cat})));
-  if(allPlanned.length){
-    const teamMap={};
-    for(const p of allPlanned){
-      const t=p.team||'미배정';
-      if(!teamMap[t])teamMap[t]={};
-      const m=p.month||'미정';
-      if(!teamMap[t][m])teamMap[t][m]=[];
-      teamMap[t][m].push(p);
-    }
-    const teams=Object.keys(teamMap).sort();
-    const months=[...new Set(allPlanned.map(p=>p.month||'미정'))].sort((a,b)=>{
-      if(a==='미정')return 1;if(b==='미정')return -1;return a.localeCompare(b,'ko');
-    });
-    // 헤더
-    const wkHdr=['담당자/팀',...months,'합계','출간예정','기획예정'];
-    const wkRows=[wkHdr];
-    for(const t of teams){
-      const row=[t];
-      let total=0,pub=0,plan=0;
-      for(const m of months){
-        const books=teamMap[t][m]||[];
-        row.push(books.length?books.map(p=>p.title).join(', '):'');
-        total+=books.length;
-        pub+=books.filter(p=>!isPlanning(p.status)).length;
-        plan+=books.filter(p=>isPlanning(p.status)).length;
-      }
-      row.push(total,pub,plan);
-      wkRows.push(row);
-    }
-    // 월별 합계 행
-    const sumRow=['합계'];
-    for(const m of months){
-      const cnt=allPlanned.filter(p=>(p.month||'미정')===m).length;
-      sumRow.push(cnt?`${cnt}권`:'');
-    }
-    sumRow.push(allPlanned.length,allPlanned.filter(p=>!isPlanning(p.status)).length,allPlanned.filter(p=>isPlanning(p.status)).length);
-    wkRows.push(sumRow);
-
-    // 도서별 행 (아래쪽)
-    wkRows.push(Array(wkHdr.length).fill(''));
-    wkRows.push(['[도서 목록]','담당팀','출간월','진행상태','카테고리','도서명']);
-    allPlanned.sort((a,b)=>{
-      const ma=a.month||'미정',mb=b.month||'미정';
-      if(ma==='미정')return 1;if(mb==='미정')return -1;return ma.localeCompare(mb,'ko');
-    }).forEach((p,i)=>wkRows.push([i+1,p.team||'미배정',p.month||'미정',p.status||'',p.cat||'',p.title]));
-
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(wkRows),'⑤ 담당자별 부하');
-  }
-
-  XLSX.writeFile(wb,'출판경쟁분석_'+new Date().toISOString().slice(0,10)+'.xlsx');
-}
 
 function dlHTML(){
   if(!analysisData.length){alert('먼저 분석을 실행하세요.');return;}
@@ -4225,121 +4997,6 @@ document.querySelectorAll('.nav-item').forEach((btn, i) => {
   </div>
 </div>
 
-<style>
-/* ===== 기획서 작성 탭 전용 스타일 ===== */
-.prop-wrap{display:grid;grid-template-columns:400px 1fr;flex:1;min-height:0;overflow:hidden;}
-@media(max-width:900px){.prop-wrap{grid-template-columns:1fr;}}
-.prop-form-panel{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
-.prop-form-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);background:#1C1C2E;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.prop-form-header span{font-size:.9rem;font-weight:700;}
-.prop-form-tag{font-size:.62rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;}
-.prop-form-body{flex:1;min-height:0;overflow-y:auto;padding:1rem 1.1rem;display:block;}
-.prop-section{margin-bottom:.9rem;}
-.prop-section-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
-.prop-field{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.4rem;}
-.prop-field label{font-size:.68rem;font-weight:600;color:var(--muted);}
-.prop-field input[type=text],.prop-field input[type=date],.prop-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;resize:vertical;transition:border-color .15s,box-shadow .15s;}
-.prop-field input:focus,.prop-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
-.prop-field-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.4rem;}
-.prop-form-action{padding:.85rem 1.1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;flex-shrink:0;background:var(--surface);}
-.prop-dl-btn{flex:1;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.6rem;font-size:.83rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(59,63,140,.2);transition:all .18s;}
-.prop-dl-btn:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 14px rgba(59,63,140,.3);}
-.prop-reset-btn{background:none;border:1.5px solid var(--border2);border-radius:8px;padding:.6rem .9rem;font-size:.8rem;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;}
-.prop-reset-btn:hover{border-color:var(--red);color:var(--red);}
-
-/* 빠른 AI 생성 패널 */
-.prop-quick-wrap{background:linear-gradient(135deg,#f2f2fa,#ecedf8);border:1.5px solid rgba(59,63,140,.2);border-radius:12px;padding:.85rem 1rem;margin-bottom:.5rem;}
-.prop-quick-title{font-size:.7rem;font-weight:700;color:var(--accent);margin-bottom:.6rem;letter-spacing:.04em;display:flex;align-items:center;gap:.35rem;}
-.prop-quick-row{display:flex;gap:.45rem;margin-bottom:.45rem;align-items:flex-end;}
-.prop-quick-row .pq-field{display:flex;flex-direction:column;gap:.18rem;flex:1;}
-.prop-quick-row .pq-field label{font-size:.63rem;font-weight:700;color:var(--muted);letter-spacing:.03em;}
-.prop-quick-row .pq-field select,.prop-quick-row .pq-field input{border:1px solid var(--border);border-radius:6px;padding:.38rem .55rem;font-size:.78rem;font-family:inherit;color:var(--text);background:var(--surface);width:100%;}
-.prop-quick-row .pq-field select:focus,.prop-quick-row .pq-field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
-.prop-quick-row .pq-author-btn{font-size:.65rem;padding:.3rem .55rem;border:1px solid var(--border2);border-radius:5px;background:var(--surface);cursor:pointer;color:var(--muted);white-space:nowrap;height:fit-content;font-family:inherit;transition:all .12s;}
-.prop-quick-row .pq-author-btn:hover{border-color:var(--accent);color:var(--accent);}
-.prop-quick-gen-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.58rem;font-size:.84rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;letter-spacing:.02em;}
-.prop-quick-gen-btn:hover{background:var(--accent-hover);}
-.prop-quick-gen-btn:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed;}
-.prop-quick-hint{font-size:.68rem;color:var(--green);margin-top:.38rem;opacity:.75;}
-.prop-file-label{display:flex;align-items:center;gap:.4rem;border:1.5px dashed var(--border2);border-radius:7px;padding:.38rem .6rem;cursor:pointer;font-size:.75rem;transition:border-color .15s;}
-.prop-file-label:hover{border-color:var(--accent);}
-#prop-file-name{flex:1;color:var(--muted);font-size:.73rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.prop-file-btn{font-size:.65rem;background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:.18rem .5rem;color:var(--text);white-space:nowrap;flex-shrink:0;}
-/* 카테고리 목록 */
-.prop-cats-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;}
-.prop-cats-toggle{font-size:.65rem;color:var(--accent);cursor:pointer;text-decoration:underline;}
-/* 카테고리 선택 */
-.prop-cats{display:flex;flex-direction:column;gap:.35rem;}
-.prop-cat-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;background:var(--surface);}
-.prop-cat-item:hover{border-color:var(--accent);background:var(--accent-light);}
-.prop-cat-item.selected{border-color:var(--accent);background:var(--accent-light);}
-.prop-cat-badge{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
-.prop-cat-name{font-size:.8rem;font-weight:600;flex:1;}
-.prop-cat-meta{font-size:.68rem;color:var(--muted);}
-
-/* 기획 목표 체크박스 */
-.prop-goals{display:flex;flex-wrap:wrap;gap:.4rem;}
-.prop-goal-item{display:flex;align-items:center;gap:.3rem;font-size:.75rem;cursor:pointer;}
-.prop-goal-item input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;}
-
-/* 핵심 포인트 */
-.prop-kp-row{border:1px solid var(--border);border-radius:7px;padding:.6rem;margin-bottom:.4rem;}
-.prop-kp-row input{width:100%;border:1px solid var(--border);border-radius:5px;padding:.3rem .5rem;font-size:.78rem;font-family:inherit;margin-bottom:.3rem;}
-.prop-kp-row textarea{width:100%;border:1px solid var(--border);border-radius:5px;padding:.3rem .5rem;font-size:.76rem;font-family:inherit;resize:vertical;min-height:44px;}
-.prop-kp-row input:focus,.prop-kp-row textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
-
-/* 경쟁 분석 행 */
-.prop-comp-row{display:flex;gap:.4rem;align-items:flex-start;margin-bottom:.4rem;}
-.prop-comp-row input{flex:1;border:1px solid var(--border);border-radius:5px;padding:.32rem .5rem;font-size:.76rem;font-family:inherit;}
-.prop-comp-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
-.prop-comp-del{background:none;border:1px solid var(--border2);border-radius:4px;padding:3px 7px;cursor:pointer;color:var(--muted);font-size:.75rem;flex-shrink:0;}
-.prop-comp-del:hover{border-color:var(--red);color:var(--red);}
-.prop-add-btn{width:100%;border:1.5px dashed var(--border2);border-radius:8px;padding:.38rem;font-size:.75rem;color:var(--muted);cursor:pointer;background:none;font-family:inherit;transition:all .15s;}
-.prop-add-btn:hover{border-color:var(--accent);color:var(--accent);}
-
-/* 미리보기 영역 */
-.prop-preview-area{background:#EEEDEA;padding:1.5rem;overflow-y:auto;height:100%;}
-.prop-preview-hint{text-align:center;font-size:.72rem;color:#999;margin-bottom:.8rem;letter-spacing:.04em;}
-
-/* A4 기획서 문서 */
-.prop-doc{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.16);font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:12.5px;line-height:1.65;color:#1a1a18;}
-.pd2-header{background:#1C1C2E;padding:28px 44px 22px;display:flex;justify-content:space-between;align-items:flex-end;}
-.pd2-header-title{font-size:20px;font-weight:300;color:#fff;letter-spacing:.06em;}
-.pd2-header-sub{font-size:9.5px;color:rgba(255,255,255,.5);letter-spacing:.15em;margin-bottom:4px;}
-.pd2-header-right{text-align:right;}
-.pd2-header-dept{font-size:9.5px;color:rgba(255,255,255,.55);line-height:1.7;}
-.pd2-body{padding:24px 44px;}
-.pd2-block{margin-bottom:20px;}
-.pd2-block-title{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--green,#1a6b3c);display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-.pd2-block-title::after{content:'';flex:1;height:1px;background:#e8e8e8;}
-.pd2-table{width:100%;border-collapse:collapse;font-size:11.5px;}
-.pd2-table th{background:#f5f5f3;font-weight:600;font-size:10px;padding:7px 10px;text-align:left;border:1px solid #e0e0d8;color:#555;}
-.pd2-table td{padding:7px 10px;border:1px solid #e0e0d8;vertical-align:top;}
-.pd2-table td.label{background:#fafaf8;font-weight:600;font-size:10px;color:#666;white-space:nowrap;width:80px;}
-.pd2-concept{background:#f5f5f3;border-left:3px solid var(--green,#1a6b3c);padding:12px 16px;border-radius:4px;font-size:12px;line-height:1.75;}
-.pd2-goals{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:2px;}
-.pd2-goal-chip{font-size:10.5px;padding:3px 9px;border-radius:3px;font-weight:500;}
-.pd2-goal-on{background:#e8f5ee;color:#1a6b3c;border:1px solid #b0d8be;}
-.pd2-goal-off{background:#f5f5f3;color:#bbb;border:1px solid #e0e0d8;}
-.pd2-reader-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.pd2-reader-card{background:#f5f5f3;border-radius:5px;padding:10px 13px;}
-.pd2-reader-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:4px;}
-.pd2-reader-val{font-size:11.5px;color:#1a1a18;line-height:1.6;}
-.pd2-kp-list{display:flex;flex-direction:column;gap:7px;}
-.pd2-kp-item{display:flex;gap:10px;align-items:flex-start;background:#f5f5f3;border-radius:5px;padding:10px 13px;}
-.pd2-kp-num{font-size:11px;font-weight:700;color:#fff;width:22px;height:22px;background:var(--green,#1a6b3c);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-.pd2-kp-body{flex:1;}
-.pd2-kp-title{font-size:12px;font-weight:700;color:#1a1a18;margin-bottom:2px;}
-.pd2-kp-desc{font-size:10.5px;color:#666;line-height:1.65;}
-.pd2-comp-table{width:100%;border-collapse:collapse;font-size:11px;}
-.pd2-comp-table th{background:#1C1C2E;color:#fff;padding:6px 10px;font-size:9.5px;font-weight:600;letter-spacing:.06em;}
-.pd2-comp-table td{padding:6px 10px;border-bottom:1px solid #e8e8e8;}
-.pd2-comp-table tr:last-child td{border-bottom:none;}
-.pd2-comp-table tr:nth-child(even) td{background:#fafaf8;}
-.pd2-footer{padding:12px 44px;border-top:1px solid #e8e8e8;display:flex;justify-content:space-between;align-items:center;background:#fafaf8;}
-.pd2-footer-l{font-size:9px;color:#aaa;line-height:1.6;}
-.pd2-footer-r{font-size:10px;font-weight:700;color:#1a1a18;letter-spacing:.06em;}
-</style>
 
 <script>
 /* ===================================================
@@ -5255,72 +5912,6 @@ function zipStore(files) {
   </div>
 </div>
 
-<style>
-/* ===== 저자 미팅 자료 탭 전용 스타일 ===== */
-.meet-wrap{display:grid;grid-template-columns:380px 1fr;flex:1;min-height:0;overflow:hidden;}
-@media(max-width:900px){.meet-wrap{grid-template-columns:1fr;}}
-.meet-form-panel{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
-.meet-form-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);background:#1C1C2E;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.meet-form-header span{font-size:.9rem;font-weight:700;}
-.meet-form-tag{font-size:.62rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;}
-.meet-form-body{flex:1;min-height:0;overflow-y:auto;padding:1rem 1.1rem;display:block;}
-.meet-section{margin-bottom:.9rem;}
-.meet-section-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
-.meet-field{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.4rem;}
-.meet-field label{font-size:.68rem;font-weight:600;color:var(--muted);}
-.meet-field input[type=text],.meet-field input[type=date],.meet-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;resize:vertical;transition:border-color .15s,box-shadow .15s;}
-.meet-field input:focus,.meet-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
-.meet-field-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.4rem;}
-/* 미리보기 */
-.meet-preview-area{background:#EEEDEA;padding:1.5rem;overflow-y:auto;height:100%;}
-.meet-preview-hint{text-align:center;font-size:.72rem;color:#999;margin-bottom:.8rem;letter-spacing:.04em;}
-.meet-doc-mode-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:.6rem 1.2rem;background:var(--surface2);border-bottom:1px solid var(--border);margin-bottom:.5rem;border-radius:12px;}
-.meet-mode-btn{height:36px;padding:0 14px;font-size:13px;font-weight:600;border:1.5px solid var(--border2);border-radius:8px;background:var(--surface);cursor:pointer;transition:all .15s;font-family:inherit;color:var(--muted);}
-.meet-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-/* 미팅 액션 버튼 바 */
-.meet-action-bar{display:flex;gap:8px;align-items:center;padding:.5rem 0 1rem;}
-.meet-act-primary{height:40px;padding:0 20px;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s;}
-.meet-act-dl{flex:1;background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(59,63,140,.2);}
-.meet-act-dl:hover{background:var(--accent-hover);box-shadow:0 4px 12px rgba(59,63,140,.25);}
-.meet-act-secondary{height:36px;padding:0 18px;font-size:13px;font-weight:500;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;}
-.meet-act-secondary:hover{border-color:var(--red);color:var(--red);}
-.meet-mode-hint{font-size:.68rem;color:#999;flex:1;}
-/* A4 미팅 문서 */
-.meet-doc{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.16);font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:12.5px;line-height:1.65;color:#1a1a18;}
-.md-header{background:#1C1C2E;padding:28px 44px 22px;display:flex;justify-content:space-between;align-items:flex-end;}
-.md-header-left .md-title{font-size:20px;font-weight:300;color:#fff;letter-spacing:.05em;}
-.md-header-left .md-sub{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.15em;margin-bottom:4px;text-transform:uppercase;}
-.md-header-right{text-align:right;font-size:9px;color:rgba(255,255,255,.55);line-height:1.8;}
-.md-body{padding:28px 44px;}
-.md-block{margin-bottom:22px;}
-.md-block-title{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#1a6b3c;display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-.md-block-title::after{content:'';flex:1;height:1px;background:#e8e8e8;}
-.md-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;}
-.md-info-item{font-size:11.5px;line-height:1.5;}
-.md-info-item .lbl{font-size:9px;font-weight:700;color:#999;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:1px;}
-.md-info-item .val{color:#1a1a18;}
-.md-toc-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;}
-.md-toc-item{display:flex;align-items:baseline;gap:8px;font-size:11.5px;padding:5px 10px;border-left:3px solid #e8e8e8;}
-.md-toc-item:nth-child(odd){background:#fafafa;}
-.md-toc-num{font-size:9px;font-weight:700;color:#1a6b3c;min-width:16px;}
-.md-diff-box{background:#f8f9fa;border-left:3px solid #1a6b3c;padding:10px 14px;font-size:11.5px;line-height:1.7;}
-.md-memo-box{background:#fffbf0;border:1px solid #f0e6c0;border-radius:6px;padding:12px 16px;font-size:11.5px;line-height:1.8;white-space:pre-line;}
-.md-footer{margin-top:auto;border-top:1px solid #e8e8e8;padding:16px 44px;display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#bbb;}
-.meet-checklist{display:flex;flex-direction:column;gap:.45rem;}
-.meet-check-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
-.meet-check-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);flex-shrink:0;cursor:pointer;}
-.meet-check-row label{font-size:.76rem;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;}
-.meet-check-row input[type=text]{flex:1;min-width:0;border:1px solid var(--border);border-radius:5px;padding:.25rem .5rem;font-size:.73rem;font-family:inherit;background:var(--surface);color:var(--text);}
-.meet-select{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
-.md-agenda-item{padding:4px 10px;font-size:11.5px;border-left:3px solid #2563eb;margin-bottom:3px;background:#f0f7ff;}
-.md-check-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11.5px;}
-.md-check-item .check-icon{font-size:13px;flex-shrink:0;}
-.md-notes-box{background:#fafafa;border:1.5px dashed #ccc;border-radius:6px;padding:12px 16px;font-size:11.5px;line-height:1.8;white-space:pre-line;min-height:52px;}
-.md-market-box{background:#fffbf0;border-left:3px solid #b45309;padding:10px 14px;font-size:11px;line-height:1.7;white-space:pre-line;}
-.md-terms-box{background:#f0fdf4;border-left:3px solid #1a6b3c;padding:10px 14px;font-size:11px;line-height:1.7;}
-.md-terms-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;}
-.md-concept-box{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:8px 12px;font-size:11.5px;font-style:italic;color:#444;margin:6px 0;}
-</style>
 
 <script>
 // ── 저자 미팅 자료 렌더링 ──
@@ -6397,6 +6988,2153 @@ switchTab = function(i, btn){
   _origSwitchTab6(i, btn);
   if(i === 6){ setMeetDocMode('brief'); updateMeetCtxBar(); }
 };
+</script>
+
+
+<!-- ═══════ 유튜버 분석 패널 (panel7) ═══════ -->
+<div class="panel yt-scope" id="panel7" style="padding:0;">
+  <div id="yt-app" style="display:flex;height:100%;min-height:0;">
+    <!-- yt 전용 사이드바 -->
+    <nav id="sidebar">
+      <div class="logo">
+        <h1>유튜버 분석</h1>
+        <span>YouTube Channel Analyzer</span>
+      </div>
+      <div class="nav-list">
+        <div class="nav-item active" data-panel="0" onclick="ytSwitchPanel(0)">
+          <span class="icon">🔍</span> 채널 검색
+        </div>
+        <div class="nav-item" data-panel="1" onclick="ytSwitchPanel(1)">
+          <span class="icon">📊</span> 채널 분석
+        </div>
+        <div class="nav-item" data-panel="2" onclick="ytSwitchPanel(2)">
+          <span class="icon">🎬</span> 영상 목록
+        </div>
+        <div class="nav-item" data-panel="3" onclick="ytSwitchPanel(3)">
+          <span class="icon">⚖️</span> 비교 분석
+        </div>
+        <div class="nav-item" data-panel="4" onclick="ytSwitchPanel(4)">
+          <span class="icon">⭐</span> 저장 목록
+        </div>
+        <div class="nav-item" data-panel="5" onclick="ytSwitchPanel(5)">
+          <span class="icon">🚀</span> 슈퍼 루키
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div id="yt-quota-display" style="font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:8px;line-height:1.6;">
+          키1: ~0/10,000 ✓활성<br>키2: ~0/10,000 ✓활성
+        </div>
+        <button class="api-key-btn" onclick="openApiModal()">
+          <span>🔑</span> API 키 설정
+        </button>
+      </div>
+    </nav>
+    <main id="yt-main" style="flex:1;overflow-y:auto;padding:24px;">
+
+
+    <!-- panel0: 채널 검색 -->
+    <div id="yt-panel0" class="yt-panel active">
+      <div class="yt-panel-header">
+        <h2>채널 검색</h2>
+        <p>채널명, @핸들, 유튜브 URL, 또는 채널 ID(UCxxx…)로 검색하세요</p>
+      </div>
+      <div class="trend-section">
+        <div class="trend-header">
+          <span class="trend-label">🔥 최신 IT 트렌드 키워드</span>
+          <button class="trend-refresh" onclick="refreshTrendKeywords()" title="새로고침">↻ 새로고침</button>
+        </div>
+        <div id="trendKeywords" class="kw-chips-wrap">
+          <span class="kw-loading">키워드 불러오는 중…</span>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <input id="searchInput" type="text" class="search-input"
+               placeholder="예: 파이썬 강의 / @테크채널 / https://youtube.com/@handle"
+               onkeydown="if(event.key==='Enter')doSearch()">
+        <button id="searchBtn" class="btn btn-primary" onclick="doSearch()">검색</button>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+
+    <!-- panel1: 채널 분석 -->
+    <div id="yt-panel1" class="yt-panel">
+      <div id="channelAnalysis">
+        <div class="empty-state">
+          <div class="icon">📊</div>
+          <p>채널 검색에서 채널을 선택하면<br>상세 분석이 여기에 표시됩니다</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- panel2: 영상 목록 -->
+    <div id="yt-panel2" class="yt-panel">
+      <div id="videoList">
+        <div class="empty-state">
+          <div class="icon">🎬</div>
+          <p>채널을 먼저 분석하면 영상 목록이 표시됩니다</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- panel3: 비교 분석 -->
+    <div id="yt-panel3" class="yt-panel">
+      <div class="yt-panel-header">
+        <h2>비교 분석</h2>
+        <p>채널 분석 화면에서 "비교에 추가"를 눌러 채널을 추가하세요 (최대 4개)</p>
+      </div>
+      <div id="compareSection">
+        <div class="empty-state">
+          <div class="icon">⚖️</div>
+          <p>채널 분석 화면에서 "비교에 추가" 버튼을 클릭하세요</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- panel4: 저장 목록 -->
+    <div id="yt-panel4" class="yt-panel">
+      <div class="yt-panel-header-row">
+        <div class="yt-panel-header" style="margin-bottom:0">
+          <h2>저장 목록</h2>
+          <p>관심 채널을 저장하고 관리하세요</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm" onclick="exportCsv()">📥 CSV 내보내기</button>
+          <button class="btn btn-secondary btn-sm" onclick="clearAllSaved()">🗑 전체 삭제</button>
+        </div>
+      </div>
+      <div id="savedList" style="margin-top:20px"></div>
+    </div>
+
+    <!-- panel5: 슈퍼 루키 -->
+    <div id="yt-panel5" class="yt-panel">
+      <div class="yt-panel-header">
+        <h2>🚀 슈퍼 루키</h2>
+        <p>키워드로 급성장 중인 채널 발굴 — 구독자 대비 조회 폭발 지수 기준</p>
+      </div>
+      <div class="trend-section">
+        <div class="trend-header">
+          <span class="trend-label">🔥 최신 IT 트렌드 키워드</span>
+          <button class="trend-refresh" onclick="refreshTrendKeywords()" title="새로고침">↻ 새로고침</button>
+        </div>
+        <div id="rookieTrendKeywords" class="kw-chips-wrap">
+          <span class="kw-loading">키워드 불러오는 중…</span>
+        </div>
+      </div>
+      <div class="search-bar" style="margin-bottom:20px">
+        <input type="text" id="rookieInput" class="search-input" placeholder="키워드 입력 (예: 파이썬, 요리, 재테크)" onkeydown="if(event.key==='Enter') searchRookie()">
+        <button id="rookieBtn" class="btn btn-primary" onclick="searchRookie()">🚀 탐색</button>
+      </div>
+      <div class="sort-bar" id="rookieSortBar" style="display:none">
+        <span class="sort-label">정렬</span>
+        <button class="sort-btn active" data-sort="score" onclick="applyRookieSort('score')">급성장 지수</button>
+        <button class="sort-btn" data-sort="subs" onclick="applyRookieSort('subs')">구독자 수 ↓</button>
+        <button class="sort-btn" data-sort="views" onclick="applyRookieSort('views')">총 조회수 ↓</button>
+        <button class="sort-btn" data-sort="country" onclick="applyRookieSort('country')">나라 순</button>
+        <span class="sort-count" id="rookieSortCount"></span>
+      </div>
+      <div id="rookieContent">
+        <div class="empty-state">
+          <div class="icon">🚀</div>
+          <p>키워드를 입력하면 해당 분야에서<br>급성장 중인 채널을 찾아드립니다</p>
+        </div>
+      </div>
+    </div>
+
+  
+    </main>
+  </div>
+<!-- API Key Modal -->
+<div class="modal-overlay" id="apiModal">
+  <div class="modal">
+    <h3>🔑 YouTube API 키 상태</h3>
+    <p class="modal-desc">두 개의 API 키가 내장되어 있습니다. 할당량 소진 시 자동으로 전환됩니다.<br>
+    일일 할당량은 키당 10,000 유닛이며 매일 자정(태평양 표준시)에 초기화됩니다.</p>
+    <div id="apiKeyStatusList" style="margin:12px 0;display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="clearApiCache()" style="margin-right:auto">🗑 캐시 초기화</button>
+      <button class="btn btn-secondary" onclick="resetExhaustedKeys()">🔄 소진 초기화</button>
+      <button class="btn btn-primary" onclick="closeApiModal()">닫기</button>
+    </div>
+  </div>
+<div id="toast"></div>
+</div>
+<!-- ═══════ 유튜버 분석 패널 끝 ═══════ -->
+
+
+<script>
+/* ═══════ 유튜버 분석 JS (scoped: YT_S, YT_LS, ytSwitchPanel) ═══════ */
+
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════
+// 상수 & 상태
+// ═══════════════════════════════════════════════════════════════
+// 두 API 키 — 할당량 소진 시 자동 전환
+const API_KEYS = [
+  'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo',
+  'AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c'
+];
+const YT_BASE = 'https://www.googleapis.com/youtube/v3';
+const YT_LS = { saved: 'yt_saved', compare: 'yt_compare' };
+
+// ── API 결과 캐시 ──────────────────────────────────────────────
+// YouTube API 할당량 절감: 동일 요청은 TTL 내에 로컬스토리지에서 반환
+const API_CACHE_PREFIX = 'yt_apicache_';
+const API_CACHE_TTL = {
+  '/search':        60 * 60 * 1000,  // 검색 결과 60분 (기존 10분 → 할당량 절감)
+  '/channels':      60 * 60 * 1000,  // 채널 통계 60분 (기존 30분)
+  '/playlistItems': 60 * 60 * 1000,  // 영상 목록 60분 (기존 30분)
+  '/videos':        60 * 60 * 1000,  // 영상 통계 60분 (기존 30분)
+};
+
+// ── API 유닛 사용량 트래킹 (키별) ──────────────────────────────
+// /search = 100유닛, 나머지 = 1유닛. 캐시 히트 시 소모 안 함.
+const YT_UNIT_COST = { '/search': 100, '/channels': 1, '/playlistItems': 1, '/videos': 1 };
+
+// 키별 세션 사용량 [key0유닛, key1유닛]
+let ytUnitsPerKey = (() => {
+  try { return JSON.parse(sessionStorage.getItem('yt_units_pk') || 'null') || [0, 0]; }
+  catch { return [0, 0]; }
+})();
+// 할당량 소진 키 인덱스 집합 (오늘 소진된 키는 다음날까지 사용 불가)
+let ytExhaustedKeys = (() => {
+  try { return new Set(JSON.parse(sessionStorage.getItem('yt_exhausted_pk') || '[]')); }
+  catch { return new Set(); }
+})();
+let ytUnitsUsed = ytUnitsPerKey.reduce((a, b) => a + b, 0); // 합계 (하위 호환)
+
+function _trackUnit(endpoint, keyIdx) {
+  const cost = YT_UNIT_COST[endpoint] || 1;
+  ytUnitsPerKey[keyIdx] = (ytUnitsPerKey[keyIdx] || 0) + cost;
+  ytUnitsUsed = ytUnitsPerKey.reduce((a, b) => a + b, 0);
+  sessionStorage.setItem('yt_units_pk', JSON.stringify(ytUnitsPerKey));
+  _updateQuotaDisplay();
+}
+
+function _saveKeyState() {
+  sessionStorage.setItem('yt_units_pk', JSON.stringify(ytUnitsPerKey));
+  sessionStorage.setItem('yt_exhausted_pk', JSON.stringify([...ytExhaustedKeys]));
+}
+
+function _getActiveKeyIndices() {
+  // 소진되지 않은 키를 사용량 적은 순으로 반환
+  return API_KEYS.map((_, i) => i)
+    .filter(i => !ytExhaustedKeys.has(i))
+    .sort((a, b) => ytUnitsPerKey[a] - ytUnitsPerKey[b]);
+}
+
+function _updateQuotaDisplay() {
+  const el = document.getElementById('yt-quota-display');
+  if (!el) return;
+  const lines = API_KEYS.map((_, i) => {
+    const used = ytUnitsPerKey[i] || 0;
+    const status = ytExhaustedKeys.has(i) ? '⛔소진' : '✓활성';
+    return `키${i + 1}: ~${used}/10,000 ${status}`;
+  });
+  el.innerHTML = lines.join('<br>');
+}
+
+function _cacheKey(endpoint, params) {
+  // API 키 제외한 파라미터로 캐시 키 생성
+  const p = { ...params };
+  delete p.key;
+  return API_CACHE_PREFIX + endpoint + '|' + JSON.stringify(p);
+}
+
+function _cacheGet(key, ttl) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > ttl) { localStorage.removeItem(key); return null; }
+    return data;
+  } catch { return null; }
+}
+
+function _cacheSet(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  } catch (e) {
+    // 스토리지 용량 초과 시 캐시 전체 비우고 재시도
+    _cachePurge();
+    try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
+  }
+}
+
+function _cachePurge() {
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(API_CACHE_PREFIX)) keys.push(k);
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+}
+
+// 캐시 수동 초기화 (UI에서 호출 가능)
+function clearApiCache() {
+  _cachePurge();
+  showToast('API 캐시가 초기화되었습니다.');
+}
+
+const YT_S = {
+  channel: null,         // 현재 분석 채널 전체 데이터
+  videos: [],            // 현재 채널 영상 목록
+  compareList: [],       // 비교 목록 (직렬화된 채널 요약)
+  savedChannels: [],     // 저장 목록 (직렬화된 채널 요약)
+  enrichedChannels: {},  // 검색 결과 배치 조회 시 저장 (contentDetails 포함) — analyzeChannelById 재호출 방지
+  charts: {},           // Chart.js 인스턴스
+  searchResults: [],    // 통계 포함 검색 결과
+  sortBy: 'relevance', // 검색 결과 정렬 기준
+  rookieResults: [],    // 슈퍼 루키 검색 결과 보관
+  rookieSortMode: 'score' // 루키 정렬 기준: score|subs|views|country
+};
+
+function getApiKey(keyIdx) { return API_KEYS[keyIdx] || API_KEYS[0]; }
+
+// 국가 코드 → 한국어 국가명
+const COUNTRY_NAMES = {
+  KR:'대한민국', US:'미국', JP:'일본', CN:'중국', GB:'영국',
+  DE:'독일', FR:'프랑스', CA:'캐나다', AU:'호주', IN:'인도',
+  BR:'브라질', MX:'멕시코', TH:'태국', VN:'베트남', PH:'필리핀',
+  ID:'인도네시아', MY:'말레이시아', SG:'싱가포르', TW:'대만', HK:'홍콩',
+  ES:'스페인', IT:'이탈리아', NL:'네덜란드', RU:'러시아', TR:'터키',
+  UA:'우크라이나', PL:'폴란드', SE:'스웨덴', NO:'노르웨이', FI:'핀란드',
+  DK:'덴마크', PT:'포르투갈', CH:'스위스', AT:'오스트리아', BE:'벨기에',
+  AR:'아르헨티나', CL:'칠레', CO:'콜롬비아', SA:'사우디아라비아', AE:'UAE',
+  EG:'이집트', NG:'나이지리아', ZA:'남아프리카공화국', IL:'이스라엘', PK:'파키스탄',
+  BD:'방글라데시', LK:'스리랑카', NP:'네팔', NZ:'뉴질랜드', RO:'루마니아',
+};
+function countryName(code) {
+  if (!code) return '';
+  return COUNTRY_NAMES[code] || code;
+}
+
+function ytLoadLS() {
+  YT_S.savedChannels = JSON.parse(localStorage.getItem(YT_LS.saved) || '[]');
+  YT_S.compareList   = JSON.parse(localStorage.getItem(YT_LS.compare) || '[]');
+}
+function ytSaveLS() {
+  localStorage.setItem(YT_LS.saved,   JSON.stringify(YT_S.savedChannels));
+  localStorage.setItem(YT_LS.compare, JSON.stringify(YT_S.compareList));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UI 유틸
+// ═══════════════════════════════════════════════════════════════
+function ytSwitchPanel(n) {
+  document.querySelectorAll('#yt-app .yt-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#sidebar .nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('yt-panel' + n).classList.add('active');
+  const navItem = document.querySelector(`#sidebar .nav-item[data-panel="${n}"]`);
+  if (navItem) navItem.classList.add('active');
+  if (n === 3) renderCompare();
+  if (n === 4) renderSaved();
+}
+
+let toastTimer;
+function toast(msg, dur = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), dur);
+}
+
+function fmtNum(n) {
+  if (!n && n !== 0) return '-';
+  n = parseInt(n);
+  if (isNaN(n)) return '-';
+  if (n >= 100000000) return (n / 100000000).toFixed(1) + '억';
+  if (n >= 10000)     return (n / 10000).toFixed(1) + '만';
+  if (n >= 1000)      return (n / 1000).toFixed(1) + 'k';
+  return n.toLocaleString();
+}
+
+function fmtDate(s) {
+  if (!s) return '-';
+  return new Date(s).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function timeSince(s) {
+  if (!s) return '-';
+  const d = Math.floor((Date.now() - new Date(s)) / 86400000);
+  if (d < 1)   return '오늘';
+  if (d < 7)   return d + '일 전';
+  if (d < 30)  return Math.floor(d / 7) + '주 전';
+  if (d < 365) return Math.floor(d / 30) + '개월 전';
+  return Math.floor(d / 365) + '년 전';
+}
+
+function escHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function destroyChart(key) {
+  if (YT_S.charts[key]) { YT_S.charts[key].destroy(); delete YT_S.charts[key]; }
+}
+
+function scoreColor(n) {
+  if (n >= 80) return '#10B981';
+  if (n >= 60) return '#3B3F8C';
+  if (n >= 40) return '#F59E0B';
+  return '#EF4444';
+}
+
+function scoreTag(n) {
+  if (n >= 80) return ['tag-green', '출판 최적'];
+  if (n >= 60) return ['tag-blue',  '출판 적합'];
+  if (n >= 40) return ['tag-yellow','가능성 있음'];
+  return          ['tag-red',   '추가 검토 필요'];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// YouTube API
+// ═══════════════════════════════════════════════════════════════
+async function ytFetch(endpoint, params) {
+  // 캐시 확인 — 히트 시 유닛 소모 없음
+  const ttl = API_CACHE_TTL[endpoint];
+  if (ttl) {
+    const ckey = _cacheKey(endpoint, params);
+    const hit = _cacheGet(ckey, ttl);
+    if (hit) return hit;
+  }
+
+  // 사용 가능한 키 목록 (사용량 적은 순)
+  const tryKeys = _getActiveKeyIndices();
+  if (tryKeys.length === 0) {
+    throw new Error('모든 API 키의 일일 할당량이 소진되었습니다. 내일 다시 시도하거나 Google Cloud Console에서 할당량을 확인하세요.');
+  }
+
+  for (const keyIdx of tryKeys) {
+    const url = new URL(YT_BASE + endpoint);
+    Object.entries({ ...params, key: API_KEYS[keyIdx] }).forEach(([k, v]) => url.searchParams.set(k, v));
+    const res = await fetch(url.toString());
+    const data = await res.json();
+
+    if (data.error) {
+      const reason = data.error.errors?.[0]?.reason || '';
+      // 할당량 초과 → 이 키를 소진으로 표시하고 다음 키 시도
+      if (data.error.code === 403 && (reason === 'quotaExceeded' || reason === 'dailyLimitExceeded')) {
+        ytExhaustedKeys.add(keyIdx);
+        _saveKeyState();
+        _updateQuotaDisplay();
+        showToast(`키 ${keyIdx + 1} 할당량 소진 — 키 ${keyIdx === 0 ? 2 : 1}로 전환`, 'yellow');
+        continue; // 다음 키 시도
+      }
+      throw new Error(`YouTube API 오류: ${data.error.message}`);
+    }
+
+    // 성공 — 유닛 차감 후 캐시 저장
+    _trackUnit(endpoint, keyIdx);
+    if (ttl) _cacheSet(_cacheKey(endpoint, params), data);
+    return data;
+  }
+
+  throw new Error('모든 API 키의 일일 할당량이 소진되었습니다. 내일 다시 시도해주세요.');
+}
+
+async function apiSearchChannels(q) {
+  return ytFetch('/search', {
+    part: 'snippet', type: 'channel', q,
+    maxResults: 50,
+    regionCode: 'KR',          // 한국 지역 기반 검색 결과 편향
+    relevanceLanguage: 'ko'    // 한국어 관련성 우선
+  });
+}
+
+async function apiGetChannelById(id) {
+  return ytFetch('/channels', {
+    part: 'snippet,statistics,contentDetails', // brandingSettings 제거 — 미사용 part
+    id
+  });
+}
+
+async function apiGetChannelByHandle(handle) {
+  return ytFetch('/channels', {
+    part: 'snippet,statistics,contentDetails',
+    forHandle: handle
+  });
+}
+
+async function apiGetPlaylistItems(playlistId, maxResults = 20) {
+  return ytFetch('/playlistItems', {
+    part: 'snippet,contentDetails',
+    playlistId,
+    maxResults
+  });
+}
+
+async function apiGetVideoStats(videoIds) {
+  return ytFetch('/videos', {
+    part: 'statistics,snippet',
+    id: videoIds.join(',')
+  });
+}
+
+// URL/입력값 → 채널 ID 해석
+async function resolveInput(input) {
+  input = input.trim();
+
+  // YouTube URL 파싱
+  try {
+    const url = new URL(input);
+    const path = url.pathname;
+
+    if (path.startsWith('/@')) {
+      const handle = path.slice(2).split('/')[0];
+      return await fetchByHandle(handle);
+    }
+    if (path.startsWith('/channel/')) {
+      const cid = path.split('/channel/')[1].split('/')[0];
+      return await fetchById(cid);
+    }
+    if (path.startsWith('/c/') || path.startsWith('/user/')) {
+      const name = path.split('/').filter(Boolean).pop();
+      return await fetchBySearch(name);
+    }
+  } catch (_) { /* not a URL */ }
+
+  // @handle
+  if (input.startsWith('@')) return await fetchByHandle(input.slice(1));
+
+  // Channel ID pattern (UC + 22 chars)
+  if (/^UC[\w-]{22}$/.test(input)) return await fetchById(input);
+
+  // keyword → return null to show search results
+  return null;
+}
+
+async function fetchById(id) {
+  const data = await apiGetChannelById(id);
+  return data.items?.[0] || null;
+}
+
+async function fetchByHandle(handle) {
+  try {
+    const data = await apiGetChannelByHandle(handle);
+    if (data.items?.length) return data.items[0];
+  } catch (_) {}
+  // fallback to search
+  return await fetchBySearch(handle);
+}
+
+async function fetchBySearch(q) {
+  const data = await apiSearchChannels(q);
+  if (!data.items?.length) return null;
+  const cid = data.items[0].id.channelId;
+  return await fetchById(cid);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 출판 적합도 점수
+// ═══════════════════════════════════════════════════════════════
+// 콘텐츠 품질 신호 분석
+// 조회수·구독자는 인기 지표일 뿐, 지식 깊이는 별도 신호로 측정한다.
+function analyzeContentQuality(videos) {
+  if (!videos.length) return null;
+
+  const totView    = videos.reduce((a, v) => a + parseInt(v.statistics?.viewCount    || 0), 0);
+  const totLike    = videos.reduce((a, v) => a + parseInt(v.statistics?.likeCount    || 0), 0);
+  const totComment = videos.reduce((a, v) => a + parseInt(v.statistics?.commentCount || 0), 0);
+
+  // 1. 댓글 참여율 — 교육·실용 콘텐츠 vs 오락 콘텐츠의 핵심 구분자
+  //    댓글은 "배웠거나 질문이 생겼을 때" 달린다. 단순 시청 콘텐츠는 낮다.
+  const commentRate = totView > 0 ? (totComment / totView) * 100 : 0;
+  let cq1 = commentRate >= 0.5 ? 35 : commentRate >= 0.2 ? 28 : commentRate >= 0.05 ? 18 : commentRate >= 0.01 ? 8 : 3;
+  let cr1;
+  if (cq1 >= 35) cr1 = `댓글 비율 ${commentRate.toFixed(2)}% — 매우 높은 심화 참여. 시청자가 적극적으로 질문하고 토론합니다. 교육·실용 저자 유형.`;
+  else if (cq1 >= 28) cr1 = `댓글 비율 ${commentRate.toFixed(2)}% — 높은 참여. 콘텐츠가 실질적인 반응을 유도합니다.`;
+  else if (cq1 >= 18) cr1 = `댓글 비율 ${commentRate.toFixed(2)}% — 평균 수준. 학습·오락 혼합 채널로 추정됩니다.`;
+  else if (cq1 >= 8)  cr1 = `댓글 비율 ${commentRate.toFixed(2)}% — 낮은 편. 시청 후 별도 반응을 유발하지 않는 콘텐츠.`;
+  else               cr1 = `댓글 비율 ${commentRate.toFixed(2)}% — 매우 낮음. 수동적 시청 콘텐츠일 가능성이 높습니다.`;
+
+  // 2. 좋아요 비율 — "유익했다"고 느낄 때 누른다
+  const likeRate = totView > 0 ? (totLike / totView) * 100 : 0;
+  let cq2 = likeRate >= 5 ? 25 : likeRate >= 2 ? 18 : likeRate >= 1 ? 12 : likeRate >= 0.3 ? 7 : 3;
+  let cr2;
+  if (cq2 >= 25) cr2 = `좋아요 비율 ${likeRate.toFixed(2)}% — 매우 높음. 시청자가 콘텐츠에 명확한 가치를 느낍니다.`;
+  else if (cq2 >= 18) cr2 = `좋아요 비율 ${likeRate.toFixed(2)}% — 높은 만족도. 유익한 콘텐츠로 인식됩니다.`;
+  else if (cq2 >= 12) cr2 = `좋아요 비율 ${likeRate.toFixed(2)}% — 보통 수준입니다.`;
+  else if (cq2 >= 7)  cr2 = `좋아요 비율 ${likeRate.toFixed(2)}% — 다소 낮음. 알고리즘 도달 대비 만족도가 낮을 수 있습니다.`;
+  else               cr2 = `좋아요 비율 ${likeRate.toFixed(2)}% — 낮음. 무작위 유입이 많은 채널일 수 있습니다.`;
+
+  // 3. 설명문 충실도 — 글 쓰는 습관이 있는 저자인가
+  //    설명문이 길고 구체적일수록 집필 능력이 있다고 볼 수 있다
+  const descLengths = videos.map(v => (v.snippet?.description || '').length);
+  const avgDesc = descLengths.reduce((a, b) => a + b, 0) / descLengths.length;
+  const longDescRate = Math.round(descLengths.filter(l => l >= 200).length / descLengths.length * 100);
+  let cq3 = avgDesc >= 500 ? 20 : avgDesc >= 200 ? 15 : avgDesc >= 80 ? 10 : avgDesc >= 30 ? 5 : 2;
+  let cr3;
+  if (cq3 >= 20) cr3 = `평균 설명문 ${Math.round(avgDesc)}자 (${longDescRate}% 충실 작성) — 글쓰기 습관이 매우 잘 갖춰진 저자입니다.`;
+  else if (cq3 >= 15) cr3 = `평균 설명문 ${Math.round(avgDesc)}자 — 설명문 작성에 공을 들입니다. 집필 능력이 기대됩니다.`;
+  else if (cq3 >= 10) cr3 = `평균 설명문 ${Math.round(avgDesc)}자 — 기본 수준의 설명문. 집필 역량은 직접 검토가 필요합니다.`;
+  else if (cq3 >= 5)  cr3 = `평균 설명문 ${Math.round(avgDesc)}자 — 설명문이 짧습니다. 글로 표현하는 습관이 아직 약합니다.`;
+  else               cr3 = `평균 설명문 ${Math.round(avgDesc)}자 — 설명문 거의 없음. 텍스트 집필 적응에 상당한 편집 지원이 필요합니다.`;
+
+  // 4. 제목 전문성 — 구체적·긴 제목 = 주제 심화, 짧은 제목 = 클릭베이트
+  const titles = videos.map(v => v.snippet?.title || v._sn?.title || '').filter(Boolean);
+  const avgTitleLen = titles.length > 0 ? titles.reduce((a, t) => a + t.length, 0) / titles.length : 0;
+  // 시리즈·강의 구조 감지
+  const seriesRe = /(ep\.?\s*\d+|\d+편|\d+강|part\.?\s*\d+|#\d+|시리즈|강의|강좌|course)/i;
+  const seriesRate = titles.length > 0 ? Math.round(titles.filter(t => seriesRe.test(t)).length / titles.length * 100) : 0;
+  let cq4 = avgTitleLen >= 25 ? 20 : avgTitleLen >= 18 ? 15 : avgTitleLen >= 12 ? 10 : avgTitleLen >= 7 ? 5 : 2;
+  let cr4;
+  const seriesTxt = seriesRate >= 20 ? ` · 시리즈 구성 ${seriesRate}% (체계적 집필 역량 기대)` : '';
+  if (cq4 >= 20) cr4 = `평균 제목 ${avgTitleLen.toFixed(0)}자 — 구체적이고 전문적인 제목${seriesTxt}. 주제 깊이가 있는 채널입니다.`;
+  else if (cq4 >= 15) cr4 = `평균 제목 ${avgTitleLen.toFixed(0)}자 — 양호한 수준${seriesTxt}.`;
+  else if (cq4 >= 10) cr4 = `평균 제목 ${avgTitleLen.toFixed(0)}자 — 보통 수준. 클릭베이트성 제목이 섞여 있을 수 있습니다.`;
+  else               cr4 = `평균 제목 ${avgTitleLen.toFixed(0)}자 — 제목이 짧고 일반적. 콘텐츠 깊이 확인이 필요합니다.`;
+
+  const qualityTotal = cq1 + cq2 + cq3 + cq4;  // max 100
+
+  // 종합 편집자 코멘트
+  let qualitySummary;
+  if (qualityTotal >= 75) qualitySummary = '데이터 기반으로 양질의 콘텐츠 생산자로 판단됩니다. 시청자 반응(댓글·좋아요)과 글쓰기 습관(설명문)이 모두 높아 집필 저자로 강력 추천합니다.';
+  else if (qualityTotal >= 55) qualitySummary = '콘텐츠 품질이 양호합니다. 일부 지표를 편집자가 직접 영상을 시청하며 검증하면 최종 판단에 도움이 됩니다.';
+  else if (qualityTotal >= 35) qualitySummary = '인기 채널이더라도 콘텐츠 깊이 신호가 약합니다. 실제 영상 2~3개를 직접 시청하고 집필 역량을 검토한 후 진행을 권장합니다.';
+  else qualitySummary = '오락·단편 콘텐츠 특성이 강합니다. 출판 저자보다는 브랜드 협업·에세이 방향으로 접근하거나, 집필 의지와 역량을 별도 확인해야 합니다.';
+
+  return { cq1, cq2, cq3, cq4, qualityTotal, cr1, cr2, cr3, cr4, qualitySummary, commentRate, likeRate, avgDesc, avgTitleLen, seriesRate };
+}
+
+function calcScore(channel, videos) {
+  const st = channel.statistics;
+  const subs   = parseInt(st.subscriberCount || 0);
+  const vCount = parseInt(st.videoCount || 0);
+  const tViews = parseInt(st.viewCount || 0);
+
+  // 1. 구독자 규모 (30점)
+  let s1 = subs >= 1000000 ? 30
+         : subs >= 100000  ? 25
+         : subs >= 10000   ? 15
+         : subs >= 1000    ? 8 : 3;
+
+  const subsStr = st.hiddenSubscriberCount ? '비공개' : subs.toLocaleString() + '명';
+  let r1;
+  if (s1 === 30) r1 = `구독자 ${subsStr} — 광범위한 팬베이스. 초판 대량 판매 및 베스트셀러 가능성이 높습니다.`;
+  else if (s1 === 25) r1 = `구독자 ${subsStr} — 출판 도서 초판 소화에 충분한 팬베이스입니다.`;
+  else if (s1 === 15) r1 = `구독자 ${subsStr} — 특정 분야 독자층 형성. 타깃 출판에 적합합니다.`;
+  else if (s1 === 8)  r1 = `구독자 ${subsStr} — 소규모 핵심 독자층. 틈새 시장 도서로 기획하면 가능성 있습니다.`;
+  else               r1 = `구독자 ${subsStr} — 아직 독자층이 제한적입니다. 성장 추이를 확인하세요.`;
+
+  // 2. 참여율 (30점) — 평균조회수/구독자
+  let s2 = 0;
+  let avgV = 0;
+  if (videos.length > 0) {
+    avgV = videos.reduce((a, v) => a + parseInt(v.statistics?.viewCount || 0), 0) / videos.length;
+  } else if (vCount > 0) {
+    avgV = tViews / vCount;
+  }
+  let r2;
+  if (subs > 0 && avgV > 0) {
+    const er = (avgV / subs) * 100;
+    s2 = er >= 7 ? 30 : er >= 3 ? 25 : er >= 1 ? 15 : er >= 0.3 ? 8 : 3;
+    const erStr = er.toFixed(2);
+    if (s2 === 30) r2 = `참여율 ${erStr}% — 매우 높은 시청 유지율. 강한 팬덤이 형성되어 있습니다.`;
+    else if (s2 === 25) r2 = `참여율 ${erStr}% — 높은 참여율. 독자 전환 가능성이 큽니다.`;
+    else if (s2 === 15) r2 = `참여율 ${erStr}% — 평균 수준. 콘텐츠 주제와 도서의 연관성이 중요합니다.`;
+    else if (s2 === 8)  r2 = `참여율 ${erStr}% — 낮은 편. 영상 홍보 의존도가 높을 수 있습니다.`;
+    else               r2 = `참여율 ${erStr}% — 매우 낮음. 구독자 활성도 확인이 필요합니다.`;
+  } else {
+    r2 = '참여율 측정 불가 — 영상 데이터 또는 구독자 정보가 부족합니다.';
+  }
+
+  // 3. 업로드 일관성 (20점)
+  let s3 = 0;
+  const pub = channel.snippet.publishedAt;
+  let r3;
+  if (pub && vCount > 0) {
+    const months = Math.max((Date.now() - new Date(pub)) / (1000 * 60 * 60 * 24 * 30), 1);
+    const vpm = vCount / months;
+    s3 = vpm >= 8 ? 20 : vpm >= 4 ? 16 : vpm >= 2 ? 12 : vpm >= 0.5 ? 8 : 3;
+    const vpmStr = vpm.toFixed(1);
+    if (s3 === 20) r3 = `월 ${vpmStr}회 업로드 — 매우 활발. 집필 병행 시 속도 조절 협의 필요합니다.`;
+    else if (s3 === 16) r3 = `월 ${vpmStr}회 업로드 — 안정적인 주기. 집필 병행에 유리합니다.`;
+    else if (s3 === 12) r3 = `월 ${vpmStr}회 업로드 — 꾸준한 업로드. 무난한 집필 병행이 예상됩니다.`;
+    else if (s3 === 8)  r3 = `월 ${vpmStr}회 업로드 — 빈도가 낮습니다. 채널 활성도를 확인하세요.`;
+    else               r3 = `월 ${vpmStr}회 업로드 — 거의 활동이 없습니다. 채널 상태를 점검하세요.`;
+  } else {
+    r3 = '업로드 이력 데이터가 부족합니다.';
+  }
+
+  // 4. 콘텐츠 반응 (20점) — 좋아요+댓글×5 / 조회수
+  let s4 = 10; // 영상 없으면 중간값
+  let r4;
+  if (videos.length > 0) {
+    const totV = videos.reduce((a, v) => a + parseInt(v.statistics?.viewCount   || 0), 0);
+    const totL = videos.reduce((a, v) => a + parseInt(v.statistics?.likeCount   || 0), 0);
+    const totC = videos.reduce((a, v) => a + parseInt(v.statistics?.commentCount || 0), 0);
+    if (totV > 0) {
+      const combined = ((totL + totC * 5) / totV) * 100;
+      s4 = combined >= 15 ? 20 : combined >= 8 ? 16 : combined >= 4 ? 12 : combined >= 1 ? 8 : 3;
+      const crStr = combined.toFixed(1);
+      if (s4 === 20) r4 = `콘텐츠 반응률 ${crStr}% — 열정적인 커뮤니티. 독자 참여형 도서 기획에 적합합니다.`;
+      else if (s4 === 16) r4 = `콘텐츠 반응률 ${crStr}% — 높은 반응. 팬과의 관계가 밀접합니다.`;
+      else if (s4 === 12) r4 = `콘텐츠 반응률 ${crStr}% — 양호한 반응입니다.`;
+      else if (s4 === 8)  r4 = `콘텐츠 반응률 ${crStr}% — 평균 수준입니다.`;
+      else               r4 = `콘텐츠 반응률 ${crStr}% — 좋아요·댓글 문화가 약한 채널일 수 있습니다.`;
+    } else {
+      r4 = '영상 반응 데이터가 없습니다.';
+    }
+  } else {
+    r4 = '최근 영상 데이터로 반응을 측정할 수 없습니다. (s4 기본값 적용)';
+  }
+
+  const total = s1 + s2 + s3 + s4;
+  let summary;
+  if (total >= 80) summary = '출판 계약을 적극 검토할 수 있는 채널입니다. 팬베이스와 참여율 모두 출판 성공 요소를 갖추고 있습니다.';
+  else if (total >= 60) summary = '출판에 적합한 채널입니다. 콘텐츠 전문성과 독자층 전환 가능성을 추가로 확인하면 좋습니다.';
+  else if (total >= 40) summary = '가능성은 있으나 보완이 필요합니다. 구독자 성장 추이 또는 참여율 개선 여부를 확인하세요.';
+  else summary = '현 시점에서는 출판 리스크가 높습니다. 채널 성장 후 재검토를 권장합니다.';
+
+  return { total, s1, s2, s3, s4, avgV: Math.round(avgV), r1, r2, r3, r4, summary };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Panel 0 — 채널 검색
+// ═══════════════════════════════════════════════════════════════
+async function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+
+  const btn = document.getElementById('searchBtn');
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true;
+
+  const resEl = document.getElementById('searchResults');
+  resEl.innerHTML = '<div class="loading-box"><div class="spinner"></div><p>검색 중…</p></div>';
+
+  try {
+    // URL/핸들/채널ID → 바로 분석
+    const isSpecific = q.startsWith('http') || q.startsWith('@') || /^UC[\w-]{22}$/.test(q);
+    if (isSpecific) {
+      const ch = await resolveInput(q);
+      if (ch) { resEl.innerHTML = ''; await analyzeChannel(ch); return; }
+    }
+
+    // 키워드 검색
+    const data = await apiSearchChannels(q);
+    if (!data.items?.length) {
+      resEl.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>검색 결과가 없습니다</p></div>';
+      return;
+    }
+
+    // 채널 통계 + 영상 검색 병렬 조회
+    resEl.innerHTML = '<div class="loading-box"><div class="spinner"></div><p>채널 분석 중…</p></div>';
+    const cids = data.items.map(i => i.id.channelId || i.id).filter(Boolean);
+
+    // 두 요청 병렬 실행 (비디오 검색도 한국 리전/언어 적용)
+    // contentDetails 포함 → analyzeChannelById 클릭 시 재호출 불필요 (1유닛 절감)
+    const [statsResult, videoResult] = await Promise.allSettled([
+      ytFetch('/channels', { part: 'snippet,statistics,contentDetails', id: cids.join(',') }),
+      ytFetch('/search', { part: 'snippet', type: 'video', q, maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko' })
+    ]);
+
+    // 채널 통계 맵 + enrichedChannels 캐시에 저장
+    let statsMap = {};
+    if (statsResult.status === 'fulfilled') {
+      (statsResult.value.items || []).forEach(ch => {
+        statsMap[ch.id] = ch;
+        YT_S.enrichedChannels[ch.id] = ch; // analyzeChannelById 재조회 방지
+      });
+    }
+
+    // 채널별 관련 영상 수 카운트 + 한국 콘텐츠 채널 ID 수집
+    // 판정: 영상 제목 OR 채널명에 한글이 있어야 한국 콘텐츠 채널로 봄
+    const HANGUL_V = /[가-힣]/;
+    let videoCountMap = {};
+    const koreanVideoChannelIds = new Set();
+    if (videoResult.status === 'fulfilled') {
+      (videoResult.value.items || []).forEach(v => {
+        const cid        = v.snippet?.channelId;
+        const videoTitle = v.snippet?.title || '';
+        const chTitle    = v.snippet?.channelTitle || '';
+        if (cid) {
+          videoCountMap[cid] = (videoCountMap[cid] || 0) + 1;
+          if (HANGUL_V.test(videoTitle) || HANGUL_V.test(chTitle)) {
+            koreanVideoChannelIds.add(cid);
+          }
+        }
+      });
+    }
+
+    const qLow = q.toLowerCase();
+    const HANGUL = /[가-힣]/;
+    const existingIds = new Set(data.items.map(i => i.id.channelId || i.id).filter(Boolean));
+
+    // 영상 5개 이상이지만 채널 검색에 없는 채널 → 콘텐츠 일치 추가
+    let contentMatchItems = [];
+    try {
+      const contentMatchIds = Object.entries(videoCountMap)
+        .filter(([cid, cnt]) => cnt >= 5 && !existingIds.has(cid))
+        .map(([cid]) => cid);
+      if (contentMatchIds.length > 0) {
+        const cmRes = await ytFetch('/channels', {
+          part: 'snippet,statistics',
+          id: contentMatchIds.slice(0, 50).join(',')
+        });
+        if (cmRes.items?.length) {
+          cmRes.items.forEach(ch => { statsMap[ch.id] = ch; });
+          contentMatchItems = cmRes.items;
+        }
+      }
+    } catch (_) { /* 콘텐츠 일치 보완 실패 시 기본 결과만 표시 */ }
+
+    const baseCount = data.items.length;
+
+    YT_S.searchResults = data.items.map((item, idx) => {
+      const cid      = item.id.channelId || item.id;
+      const enriched = statsMap[cid] || {};
+      const title    = (item.snippet?.title || '').toLowerCase();
+      const desc     = (item.snippet?.description || '').toLowerCase();
+      const country  = enriched.snippet?.country || '';
+      // 한국 채널 판정: 국가코드 KR | 채널명/설명 한글 | 한국어 영상 검색에서 나온 채널
+      const isKorean = country === 'KR'
+                    || HANGUL.test(item.snippet?.title || '')
+                    || HANGUL.test(item.snippet?.description || '')
+                    || koreanVideoChannelIds.has(cid);
+      return {
+        ...item,
+        _cid:        cid,
+        _stats:      enriched.statistics || {},
+        _country:    country || (isKorean ? 'KR' : ''),
+        _origIdx:    idx,
+        _nameMatch:  title.includes(qLow),
+        _descMatch:  desc.includes(qLow),
+        _videoCount: videoCountMap[cid] || 0,
+        _isKorean:   isKorean,
+        _contentMatch: false
+      };
+    }).concat(contentMatchItems.map((ch, idx) => {
+      const sn      = ch.snippet || {};
+      const title   = (sn.title || '').toLowerCase();
+      const desc    = (sn.description || '').toLowerCase();
+      const country = sn.country || '';
+      const isKorean = country === 'KR'
+                    || HANGUL.test(sn.title || '')
+                    || HANGUL.test(sn.description || '')
+                    || koreanVideoChannelIds.has(ch.id);
+      return {
+        id: { channelId: ch.id },
+        snippet: sn,
+        _cid:        ch.id,
+        _stats:      ch.statistics || {},
+        _country:    country || (isKorean ? 'KR' : ''),
+        _origIdx:    baseCount + idx,
+        _nameMatch:  title.includes(qLow),
+        _descMatch:  desc.includes(qLow),
+        _videoCount: videoCountMap[ch.id] || 0,
+        _isKorean:   isKorean,
+        _contentMatch: true
+      };
+    }));
+    YT_S.sortBy = 'relevance';
+    renderSortedResults();
+  } catch (e) {
+    resEl.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(e.message)}</p></div>`;
+  } finally {
+    btn.innerHTML = '검색';
+    btn.disabled = false;
+  }
+}
+
+// 한국 채널 70% 보장: 정렬 결과를 KR/non-KR로 분리 후 7:3 비율로 인터리브
+function applyKoreanBias(items, ratio = 0.7) {
+  const kr    = items.filter(i => i._isKorean);
+  const other = items.filter(i => !i._isKorean);
+  // 한쪽이 비어있으면 재배열 불필요
+  if (!kr.length || !other.length) return items;
+
+  const result = [];
+  let ki = 0, oi = 0;
+  for (let i = 0; i < items.length; i++) {
+    const placed   = result.length;
+    const krPlaced = result.filter(x => x._isKorean).length;
+    // 현재 KR 비율이 목표보다 낮거나 해외 채널이 소진됐으면 KR 배치
+    const curRatio = placed > 0 ? krPlaced / placed : 0;
+    if (ki < kr.length && (curRatio < ratio || oi >= other.length)) {
+      result.push(kr[ki++]);
+    } else if (oi < other.length) {
+      result.push(other[oi++]);
+    } else {
+      result.push(kr[ki++]);
+    }
+  }
+  return result;
+}
+
+// 정확도 점수: 채널명 일치(10) + 관련 영상 수(×2) + 설명 일치(1)
+function relevanceScore(item) {
+  return (item._nameMatch  ? 10 : 0)
+       + (item._videoCount  * 2)
+       + (item._descMatch  ? 1  : 0);
+}
+
+function setSort(key) {
+  YT_S.sortBy = key;
+  renderSortedResults();
+}
+
+function renderSortedResults() {
+  let sorted = [...YT_S.searchResults];
+  if (YT_S.sortBy === 'relevance') {
+    sorted.sort((a, b) => {
+      const diff = relevanceScore(b) - relevanceScore(a);
+      return diff !== 0 ? diff : a._origIdx - b._origIdx;
+    });
+  } else if (YT_S.sortBy === 'subscribers') {
+    sorted.sort((a, b) => parseInt(b._stats.subscriberCount || 0) - parseInt(a._stats.subscriberCount || 0));
+  } else if (YT_S.sortBy === 'views') {
+    sorted.sort((a, b) => parseInt(b._stats.viewCount || 0) - parseInt(a._stats.viewCount || 0));
+  } else if (YT_S.sortBy === 'country') {
+    // 나라 순 정렬은 KR 100% 우선이므로 bias 적용 불필요
+    sorted.sort((a, b) => {
+      const aKR = a._country === 'KR' ? 0 : a._country ? 1 : 2;
+      const bKR = b._country === 'KR' ? 0 : b._country ? 1 : 2;
+      if (aKR !== bKR) return aKR - bKR;
+      return countryName(a._country).localeCompare(countryName(b._country), 'ko');
+    });
+    renderSearchResults(sorted);
+    return;
+  }
+  // 나라 순 외 모든 정렬에 한국 70% 보장 적용
+  renderSearchResults(applyKoreanBias(sorted));
+}
+
+function renderSearchResults(items) {
+  const el = document.getElementById('searchResults');
+  const SORT_OPTIONS = [
+    { key: 'relevance',  label: '정확도' },
+    { key: 'subscribers',label: '구독자 수 ↓' },
+    { key: 'views',      label: '총 조회수 ↓' },
+    { key: 'country',    label: '나라 순' }
+  ];
+
+  el.innerHTML = `
+    <div class="sort-bar">
+      <span class="sort-label">정렬</span>
+      ${SORT_OPTIONS.map(o => `
+        <button class="sort-btn ${YT_S.sortBy === o.key ? 'active' : ''}"
+                onclick="setSort('${o.key}')">${escHtml(o.label)}</button>
+      `).join('')}
+      <span class="sort-count">${items.length}개 채널</span>
+    </div>
+    <div class="channel-grid">
+      ${items.map(item => {
+        const sn    = item.snippet;
+        const cid   = item._cid || item.id.channelId || item.id;
+        const thumb = sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '';
+        const subs  = parseInt(item._stats?.subscriberCount || 0);
+        const views = parseInt(item._stats?.viewCount || 0);
+        const country    = item._country || '';
+        const hidden     = item._stats?.hiddenSubscriberCount;
+        const nameMatch    = item._nameMatch;
+        const videoCount   = item._videoCount || 0;
+        const contentMatch = item._contentMatch;
+        return `
+          <div class="card channel-card ${item._isKorean ? 'kr-highlight' : ''}">
+            <div class="channel-card-top">
+              ${thumb
+                ? `<img class="ch-thumb" src="${escHtml(thumb)}" alt="">`
+                : `<div class="ch-thumb" style="display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--bg)">📺</div>`}
+              <div style="min-width:0">
+                <div class="ch-name">${escHtml(sn.title)}</div>
+                ${item._isKorean
+                  ? `<div class="ch-country">🇰🇷 한국</div>`
+                  : country ? `<div class="ch-country">🌏 ${escHtml(countryName(country))}</div>` : ''}
+              </div>
+            </div>
+            ${(nameMatch || videoCount > 0 || contentMatch) ? `
+            <div class="ch-match-badges">
+              ${nameMatch  ? `<span class="match-badge match-name">이름 일치</span>` : ''}
+              ${videoCount > 0 ? `<span class="match-badge match-video">관련 영상 ${videoCount}개</span>` : ''}
+              ${contentMatch ? `<span class="match-badge match-content">콘텐츠 일치</span>` : ''}
+            </div>` : ''}
+            <div class="ch-stat-row">
+              <div class="ch-stat-item">
+                <span class="ch-stat-lbl">구독자</span>
+                <span class="ch-stat-val">${hidden ? '비공개' : fmtNum(subs)}</span>
+              </div>
+              <div class="ch-stat-item">
+                <span class="ch-stat-lbl">총 조회수</span>
+                <span class="ch-stat-val">${views ? fmtNum(views) : '-'}</span>
+              </div>
+            </div>
+            <div class="ch-desc">${escHtml(sn.description || '채널 설명 없음')}</div>
+            <button class="btn btn-primary btn-sm" onclick="analyzeChannelById('${escHtml(cid)}')">
+              📊 분석하기
+            </button>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Panel 5 — 슈퍼 루키
+// ═══════════════════════════════════════════════════════════════
+async function searchRookie() {
+  const q = document.getElementById('rookieInput').value.trim();
+  if (!q) return;
+
+  const btn = document.getElementById('rookieBtn');
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true;
+
+  const el = document.getElementById('rookieContent');
+  el.innerHTML = '<div class="loading-box"><div class="spinner"></div><p>급성장 채널 탐색 중…</p></div>';
+
+  try {
+    // 영상 검색(조회수순) + 채널 직접 검색 병렬 실행
+    // ※ order=viewCount + publishedAfter 조합은 YouTube API 미지원 — publishedAfter 제거
+    const [videoRes, chSearchRes] = await Promise.allSettled([
+      ytFetch('/search', { part: 'snippet', type: 'video',   q, order: 'viewCount', maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko' }),
+      ytFetch('/search', { part: 'snippet', type: 'channel', q,                     maxResults: 25, regionCode: 'KR', relevanceLanguage: 'ko' })
+    ]);
+
+    // 채널별 인기 영상 수 카운트 + 한국 콘텐츠 채널 ID 수집
+    // 판정 기준: 영상 제목 또는 채널명에 한글이 있는 경우만 한국 콘텐츠로 봄
+    const HANGUL_RK = /[가-힣]/;
+    const videoCountMap = {};
+    const rookieKrVideoChannelIds = new Set();
+    if (videoRes.status === 'fulfilled') {
+      (videoRes.value.items || []).forEach(v => {
+        const cid        = v.snippet?.channelId;
+        const videoTitle = v.snippet?.title || '';
+        const chTitle    = v.snippet?.channelTitle || '';
+        if (cid) {
+          videoCountMap[cid] = (videoCountMap[cid] || 0) + 1;
+          // 영상 제목 또는 채널명에 한글 → 한국 콘텐츠 채널로 판정
+          if (HANGUL_RK.test(videoTitle) || HANGUL_RK.test(chTitle)) {
+            rookieKrVideoChannelIds.add(cid);
+          }
+        }
+      });
+    }
+
+    // 채널 검색 결과 ID 세트 (콘텐츠 일치 판정용)
+    const chSearchIds = new Set(
+      chSearchRes.status === 'fulfilled'
+        ? (chSearchRes.value.items || []).map(i => i.id.channelId || i.id).filter(Boolean)
+        : []
+    );
+    // 영상 5개 이상 + 채널 검색에 없는 → 콘텐츠 일치 채널
+    const contentMatchRookieIds = new Set(
+      Object.entries(videoCountMap)
+        .filter(([cid, cnt]) => cnt >= 5 && !chSearchIds.has(cid))
+        .map(([cid]) => cid)
+    );
+
+    // 채널 ID 수집: 영상 출처 채널 + 채널 검색 결과 합산, 중복 제거
+    const cidSet = new Set([
+      ...Object.keys(videoCountMap),
+      ...chSearchIds
+    ]);
+
+    if (!cidSet.size) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>검색 결과가 없습니다</p></div>';
+      return;
+    }
+
+    // 채널 통계 일괄 조회 (최대 50개)
+    const cids = [...cidSet].slice(0, 50);
+    const statsRes = await ytFetch('/channels', {
+      part: 'snippet,statistics',
+      id: cids.join(',')
+    });
+
+    if (!statsRes.items?.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>채널 정보를 가져올 수 없습니다</p></div>';
+      return;
+    }
+
+    // 급성장 지수 = 평균조회수 / 구독자^0.6 × (관련영상수+1)
+    // → 구독자가 적어도 영상 조회가 폭발적이면 루키로 판별
+    const scored = statsRes.items.map(ch => {
+      const st       = ch.statistics || {};
+      const sn       = ch.snippet || {};
+      const subs     = parseInt(st.subscriberCount || 0);
+      const vCount   = parseInt(st.videoCount || 0);
+      const tViews   = parseInt(st.viewCount || 0);
+      const vidCount = videoCountMap[ch.id] || 0;
+
+      const avgV = vCount > 0 ? tViews / vCount : 0;
+      const rookieScore = subs > 100
+        ? Math.round((avgV / Math.pow(subs, 0.6)) * (vidCount + 1) * 10)
+        : 0;
+
+      // 한국 채널 판정: 국가코드 KR | 채널명/설명 한글 | 한국어 영상 검색에서 나온 채널
+      const country  = sn.country || '';
+      const isKorean = country === 'KR'
+                    || HANGUL_RK.test(sn.title || '')
+                    || HANGUL_RK.test(sn.description || '')
+                    || rookieKrVideoChannelIds.has(ch.id);
+
+      return {
+        ch, subs, avgV: Math.round(avgV), vidCount, rookieScore,
+        totalViews: tViews,
+        _isKorean: isKorean,
+        _country:  country || (isKorean ? 'KR' : ''),
+        _contentMatch: contentMatchRookieIds.has(ch.id)
+      };
+    }).filter(r => r.rookieScore > 0)
+      .sort((a, b) => b.rookieScore - a.rookieScore);
+
+    if (!scored.length) {
+      el.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>급성장 지수를 계산할 수 없습니다.<br>다른 키워드를 시도해보세요.</p></div>';
+      document.getElementById('rookieSortBar').style.display = 'none';
+      return;
+    }
+
+    // 결과 저장 및 정렬 UI 표시
+    YT_S.rookieResults = scored;
+    YT_S.rookieSortMode = 'score';
+    document.getElementById('rookieSortBar').style.display = 'flex';
+    document.getElementById('rookieSortCount').textContent = scored.length + '개 채널';
+    // sort-btn active 초기화
+    document.querySelectorAll('#rookieSortBar .sort-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.sort === 'score'));
+    renderRookieSorted(YT_S.rookieResults);
+  } catch (e) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(e.message)}</p></div>`;
+  } finally {
+    btn.innerHTML = '🚀 탐색';
+    btn.disabled = false;
+  }
+}
+
+// ── 루키 정렬 ──
+function applyRookieSort(mode) {
+  YT_S.rookieSortMode = mode;
+  document.querySelectorAll('#rookieSortBar .sort-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.sort === mode));
+  renderRookieSorted(YT_S.rookieResults);
+}
+
+function renderRookieSorted(items) {
+  if (!items || !items.length) return;
+
+  let sorted = [...items];
+  if (YT_S.rookieSortMode === 'score') {
+    sorted.sort((a, b) => b.rookieScore - a.rookieScore);
+  } else if (YT_S.rookieSortMode === 'subs') {
+    sorted.sort((a, b) => b.subs - a.subs);
+  } else if (YT_S.rookieSortMode === 'views') {
+    sorted.sort((a, b) => b.totalViews - a.totalViews);
+  } else if (YT_S.rookieSortMode === 'country') {
+    // 나라 순: KR 최우선 + 나머지 가나다순, bias 미적용
+    sorted.sort((a, b) => {
+      const aKR = a._country === 'KR' ? 0 : a._country ? 1 : 2;
+      const bKR = b._country === 'KR' ? 0 : b._country ? 1 : 2;
+      if (aKR !== bKR) return aKR - bKR;
+      return countryName(a._country).localeCompare(countryName(b._country), 'ko');
+    });
+  }
+
+  // 나라 순 외 모든 정렬에 한국 70% 보장 적용
+  if (YT_S.rookieSortMode !== 'country') {
+    sorted = applyKoreanBias(sorted, 0.7);
+  }
+
+  const maxScore = Math.max(...sorted.map(r => r.rookieScore), 1);
+  const q = document.getElementById('rookieInput').value.trim();
+  const el = document.getElementById('rookieContent');
+
+  el.innerHTML = `
+    <div class="rookie-info-bar">
+      <span>🔍 <strong>${escHtml(q)}</strong> 키워드 · ${sorted.length}개 채널</span>
+    </div>
+    <div class="rookie-grid">
+      ${sorted.map((item, i) => {
+        const { ch, subs, avgV, vidCount, rookieScore, _isKorean, _country, _contentMatch } = item;
+        const sn    = ch.snippet || {};
+        const thumb = sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '';
+        const pct   = Math.min(Math.round(rookieScore / maxScore * 100), 100);
+        return `
+          <div class="rookie-card ${_isKorean ? 'kr-highlight' : ''}" onclick="analyzeChannelById('${escHtml(ch.id)}')">
+            <div class="rookie-rank">#${i + 1}</div>
+            ${thumb
+              ? `<img class="rookie-thumb" src="${escHtml(thumb)}" alt="">`
+              : `<div class="rookie-thumb rookie-thumb-empty">📺</div>`}
+            <div class="rookie-info">
+              <div class="rookie-name">${escHtml(sn.title || '')}${_isKorean ? ' 🇰🇷' : ''}</div>
+              <div class="rookie-meta">
+                <span>구독자 ${subs > 0 ? fmtNum(subs) : '비공개'}</span>
+                <span>평균 조회 ${fmtNum(avgV)}</span>
+                ${_isKorean ? '<span class="kr-badge">🇰🇷 한국</span>' : (_country ? `<span>${escHtml(countryName(_country))}</span>` : '')}
+              </div>
+              <div class="rookie-score-row">
+                <span class="rookie-label">급성장 지수</span>
+                <div class="rookie-bar-wrap">
+                  <div class="rookie-bar">
+                    <div class="rookie-bar-fill" style="width:${pct}%;background:${scoreColor(pct)}"></div>
+                  </div>
+                  <span class="rookie-score-num">${rookieScore.toLocaleString()}</span>
+                </div>
+              </div>
+              ${vidCount > 0 ? `<span class="match-video">관련 인기영상 ${vidCount}개</span>` : ''}
+              ${_contentMatch ? `<span class="match-content">콘텐츠 일치</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Panel 1 — 채널 분석
+// ═══════════════════════════════════════════════════════════════
+async function analyzeChannelById(cid) {
+  document.getElementById('channelAnalysis').innerHTML =
+    '<div class="loading-box"><div class="spinner"></div><p>채널 정보 불러오는 중…</p></div>';
+  ytSwitchPanel(1);
+  try {
+    // 검색 결과 배치 조회 시 이미 contentDetails 포함하여 저장된 경우 → API 재호출 불필요
+    const cached = YT_S.enrichedChannels[cid];
+    if (cached?.contentDetails) {
+      await analyzeChannel(cached);
+      return;
+    }
+    const data = await apiGetChannelById(cid);
+    if (!data.items?.length) throw new Error('채널을 찾을 수 없습니다');
+    await analyzeChannel(data.items[0]);
+  } catch (e) {
+    document.getElementById('channelAnalysis').innerHTML =
+      `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(e.message)}</p></div>`;
+  }
+}
+
+async function analyzeChannel(channel) {
+  ytSwitchPanel(1);
+  document.getElementById('channelAnalysis').innerHTML =
+    '<div class="loading-box"><div class="spinner"></div><p>영상 데이터 수집 중…</p></div>';
+
+  YT_S.channel = channel;
+  YT_S.videos  = [];
+
+  try {
+    const uploadsId = channel.contentDetails?.relatedPlaylists?.uploads;
+    if (uploadsId) {
+      const pl = await apiGetPlaylistItems(uploadsId, 20);
+      const vids = (pl.items || []).map(i => i.contentDetails?.videoId).filter(Boolean);
+      if (vids.length) {
+        const vData = await apiGetVideoStats(vids);
+        // 재생목록 snippet (title, thumbnail, publishedAt) 매핑
+        const snMap = {};
+        (pl.items || []).forEach(i => {
+          if (i.contentDetails?.videoId) snMap[i.contentDetails.videoId] = i.snippet;
+        });
+        YT_S.videos = (vData.items || []).map(v => ({ ...v, _sn: snMap[v.id] }));
+      }
+    }
+
+    const score = calcScore(channel, YT_S.videos);
+    renderChannelAnalysis(channel, score);
+    renderVideoList(channel, YT_S.videos);
+    // loadSimilarChannels는 버튼 클릭 시에만 실행 (자동 200유닛 절감)
+  } catch (e) {
+    document.getElementById('channelAnalysis').innerHTML =
+      `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(e.message)}</p></div>`;
+  }
+}
+
+// 비슷한 채널 검색 & 랭킹 렌더
+async function loadSimilarChannels(channel) {
+  const el = document.getElementById('similarChannels');
+  if (!el || !channel) return;
+
+  el.innerHTML = '<div class="loading-box"><div class="spinner"></div><p>비슷한 채널 탐색 중… (~200 유닛)</p></div>';
+
+  // 채널명에서 검색 키워드 추출 (특수문자·조사·영어 단음절 제거 후 앞 3단어)
+  const rawTitle = channel.snippet?.title || '';
+  const keywords = rawTitle
+    .replace(/[^\w\s가-힣]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 1)
+    .slice(0, 3)
+    .join(' ')
+    .trim();
+
+  if (!keywords) { el.innerHTML = ''; return; }
+
+  try {
+    const [searchRes, videoRes] = await Promise.allSettled([
+      ytFetch('/search', { part: 'snippet', type: 'channel', q: keywords, maxResults: 20, regionCode: 'KR', relevanceLanguage: 'ko' }),
+      ytFetch('/search', { part: 'snippet', type: 'video', q: keywords, maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko' })
+    ]);
+
+    if (searchRes.status !== 'fulfilled' || !searchRes.value.items?.length) {
+      el.innerHTML = '';
+      return;
+    }
+
+    const items = searchRes.value.items;
+    const cids = items.map(i => i.id.channelId || i.id).filter(Boolean);
+
+    // 현재 채널 제외
+    const filteredCids = cids.filter(id => id !== channel.id);
+    if (!filteredCids.length) { el.innerHTML = ''; return; }
+
+    // 채널 통계 일괄 조회
+    const statsData = await ytFetch('/channels', {
+      part: 'snippet,statistics',
+      id: filteredCids.join(',')
+    });
+
+    // 관련 영상 수 카운트
+    const videoCountMap = {};
+    if (videoRes.status === 'fulfilled') {
+      (videoRes.value.items || []).forEach(v => {
+        const cid = v.snippet?.channelId;
+        if (cid) videoCountMap[cid] = (videoCountMap[cid] || 0) + 1;
+      });
+    }
+
+    // 한국 채널 판정용
+    const HANGUL_RE = /[가-힣]/;
+
+    // 점수 계산 (채널 수준 통계만으로 간략 계산)
+    const ranked = (statsData.items || []).map(ch => {
+      const st = ch.statistics || {};
+      const sn = ch.snippet || {};
+      const subs = parseInt(st.subscriberCount || 0);
+      const vCount = parseInt(st.videoCount || 0);
+      const tViews = parseInt(st.viewCount || 0);
+      const country = sn.country || '';
+
+      // 한국 채널 판정
+      const isKorean = country === 'KR'
+        || HANGUL_RE.test(sn.title || '')
+        || HANGUL_RE.test(sn.description || '');
+
+      // 구독자 (30점)
+      const s1 = subs >= 1000000 ? 30 : subs >= 100000 ? 25 : subs >= 10000 ? 15 : subs >= 1000 ? 8 : 3;
+      // 참여율 — 총조회수/영상수/구독자 (30점)
+      let s2 = 0;
+      if (subs > 0 && vCount > 0) {
+        const avgV = tViews / vCount;
+        const er = (avgV / subs) * 100;
+        s2 = er >= 7 ? 30 : er >= 3 ? 25 : er >= 1 ? 15 : er >= 0.3 ? 8 : 3;
+      }
+      // 업로드 일관성 (20점)
+      let s3 = 0;
+      const pub = sn.publishedAt;
+      if (pub && vCount > 0) {
+        const months = Math.max((Date.now() - new Date(pub)) / (1000*60*60*24*30), 1);
+        const vpm = vCount / months;
+        s3 = vpm >= 8 ? 20 : vpm >= 4 ? 16 : vpm >= 2 ? 12 : vpm >= 0.5 ? 8 : 3;
+      }
+      // 관련 영상 매칭 보너스 (콘텐츠 반응 대체, 20점)
+      const vc = videoCountMap[ch.id] || 0;
+      const s4 = vc >= 10 ? 20 : vc >= 5 ? 16 : vc >= 3 ? 12 : vc >= 1 ? 8 : 3;
+
+      return { ch, score: s1 + s2 + s3 + s4, subs, videoCount: vc, hiddenSubs: !!st.hiddenSubscriberCount, _isKorean: isKorean, _country: country || (isKorean ? 'KR' : '') };
+    }).sort((a, b) => b.score - a.score);
+
+    // 한국 채널 70% 보장 정렬 적용
+    const biased = applyKoreanBias(ranked);
+
+    if (!biased.length) { el.innerHTML = ''; return; }
+
+    el.innerHTML = `
+      <div class="card" style="margin-bottom:18px">
+        <div class="section-label" style="margin-bottom:14px">📡 비슷한 채널 랭킹</div>
+        <div class="similar-list">
+          ${biased.map((item, i) => {
+            const { ch, score, subs, videoCount, hiddenSubs, _isKorean, _country } = item;
+            const sn = ch.snippet || {};
+            const thumb = sn.thumbnails?.default?.url || '';
+            const [tagCls, tagLbl] = scoreTag(score);
+            return `
+              <div class="similar-row" onclick="analyzeChannelById('${escHtml(ch.id)}')" title="분석하기">
+                <div class="sim-rank" style="color:${scoreColor(score)}">${i + 1}</div>
+                ${thumb
+                  ? `<img class="sim-thumb" src="${escHtml(thumb)}" alt="">`
+                  : `<div class="sim-thumb sim-thumb-empty">📺</div>`}
+                <div class="sim-info">
+                  <div class="sim-name">${escHtml(sn.title || '')}${_isKorean ? ' 🇰🇷' : ''}</div>
+                  <div class="sim-meta">
+                    <span>구독자 ${hiddenSubs ? '비공개' : fmtNum(subs)}</span>
+                    ${videoCount > 0 ? `<span class="match-video">관련 영상 ${videoCount}개</span>` : ''}
+                    ${_country ? `<span>${_country === 'KR' ? '🇰🇷 ' : ''}${escHtml(countryName(_country))}</span>` : ''}
+                  </div>
+                </div>
+                <div class="sim-score-wrap">
+                  <div class="sim-score-bar">
+                    <div class="sim-score-fill" style="width:${score}%;background:${scoreColor(score)}"></div>
+                  </div>
+                  <span class="sim-score-num" style="color:${scoreColor(score)}">${score}점</span>
+                  <span class="tag ${tagCls}">${tagLbl}</span>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    // 비슷한 채널 로드 실패는 조용히 무시 (메인 분석에 영향 없음)
+    el.innerHTML = '';
+  }
+}
+
+function renderChannelAnalysis(ch, score) {
+  const el  = document.getElementById('channelAnalysis');
+  const st  = ch.statistics;
+  const sn  = ch.snippet;
+  const thumb = sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '';
+  const subs  = parseInt(st.subscriberCount || 0);
+  const tvs   = parseInt(st.viewCount || 0);
+  const vcnt  = parseInt(st.videoCount || 0);
+  const isSaved   = YT_S.savedChannels.some(c => c.id === ch.id);
+  const isCompare = YT_S.compareList.some(c => c.id === ch.id);
+  const [tagCls, tagLbl] = scoreTag(score.total);
+
+  // 업로드 주기
+  let vpm = '-';
+  if (sn.publishedAt && vcnt > 0) {
+    const months = Math.max((Date.now() - new Date(sn.publishedAt)) / (1000*60*60*24*30), 1);
+    vpm = (vcnt / months).toFixed(1) + '회/월';
+  }
+
+  // 참여율
+  const er = subs > 0 && score.avgV > 0
+    ? ((score.avgV / subs) * 100).toFixed(2) + '%'
+    : '-';
+
+  destroyChart('analysis');
+
+  el.innerHTML = `
+    <div class="card" style="margin-bottom:18px">
+      <div class="ch-header">
+        ${thumb
+          ? `<img src="${escHtml(thumb)}" alt="">`
+          : `<div style="width:68px;height:68px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">📺</div>`}
+        <div class="ch-info">
+          <h2>${escHtml(sn.title)}</h2>
+          <p>${escHtml((sn.description || '').slice(0, 120))}${(sn.description || '').length > 120 ? '…' : ''}</p>
+          <div class="info-chips">
+            <span class="info-chip">개설 <strong>${fmtDate(sn.publishedAt)}</strong></span>
+            ${sn.country ? `<span class="info-chip">국가 <strong>${escHtml(sn.country)}</strong></span>` : ''}
+          </div>
+        </div>
+        <div class="ch-actions">
+          <button id="saveBtn" class="btn btn-secondary btn-sm" onclick="toggleSave()">
+            ${isSaved ? '✅ 저장됨' : '⭐ 저장'}
+          </button>
+          <button id="compareBtn" class="btn btn-secondary btn-sm" onclick="toggleCompare()">
+            ${isCompare ? '✅ 비교중' : '⚖️ 비교 추가'}
+          </button>
+          <a href="https://youtube.com/channel/${escHtml(ch.id)}" target="_blank" rel="noopener"
+             class="btn btn-secondary btn-sm">🔗 채널 열기</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="card stat-card">
+        <div class="lbl">구독자</div>
+        <div class="val">${st.hiddenSubscriberCount ? '비공개' : fmtNum(subs)}</div>
+        <div class="sub">${st.hiddenSubscriberCount ? '' : subs.toLocaleString() + '명'}</div>
+      </div>
+      <div class="card stat-card">
+        <div class="lbl">총 조회수</div>
+        <div class="val">${fmtNum(tvs)}</div>
+        <div class="sub">${tvs.toLocaleString()}회</div>
+      </div>
+      <div class="card stat-card">
+        <div class="lbl">영상 수</div>
+        <div class="val">${vcnt.toLocaleString()}</div>
+        <div class="sub">개</div>
+      </div>
+      <div class="card stat-card">
+        <div class="lbl">평균 조회수</div>
+        <div class="val">${fmtNum(score.avgV)}</div>
+        <div class="sub">영상당</div>
+      </div>
+      <div class="card stat-card">
+        <div class="lbl">참여율</div>
+        <div class="val" style="font-size:18px">${er}</div>
+        <div class="sub">조회/구독자</div>
+      </div>
+      <div class="card stat-card">
+        <div class="lbl">업로드 주기</div>
+        <div class="val" style="font-size:18px">${vpm}</div>
+        <div class="sub">평균</div>
+      </div>
+    </div>
+
+    <div class="card score-section" style="margin-bottom:18px">
+      <div class="score-header">
+        <div class="title">📚 출판 적합도 점수</div>
+        <span class="tag ${tagCls}">${tagLbl}</span>
+      </div>
+      <div class="score-bar-row">
+        <div class="score-bar">
+          <div class="score-bar-fill" style="width:${score.total}%;background:${scoreColor(score.total)}"></div>
+        </div>
+        <div class="score-num" style="color:${scoreColor(score.total)}">${score.total}점</div>
+      </div>
+      <div class="score-breakdown">
+        <div class="score-item">
+          <div class="score-row"><span>👥 구독자 규모</span><span class="score-pts">${score.s1}/30</span></div>
+          <div class="score-reason">${escHtml(score.r1)}</div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>📈 참여율</span><span class="score-pts">${score.s2}/30</span></div>
+          <div class="score-reason">${escHtml(score.r2)}</div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>📅 업로드 일관성</span><span class="score-pts">${score.s3}/20</span></div>
+          <div class="score-reason">${escHtml(score.r3)}</div>
+        </div>
+        <div class="score-item">
+          <div class="score-row"><span>💬 콘텐츠 반응</span><span class="score-pts">${score.s4}/20</span></div>
+          <div class="score-reason">${escHtml(score.r4)}</div>
+        </div>
+      </div>
+      <div class="score-summary">${escHtml(score.summary)}</div>
+    </div>
+
+    ${(() => {
+      const q = analyzeContentQuality(YT_S.videos);
+      if (!q) return '';
+      return `
+    <div class="card quality-card" style="margin-bottom:18px">
+      <div class="section-label" style="margin-bottom:14px">🔬 콘텐츠 품질 신호 <span style="font-size:11px;font-weight:400;color:#9CA3AF;margin-left:6px">조회수·구독자와 별개의 깊이 지표</span></div>
+      <div class="quality-score-header">
+        <div class="quality-total-wrap">
+          <span class="quality-total-num" style="color:${scoreColor(q.qualityTotal)}">${q.qualityTotal}</span>
+          <span class="quality-total-label">/ 100</span>
+        </div>
+        <div class="quality-bar-outer">
+          <div class="quality-bar-inner" style="width:${q.qualityTotal}%;background:${scoreColor(q.qualityTotal)}"></div>
+        </div>
+      </div>
+      <div class="quality-breakdown">
+        <div class="quality-item">
+          <div class="quality-row"><span>💬 댓글 참여율</span><span class="score-pts">${q.cq1}/35</span></div>
+          <div class="quality-mini-bar"><div class="quality-mini-bar-inner" style="width:${Math.round(q.cq1/35*100)}%;background:${scoreColor(q.cq1/35*100)}"></div></div>
+          <div class="score-reason">${escHtml(q.cr1)}</div>
+        </div>
+        <div class="quality-item">
+          <div class="quality-row"><span>👍 좋아요 비율</span><span class="score-pts">${q.cq2}/25</span></div>
+          <div class="quality-mini-bar"><div class="quality-mini-bar-inner" style="width:${Math.round(q.cq2/25*100)}%;background:${scoreColor(q.cq2/25*100)}"></div></div>
+          <div class="score-reason">${escHtml(q.cr2)}</div>
+        </div>
+        <div class="quality-item">
+          <div class="quality-row"><span>📝 설명문 충실도</span><span class="score-pts">${q.cq3}/20</span></div>
+          <div class="quality-mini-bar"><div class="quality-mini-bar-inner" style="width:${Math.round(q.cq3/20*100)}%;background:${scoreColor(q.cq3/20*100)}"></div></div>
+          <div class="score-reason">${escHtml(q.cr3)}</div>
+        </div>
+        <div class="quality-item">
+          <div class="quality-row"><span>🎯 제목 전문성</span><span class="score-pts">${q.cq4}/20</span></div>
+          <div class="quality-mini-bar"><div class="quality-mini-bar-inner" style="width:${Math.round(q.cq4/20*100)}%;background:${scoreColor(q.cq4/20*100)}"></div></div>
+          <div class="score-reason">${escHtml(q.cr4)}</div>
+        </div>
+      </div>
+      <div class="quality-analyst-note">
+        <span class="quality-analyst-label">📋 편집자 참고</span>
+        ${escHtml(q.qualitySummary)}
+      </div>
+    </div>`;
+    })()}
+
+    ${YT_S.videos.length > 0 ? `
+    <div class="card" style="margin-bottom:18px">
+      <div class="section-label">최근 영상 조회수 추이</div>
+      <div class="chart-wrap"><canvas id="analysisChart"></canvas></div>
+    </div>` : ''}
+
+    <div style="text-align:center;margin-bottom:24px">
+      <button class="btn btn-primary" onclick="ytSwitchPanel(2)">
+        🎬 영상 목록 보기 (${YT_S.videos.length}개)
+      </button>
+    </div>
+
+    <div id="similarChannels">
+      <div style="text-align:center;padding:20px 0;">
+        <button class="btn btn-secondary" onclick="loadSimilarChannels(YT_S.channel)" style="gap:6px;">
+          🔍 유사 채널 탐색 <span style="font-size:.75rem;opacity:.65;margin-left:4px;">(~200 유닛)</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  if (YT_S.videos.length > 0) {
+    requestAnimationFrame(() => {
+      const ctx = document.getElementById('analysisChart');
+      if (!ctx) return;
+      const recent = [...YT_S.videos].reverse().slice(-10);
+      YT_S.charts.analysis = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: recent.map((v, i) => {
+            const t = v.snippet?.title || v._sn?.title || ('영상 ' + (i + 1));
+            return t.slice(0, 14) + (t.length > 14 ? '…' : '');
+          }),
+          datasets: [{
+            label: '조회수',
+            data: recent.map(v => parseInt(v.statistics?.viewCount || 0)),
+            backgroundColor: 'rgba(59,63,140,0.72)',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { ticks: { callback: v => fmtNum(v) } },
+            x: { ticks: { maxRotation: 35, font: { size: 10 } } }
+          }
+        }
+      });
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Panel 2 — 영상 목록
+// ═══════════════════════════════════════════════════════════════
+function renderVideoList(ch, videos) {
+  const el = document.getElementById('videoList');
+  if (!videos.length) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">🎬</div><p>영상 데이터를 불러올 수 없습니다</p></div>';
+    return;
+  }
+
+  const maxV = Math.max(...videos.map(v => parseInt(v.statistics?.viewCount || 0)));
+  const avgV = videos.reduce((a, v) => a + parseInt(v.statistics?.viewCount || 0), 0) / videos.length;
+
+  el.innerHTML = `
+    <div class="panel-header">
+      <h2>${escHtml(ch.snippet.title)} 영상 목록</h2>
+      <p>최근 ${videos.length}개 영상 · 평균 조회수 ${fmtNum(Math.round(avgV))}</p>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>썸네일</th>
+              <th>제목</th>
+              <th>조회수</th>
+              <th>좋아요</th>
+              <th>댓글</th>
+              <th>참여율</th>
+              <th>업로드</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${videos.map(v => {
+              const st  = v.statistics || {};
+              const sn  = v.snippet || v._sn || {};
+              const views    = parseInt(st.viewCount    || 0);
+              const likes    = parseInt(st.likeCount    || 0);
+              const comments = parseInt(st.commentCount || 0);
+              const er  = views > 0 ? ((likes + comments) / views * 100).toFixed(2) : '0.00';
+              const pct = maxV > 0 ? (views / maxV * 100) : 0;
+              const thumb = sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '';
+              const pub   = sn.publishedAt || '';
+              return `
+                <tr>
+                  <td style="padding:8px 14px">
+                    ${thumb
+                      ? `<img class="vid-thumb" src="${escHtml(thumb)}" alt="" loading="lazy">`
+                      : `<div class="vid-thumb" style="display:flex;align-items:center;justify-content:center">🎬</div>`}
+                  </td>
+                  <td class="vid-title">
+                    <a href="https://youtube.com/watch?v=${escHtml(v.id)}" target="_blank" rel="noopener">
+                      ${escHtml(sn.title || '-')}
+                    </a>
+                    <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%"></div></div>
+                  </td>
+                  <td><strong>${fmtNum(views)}</strong></td>
+                  <td>${fmtNum(likes)}</td>
+                  <td>${fmtNum(comments)}</td>
+                  <td>${er}%</td>
+                  <td style="color:var(--text-muted);white-space:nowrap">${timeSince(pub)}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Panel 3 — 비교 분석
+// ═══════════════════════════════════════════════════════════════
+function toggleCompare() {
+  if (!YT_S.channel) return;
+  const ch  = YT_S.channel;
+  const idx = YT_S.compareList.findIndex(c => c.id === ch.id);
+
+  if (idx >= 0) {
+    YT_S.compareList.splice(idx, 1);
+    toast('비교 목록에서 제거했습니다');
+  } else {
+    if (YT_S.compareList.length >= 4) { toast('최대 4개까지 비교할 수 있습니다'); return; }
+    const score = calcScore(ch, YT_S.videos);
+    YT_S.compareList.push({
+      id:          ch.id,
+      title:       ch.snippet.title,
+      thumb:       ch.snippet.thumbnails?.medium?.url || '',
+      subscribers: parseInt(ch.statistics?.subscriberCount || 0),
+      totalViews:  parseInt(ch.statistics?.viewCount || 0),
+      videoCount:  parseInt(ch.statistics?.videoCount || 0),
+      avgViews:    score.avgV,
+      score:       score.total,
+      publishedAt: ch.snippet.publishedAt
+    });
+    toast('비교 목록에 추가했습니다');
+  }
+
+  ytSaveLS();
+  const btn = document.getElementById('compareBtn');
+  if (btn) {
+    const now = YT_S.compareList.some(c => c.id === ch.id);
+    btn.textContent = now ? '✅ 비교중' : '⚖️ 비교 추가';
+  }
+}
+
+function renderCompare() {
+  const el = document.getElementById('compareSection');
+  if (!YT_S.compareList.length) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">⚖️</div><p>채널 분석 화면에서 "비교에 추가" 버튼을 클릭하세요</p></div>';
+    return;
+  }
+
+  const maxSub = Math.max(...YT_S.compareList.map(c => c.subscribers));
+  const maxAvg = Math.max(...YT_S.compareList.map(c => c.avgViews));
+  destroyChart('compare');
+
+  el.innerHTML = `
+    <div class="compare-chips">
+      ${YT_S.compareList.map(c => `
+        <div class="compare-chip">
+          ${c.thumb ? `<img src="${escHtml(c.thumb)}" alt="">` : '📺'}
+          ${escHtml(c.title)}
+          <span class="chip-remove" onclick="removeCompare('${escHtml(c.id)}')">×</span>
+        </div>
+      `).join('')}
+      <button class="btn btn-secondary btn-xs" onclick="clearCompare()">전체 초기화</button>
+    </div>
+
+    <div class="card" style="margin-bottom:18px">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>채널</th><th>구독자</th><th>총 조회수</th><th>영상 수</th><th>평균 조회수</th><th>출판 적합도</th></tr>
+          </thead>
+          <tbody>
+            ${YT_S.compareList.map(c => {
+              const [tc, tl] = scoreTag(c.score);
+              return `
+                <tr>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      ${c.thumb ? `<img src="${escHtml(c.thumb)}" style="width:30px;height:30px;border-radius:50%">` : '📺'}
+                      <strong>${escHtml(c.title)}</strong>
+                    </div>
+                  </td>
+                  <td>
+                    ${fmtNum(c.subscribers)}
+                    <div class="mini-bar" style="margin-top:5px">
+                      <div class="mini-bar-fill" style="width:${maxSub > 0 ? c.subscribers/maxSub*100 : 0}%;background:var(--accent)"></div>
+                    </div>
+                  </td>
+                  <td>${fmtNum(c.totalViews)}</td>
+                  <td>${c.videoCount.toLocaleString()}</td>
+                  <td>
+                    ${fmtNum(c.avgViews)}
+                    <div class="mini-bar" style="margin-top:5px">
+                      <div class="mini-bar-fill" style="width:${maxAvg > 0 ? c.avgViews/maxAvg*100 : 0}%;background:#10B981"></div>
+                    </div>
+                  </td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <strong style="color:${scoreColor(c.score)}">${c.score}점</strong>
+                      <span class="tag ${tc}">${tl}</span>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    ${YT_S.compareList.length >= 2 ? `
+    <div class="card">
+      <div class="section-label">채널 비교 차트 (정규화 100점 기준)</div>
+      <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
+    </div>` : ''}
+  `;
+
+  if (YT_S.compareList.length >= 2) {
+    requestAnimationFrame(() => {
+      const ctx = document.getElementById('compareChart');
+      if (!ctx) return;
+      const colors = [
+        'rgba(59,63,140,0.75)',
+        'rgba(16,185,129,0.75)',
+        'rgba(245,158,11,0.75)',
+        'rgba(239,68,68,0.75)'
+      ];
+      YT_S.charts.compare = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['구독자\n(정규화)', '평균 조회수\n(정규화)', '출판 점수'],
+          datasets: YT_S.compareList.map((c, i) => ({
+            label: c.title,
+            data: [
+              maxSub > 0 ? Math.round(c.subscribers / maxSub * 100) : 0,
+              maxAvg > 0 ? Math.round(c.avgViews    / maxAvg * 100) : 0,
+              c.score
+            ],
+            backgroundColor: colors[i % colors.length],
+            borderRadius: 6
+          }))
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'top' } },
+          scales: { y: { min: 0, max: 100 } }
+        }
+      });
+    });
+  }
+}
+
+function removeCompare(id) {
+  YT_S.compareList = YT_S.compareList.filter(c => c.id !== id);
+  ytSaveLS();
+  renderCompare();
+  const btn = document.getElementById('compareBtn');
+  if (btn && YT_S.channel) {
+    btn.textContent = YT_S.compareList.some(c => c.id === YT_S.channel.id) ? '✅ 비교중' : '⚖️ 비교 추가';
+  }
+}
+
+function clearCompare() {
+  YT_S.compareList = [];
+  ytSaveLS();
+  renderCompare();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Panel 4 — 저장 목록
+// ═══════════════════════════════════════════════════════════════
+function toggleSave() {
+  if (!YT_S.channel) return;
+  const ch  = YT_S.channel;
+  const idx = YT_S.savedChannels.findIndex(c => c.id === ch.id);
+
+  if (idx >= 0) {
+    YT_S.savedChannels.splice(idx, 1);
+    toast('저장 목록에서 제거했습니다');
+  } else {
+    const score = calcScore(ch, YT_S.videos);
+    YT_S.savedChannels.push({
+      id:          ch.id,
+      title:       ch.snippet.title,
+      thumb:       ch.snippet.thumbnails?.medium?.url || '',
+      subscribers: parseInt(ch.statistics?.subscriberCount || 0),
+      totalViews:  parseInt(ch.statistics?.viewCount || 0),
+      videoCount:  parseInt(ch.statistics?.videoCount || 0),
+      score:       score.total,
+      country:     ch.snippet.country || '',
+      savedAt:     new Date().toISOString(),
+      memo:        ''
+    });
+    toast('저장했습니다 ⭐');
+  }
+
+  ytSaveLS();
+  const btn = document.getElementById('saveBtn');
+  if (btn) {
+    btn.textContent = YT_S.savedChannels.some(c => c.id === ch.id) ? '✅ 저장됨' : '⭐ 저장';
+  }
+}
+
+function renderSaved() {
+  const el = document.getElementById('savedList');
+  if (!YT_S.savedChannels.length) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">⭐</div><p>저장된 채널이 없습니다<br>채널 분석 후 저장 버튼을 클릭하세요</p></div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="saved-list">
+      ${YT_S.savedChannels.map(c => {
+        const [tc, tl] = scoreTag(c.score);
+        return `
+          <div class="card saved-card">
+            ${c.thumb
+              ? `<img src="${escHtml(c.thumb)}" alt="">`
+              : `<div style="width:42px;height:42px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">📺</div>`}
+            <div class="s-info">
+              <h4>${escHtml(c.title)}</h4>
+              <p>구독자 ${fmtNum(c.subscribers)} · 영상 ${c.videoCount.toLocaleString()}개 · ${timeSince(c.savedAt)} 저장</p>
+            </div>
+            <span class="tag ${tc}" style="flex-shrink:0">${c.score}점 · ${tl}</span>
+            <textarea class="memo-input" placeholder="메모…"
+              onchange="updateMemo('${escHtml(c.id)}', this.value)">${escHtml(c.memo || '')}</textarea>
+            <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+              <button class="btn btn-secondary btn-xs" onclick="analyzeChannelById('${escHtml(c.id)}')">분석</button>
+              <button class="btn btn-danger btn-xs" onclick="removeSaved('${escHtml(c.id)}')">삭제</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function updateMemo(id, memo) {
+  const c = YT_S.savedChannels.find(x => x.id === id);
+  if (c) { c.memo = memo; ytSaveLS(); }
+}
+
+function removeSaved(id) {
+  YT_S.savedChannels = YT_S.savedChannels.filter(c => c.id !== id);
+  ytSaveLS();
+  renderSaved();
+  const btn = document.getElementById('saveBtn');
+  if (btn && YT_S.channel?.id === id) btn.textContent = '⭐ 저장';
+  toast('삭제했습니다');
+}
+
+function clearAllSaved() {
+  if (!YT_S.savedChannels.length) return;
+  if (!confirm(`저장된 채널 ${YT_S.savedChannels.length}개를 모두 삭제할까요?`)) return;
+  YT_S.savedChannels = [];
+  ytSaveLS();
+  renderSaved();
+}
+
+function exportCsv() {
+  if (!YT_S.savedChannels.length) { toast('저장된 채널이 없습니다'); return; }
+  const headers = ['채널명', '구독자', '총조회수', '영상수', '출판적합도', '국가', '저장일', '메모', '채널URL'];
+  const rows = YT_S.savedChannels.map(c => [
+    c.title, c.subscribers, c.totalViews, c.videoCount, c.score,
+    c.country || '',
+    new Date(c.savedAt).toLocaleDateString('ko-KR'),
+    c.memo || '',
+    `https://youtube.com/channel/${c.id}`
+  ]);
+  const csv = [headers, ...rows]
+    .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+    .join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `유튜브저자분석_${new Date().toLocaleDateString('ko-KR').replace(/\./g,'').replace(/ /g,'')}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('📥 CSV 다운로드 완료');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// API Key Modal
+// ═══════════════════════════════════════════════════════════════
+function openApiModal() {
+  const list = document.getElementById('apiKeyStatusList');
+  if (list) {
+    list.innerHTML = API_KEYS.map((key, i) => {
+      const used = ytUnitsPerKey[i] || 0;
+      const exhausted = ytExhaustedKeys.has(i);
+      const pct = Math.min(100, Math.round(used / 100));
+      const statusColor = exhausted ? '#C0392B' : used > 7000 ? '#B07000' : '#1A6B3C';
+      const statusText = exhausted ? '소진' : used > 7000 ? '주의' : '정상';
+      const maskedKey = key.slice(0, 10) + '…' + key.slice(-4);
+      return `<div style="border:1px solid #E4E2D8;border-radius:10px;padding:10px 14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-size:.78rem;font-weight:700;">키 ${i + 1} <code style="font-size:.7rem;color:#6B6860;">${maskedKey}</code></span>
+          <span style="font-size:.72rem;font-weight:700;color:${statusColor};">${statusText}</span>
+        </div>
+        <div style="background:#F0EFE8;border-radius:4px;height:6px;overflow:hidden;">
+          <div style="background:${statusColor};height:100%;width:${pct}%;transition:width .3s;"></div>
+        </div>
+        <div style="font-size:.68rem;color:#6B6860;margin-top:4px;">~${used} / 10,000 유닛 (세션)</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('apiModal').classList.add('open');
+}
+function closeApiModal() {
+  document.getElementById('apiModal').classList.remove('open');
+}
+function resetExhaustedKeys() {
+  ytExhaustedKeys.clear();
+  ytUnitsPerKey = API_KEYS.map(() => 0);
+  ytUnitsUsed = 0;
+  _saveKeyState();
+  _updateQuotaDisplay();
+  openApiModal(); // refresh display
+  toast('키 소진 상태가 초기화되었습니다 🔄');
+}
+document.getElementById('apiModal').addEventListener('click', function(e) {
+  if (e.target === this) closeApiModal();
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 트렌드 키워드
+// ═══════════════════════════════════════════════════════════════
+const TREND_CACHE_KEY = 'yt_trend_keywords_v5';
+const TREND_CACHE_TTL = 30 * 60 * 1000; // 30분
+// IT 출판 키워드 30개 — 6개 카테고리
+const STATIC_IT_KEYWORDS = [
+  // AI 핵심 툴 (제품명)
+  'AI', 'ChatGPT', 'Claude', 'Gemini', 'Grok', '딥시크',
+  // AI 코딩 패러다임
+  '바이브코딩', '클로드코드', '커서', '코파일럿', 'GPT',
+  // AI 개념·기술
+  'LLM', 'RAG', 'AI에이전트', 'MCP', '파인튜닝', '멀티모달', '벡터DB',
+  // AI 활용 실무
+  '생성형AI', '프롬프트엔지니어링', '노코드AI', 'AI자동화', '로컬LLM', '안티그래비티',
+  // 뜨는 언어·환경
+  '파이썬', 'TypeScript', '러스트', 'Go언어',
+  // 기반 기술
+  '머신러닝', '데이터분석'
+];
+
+// 큐레이션된 키워드 목록을 유지하되, 트렌딩 영상 텍스트에서
+// 각 키워드의 언급 횟수를 세어 순위를 조정한다.
+// 임의 단어 추출은 노이즈가 많아 사용하지 않는다.
+function rankByTrending(corpus) {
+  const text = corpus.toLowerCase();
+  return STATIC_IT_KEYWORDS
+    .map(kw => {
+      // 공백 포함 키워드('클로드 코드' 등)도 처리
+      const pattern = kw.toLowerCase().replace(/[+#()[\]]/g, '\\$&');
+      const count = (text.match(new RegExp(pattern, 'g')) || []).length;
+      return { kw, count };
+    })
+    .sort((a, b) => b.count - a.count)
+    .map(s => s.kw);
+}
+
+function renderKeywordChips(keywords) {
+  const wrap = document.getElementById('trendKeywords');
+  const rookieWrap = document.getElementById('rookieTrendKeywords');
+  if (!keywords || keywords.length === 0) {
+    const msg = '<span class="kw-loading">키워드를 불러올 수 없습니다</span>';
+    if (wrap) wrap.innerHTML = msg;
+    if (rookieWrap) rookieWrap.innerHTML = msg;
+    return;
+  }
+  const searchChips = keywords
+    .map(kw => `<button class="kw-chip" data-kw="${escHtml(kw)}" onclick="setSearchAndRun(this.dataset.kw)">${escHtml(kw)}</button>`)
+    .join('');
+  const rookieChips = keywords
+    .map(kw => `<button class="kw-chip" data-kw="${escHtml(kw)}" onclick="setRookieSearch(this.dataset.kw)">${escHtml(kw)}</button>`)
+    .join('');
+  if (wrap) wrap.innerHTML = searchChips;
+  if (rookieWrap) rookieWrap.innerHTML = rookieChips;
+}
+
+function setSearchAndRun(kw) {
+  document.getElementById('searchInput').value = kw;
+  doSearch();
+}
+
+function setRookieSearch(kw) {
+  document.getElementById('rookieInput').value = kw;
+  searchRookie();
+}
+
+async function loadTrendKeywords(forceRefresh = false) {
+  if (!forceRefresh) {
+    try {
+      const cached = JSON.parse(localStorage.getItem(TREND_CACHE_KEY) || 'null');
+      if (cached && cached.ts && (Date.now() - cached.ts < TREND_CACHE_TTL) && cached.keywords?.length) {
+        renderKeywordChips(cached.keywords);
+        return;
+      }
+    } catch (e) { /* 캐시 없거나 파손 */ }
+  }
+
+  // API 키 없으면 정적 목록 사용
+  if (!getApiKey()) {
+    renderKeywordChips(STATIC_IT_KEYWORDS);
+    return;
+  }
+
+  try {
+    // IT/과학기술 카테고리(28) 인기 영상 제목+설명 텍스트로 키워드 트렌드 점수 산출
+    const data = await ytFetch('/videos', {
+      part: 'snippet',
+      chart: 'mostPopular',
+      regionCode: 'KR',
+      videoCategoryId: '28',
+      maxResults: '50'
+    });
+
+    const corpus = (data.items || [])
+      .map(v => (v.snippet?.title || '') + ' ' + (v.snippet?.description || ''))
+      .join(' ');
+
+    // STATIC_IT_KEYWORDS 순서를 트렌딩 언급 횟수 기준으로 재정렬
+    const keywords = rankByTrending(corpus);
+
+    localStorage.setItem(TREND_CACHE_KEY, JSON.stringify({ ts: Date.now(), keywords }));
+    renderKeywordChips(keywords);
+  } catch (e) {
+    // API 실패 시 정적 목록 원래 순서 그대로 표시
+    renderKeywordChips(STATIC_IT_KEYWORDS);
+  }
+}
+
+async function refreshTrendKeywords() {
+  const loadingHtml = '<span class="kw-loading">키워드 불러오는 중…</span>';
+  document.getElementById('trendKeywords').innerHTML = loadingHtml;
+  const rookieWrap = document.getElementById('rookieTrendKeywords');
+  if (rookieWrap) rookieWrap.innerHTML = loadingHtml;
+  await loadTrendKeywords(true);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Init
+// ═══════════════════════════════════════════════════════════════
+ytLoadLS();
+loadTrendKeywords();
+// 세션 누적 유닛 표시 초기화
+(function(){ _updateQuotaDisplay(); })();
+// 30분마다 키워드 자동 갱신 (페이지를 열어둔 상태에서도 최신 유지)
+setInterval(() => loadTrendKeywords(true), 30 * 60 * 1000);
+
+/* ═══════ 유튜버 분석 JS 끝 ═══════ */
+
+/* switchTab 후크: panel7 진입 시 초기화 + 탭 잠금 해제 */
+(function(){
+  const _origSwitchTabYT = switchTab;
+  switchTab = function(i, btn){
+    _origSwitchTabYT(i, btn);
+    if(i === 7){
+      if(typeof loadTrendKeywords === "function") loadTrendKeywords();
+    }
+  };
+  function unlockYT(){
+    const t7 = document.getElementById("tab7");
+    if(t7){ t7.classList.remove("locked"); t7.innerHTML = '<span class="nav-label">유튜버 분석</span>'; }
+  }
+  if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", unlockYT); } else { unlockYT(); }
+})();
 </script>
 
 </body>
