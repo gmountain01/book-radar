@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>출판 도우미 v1.8.0 업데이트 날짜 2026-04-15</title>
+<title>출판 도우미 v1.8.1 업데이트 날짜 2026-04-15</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1694,7 +1694,7 @@ const ACCESS_PW='hanbit2026';  // ← 비밀번호 변경 시 여기만 수정
 
 <div class="hdr">
   <div class="hdr-left">
-    <div class="tag">출판 도우미 v1.8.0 업데이트 날짜 2026-04-15</div>
+    <div class="tag">출판 도우미 v1.8.1 업데이트 날짜 2026-04-15</div>
     <h1>출판 <span>도우미</span></h1>
   </div>
   <div class="hdr-right" style="display:flex;gap:.5rem;align-items:center;">
@@ -7028,8 +7028,13 @@ switchTab = function(i, btn){
         </div>
       </div>
       <div class="sidebar-footer">
-        <div id="yt-quota-display" style="font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:8px;line-height:1.6;">
-          키1: ~0/10,000 ✓활성<br>키2: ~0/10,000 ✓활성
+        <div id="yt-quota-display" style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;line-height:1.5;padding:0 4px;">
+          <div style="margin-bottom:5px;"><span style="opacity:.7;">키1</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
+          <div style="margin-bottom:5px;"><span style="opacity:.7;">키2</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
+          <div style="margin-bottom:5px;"><span style="opacity:.7;">키3</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
+          <div style="margin-bottom:5px;"><span style="opacity:.7;">키4</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
+          <div style="margin-bottom:5px;"><span style="opacity:.7;">키5</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
+          <div style="margin-bottom:5px;"><span style="opacity:.7;">키6</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
         </div>
         <button class="api-key-btn" onclick="openApiModal()">
           <span>🔑</span> API 키 설정
@@ -7154,8 +7159,9 @@ switchTab = function(i, btn){
 <div class="modal-overlay" id="apiModal">
   <div class="modal">
     <h3>🔑 YouTube API 키 상태</h3>
-    <p class="modal-desc">두 개의 API 키가 내장되어 있습니다. 할당량 소진 시 자동으로 전환됩니다.<br>
-    일일 할당량은 키당 10,000 유닛이며 매일 자정(태평양 표준시)에 초기화됩니다.</p>
+    <p class="modal-desc">여섯 개의 API 키가 내장되어 있습니다. 할당량 소진 시 자동으로 전환됩니다.<br>
+    일일 할당량은 키당 10,000 유닛이며 매일 자정(태평양 표준시)에 초기화됩니다.<br>
+    <small style="color:#999;">유닛: 검색=100, 채널/영상 조회=1 / 캐시 히트 시 소모 없음</small></p>
     <div id="apiKeyStatusList" style="margin:12px 0;display:flex;flex-direction:column;gap:8px;"></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="clearApiCache()" style="margin-right:auto">🗑 캐시 초기화</button>
@@ -7176,10 +7182,14 @@ switchTab = function(i, btn){
 // ═══════════════════════════════════════════════════════════════
 // 상수 & 상태
 // ═══════════════════════════════════════════════════════════════
-// 두 API 키 — 할당량 소진 시 자동 전환
+// 여섯 API 키 — 할당량 소진 시 자동 전환
 const API_KEYS = [
   'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo',
-  'AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c'
+  'AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c',
+  'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM',
+  'AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
+  'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis',
+  'AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc'
 ];
 const YT_BASE = 'https://www.googleapis.com/youtube/v3';
 const YT_LS = { saved: 'yt_saved', compare: 'yt_compare' };
@@ -7198,10 +7208,13 @@ const API_CACHE_TTL = {
 // /search = 100유닛, 나머지 = 1유닛. 캐시 히트 시 소모 안 함.
 const YT_UNIT_COST = { '/search': 100, '/channels': 1, '/playlistItems': 1, '/videos': 1 };
 
-// 키별 세션 사용량 [key0유닛, key1유닛]
+// 키별 세션 사용량 [key0유닛, key1유닛, key2유닛, ...]
 let ytUnitsPerKey = (() => {
-  try { return JSON.parse(sessionStorage.getItem('yt_units_pk') || 'null') || [0, 0]; }
-  catch { return [0, 0]; }
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('yt_units_pk') || 'null');
+    if (Array.isArray(saved) && saved.length === API_KEYS.length) return saved;
+    return API_KEYS.map(() => 0);
+  } catch { return API_KEYS.map(() => 0); }
 })();
 // 할당량 소진 키 인덱스 집합 (오늘 소진된 키는 다음날까지 사용 불가)
 let ytExhaustedKeys = (() => {
@@ -7235,10 +7248,20 @@ function _updateQuotaDisplay() {
   if (!el) return;
   const lines = API_KEYS.map((_, i) => {
     const used = ytUnitsPerKey[i] || 0;
-    const status = ytExhaustedKeys.has(i) ? '⛔소진' : '✓활성';
-    return `키${i + 1}: ~${used}/10,000 ${status}`;
+    const remaining = Math.max(0, 10000 - used);
+    const exhausted = ytExhaustedKeys.has(i);
+    const statusIcon = exhausted ? '⛔' : remaining < 500 ? '⚠️' : '✓';
+    const statusText = exhausted ? '소진' : '활성';
+    const pctBar = Math.min(100, Math.round(used / 100));
+    return `<div style="margin-bottom:5px;">
+      <span style="opacity:.7;">키${i + 1}</span> ${statusIcon}<span style="opacity:.55;font-size:10px;">${statusText}</span>
+      <div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;">
+        <div style="background:${exhausted?'#C0392B':used>7000?'#F39C12':'#2ECC71'};height:100%;width:${pctBar}%;border-radius:3px;"></div>
+      </div>
+      <span style="font-size:10px;opacity:.5;">${used.toLocaleString()} / 10,000 유닛 (잔여 ${remaining.toLocaleString()})</span>
+    </div>`;
   });
-  el.innerHTML = lines.join('<br>');
+  el.innerHTML = lines.join('');
 }
 
 function _cacheKey(endpoint, params) {
@@ -7989,104 +8012,145 @@ async function searchRookie() {
   btn.disabled = true;
 
   const el = document.getElementById('rookieContent');
-  el.innerHTML = '<div class="loading-box"><div class="spinner"></div><p>급성장 채널 탐색 중…</p></div>';
+  el.innerHTML = '<div class="loading-box"><div class="spinner"></div><p>최근 급성장 채널 탐색 중…</p></div>';
 
   try {
-    // 콘텐츠 기반 탐색: 키워드 영상 검색(조회수순) → 해당 영상을 만든 채널 수집
-    // KR 리전+한국어 조건으로 나온 채널은 모두 한국 콘텐츠 후보로 취급
     const HANGUL_RK = /[가-힣]/;
-    const videoCountMap = {};
+    const videoCountMap = {};       // channelId → 관련 영상 수
     const rookieKrVideoChannelIds = new Set();
-    let rkPageToken = null;
+    const now = Date.now();
 
-    // 최대 5페이지(250개 영상)로 충분한 채널 확보
-    for (let p = 0; p < 5; p++) {
-      const params = { part: 'snippet', type: 'video', q, order: 'viewCount', maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko' };
-      if (rkPageToken) params.pageToken = rkPageToken;
+    // ── Phase 1: 최근 1년 이내 영상, 날짜순 ──────────────────────
+    // 최근에 활발히 업로드 중인 채널을 발굴
+    const oneYearAgo = new Date(now - 365 * 24 * 60 * 60 * 1000).toISOString();
+    let pageToken = null;
+    for (let p = 0; p < 3; p++) {
+      const params = {
+        part: 'snippet', type: 'video', q,
+        order: 'date',              // 최신 업로드순 — 최근 활동 채널
+        publishedAfter: oneYearAgo, // 최근 1년 이내 영상만
+        maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko'
+      };
+      if (pageToken) params.pageToken = pageToken;
       const data = await ytFetch('/search', params);
       if (!data.items?.length) break;
-
       (data.items || []).forEach(v => {
-        const cid     = v.snippet?.channelId;
-        const vTitle  = v.snippet?.title || '';
-        const chTitle = v.snippet?.channelTitle || '';
+        const cid = v.snippet?.channelId;
         if (!cid) return;
         videoCountMap[cid] = (videoCountMap[cid] || 0) + 1;
-        // 영상 제목 또는 채널명에 한글 → 한국어 콘텐츠 채널
-        if (HANGUL_RK.test(vTitle) || HANGUL_RK.test(chTitle)) rookieKrVideoChannelIds.add(cid);
+        if (HANGUL_RK.test(v.snippet?.title || '') || HANGUL_RK.test(v.snippet?.channelTitle || ''))
+          rookieKrVideoChannelIds.add(cid);
       });
-
       if (!data.nextPageToken) break;
-      rkPageToken = data.nextPageToken;
+      pageToken = data.nextPageToken;
     }
 
-    // 영상 검색으로 수집된 채널 = 모두 콘텐츠 일치
-    const contentMatchRookieIds = new Set(Object.keys(videoCountMap));
-    const cidSet = new Set(Object.keys(videoCountMap));
+    // ── Phase 2: 최근 6개월 이내 영상, 조회수순 ──────────────────
+    // 최근에 갑자기 폭발한 영상을 만든 채널 발굴
+    const sixMonthsAgo = new Date(now - 180 * 24 * 60 * 60 * 1000).toISOString();
+    pageToken = null;
+    for (let p = 0; p < 2; p++) {
+      const params = {
+        part: 'snippet', type: 'video', q,
+        order: 'viewCount',           // 조회수순 — 최근 바이럴
+        publishedAfter: sixMonthsAgo, // 6개월 이내 영상만
+        maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko'
+      };
+      if (pageToken) params.pageToken = pageToken;
+      const data = await ytFetch('/search', params);
+      if (!data.items?.length) break;
+      (data.items || []).forEach(v => {
+        const cid = v.snippet?.channelId;
+        if (!cid) return;
+        videoCountMap[cid] = (videoCountMap[cid] || 0) + 1;
+        if (HANGUL_RK.test(v.snippet?.title || '') || HANGUL_RK.test(v.snippet?.channelTitle || ''))
+          rookieKrVideoChannelIds.add(cid);
+      });
+      if (!data.nextPageToken) break;
+      pageToken = data.nextPageToken;
+    }
 
-    if (!cidSet.size) {
+    const contentMatchRookieIds = new Set(Object.keys(videoCountMap));
+    const cids = [...contentMatchRookieIds];
+
+    if (!cids.length) {
       el.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>검색 결과가 없습니다</p></div>';
       return;
     }
 
-    // 채널 통계 배치 조회 (50개 초과 분할)
-    const cids = [...cidSet];
+    // 채널 통계 배치 조회
     const statsRes = await fetchChannelStatsBatch(cids, 'snippet,statistics');
-
     if (!statsRes.items?.length) {
       el.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>채널 정보를 가져올 수 없습니다</p></div>';
       return;
     }
 
-    // 급성장 지수 = 평균조회수 / 구독자^0.6 × (관련영상수+1)
-    // → 구독자가 적어도 영상 조회가 폭발적이면 루키로 판별
+    // ── 급성장 지수 계산 ──────────────────────────────────────────
+    // 루키 조건: 구독자 1,000~30만 AND 채널 개설 4년 이하
+    // 급성장 지수 = (총조회수/구독자) × 채널나이 가중치 × log(관련영상+2)
+    // → 구독자 대비 조회수가 높고 + 최근에 개설된 채널일수록 높은 점수
     const scored = statsRes.items.map(ch => {
-      const st       = ch.statistics || {};
-      const sn       = ch.snippet || {};
-      const subs     = parseInt(st.subscriberCount || 0);
-      const vCount   = parseInt(st.videoCount || 0);
-      const tViews   = parseInt(st.viewCount || 0);
+      const st     = ch.statistics || {};
+      const sn     = ch.snippet || {};
+      const subs   = parseInt(st.subscriberCount || 0);
+      const vCount = parseInt(st.videoCount || 0);
+      const tViews = parseInt(st.viewCount || 0);
       const vidCount = videoCountMap[ch.id] || 0;
 
-      const avgV = vCount > 0 ? tViews / vCount : 0;
-      const rookieScore = subs > 100
-        ? Math.round((avgV / Math.pow(subs, 0.6)) * (vidCount + 1) * 10)
-        : 0;
+      // 구독자 범위 필터: 루키 = 1,000 ~ 300,000
+      if (subs < 1000 || subs > 300000) return null;
 
-      // 한국 채널 판정: 채널명 한글 OR 소개 한글 OR 콘텐츠(영상 제목/채널명) 한글 OR 국가코드 KR
+      // 채널 나이 계산 (publishedAt 기준)
+      const publishedAt = sn.publishedAt ? new Date(sn.publishedAt) : null;
+      const channelAgeYears = publishedAt
+        ? (now - publishedAt.getTime()) / (365 * 24 * 60 * 60 * 1000)
+        : 99;
+
+      // 채널 나이 필터: 4년 이하만 (2022년 이후 개설)
+      if (channelAgeYears > 4) return null;
+
+      // 채널 나이 가중치: 최근일수록 급성장 가능성 높음
+      const ageBonus = channelAgeYears < 1 ? 4.0
+                     : channelAgeYears < 2 ? 2.5
+                     : channelAgeYears < 3 ? 1.5
+                     : 1.0;
+
+      const avgV = vCount > 0 ? Math.round(tViews / vCount) : 0;
+      // 총조회수/구독자 = 구독자 1명당 누적 조회수 (높을수록 바이럴형)
+      const viewsPerSub = subs > 0 ? tViews / subs : 0;
+      const rookieScore = Math.round(viewsPerSub * ageBonus * Math.log2(vidCount + 2) * 10);
+
       const country  = sn.country || '';
       const isKorean = HANGUL_RK.test(sn.title || '')
                     || HANGUL_RK.test(sn.description || '')
                     || rookieKrVideoChannelIds.has(ch.id)
                     || country === 'KR';
 
-      const _isKorean2 = isKorean;
-      const _contentMatch2 = contentMatchRookieIds.has(ch.id);
-      const _avgV2 = Math.round(avgV);
-      const publishTier = calcPublishTier(_isKorean2, subs, _avgV2, videoCountMap[ch.id]||0, _contentMatch2);
+      const publishTier = calcPublishTier(isKorean, subs, avgV, vidCount, contentMatchRookieIds.has(ch.id));
+
       return {
-        ch, subs, avgV: _avgV2, vidCount, rookieScore,
+        ch, subs, avgV, vidCount, rookieScore,
         totalViews: tViews,
+        channelAgeYears,
+        publishedAt,
         publishTier,
         _isKorean: isKorean,
         _country:  country || (isKorean ? 'KR' : ''),
-        _contentMatch: _contentMatch2
+        _contentMatch: contentMatchRookieIds.has(ch.id)
       };
-    }).filter(r => r.rookieScore > 0 && r._isKorean)
+    }).filter(r => r !== null && r.rookieScore > 0 && r._isKorean)
       .sort((a, b) => b.rookieScore - a.rookieScore);
 
     if (!scored.length) {
-      el.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>급성장 지수를 계산할 수 없습니다.<br>다른 키워드를 시도해보세요.</p></div>';
+      el.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>조건에 맞는 급성장 채널을 찾지 못했습니다.<br><small>구독자 1천~30만, 개설 4년 이하 한국 채널 기준</small></p></div>';
       document.getElementById('rookieSortBar').style.display = 'none';
       return;
     }
 
-    // 결과 저장 및 정렬 UI 표시
     YT_S.rookieResults = scored;
     YT_S.rookieSortMode = 'publish';
     document.getElementById('rookieSortBar').style.display = 'flex';
     document.getElementById('rookieSortCount').textContent = scored.length + '개 채널';
-    // sort-btn active 초기화
     document.querySelectorAll('#rookieSortBar .sort-btn').forEach(b =>
       b.classList.toggle('active', b.dataset.sort === 'publish'));
     renderRookieSorted(YT_S.rookieResults);
@@ -8125,14 +8189,25 @@ function renderRookieSorted(items) {
 
   el.innerHTML = `
     <div class="rookie-info-bar">
-      <span>🔍 <strong>${escHtml(q)}</strong> 키워드 · ${sorted.length}개 채널</span>
+      <span>🔍 <strong>${escHtml(q)}</strong> 키워드 · ${sorted.length}개 채널 <small style="opacity:.6;font-size:11px;">(구독자 1천~30만 · 개설 4년 이하 한국 채널)</small></span>
     </div>
     <div class="rookie-grid">
       ${sorted.map((item, i) => {
-        const { ch, subs, avgV, vidCount, rookieScore, publishTier, _isKorean, _country, _contentMatch } = item;
+        const { ch, subs, avgV, vidCount, rookieScore, publishTier, channelAgeYears, publishedAt, _isKorean } = item;
         const sn    = ch.snippet || {};
         const thumb = sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '';
         const pct   = Math.min(Math.round(rookieScore / maxScore * 100), 100);
+        // 채널 나이 표시
+        const ageLabel = channelAgeYears < 1
+          ? `${Math.round(channelAgeYears * 12)}개월`
+          : `${channelAgeYears.toFixed(1)}년`;
+        const ageColor = channelAgeYears < 1 ? '#E74C3C'
+                       : channelAgeYears < 2 ? '#E67E22'
+                       : channelAgeYears < 3 ? '#F1C40F'
+                       : '#95A5A6';
+        const ageBadge = publishedAt
+          ? `<span style="font-size:10px;font-weight:700;color:${ageColor};background:${ageColor}18;border-radius:4px;padding:1px 5px;">🆕 개설 ${ageLabel}</span>`
+          : '';
         return `
           <div class="rookie-card ${_isKorean ? 'kr-highlight' : ''}" onclick="analyzeChannelById('${escHtml(ch.id)}')">
             <div class="rookie-rank">#${i + 1}</div>
@@ -8145,6 +8220,7 @@ function renderRookieSorted(items) {
                 <span>구독자 ${subs > 0 ? fmtNum(subs) : '비공개'}</span>
                 <span>평균 조회 ${fmtNum(avgV)}</span>
                 <span class="kr-badge">🇰🇷 한국</span>
+                ${ageBadge}
               </div>
               <div class="rookie-score-row">
                 <span class="rookie-label">급성장 지수</span>
@@ -8155,7 +8231,7 @@ function renderRookieSorted(items) {
                   <span class="rookie-score-num">${rookieScore.toLocaleString()}</span>
                 </div>
               </div>
-              ${vidCount > 0 ? `<span class="match-video">관련 인기영상 ${vidCount}개</span>` : ''}
+              ${vidCount > 0 ? `<span class="match-video">관련 최신영상 ${vidCount}개</span>` : ''}
               <span class="tag publish-tier-${publishTier}">${['','📗 출판 적합','📘 가능성 있음','🔍 추가 검토'][publishTier]}</span>
             </div>
           </div>
@@ -8950,20 +9026,27 @@ function openApiModal() {
   if (list) {
     list.innerHTML = API_KEYS.map((key, i) => {
       const used = ytUnitsPerKey[i] || 0;
+      const remaining = Math.max(0, 10000 - used);
       const exhausted = ytExhaustedKeys.has(i);
-      const pct = Math.min(100, Math.round(used / 100));
+      const pct = Math.min(100, (used / 10000) * 100);
       const statusColor = exhausted ? '#C0392B' : used > 7000 ? '#B07000' : '#1A6B3C';
-      const statusText = exhausted ? '소진' : used > 7000 ? '주의' : '정상';
+      const statusText = exhausted ? '⛔ 소진' : used > 7000 ? '⚠️ 주의' : '✓ 정상';
       const maskedKey = key.slice(0, 10) + '…' + key.slice(-4);
+      const searchCalls = Math.floor(used / 100);
+      const otherCalls = used % 100;
       return `<div style="border:1px solid #E4E2D8;border-radius:10px;padding:10px 14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
           <span style="font-size:.78rem;font-weight:700;">키 ${i + 1} <code style="font-size:.7rem;color:#6B6860;">${maskedKey}</code></span>
           <span style="font-size:.72rem;font-weight:700;color:${statusColor};">${statusText}</span>
         </div>
-        <div style="background:#F0EFE8;border-radius:4px;height:6px;overflow:hidden;">
-          <div style="background:${statusColor};height:100%;width:${pct}%;transition:width .3s;"></div>
+        <div style="background:#F0EFE8;border-radius:4px;height:6px;overflow:hidden;margin-bottom:5px;">
+          <div style="background:${statusColor};height:100%;width:${pct.toFixed(1)}%;transition:width .3s;"></div>
         </div>
-        <div style="font-size:.68rem;color:#6B6860;margin-top:4px;">~${used} / 10,000 유닛 (세션)</div>
+        <div style="display:flex;justify-content:space-between;font-size:.68rem;color:#6B6860;">
+          <span><b>${used.toLocaleString()}</b> / 10,000 유닛 사용</span>
+          <span>잔여 <b>${remaining.toLocaleString()}</b> 유닛</span>
+        </div>
+        <div style="font-size:.63rem;color:#9B9A93;margin-top:3px;">검색 약 ${searchCalls}회 + 기타 ${otherCalls}유닛 소모 (캐시 제외)</div>
       </div>`;
     }).join('');
   }
