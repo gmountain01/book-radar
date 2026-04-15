@@ -1,0 +1,328 @@
+
+  .panel9-scope *, .panel9-scope *::before, .panel9-scope *::after{ box-sizing: border-box; margin: 0; padding: 0; }
+
+  .panel9-scope{
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #333;
+    background: #f0f2f5;
+  }
+
+  .panel9-scope .hd{
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    color: #fff;
+    padding: 0 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .panel9-scope .hd-top{ display: flex; align-items: center; gap: 16px; padding: 14px 0 0; }
+  .panel9-scope .hd-icon-badge{
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .panel9-scope .hd-title{ font-size: 1.1em; font-weight: 700; letter-spacing: -0.3px; }
+  .panel9-scope .hd-sub{ font-size: 0.78em; opacity: 0.6; margin-top: 2px; }
+
+  /* ── 탭 메뉴 ── */
+  .panel9-scope .hd-tabs{ display: flex; gap: 2px; margin-top: 10px; }
+  .panel9-scope .hd-tab{
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 20px; border-radius: 8px 8px 0 0;
+    font-size: 0.88em; font-weight: 600; text-decoration: none;
+    color: rgba(255,255,255,0.5); border-bottom: 2px solid transparent;
+    transition: all 0.2s; cursor: pointer; letter-spacing: -0.2px;
+  }
+  .panel9-scope .hd-tab:hover{ color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.07); }
+  .panel9-scope .hd-tab.active{ color: #fff; border-bottom: 2px solid #2ecc71; background: rgba(255,255,255,0.1); }
+
+  .panel9-scope main{ max-width: 1200px; margin: 0 auto; padding: 28px 20px; }
+
+  /* ── Panel visibility ── */
+  .panel9-scope #uploadPanel{ display: block; }
+  .panel9-scope #loadingPanel{ display: none; }
+  .panel9-scope #resultPanel{ display: none; }
+
+  /* ── Upload panel ── */
+  .panel9-scope .upload-intro{
+    background: white; border-radius: 14px; padding: 20px 24px;
+    margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    display: flex; align-items: center; gap: 16px;
+  }
+  .panel9-scope .upload-intro-icon{ font-size: 2rem; flex-shrink: 0; }
+  .panel9-scope .upload-intro-text h2{ font-size: 1rem; font-weight: 700; margin-bottom: 5px; }
+  .panel9-scope .upload-intro-text p{ font-size: 0.82rem; color: #666; line-height: 1.6; }
+  .panel9-scope .upload-intro-flow{
+    display: flex; align-items: center; gap: 8px; margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .panel9-scope .flow-chip{
+    padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;
+  }
+  .panel9-scope .flow-chip.toc{ background: #e8f0fe; color: #4361ee; }
+  .panel9-scope .flow-chip.arrow{ color: #aaa; font-size: 1rem; }
+  .panel9-scope .flow-chip.body{ background: #fce8ff; color: #9b3fb5; }
+  .panel9-scope .flow-chip.result{ background: #e8f8f2; color: #2bb78b; }
+
+  .panel9-scope .upload-grid{
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; margin-bottom: 20px;
+  }
+  .panel9-scope .upload-zone{
+    background: white; border: 2.5px dashed #d0d5dd;
+    border-radius: 14px; padding: 32px 24px; text-align: center;
+    cursor: pointer; transition: all 0.2s; position: relative;
+  }
+  .panel9-scope .upload-zone:hover{ border-color: #4361ee; background: #f5f6ff; transform: translateY(-2px); }
+  .panel9-scope .upload-zone.active{ border-color: #4361ee; background: #eef0ff; }
+  .panel9-scope .upload-zone.has-file{ border-color: #2bb78b; background: #f0faf6; border-style: solid; }
+  .panel9-scope .upload-zone input[type=file]{
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .panel9-scope .upload-icon{ font-size: 2.2rem; margin-bottom: 8px; }
+  .panel9-scope .upload-tag{
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 0.72rem; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.3px;
+  }
+  .panel9-scope .upload-tag.toc{ background: #e8f0fe; color: #4361ee; }
+  .panel9-scope .upload-tag.body{ background: #fce8ff; color: #9b3fb5; }
+  .panel9-scope .upload-label{ font-size: 0.93rem; font-weight: 700; color: #333; margin-bottom: 4px; }
+  .panel9-scope .upload-sub{ font-size: 0.78rem; color: #999; line-height: 1.5; }
+  .panel9-scope .upload-hint{
+    margin-top: 10px; padding: 8px 12px; background: #f8f9ff; border-radius: 8px;
+    font-size: 0.74rem; color: #666; text-align: left; line-height: 1.6;
+  }
+  .panel9-scope .upload-hint b{ color: #4361ee; }
+  .panel9-scope .upload-filename{
+    margin-top: 10px; font-size: 0.82rem; font-weight: 600;
+    color: #2bb78b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .panel9-scope .start-btn{
+    display: block; width: 100%; padding: 16px;
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    color: white; border: none; border-radius: 12px;
+    font-size: 1.05rem; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; letter-spacing: -0.2px;
+    box-shadow: 0 4px 15px rgba(67,97,238,0.35);
+  }
+  .panel9-scope .start-btn:hover:not(:disabled){ transform: translateY(-2px); box-shadow: 0 6px 20px rgba(67,97,238,0.4); }
+  .panel9-scope .start-btn:disabled{ opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* ── Loading panel ── */
+  .panel9-scope .loading-card{
+    background: white; border-radius: 16px; padding: 40px;
+    max-width: 520px; margin: 60px auto;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center;
+  }
+  .panel9-scope .loading-spinner{
+    width: 48px; height: 48px; border: 4px solid #e8ecf0;
+    border-top-color: #4361ee; border-radius: 50%;
+    animation: spin 0.9s linear infinite; margin: 0 auto 20px;
+  }
+  .panel9-scope .loading-title{ font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+  .panel9-scope .loading-sub{ font-size: 0.82rem; color: #999; margin-bottom: 28px; }
+
+  .panel9-scope .step-list{ text-align: left; }
+  .panel9-scope .step-item{
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 9px; margin-bottom: 6px;
+    background: #f9fafb; transition: background 0.2s;
+  }
+  .panel9-scope .step-item.running{ background: #eef0ff; }
+  .panel9-scope .step-item.done{ background: #f0faf6; }
+  .panel9-scope .step-item.error{ background: #fff0f0; }
+  .panel9-scope .step-icon{
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; flex-shrink: 0;
+  }
+  .panel9-scope .step-icon.pending{ background: #e8ecf0; color: #999; }
+  .panel9-scope .step-icon.running{ background: #4361ee; color: white; animation: spin 1s linear infinite; }
+  .panel9-scope .step-icon.done{ background: #2bb78b; color: white; }
+  .panel9-scope .step-icon.error{ background: #e74c3c; color: white; }
+  @keyframes spin{ to { transform: rotate(360deg); } }
+
+  .panel9-scope .step-text{ flex: 1; }
+  .panel9-scope .step-text strong{ display: block; font-size: 0.86rem; font-weight: 600; }
+  .panel9-scope .step-text span{ font-size: 0.76rem; color: #888; }
+
+  /* ── Result panel ── */
+  .panel9-scope .result-header{
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 70%, #0f3460 100%);
+    border-radius: 16px; padding: 24px 28px; margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .panel9-scope .result-header-left{ display: flex; align-items: center; gap: 20px; }
+  .panel9-scope .match-ring{
+    position: relative; width: 72px; height: 72px; flex-shrink: 0;
+  }
+  .panel9-scope .match-ring svg{ width: 72px; height: 72px; transform: rotate(-90deg); }
+  .panel9-scope .match-ring circle{ fill: none; stroke-width: 6; }
+  .panel9-scope .ring-bg{ stroke: rgba(255,255,255,0.15); }
+  .panel9-scope .ring-fill{ stroke: #2ecc71; stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; }
+  .panel9-scope .match-pct{
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 0.85rem; font-weight: 800; color: white; text-align: center;
+    line-height: 1.2;
+  }
+  .panel9-scope .match-pct span{ display: block; font-size: 0.6rem; font-weight: 500; opacity: 0.7; }
+
+  .panel9-scope .result-info .result-title{ font-size: 1.1rem; font-weight: 700; color: white; }
+  .panel9-scope .result-info .result-meta{
+    font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 6px; line-height: 1.6;
+  }
+  .panel9-scope .result-info .file-tags{ display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .panel9-scope .file-tag{
+    padding: 3px 10px; border-radius: 6px; font-size: 0.73rem; font-weight: 600;
+    max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .panel9-scope .file-tag.toc{ background: rgba(67,97,238,0.3); color: #a8b9ff; }
+  .panel9-scope .file-tag.body{ background: rgba(155,63,181,0.3); color: #e0a8ff; }
+
+  .panel9-scope .reset-btn{
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+    color: rgba(255,255,255,0.85); transition: all 0.2s;
+  }
+  .panel9-scope .reset-btn:hover{ background: rgba(255,255,255,0.2); }
+
+  /* ── Summary cards ── */
+  .panel9-scope .summary-grid{
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-bottom: 18px;
+  }
+  .panel9-scope .stat-card{
+    background: white; border-radius: 12px; padding: 16px 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex; align-items: center; gap: 14px;
+    border-left: 4px solid transparent;
+  }
+  .panel9-scope .stat-card.ok{ border-left-color: #2bb78b; }
+  .panel9-scope .stat-card.warn{ border-left-color: #e67e22; }
+  .panel9-scope .stat-card.err{ border-left-color: #e74c3c; }
+  .panel9-scope .stat-card.info{ border-left-color: #4361ee; }
+  .panel9-scope .stat-icon{ font-size: 1.6rem; flex-shrink: 0; }
+  .panel9-scope .stat-body{ flex: 1; }
+  .panel9-scope .stat-num{ font-size: 1.6rem; font-weight: 800; line-height: 1; }
+  .panel9-scope .stat-label{ font-size: 0.73rem; color: #888; font-weight: 500; margin-top: 3px; }
+  .panel9-scope .stat-card.ok  .stat-num{ color: #2bb78b; }
+  .panel9-scope .stat-card.warn .stat-num{ color: #e67e22; }
+  .panel9-scope .stat-card.err .stat-num{ color: #e74c3c; }
+  .panel9-scope .stat-card.info .stat-num{ color: #4361ee; }
+
+  /* ── Filter bar ── */
+  .panel9-scope .filter-bar{ display: flex; gap: 7px; margin-bottom: 14px; flex-wrap: wrap; }
+  .panel9-scope .filter-btn{
+    padding: 6px 14px; border-radius: 8px; border: 1.5px solid transparent;
+    cursor: pointer; font-size: 0.8rem; font-weight: 600;
+    transition: all 0.15s; display: flex; align-items: center; gap: 5px;
+  }
+  .panel9-scope .filter-btn .cnt{
+    background: rgba(0,0,0,0.1); border-radius: 4px;
+    padding: 1px 5px; font-size: 0.72rem;
+  }
+  .panel9-scope .filter-btn.all{ background: #f0f2f5; color: #333; border-color: #d8dce2; }
+  .panel9-scope .filter-btn.all.active, .panel9-scope .filter-btn.all:hover{ background: #1a1a2e; color: white; border-color: #1a1a2e; }
+  .panel9-scope .filter-btn.match{ background: #f0faf6; color: #27ae60; border-color: #2bb78b; }
+  .panel9-scope .filter-btn.match.active, .panel9-scope .filter-btn.match:hover{ background: #2bb78b; color: white; }
+  .panel9-scope .filter-btn.page-mismatch{ background: #fff8e1; color: #d35400; border-color: #e67e22; }
+  .panel9-scope .filter-btn.page-mismatch.active, .panel9-scope .filter-btn.page-mismatch:hover{ background: #e67e22; color: white; }
+  .panel9-scope .filter-btn.missing-body{ background: #fff0f0; color: #c0392b; border-color: #e74c3c; }
+  .panel9-scope .filter-btn.missing-body.active, .panel9-scope .filter-btn.missing-body:hover{ background: #e74c3c; color: white; }
+
+  /* ── Comparison table ── */
+  .panel9-scope .table-wrap{
+    background: white; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06); overflow-x: auto;
+  }
+  .panel9-scope .table-toolbar{
+    padding: 12px 16px; background: #f8f9fb; border-bottom: 1px solid #eee;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.8rem; color: #666;
+  }
+  .panel9-scope .table-note{
+    display: flex; align-items: center; gap: 6px;
+  }
+  .panel9-scope .dot{ width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .panel9-scope .dot.green{ background: #2bb78b; }
+  .panel9-scope .dot.orange{ background: #e67e22; }
+  .panel9-scope .dot.red{ background: #e74c3c; }
+
+  .panel9-scope table{ width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  .panel9-scope thead th{
+    background: #1a1a2e; color: rgba(255,255,255,0.85); padding: 12px 14px;
+    font-weight: 600; text-align: left; white-space: nowrap; font-size: 0.78rem;
+    letter-spacing: 0.3px;
+  }
+  .panel9-scope thead th:first-child{ width: 40px; text-align: center; }
+  .panel9-scope thead th .th-sub{ display: block; font-size: 0.68rem; color: rgba(255,255,255,0.45); font-weight: 400; margin-top: 1px; }
+
+  .panel9-scope tbody tr{ border-bottom: 1px solid #f0f2f5; transition: background 0.1s; }
+  .panel9-scope tbody tr:last-child{ border-bottom: none; }
+  .panel9-scope tbody tr:hover{ background: #fafbff; }
+  .panel9-scope tbody tr.status-match td.td-status{ border-left: 3px solid #2bb78b; }
+  .panel9-scope tbody tr.status-page-mismatch td.td-status{ border-left: 3px solid #e67e22; }
+  .panel9-scope tbody tr.status-missing-body td.td-status{ border-left: 3px solid #e74c3c; }
+
+  .panel9-scope td{ padding: 11px 14px; vertical-align: middle; }
+  .panel9-scope .td-status{ padding-left: 11px; }
+  .panel9-scope .row-num{ text-align: center; color: #ccc; font-size: 0.76rem; font-weight: 600; }
+
+  .panel9-scope .level-badge{
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 38px; height: 22px; border-radius: 5px;
+    font-size: 0.7rem; font-weight: 700; padding: 0 5px; white-space: nowrap;
+  }
+  /* 파트/장 */
+  .panel9-scope .level-1{ background: #1a1a2e; color: white; }
+  /* 챕터/절 */
+  .panel9-scope .level-2{ background: #4361ee; color: white; }
+  /* 중절 */
+  .panel9-scope .level-3{ background: #a8b2ff; color: #1a1a2e; }
+  /* 소절 */
+  .panel9-scope .level-4{ background: #e0e3ff; color: #4361ee; }
+  /* 소소절 */
+  .panel9-scope .level-5{ background: #f3f4ff; color: #7b8cde; border: 1px solid #c5caff; }
+
+  .panel9-scope .cell-title{ line-height: 1.5; word-break: keep-all; }
+
+  .panel9-scope .page-chip{
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 40px; padding: 4px 10px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 700; white-space: nowrap;
+  }
+  .panel9-scope .page-chip.ok{ background: #e8f8f2; color: #2bb78b; }
+  .panel9-scope .page-chip.bad{ background: #fff0f0; color: #e74c3c; }
+  .panel9-scope .page-chip.warn{ background: #fff8e1; color: #e67e22; }
+  .panel9-scope .page-chip.none{ background: #f4f4f4; color: #bbb; font-style: italic; }
+  .panel9-scope .note-text{ font-size: 0.72rem; color: #e67e22; margin-top: 3px; }
+
+  .panel9-scope .status-pill{
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 8px;
+    font-size: 0.73rem; font-weight: 700; white-space: nowrap;
+  }
+  .panel9-scope .pill-match{ background: #e8f8f2; color: #27ae60; }
+  .panel9-scope .pill-page-mismatch{ background: #fff8e1; color: #d35400; }
+  .panel9-scope .pill-missing-body{ background: #fff0f0; color: #c0392b; }
+
+  /* ── Empty state ── */
+  .panel9-scope .empty-state{ text-align: center; padding: 60px 20px; color: #ccc; }
+  .panel9-scope .empty-state .es-icon{ font-size: 3rem; margin-bottom: 12px; }
+  .panel9-scope .empty-state p{ font-size: 0.88rem; }
+
+  @media (max-width: 700px){
+    .panel9-scope .upload-grid { grid-template-columns: 1fr; }
+    .panel9-scope .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .panel9-scope table { font-size: 0.76rem; }
+    .panel9-scope td, .panel9-scope thead th { padding: 9px 10px; }
+    .panel9-scope .result-header { flex-direction: column; }
+  }
