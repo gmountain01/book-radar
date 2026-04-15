@@ -1,10 +1,39 @@
 (function(){
 
 // ──────────────────────────────────────────────
-// PDF.js 설정
+// PDF.js 설정 (CDN 로드 실패 시 안전하게 처리)
 // ──────────────────────────────────────────────
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+try {
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+} catch(e) { console.warn('PDF.js 초기화 실패:', e.message); }
+
+// ──────────────────────────────────────────────
+// API 키 형식 검증 유틸 (모듈 스코프 — 어디서든 참조 가능)
+// ──────────────────────────────────────────────
+function isValidApiKeyFormat(key) {
+  return /^sk-ant-[a-zA-Z0-9_-]{10,}$/.test(key);
+}
+function showApiKeyFormatError(inputEl) {
+  if (!inputEl) return;
+  inputEl.style.borderColor = '#e74c3c';
+  let errEl = inputEl.parentElement && inputEl.parentElement.querySelector('.p8-key-err');
+  if (!errEl) {
+    errEl = document.createElement('div');
+    errEl.className = 'p8-key-err';
+    errEl.style.cssText = 'color:#e74c3c;font-size:.78rem;margin-top:3px;';
+    if (inputEl.parentElement) inputEl.parentElement.appendChild(errEl);
+  }
+  errEl.textContent = '⚠️ 형식 오류 — Anthropic API 키는 sk-ant- 로 시작해야 합니다.';
+}
+function clearApiKeyFormatError(inputEl) {
+  if (!inputEl) return;
+  inputEl.style.borderColor = '';
+  const errEl = inputEl.parentElement && inputEl.parentElement.querySelector('.p8-key-err');
+  if (errEl) errEl.remove();
+}
 
 let selectedFile = null;
 let allIssues = [];
@@ -106,29 +135,45 @@ function p8_onClearThisCache() {
 const dropZone = document.getElementById('p8_dropZone');
 const fileInput = document.getElementById('p8_fileInput');
 
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
 const ALLOWED_EXTS = new Set(['pdf','docx','hwpx','hwp','doc']);
 function isAllowedFile(f) {
   return f && ALLOWED_EXTS.has(f.name.split('.').pop().toLowerCase());
 }
 
-dropZone.addEventListener('drop', e => {
-  e.preventDefault(); dropZone.classList.remove('over');
-  const f = e.dataTransfer.files[0];
-  if (isAllowedFile(f)) setFile(f);
-  else alert('지원하지 않는 파일 형식입니다.\nPDF / DOCX / HWPX / HWP / DOC 파일을 업로드해 주세요.');
-});
-fileInput.addEventListener('change', () => {
-  if (fileInput.files[0]) setFile(fileInput.files[0]);
-});
+if (dropZone && fileInput) {
+  // 클릭은 <label for="p8_fileInput"> 가 네이티브로 처리 — JS click() 불필요
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    e.stopPropagation(); // label 네이티브 동작 차단
+    dropZone.classList.remove('over');
+    const f = e.dataTransfer.files[0];
+    if (!f) return;
+    if (isAllowedFile(f)) setFile(f);
+    else alert('지원하지 않는 파일 형식입니다.\nPDF / DOCX / HWPX / HWP / DOC 파일을 업로드해 주세요.');
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) setFile(fileInput.files[0]);
+  });
+} else {
+  console.error('[panel8] 업로드 요소를 찾을 수 없습니다. p8_dropZone:', !!dropZone, 'p8_fileInput:', !!fileInput);
+}
 
 function setFile(f) {
-  selectedFile = f;
-  currentFileKey = getCacheKey(f);
-  document.getElementById('p8_fileName').textContent = '✓ ' + f.name;
-  document.getElementById('p8_btnStart').disabled = false;
-  renderCacheInfo(f);
+  if (!f) return;
+  try {
+    selectedFile = f;
+    currentFileKey = getCacheKey(f);
+    const nameEl = document.getElementById('p8_fileName');
+    const btnEl  = document.getElementById('p8_btnStart');
+    if (nameEl) nameEl.textContent = '✓ ' + f.name;
+    if (btnEl)  btnEl.disabled = false;
+    renderCacheInfo(f);
+  } catch(e) {
+    console.error('[panel8] setFile 오류:', e);
+    alert('파일 첨부 중 오류가 발생했습니다.\n' + e.message);
+  }
 }
 
 // 규칙 파일 처리
@@ -365,39 +410,19 @@ async function extractHWPX(file) {
 }
 
 /**
- * HWP binary (OLE Compound Document) — 제한적 텍스트 추출.
- * UTF-16LE 한글 문자 연속 구간을 스캔한다.
+ * HWP binary (OLE Compound Document) — 브라우저에서 신뢰 가능한 텍스트 추출 불가.
+ * HWP 바이너리는 텍스트를 zlib 압축 OLE 스트림에 저장하므로
+ * 바이트 스캔 방식은 OLE 메타데이터에서 우연히 일치하는 쓰레기 값을 반환한다.
+ * → 잘못된 텍스트로 교정 검사를 수행하는 것보다 명확한 안내가 낫다.
  */
 async function extractHWP(file) {
-  const ab = await file.arrayBuffer();
-  const bytes = new Uint8Array(ab);
-  // OLE 시그니처 확인: D0 CF 11 E0
-  const isOLE = bytes[0] === 0xD0 && bytes[1] === 0xCF && bytes[2] === 0x11 && bytes[3] === 0xE0;
-  if (!isOLE) throw new Error('HWP 파일 형식을 인식할 수 없습니다.\n한컴오피스에서 "다른 이름으로 저장 → HWPX(.hwpx)"로 변환 후 업로드해 주세요.');
-
-  // UTF-16LE 한글(AC00-D7A3) + 기본 ASCII 구간 스캔
-  const words = [];
-  let run = '';
-  for (let i = 0; i < bytes.length - 1; i += 2) {
-    const cp = bytes[i] | (bytes[i + 1] << 8);
-    if ((cp >= 0xAC00 && cp <= 0xD7A3) ||  // 한글 음절
-        (cp >= 0x0020 && cp <= 0x007E) ||  // 기본 ASCII 출력 가능 문자
-        cp === 0x000A || cp === 0x000D) {   // 개행
-      run += String.fromCodePoint(cp);
-    } else {
-      if (run.replace(/\s/g, '').length >= 4) words.push(run.trim());
-      run = '';
-    }
-  }
-  if (run.replace(/\s/g, '').length >= 4) words.push(run.trim());
-
-  const fullText = words.join(' ');
-  if (!fullText || fullText.replace(/\s/g, '').length < 50) {
-    throw new Error('HWP(바이너리) 파일에서 텍스트를 추출하지 못했습니다.\n한컴오피스에서 "다른 이름으로 저장 → HWPX(.hwpx)"로 변환 후 업로드해 주세요.');
-  }
-  const extracted = textToExtracted(file.name, fullText);
-  extracted.limitedExtraction = true; // 결과 화면에 경고 표시용
-  return extracted;
+  throw new Error(
+    'HWP 바이너리 파일은 브라우저에서 텍스트를 정확히 추출할 수 없습니다.\n\n' +
+    '아래 방법 중 하나로 변환 후 재업로드해 주세요:\n' +
+    '① 한컴오피스에서 "다른 이름으로 저장 → HWPX(.hwpx)"\n' +
+    '② 한컴오피스에서 "내보내기 → PDF"\n' +
+    '③ 한컴오피스에서 "다른 이름으로 저장 → DOCX(.docx)"'
+  );
 }
 
 /** DOC (구형 바이너리 Word) — mammoth.js 시도 후 실패 시 안내 */
@@ -414,6 +439,13 @@ async function extractDOC(file) {
 }
 
 async function extractPDF(file) {
+  if (typeof pdfjsLib === 'undefined' || !pdfjsLib.getDocument) {
+    throw new Error(
+      'PDF.js 라이브러리가 로드되지 않았습니다.\n\n' +
+      '인터넷 연결을 확인하고 페이지를 새로고침(F5)해 주세요.\n' +
+      '계속 실패하면 PDF를 DOCX로 변환 후 업로드해 보세요.'
+    );
+  }
   const ab = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
   pdfDoc = pdf; // 페이지 뷰어용으로 보존
@@ -930,16 +962,25 @@ LOW severity (윤문 권장):
 - 중의적표현: Ambiguous expression — sentence with two or more valid interpretations
 - 저자확인필요: Content requiring author verification — specific statistics/numbers without source, technical claims that could be incorrect, dates/versions that may be outdated, code snippets or formulas needing validation, references to studies/papers without citation, product names or specs that may have changed
 
-Return ONLY this JSON (no markdown, no explanation):
-{"issues":[{"type":"유형명","severity":"high|medium|low","found":"exact verbatim phrase from text, ≤60 chars","description":"한국어 설명 — 왜 문제인지","suggestion":"수정된 한국어 표현 또는 개선 방향"}]}
+Return ONLY raw JSON — no markdown fences, no explanation, no text before or after:
+{"issues":[{"type":"유형명","severity":"high|medium|low","found":"exact verbatim phrase from text (≤60 chars)","description":"한국어 설명 — 왜 문제인지 구체적으로","suggestion":"found를 대체하는 완성된 수정문 — 편집자가 바로 복사해 쓸 수 있는 구체적 문장"}]}
 If no issues found: {"issues":[]}
+DO NOT wrap in markdown code blocks. Start your response directly with { and end with }.
 
 Type names to use exactly: 비문, 주술호응오류, 잘못된표현, 사실오류, 번역체, 일본식표현, 수동태과용, 외래어표기오류, 용어불일치, 문체불일치, 윤문필요, 내용보완필요, 문단연결불량, 중의적표현, 저자확인필요
 
 IMPORTANT:
 - "found" must be an exact substring from the input text
-- Report every issue you find — do not skip borderline cases
-- For 내용보완필요, "found" is the sentence/phrase that needs supplement, "suggestion" explains what to add`;
+- "suggestion" must be a concrete rewritten version the editor can copy and paste directly — NOT a vague direction like "표현 개선 필요". Write the actual corrected sentence or phrase.
+  - 윤문필요: rewrite the sentence with better rhythm and word choice
+  - 내용보완필요: write the specific content that should be added, in the form "예: [보완 문장]"
+  - 문단연결불량: write the transitional sentence to insert between paragraphs
+  - 번역체/일본식표현: rewrite the phrase in natural Korean
+  - 외래어표기오류: write the correctly spelled Korean word
+  - 비문/주술호응오류/잘못된표현: rewrite the corrected sentence
+  - 사실오류: describe what the correct information should be
+  - 저자확인필요: write the specific question to ask the author
+- Report every issue you find — do not skip borderline cases`;
 
 async function callClaude(apiKey, text, rulesContext = '') {
   const systemPrompt = rulesContext
@@ -947,52 +988,158 @@ async function callClaude(apiKey, text, rulesContext = '') {
     : SYS;
   const payload = JSON.stringify({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 2048,
+    max_tokens: 4096,
     system: systemPrompt,
     messages: [{ role:'user', content: text }]
   });
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-      'anthropic-dangerous-client-side-api-key-flag': 'my-test-application'
-    },
-    body: payload
-  });
-  if (!res.ok) throw new Error(`API ${res.status}`);
+
+  let res;
+  try {
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: payload,
+    });
+  } catch (e) {
+    throw new Error(
+      'API 연결 실패 (네트워크 오류)\n\n' +
+      '인터넷 연결을 확인하거나 잠시 후 다시 시도하세요.\n' +
+      `(${e.message})`
+    );
+  }
+
+  if (!res.ok) {
+    let errMsg = `API 오류 ${res.status}`;
+    try {
+      const j = await res.json();
+      if (j.error?.message) errMsg += ': ' + j.error.message;
+    } catch {}
+    if (res.status === 401 || res.status === 403) errMsg += '\n→ API 키가 올바른지 확인하세요.';
+    else if (res.status === 429) errMsg += '\n→ 요청 한도 초과 — 잠시 후 재시도하세요.';
+    throw new Error(errMsg);
+  }
   const data = await res.json();
   return data.content[0].text;
 }
 
-async function checkLinguistic(extracted, apiKey, onBatch) {
+/**
+ * Claude 응답에서 JSON 파싱 — 마크다운 코드블록, 앞뒤 텍스트, 제어문자 등 방어 처리
+ */
+function _parseClaudeJson(raw) {
+  if (!raw) return null;
+
+  // 1) 마크다운 코드블록 제거
+  let text = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
+  // 2) 가장 바깥 { } 블록 추출
+  const start = text.indexOf('{');
+  const end   = text.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) return null;
+  text = text.slice(start, end + 1);
+
+  // 3) 제어 문자 제거 (줄바꿈·탭 제외)
+  text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+
+  // 4) JSON 문자열 값 안의 리터럴 개행·탭 → 이스케이프
+  //    "key":"value\nwith newline" → "key":"value\\nwith newline"
+  text = _escapeJsonStrings(text);
+
+  // 5) JSON.parse 시도
+  try {
+    return JSON.parse(text);
+  } catch (e1) {
+    // 6) 후행 쉼표 제거 후 재시도
+    try {
+      const fixed = text.replace(/,\s*([}\]])/g, '$1');
+      return JSON.parse(fixed);
+    } catch (e2) {
+      console.warn('JSON 파싱 실패:', e2.message, '\n원본 응답:', raw.slice(0, 300));
+      return null;
+    }
+  }
+}
+
+/**
+ * JSON 문자열 값 안에 있는 리터럴 개행·탭 문자를 이스케이프 시퀀스로 교체
+ * 이미 이스케이프된 \\n 은 건드리지 않음
+ */
+function _escapeJsonStrings(text) {
+  // 상태 머신: 따옴표 내부 여부를 추적하면서 개행을 치환
+  let result = '';
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (escaped) {
+      result += ch;
+      escaped = false;
+      continue;
+    }
+    if (ch === '\\') {
+      result += ch;
+      escaped = true;
+      continue;
+    }
+    if (ch === '"') {
+      inString = !inString;
+      result += ch;
+      continue;
+    }
+    if (inString) {
+      if (ch === '\n') { result += '\\n'; continue; }
+      if (ch === '\r') { result += '\\r'; continue; }
+      if (ch === '\t') { result += '\\t'; continue; }
+    }
+    result += ch;
+  }
+  return result;
+}
+
+async function checkLinguistic(extracted, apiKey, onBatch, onError) {
   const issues = [];
-  const pages = extracted.pages.filter(p => p.text.trim().length >= 50);
+  // 짧은 페이지도 포함 — 20자 이상이면 검사 (이전 50자 기준으로 단문 문서가 통째로 제외되는 문제 수정)
+  const pages = extracted.pages.filter(p => p.text.trim().length >= 20);
+  if (!pages.length) {
+    if (onError) onError('추출된 텍스트가 없거나 너무 짧습니다.');
+    return issues;
+  }
   const batchSize = 5;
   const total = Math.ceil(pages.length / batchSize);
+  let firstError = '';
+  let successCount = 0;
+
   for (let i = 0; i < pages.length; i += batchSize) {
     const batchIdx = Math.floor(i / batchSize) + 1;
     if (onBatch) onBatch(batchIdx, total);
     const batch = pages.slice(i, i + batchSize);
     const txt = batch.map(p => `\n[p.${p.page}]\n${p.text.slice(0, 2000)}\n`).join('');
-    // RAG: 배치 텍스트와 관련된 규칙 섹션 선택
     const relevant = rulesChunks ? findRelevantChunks(rulesChunks, txt) : [];
     const rulesCtx = relevant.length > 0 ? relevant.map(c => c.text).join('\n') : '';
     try {
       const raw = await callClaude(apiKey, '교정:\n' + txt, rulesCtx);
-      const m = raw.match(/\{[\s\S]*\}/);
-      if (m) {
-        const parsed = JSON.parse(m[0]);
+      const parsed = _parseClaudeJson(raw);
+      if (parsed) {
         for (const iss of (parsed.issues || [])) {
           const found = iss.found || '';
           iss.page = batch.find(p => found && p.text.includes(found))?.page || batch[0].page;
           issues.push(iss);
         }
       }
+      successCount++;
     } catch(e) {
       console.warn('Batch error:', e.message);
+      if (!firstError) firstError = e.message;
     }
+  }
+
+  // 전체 배치가 실패했을 때 에러 콜백 호출
+  if (successCount === 0 && firstError) {
+    if (onError) onError(firstError);
   }
   return issues;
 }
@@ -1071,6 +1218,14 @@ async function p8_startProofread() {
     const keyInput = document.getElementById('p8_apiKey');
     if (keyInput) apiKey = keyInput.value.trim();
   }
+  // API 키가 입력됐는데 형식이 틀린 경우 즉시 오류 안내
+  if (apiKey && !isValidApiKeyFormat(apiKey)) {
+    const keyInput = document.getElementById('p8_apiKey');
+    showApiKeyFormatError(keyInput);
+    if (keyInput) keyInput.focus();
+    alert('API 키 형식이 올바르지 않습니다.\n\nAnthropic API 키는 sk-ant- 로 시작하는 문자열입니다.\n예) sk-ant-api03-XXXX...\n\n키를 비워두면 AI 검사 없이 표면 검사만 실행됩니다.');
+    return;
+  }
   const fileKey = currentFileKey || getCacheKey(selectedFile);
 
   show('loadingPanel');
@@ -1080,9 +1235,7 @@ async function p8_startProofread() {
   const cached = getCache(fileKey);
   const useCache = !!cached;
   const apiProvided = apiKey.startsWith('sk-ant-');
-  // 캐시 있고 AI도 이미 실행된 경우: AI 재실행 불필요
   // 캐시 있지만 AI 미실행이고 지금 키 제공: AI만 실행
-  const skipAI = useCache && cached.aiWasRun && apiProvided === false;
   const aiOnlyRun = useCache && !cached.aiWasRun && apiProvided;
 
   let extracted, surfaceIssues, structuralIssues;
@@ -1165,23 +1318,43 @@ async function p8_startProofread() {
   } else if (apiProvided) {
     stepRun(4, aiOnlyRun ? 'AI 검사 실행 (캐시 미포함 항목)…' : 'Claude API 호출 준비 중…');
     try {
-      const pages = extracted.pages.filter(p => p.text.trim().length >= 50);
-      const totalBatches = Math.ceil(pages.length / 5);
+      const totalBatches = Math.ceil(
+        extracted.pages.filter(p => p.text.trim().length >= 20).length / 5
+      );
+      let batchApiError = '';
       linguisticIssues = await checkLinguistic(extracted, apiKey,
         (batchIdx) => {
-          const pct = 60 + Math.round((batchIdx / totalBatches) * 30);
+          const pct = 60 + Math.round((batchIdx / Math.max(totalBatches, 1)) * 30);
           setBar(pct);
           document.getElementById('p8_step4-detail').textContent =
-            `배치 ${batchIdx}/${totalBatches} 분석 중…`;
-        });
-      stepDone(4, `${linguisticIssues.length}건`);
-      document.getElementById('p8_step4-detail').textContent =
-        linguisticIssues.length ? `${linguisticIssues.length}건 발견` : '이슈 없음';
-      aiUsed = true;
+            `배치 ${batchIdx}/${totalBatches || 1} 분석 중…`;
+        },
+        (errMsg) => { batchApiError = errMsg; }
+      );
+
+      if (batchApiError && !linguisticIssues.length) {
+        // 전체 배치 실패 — 에러 표시
+        stepError(4, 'API 오류: ' + batchApiError);
+        aiSkipped = true;
+        const hint = batchApiError.includes('401') ? ' — API 키를 확인하세요.'
+                   : batchApiError.includes('403') ? ' — 권한이 없습니다.'
+                   : batchApiError.includes('429') ? ' — 요청 한도 초과, 잠시 후 재시도.'
+                   : '';
+        alert(`AI 교정 중 오류가 발생했습니다.\n\n${batchApiError}${hint}`);
+        if (useCache && cached.linguisticIssues) {
+          linguisticIssues = cached.linguisticIssues;
+          aiUsed = true;
+          document.getElementById('p8_step4-detail').textContent = '오류 — 캐시 결과 사용';
+        }
+      } else {
+        stepDone(4, `${linguisticIssues.length}건`);
+        document.getElementById('p8_step4-detail').textContent =
+          linguisticIssues.length ? `${linguisticIssues.length}건 발견` : '이슈 없음';
+        aiUsed = true;
+      }
     } catch(e) {
       stepError(4, 'API 오류: ' + e.message);
       aiSkipped = true;
-      // 이전 캐시 AI 결과 있으면 폴백
       if (useCache && cached.linguisticIssues) {
         linguisticIssues = cached.linguisticIssues;
         aiUsed = true;
@@ -1411,9 +1584,59 @@ function renderResults(extracted, aiUsed, aiSkipped) {
       <span class="chip" style="background:#d35400" title="저자확인">저자확인 ${auth}</span>
       <span class="chip" style="background:#16a085" title="구조">구조 ${stru}</span>
       ${term > 0 ? `<span class="chip" style="background:#795548" title="용어불일치" onclick="p8_filterByTypes(['용어불일치'])">용어 ${term}</span>` : ''}
-      ${aiUsed ? '<span class="chip" style="background:#2980b9">AI 검사 완료</span>' : ''}
+      ${aiUsed ? '<span class="chip" style="background:#2980b9">AI 검사 완료</span>' : '<span class="chip" style="background:#c0392b" title="비문·사실오류·주술호응 등 의미 오류는 API 키 입력 후 재검사하세요">⚠️ AI 미실행</span>'}
       ${getCache(currentFileKey || '') ? '<span class="chip" style="background:#27ae60" title="캐시 재사용">⚡ 캐시</span>' : ''}
     </div>`;
+
+  // AI 미실행 배너 — API 키 입력 + 재검사 버튼 포함
+  const notice = document.getElementById('p8_aiNotice');
+  if (notice && !aiUsed) {
+    notice.style.display = 'block';
+    notice.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:2px 0;">
+        <span style="font-weight:600;">⚠️ AI 의미 검사 미실행</span>
+        <span style="font-size:.8rem;color:var(--muted)">비문·윤문필요·사실오류·주술호응 등은 아래 키 입력 후 재검사하세요</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;">
+        <input type="password" id="p8_noticeKeyInp"
+               placeholder="sk-ant-api03-..."
+               style="flex:1;min-width:220px;padding:5px 10px;border:1px solid var(--border2);
+                      border-radius:6px;font-size:.82rem;background:var(--bg2);color:var(--fg);">
+        <button onclick="p8_rerunAI()"
+                style="padding:5px 16px;background:var(--accent);color:#fff;border:none;
+                       border-radius:6px;cursor:pointer;font-size:.82rem;white-space:nowrap;
+                       font-weight:600;">
+          AI 재검사 실행
+        </button>
+      </div>`;
+
+    // 세션에 저장된 키 자동 채움 + 입력 이벤트 바인딩
+    setTimeout(async () => {
+      const inp = document.getElementById('p8_noticeKeyInp');
+      if (!inp) return;
+      try {
+        if (typeof loadApiKey === 'function') {
+          const k = await loadApiKey();
+          if (k) inp.value = k;
+        }
+      } catch(e) {}
+      inp.addEventListener('input', () => {
+        inp.style.borderColor = '';
+        if (typeof saveApiKey === 'function') saveApiKey(inp.value.trim() || '');
+      });
+      inp.addEventListener('blur', () => {
+        const v = inp.value.trim();
+        if (v && !isValidApiKeyFormat(v)) {
+          inp.style.borderColor = '#e74c3c';
+          alert('API 키 형식이 올바르지 않습니다.\n\nAnthropic API 키는 sk-ant- 로 시작하는 문자열입니다.\n예) sk-ant-api03-XXXX...');
+        } else {
+          inp.style.borderColor = '';
+        }
+      });
+    }, 0);
+  } else if (notice && aiUsed) {
+    notice.style.display = 'none';
+  }
 
   // 편집 카테고리 현황 렌더링 — 항상 표시, 없으면 "없음"
   const catGrid = document.getElementById('p8_catGrid');
@@ -1426,10 +1649,10 @@ function renderResults(extracted, aiUsed, aiSkipped) {
     const notChecked = isAiType && !aiUsed;
 
     if (notChecked) {
-      return `<div class="cat-box not-checked" title="API 키 입력 시 검사됩니다">
+      return `<div class="cat-box not-checked" title="API 키를 입력하면 AI가 이 항목을 검사합니다">
         <div class="cat-name">${cat.label}</div>
-        <div class="cat-count">불필요</div>
-        <div class="cat-sub">${cat.sub}</div>
+        <div class="cat-count">미검사</div>
+        <div class="cat-sub">API 키 필요</div>
       </div>`;
     }
     if (count === 0) {
@@ -1445,8 +1668,6 @@ function renderResults(extracted, aiUsed, aiSkipped) {
       <div class="cat-sub">${cat.sub}</div>
     </div>`;
   }).join('');
-
-  document.getElementById('p8_aiNotice').style.display = aiSkipped ? '' : 'none';
 
   // 유형 드롭다운 채우기
   const types = [...new Set(allIssues.map(i=>i.type))].sort();
@@ -1477,6 +1698,7 @@ function renderIssues(issues) {
       : CONTENT_TYPES.includes(iss.type) ? 'content'
       : STRUCT_TYPES.includes(iss.type)  ? 'struct'
       : 'linguistic';
+    const hasSuggestion = iss.suggestion && iss.suggestion.trim();
     return `<div class="issue-card sev-${sev}" id="card-${idx}">
       <div class="card-head">
         <span class="badge-page" onclick="p8_renderPage(${iss.page})" title="페이지 ${iss.page} 보기">p.${iss.page}</span>
@@ -1484,12 +1706,18 @@ function renderIssues(issues) {
         <span class="badge-sev ${sev}">${sevLabel}</span>
         <button class="btn-resolve" onclick="p8_toggleResolve(${idx},this)">해결됨</button>
       </div>
-      <div class="ctx-line">${ctxHtml}</div>
-      <div class="fix-row">
-        <span class="fix-arrow">→</span>
-        <span class="fix-text">${esc(iss.suggestion || '')}</span>
-      </div>
       ${iss.description ? `<div class="card-desc">${esc(iss.description)}</div>` : ''}
+      <div class="diff-block">
+        <div class="diff-row diff-before">
+          <span class="diff-label">원문</span>
+          <span class="diff-content">${ctxHtml}</span>
+        </div>
+        ${hasSuggestion ? `<div class="diff-row diff-after">
+          <span class="diff-label">수정안</span>
+          <span class="diff-content diff-suggestion">${esc(iss.suggestion)}</span>
+          <button class="btn-copy" onclick="p8_copyText(${idx})" title="수정안 복사">복사</button>
+        </div>` : ''}
+      </div>
     </div>`;
   }).join('');
 }
@@ -1504,6 +1732,40 @@ function p8_toggleResolve(idx, btn) {
   const card = document.getElementById('card-'+idx);
   card.classList.toggle('resolved');
   btn.textContent = card.classList.contains('resolved') ? '취소' : '해결됨';
+}
+
+function p8_copyText(idx) {
+  const issue = allIssues[idx];
+  if (!issue || !issue.suggestion) return;
+  const text = issue.suggestion;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => _p8Toast('수정안이 클립보드에 복사되었습니다.')).catch(() => _p8FallbackCopy(text));
+  } else {
+    _p8FallbackCopy(text);
+  }
+}
+function _p8FallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  ta.remove();
+  _p8Toast('수정안이 클립보드에 복사되었습니다.');
+}
+function _p8Toast(msg) {
+  let t = document.getElementById('p8_toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'p8_toast';
+    t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#2c3e50;color:#fff;padding:8px 20px;border-radius:20px;font-size:.82rem;z-index:9999;pointer-events:none;opacity:0;transition:opacity .2s';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.style.opacity = '0'; }, 1800);
 }
 
 // ──────────────────────────────────────────────
@@ -1597,8 +1859,40 @@ function p8_reset() {
   show('uploadPanel');
 }
 
-// ── 탭 복원: 세션 스토리지에 저장된 결과가 있으면 즉시 복원 ──────────────
+// ── 탭 복원 + API 키 세션 로드 ──────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // API 키 세션 복원 — 탭 닫기 전까지 유지
+  (async () => {
+    try {
+      if (typeof loadApiKey === 'function') {
+        const key = await loadApiKey();
+        if (key) {
+          const inp = document.getElementById('p8_apiKey');
+          if (inp && !inp.value) inp.value = key;
+        }
+      }
+    } catch(e) {}
+  })();
+
+  // p8_apiKey 입력 시 세션에 즉시 저장 + 형식 검증
+  const keyInp = document.getElementById('p8_apiKey');
+  if (keyInp) {
+    keyInp.addEventListener('input', () => {
+      const v = keyInp.value.trim();
+      clearApiKeyFormatError(keyInp);
+      if (typeof saveApiKey === 'function') saveApiKey(v || '');
+    });
+    keyInp.addEventListener('blur', () => {
+      const v = keyInp.value.trim();
+      if (v && !isValidApiKeyFormat(v)) {
+        showApiKeyFormatError(keyInp);
+      } else {
+        clearApiKeyFormatError(keyInp);
+      }
+    });
+  }
+
+  // 이전 세션 결과 복원
   try {
     const raw = sessionStorage.getItem('pf_session');
     if (!raw) return;
@@ -1608,18 +1902,111 @@ document.addEventListener('DOMContentLoaded', () => {
     allIssues = sess.allIssues;
     currentFileKey = sess.currentFileKey || null;
 
-    // 요약 바 재구성
     const ext = sess.extracted;
-    const aiUsedS  = !!sess.aiUsed;
-    const aiSkipS  = !!sess.aiSkipped;
     renderResults(
       { filename: ext.filename, total_pages: ext.total_pages },
-      aiUsedS,
-      aiSkipS
+      !!sess.aiUsed,
+      !!sess.aiSkipped
     );
     show('resultPanel');
   } catch (e) { /* 무시 */ }
 });
+
+  // ──────────────────────────────────────────────
+  // AI 재검사 (결과 화면에서 API 키 입력 후 재실행)
+  // ──────────────────────────────────────────────
+  async function p8_rerunAI() {
+    // 1. API 키 확인
+    const noticeInp = document.getElementById('p8_noticeKeyInp');
+    let apiKey = (noticeInp && noticeInp.value.trim()) || '';
+    if (!apiKey && typeof loadApiKey === 'function') {
+      try { apiKey = await loadApiKey(); } catch(e) {}
+    }
+    if (!apiKey) {
+      alert('API 키를 입력해 주세요.\n\n배너의 입력창에 Anthropic API 키(sk-ant-...)를 붙여넣으세요.');
+      return;
+    }
+    if (!isValidApiKeyFormat(apiKey)) {
+      if (noticeInp) { noticeInp.style.borderColor = '#e74c3c'; noticeInp.focus(); }
+      alert('API 키 형식이 올바르지 않습니다.\n\nAnthropic API 키는 sk-ant- 로 시작하는 문자열입니다.\n예) sk-ant-api03-XXXX...');
+      return;
+    }
+
+    // 2. 캐시에서 추출 데이터 가져오기
+    const cacheKey = currentFileKey;
+    const cached = cacheKey ? getCache(cacheKey) : null;
+    const extracted = cached?.extracted || null;
+    if (!extracted || !extracted.pages || !extracted.pages.length) {
+      alert('원본 텍스트 데이터가 없습니다.\n파일을 다시 업로드하여 전체 검사를 실행해 주세요.');
+      return;
+    }
+
+    // 3. 버튼 로딩 상태
+    const btn = document.querySelector('[onclick="p8_rerunAI()"]');
+    const origText = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = 'AI 검사 중…'; btn.disabled = true; }
+
+    // 4. AI 언어 검사 실행
+    let linguisticIssues = [];
+    let hasError = '';
+    try {
+      linguisticIssues = await checkLinguistic(
+        extracted,
+        apiKey,
+        (batchIdx) => {
+          if (btn) btn.textContent = `AI 검사 중… (배치 ${batchIdx})`;
+        },
+        (errMsg) => { hasError = errMsg; }
+      );
+    } catch(e) {
+      hasError = e.message || 'AI 검사 오류';
+    }
+
+    if (btn) { btn.textContent = origText; btn.disabled = false; }
+
+    if (hasError && !linguisticIssues.length) {
+      const hint = hasError.includes('401') || hasError.includes('403')
+        ? '\n\nAPI 키가 올바른지 확인하세요.'
+        : hasError.includes('429') ? '\n\n요청 한도 초과 — 잠시 후 다시 시도하세요.' : '';
+      alert(`AI 교정 중 오류가 발생했습니다.\n\n${hasError}${hint}`);
+      return;
+    }
+
+    // 5. 세션에 키 저장
+    if (typeof saveApiKey === 'function') saveApiKey(apiKey);
+    const p8inp = document.getElementById('p8_apiKey');
+    if (p8inp && !p8inp.value) p8inp.value = apiKey;
+
+    // 6. 기존 표면·구조 이슈 유지 + AI 결과 병합
+    const surface   = (cached?.surfaceIssues    || []);
+    const structural = (cached?.structuralIssues || []);
+    allIssues = [...surface, ...structural, ...linguisticIssues];
+
+    // 7. 캐시 갱신
+    if (cacheKey) {
+      setCache(cacheKey, {
+        ...cached,
+        linguisticIssues,
+        aiWasRun: true,
+        cachedAt: Date.now(),
+      });
+    }
+
+    // 8. 결과 다시 렌더링 (aiUsed=true)
+    renderResults(extracted, true, false);
+    show('resultPanel');
+
+    // 9. 세션 상태 갱신
+    try {
+      sessionStorage.setItem('pf_session', JSON.stringify({
+        allIssues,
+        aiUsed: true,
+        aiSkipped: false,
+        currentFileKey: cacheKey,
+        extracted: { filename: extracted.filename, total_pages: extracted.total_pages },
+      }));
+    } catch(e) {}
+  }
 
   window.p8_handleRulesDrop = p8_handleRulesDrop;
   window.p8_handleRulesFile = p8_handleRulesFile;
@@ -1631,7 +2018,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.p8_applyFilters = p8_applyFilters;
   window.p8_reset = p8_reset;
   window.p8_toggleResolve = p8_toggleResolve;
+  window.p8_copyText = p8_copyText;
   window.p8_filterSevChip = p8_filterSevChip;
   window.p8_filterByTypes = p8_filterByTypes;
   window.p8_onClearThisCache = p8_onClearThisCache;
+  window.p8_rerunAI = p8_rerunAI;
 })();

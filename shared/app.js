@@ -3,59 +3,64 @@
 // 키는 이 파일에만 저장되므로 파일을 공유할 때 주의하세요.
 const CLAUDE_API_KEY = '';  // 예: 'sk-ant-api03-...'
 
-// ━━━ API 키 암호화 저장소 ━━━
-// 암호화 키는 앱 시크릿 + hostname의 PBKDF2 파생값 사용.
-// 평문이 localStorage에 노출되지 않으나, DevTools에서 앱 코드를 분석하면 복호화 가능.
-// 완전한 암호화를 원하면 마스터 비밀번호 입력 방식으로 전환 필요.
+// ━━━ API 키 세션 저장소 ━━━
+// sessionStorage 사용: 탭/창 닫으면 자동 삭제 — 다중 사용자 환경에 적합.
+// 같은 탭 내에서는 패널 이동 후에도 유지됨.
+const _SESSION_AK = 'ub_session_ak';
+// 이전 버전 호환성용 키 이름 (마이그레이션 후 삭제)
 const _AK_STORE = 'ub_ak_enc';
 const _AK_SALT_STORE = 'ub_ak_salt';
 
-async function _deriveKey(salt) {
-  const enc = new TextEncoder();
-  const km = await crypto.subtle.importKey(
-    'raw', enc.encode('hb_pub_tool_2026_' + window.location.hostname),
-    { name: 'PBKDF2' }, false, ['deriveKey']
-  );
-  return crypto.subtle.deriveKey(
-    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-    km,
-    { name: 'AES-GCM', length: 256 },
-    false, ['encrypt', 'decrypt']
-  );
-}
-
 async function saveApiKey(rawKey) {
-  if (!rawKey) { localStorage.removeItem(_AK_STORE); localStorage.removeItem(_AK_SALT_STORE); return; }
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await _deriveKey(salt);
-  const enc = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    key,
-    new TextEncoder().encode(rawKey)
-  );
-  const b64 = arr => btoa(String.fromCharCode(...new Uint8Array(arr)));
-  localStorage.setItem(_AK_SALT_STORE, b64(salt));
-  localStorage.setItem(_AK_STORE, JSON.stringify({ iv: b64(iv), data: b64(enc) }));
-  localStorage.removeItem('ub_apikey');
+  if (!rawKey || !rawKey.trim()) {
+    sessionStorage.removeItem(_SESSION_AK);
+    return;
+  }
+  sessionStorage.setItem(_SESSION_AK, rawKey.trim());
+  // 이전 localStorage 잔재 정리 (보안)
+  try {
+    localStorage.removeItem(_AK_STORE);
+    localStorage.removeItem(_AK_SALT_STORE);
+    localStorage.removeItem('ub_apikey');
+  } catch(e) {}
 }
 
 async function loadApiKey() {
   if (CLAUDE_API_KEY) return CLAUDE_API_KEY;
-  const plain = localStorage.getItem('ub_apikey');
-  if (plain) { await saveApiKey(plain); return plain; }
-  const saltB64 = localStorage.getItem(_AK_SALT_STORE);
-  const stored = localStorage.getItem(_AK_STORE);
-  if (!saltB64 || !stored) return '';
+  // sessionStorage 우선
+  const session = sessionStorage.getItem(_SESSION_AK);
+  if (session) return session;
+  // 이전 localStorage 평문 마이그레이션
   try {
-    const b64d = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-    const { iv, data } = JSON.parse(stored);
-    const key = await _deriveKey(b64d(saltB64));
-    const dec = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: b64d(iv) }, key, b64d(data)
-    );
-    return new TextDecoder().decode(dec);
-  } catch { return ''; }
+    const plain = localStorage.getItem('ub_apikey');
+    if (plain) { await saveApiKey(plain); return plain; }
+  } catch(e) {}
+  // 이전 AES-GCM 암호화 저장소 마이그레이션
+  try {
+    const saltB64 = localStorage.getItem(_AK_SALT_STORE);
+    const stored  = localStorage.getItem(_AK_STORE);
+    if (saltB64 && stored) {
+      const enc2 = new TextEncoder();
+      const km = await crypto.subtle.importKey(
+        'raw', enc2.encode('hb_pub_tool_2026_' + window.location.hostname),
+        { name: 'PBKDF2' }, false, ['deriveKey']
+      );
+      const b64d = b => Uint8Array.from(atob(b), c => c.charCodeAt(0));
+      const salt = b64d(saltB64);
+      const dk = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+        km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+      );
+      const { iv, data } = JSON.parse(stored);
+      const dec = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: b64d(iv) }, dk, b64d(data)
+      );
+      const recovered = new TextDecoder().decode(dec);
+      await saveApiKey(recovered); // sessionStorage로 마이그레이션 후 localStorage 삭제
+      return recovered;
+    }
+  } catch(e) {}
+  return '';
 }
 
 const CATS=[
