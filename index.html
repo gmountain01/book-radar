@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>출판 도우미 v1.8.1 업데이트 날짜 2026-04-15</title>
+<title>출판 도우미 v1.8.2 업데이트 날짜 2026-04-15</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1694,7 +1694,7 @@ const ACCESS_PW='hanbit2026';  // ← 비밀번호 변경 시 여기만 수정
 
 <div class="hdr">
   <div class="hdr-left">
-    <div class="tag">출판 도우미 v1.8.1 업데이트 날짜 2026-04-15</div>
+    <div class="tag">출판 도우미 v1.8.2 업데이트 날짜 2026-04-15</div>
     <h1>출판 <span>도우미</span></h1>
   </div>
   <div class="hdr-right" style="display:flex;gap:.5rem;align-items:center;">
@@ -7314,8 +7314,9 @@ const YT_S = {
   enrichedChannels: {},  // 검색 결과 배치 조회 시 저장 (contentDetails 포함) — analyzeChannelById 재호출 방지
   charts: {},           // Chart.js 인스턴스
   searchResults: [],    // 통계 포함 검색 결과
-  sortBy: 'relevance', // 검색 결과 정렬 기준
-  rookieResults: [],    // 슈퍼 루키 검색 결과 보관
+  sortBy: 'relevance',   // 검색 결과 정렬 기준
+  lastSearchQuery: '',   // relevanceScore 키워드 매칭에 사용
+  rookieResults: [],     // 슈퍼 루키 검색 결과 보관
   rookieSortMode: 'score' // 루키 정렬 기준: score|subs|views|country
 };
 
@@ -7781,35 +7782,52 @@ async function doSearch() {
       if (ch) { resEl.innerHTML = ''; await analyzeChannel(ch); return; }
     }
 
-    // 콘텐츠 기반 검색: 키워드 영상 검색 → 해당 영상을 만든 채널 수집
-    // regionCode:KR + relevanceLanguage:ko 조건으로 나온 채널은 모두 한국 콘텐츠 후보
-    resEl.innerHTML = '<div class="loading-box"><div class="spinner"></div><p>관련 콘텐츠 탐색 중…</p></div>';
+    // 두 가지 검색을 병렬 실행:
+    // (1) 영상 검색(type:video) → 해당 키워드 영상을 만든 채널 수집 (콘텐츠 관련성)
+    // (2) 채널 직접 검색(type:channel) → 채널명/설명에 키워드 있는 채널 수집 (이름 정확도)
+    resEl.innerHTML = '<div class="loading-box"><div class="spinner"></div><p>관련 채널 탐색 중…</p></div>';
 
+    YT_S.lastSearchQuery = q;  // relevanceScore()에서 키워드 매칭에 사용
     const HANGUL = /[가-힣]/;
-    const videoCountMap = {};   // 채널별 검색 결과 등장 횟수
-    const krRegionCids  = new Set(); // 한국어 콘텐츠(영상 제목/채널명에 한글)를 올린 채널
-    let pageToken = null;
+    const videoCountMap  = {};        // 채널별 영상 검색 등장 횟수
+    const directMatchIds = new Set(); // 채널 직접 검색에서 찾힌 채널 ID
+    const krRegionCids   = new Set(); // 한국어 콘텐츠 채널
 
-    // 최대 5페이지(250개 영상)로 충분한 채널 확보
-    for (let p = 0; p < 5; p++) {
+    // ── (1) 영상 검색 (최대 4페이지) ───────────────────────────────
+    let pageToken = null;
+    for (let p = 0; p < 4; p++) {
       const params = { part: 'snippet', type: 'video', q, maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko' };
       if (pageToken) params.pageToken = pageToken;
       const data = await ytFetch('/search', params);
       if (!data.items?.length) break;
-
       (data.items || []).forEach(v => {
-        const cid     = v.snippet?.channelId;
-        const vTitle  = v.snippet?.title || '';
-        const chTitle = v.snippet?.channelTitle || '';
+        const cid = v.snippet?.channelId;
         if (!cid) return;
         videoCountMap[cid] = (videoCountMap[cid] || 0) + 1;
-        // 영상 제목 또는 채널명에 한글 → 한국어 콘텐츠 채널
-        if (HANGUL.test(vTitle) || HANGUL.test(chTitle)) krRegionCids.add(cid);
+        if (HANGUL.test(v.snippet?.title || '') || HANGUL.test(v.snippet?.channelTitle || ''))
+          krRegionCids.add(cid);
       });
-
       if (!data.nextPageToken) break;
       pageToken = data.nextPageToken;
     }
+
+    // ── (2) 채널 직접 검색 (type:channel) — 병렬로 이미 실행 가능 ──
+    // 채널명·설명에 키워드가 명확히 있는 채널 발굴 → 정확도 보너스 부여
+    try {
+      const chDirect = await ytFetch('/search', {
+        part: 'snippet', type: 'channel', q,
+        maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko'
+      });
+      (chDirect.items || []).forEach(item => {
+        const cid = item.id?.channelId || item.snippet?.channelId;
+        if (!cid) return;
+        directMatchIds.add(cid);
+        // 직접 검색에서 나온 채널도 videoCountMap에 등록 (없으면 0으로라도)
+        if (!(cid in videoCountMap)) videoCountMap[cid] = 0;
+        if (HANGUL.test(item.snippet?.title || '') || HANGUL.test(item.snippet?.description || ''))
+          krRegionCids.add(cid);
+      });
+    } catch (_) { /* 직접 검색 실패해도 영상 검색 결과로 진행 */ }
 
     const cids = Object.keys(videoCountMap);
     if (!cids.length) {
@@ -7834,7 +7852,6 @@ async function doSearch() {
       const title   = (sn.title || '').toLowerCase();
       const desc    = (sn.description || '').toLowerCase();
       const country = sn.country || '';
-      // 한국 채널 판정: 채널명 한글 OR 소개 한글 OR 콘텐츠(영상 제목/채널명) 한글 OR 국가코드 KR
       const isKorean = HANGUL.test(sn.title || '')
                     || HANGUL.test(sn.description || '')
                     || krRegionCids.has(ch.id)
@@ -7850,6 +7867,7 @@ async function doSearch() {
         _origIdx:      idx,
         _nameMatch:    title.includes(qLow),
         _descMatch:    desc.includes(qLow),
+        _directMatch:  directMatchIds.has(ch.id),  // 채널 직접 검색 매칭 여부
         _videoCount:   videoCountMap[ch.id] || 0,
         _subs:         subs,
         _views:        views,
@@ -7857,7 +7875,7 @@ async function doSearch() {
         _contentMatch: true
       };
     });
-    YT_S.searchResults = YT_S.searchResults.slice(0, 30);
+    YT_S.searchResults = YT_S.searchResults.slice(0, 40);
     YT_S.sortBy = 'relevance';
     renderSortedResults();
   } catch (e) {
@@ -7905,13 +7923,31 @@ function applyKoreanBias(items, ratio = 0.7) {
   return result;
 }
 
-// 정확도 점수: 관련 영상 등장(×10) + 구독자 규모 보너스 + 조회수 규모 보너스
+// 정확도 점수: 채널명/설명 키워드 매칭 + 직접 채널 검색 매칭 + 관련 영상 등장 + 규모 보너스
 function relevanceScore(item) {
+  const q = (YT_S.lastSearchQuery || '').toLowerCase();
+  const keywords = q.split(/\s+/).filter(Boolean);
+  const title = (item.snippet?.title || '').toLowerCase();
+  const desc  = (item.snippet?.description || '').toLowerCase();
+
+  // 채널명 키워드 매칭 — 가장 강한 신호 (검색어가 채널 정체성)
+  let nameScore = 0;
+  keywords.forEach(kw => { if (title.includes(kw)) nameScore += 80; });
+  if (title.includes(q)) nameScore += 60;    // 완전 쿼리 포함 추가 보너스
+
+  // 채널 설명 키워드 매칭
+  let descScore = 0;
+  keywords.forEach(kw => { if (desc.includes(kw)) descScore += 20; });
+  if (desc.includes(q)) descScore += 15;
+
+  // 채널 직접 검색 매칭 (type:channel 로 찾힌 채널) — 강한 관련성 신호
+  const directBonus = item._directMatch ? 150 : 0;
+
   const subs  = item._subs  || parseInt(item._stats?.subscriberCount  || 0);
   const views = item._views || parseInt(item._stats?.viewCount || 0);
-  const subBonus  = subs  >= 1000000 ? 50 : subs  >= 100000 ? 30 : subs  >= 10000 ? 15 : subs  >= 1000 ? 5 : 0;
-  const viewBonus = views >= 500000000 ? 30 : views >= 50000000 ? 20 : views >= 5000000 ? 10 : views >= 500000 ? 5 : 0;
-  return (item._videoCount * 10) + subBonus + viewBonus;
+  const subBonus  = subs  >= 1000000 ? 30 : subs  >= 100000 ? 15 : subs  >= 10000 ? 8 : subs  >= 1000 ? 3 : 0;
+  const viewBonus = views >= 500000000 ? 20 : views >= 50000000 ? 12 : views >= 5000000 ? 6 : views >= 500000 ? 3 : 0;
+  return directBonus + nameScore + descScore + (item._videoCount * 5) + subBonus + viewBonus;
 }
 
 function setSort(key) {
@@ -7975,9 +8011,10 @@ function renderSearchResults(items) {
                 <div class="ch-country">🇰🇷 한국</div>
               </div>
             </div>
-            ${videoCount > 0 ? `
+            ${(item._directMatch || videoCount > 0) ? `
             <div class="ch-match-badges">
-              <span class="match-badge match-video">관련 영상 ${videoCount}개</span>
+              ${item._directMatch ? `<span class="match-badge" style="background:#EEF2FF;color:#3B3F8C;border:1px solid #C7D2FE;">🎯 채널명 일치</span>` : ''}
+              ${videoCount > 0 ? `<span class="match-badge match-video">관련 영상 ${videoCount}개</span>` : ''}
             </div>` : ''}
             <div class="ch-stat-row">
               <div class="ch-stat-item">
