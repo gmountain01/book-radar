@@ -211,8 +211,8 @@ function groupTextIntoLines(items, yTol = 3) {
       cur = { y, x, text: it.str, items: [it] };
       lines.push(cur);
     } else {
+      // filtered는 이미 y→x 순으로 정렬됐으므로 추가 sort 불필요
       cur.items.push(it);
-      cur.items.sort((a, b) => a.transform[4] - b.transform[4]);
       cur.text = cur.items.map(i => i.str).join('');
     }
   }
@@ -547,9 +547,31 @@ const REPEAT_RE = /([가-힣]{3,})[ \t]*\1/g;
 
 // 3. 이중 수동 / 수동 남용
 const DOUBLE_PASSIVE_PATS = [
-  [/[가-힣]+(되어지|어지다|받아지|쓰여지)/g, '이중수동', 'high', '단일 수동 또는 능동으로 변환'],
-  [/[가-힣]+되어\s*지고/g,                   '이중수동', 'high', '단일 수동 또는 능동으로 변환'],
+  [/ ?되어지/g,   '이중수동', 'high', '단일 수동 또는 능동으로 변환'],
+  [/되어\s*지고/g,'이중수동', 'high', '단일 수동 또는 능동으로 변환'],
+  [/쓰여지/g,     '이중수동', 'high', '단일 수동 또는 능동으로 변환'],
+  [/받아지/g,     '이중수동', 'high', '단일 수동 또는 능동으로 변환'],
+  [/보여지/g,     '이중수동', 'high', '단일 수동 또는 능동으로 변환'],
+  [/잊혀지/g,     '이중수동', 'high', '단일 수동 또는 능동으로 변환'],
+  [/나뉘어지/g,   '이중수동', 'high', '단일 수동 또는 능동으로 변환'],
 ];
+
+/**
+ * 이중수동 found에 맞는 단일수동/능동 두 가지 수정안 반환
+ * @returns { passive: string, active: string }
+ */
+function makePassiveAlts(found) {
+  if (!found) return null;
+  const f = found;
+  if (/되어지/.test(f))   return { passive: f.replace(/되어지/g, '되'), active: f.replace(/되어지/g, '한다') };
+  if (/되어\s*지고/.test(f)) return { passive: f.replace(/되어\s*지고/g, '되고'), active: f.replace(/되어\s*지고/g, '하고') };
+  if (/쓰여지/.test(f))   return { passive: f.replace(/쓰여지/g, '쓰인다'), active: f.replace(/쓰여지/g, '쓴다') };
+  if (/받아지/.test(f))   return { passive: f.replace(/받아지/g, '받는다'), active: f.replace(/받아지/g, '얻는다') };
+  if (/보여지/.test(f))   return { passive: f.replace(/보여지/g, '보인다'), active: f.replace(/보여지/g, '본다') };
+  if (/잊혀지/.test(f))   return { passive: f.replace(/잊혀지/g, '잊힌다'), active: f.replace(/잊혀지/g, '잊는다') };
+  if (/나뉘어지/.test(f)) return { passive: f.replace(/나뉘어지/g, '나뉜다'), active: f.replace(/나뉘어지/g, '나눈다') };
+  return null;
+}
 
 // 4. 군더더기·중복 표현
 const REDUNDANT_PATS = [
@@ -562,6 +584,9 @@ const REDUNDANT_PATS = [
   [/매우\s*매우|아주\s*아주/g,        '중복군더더기', 'medium', '강조어 중복 삭제'],
   [/각각의\s*각/g,                    '중복군더더기', 'medium', '"각각의" 또는 "각"으로 통일'],
   [/함께\s*같이|같이\s*함께/g,        '중복군더더기', 'medium', '"함께" 또는 "같이" 하나만 사용'],
+  [/있는[ \t]+중에[ \t]+있/g,         '중복군더더기', 'medium', '"고 있습니다"로 줄이세요 (이중 상태 표현)'],
+  [/중에[ \t]+있습니다/g,             '중복군더더기', 'medium', '"중입니다"로 줄이세요 (예: 진행 중입니다)'],
+  [/중에[ \t]+있다\b/g,               '중복군더더기', 'medium', '"중이다"로 줄이세요'],
 ];
 
 // 5. 접속사 중복 연속 사용 — 같은 줄 내만 탐지 (\n 제외)
@@ -595,6 +620,32 @@ const LOANWORD_PATS = [
   [/메세지/g,         '외래어오표기', 'medium', '메시지 (표준 표기)'],
   [/리더쉽/g,         '외래어오표기', 'medium', '리더십 (표준 표기)'],
   [/페이지(?=\s*수)/g,'외래어오표기', 'low',    '쪽 수 또는 페이지 수 (문맥 확인)'],
+  [/니즈/g,           '외래어오표기', 'medium', '"요구" 또는 "필요"로 한국어 표현 권장'],
+];
+
+// 9. 번역체·일본식 표현 (표면 정규식)
+const JSTYLE_PATS = [
+  [/[가-힣]+에\s+있어서/g,           '일본식표현', 'medium', '"~에서"로 바꾸세요 (일본어 において 직역)'],
+  [/함에\s+있어서/g,                  '번역체',     'medium', '"~할 때" 또는 "~하려면"으로 바꾸세요'],
+  [/[가-힣]+를?\s*통해서\b/g,         '번역체',     'low',    '"통해"로 줄이세요 (통해서 → 통해)'],
+  [/(?:그것|이것)은\s+[가-힣]+이기도/g,'번역체',    'medium', '영어식 주어 반복 — "또한 ~이다"로 통합하세요'],
+  [/[가-힣]{2,}적인\s+[가-힣]+에서/g, '일본식표현','low',    '"~에서" 또는 명사 직접 사용 권장 (기술적인 → 기술)'],
+];
+
+// 10. 내용보완필요 (표면 정규식)
+const CITE_PATS = [
+  [/(?:최근|일부|한)\s*연구에\s*따르면/g,     '내용보완필요', 'medium', '연구 출처(기관·논문명·연도) 명시 필요'],
+  [/\d+\s*%\s*(?:이상|향상|개선|감소|증가)/g, '내용보완필요', 'medium', '수치 출처 및 측정 기준 명시 필요'],
+  [/보고도?\s*있습니다/g,                      '내용보완필요', 'low',    '"보고" 주체와 출처 명시 필요 (어느 기관·연도)'],
+  [/통계(?:가|도)\s*있습니다/g,               '내용보완필요', 'low',    '통계 출처(기관·조사 시점) 명시 필요'],
+  [/알려져\s*있습니다/g,                       '내용보완필요', 'low',    '"알려져 있습니다" — 출처 없는 주장, 근거 명시 권장'],
+];
+
+// 11. 문단연결불량 (표면 정규식)
+const TRANSITION_PATS = [
+  [/그런데\s+이와\s*동시에/g,     '문단연결불량', 'medium', '"한편"·"동시에" 중 하나로 정리하세요 (역접+동시 혼용 어색)'],
+  [/그것을\s*다루느냐/g,          '문단연결불량', 'low',    '"그것" 지시 대상 불명확 — 앞 문단과의 연결이 단절됨'],
+  [/달려\s*있다고\s*할\s*수\s*있습니다/g, '문단연결불량', 'low', '이 문장 이후 새 주제 전환 시 "한편"·"이와 달리" 등 전환어 삽입 권장'],
 ];
 
 function checkSurface(extracted) {
@@ -617,14 +668,7 @@ function checkSurface(extracted) {
     if (text.length < 20) continue;
 
     // 조사 중복
-    for (const [pat, type, severity, sugg] of PARTICLE_PATTERNS) {
-      pat.lastIndex = 0;
-      let m;
-      while ((m = pat.exec(text)) !== null) {
-        issues.push({ type, severity, page, found: m[0],
-          suggestion: sugg, description: `조사 중복: '${m[0]}'` });
-      }
-    }
+    addAll(PARTICLE_PATTERNS, text, page);
 
     // 단어 반복
     REPEAT_RE.lastIndex = 0;
@@ -636,8 +680,13 @@ function checkSurface(extracted) {
         description: `단어 반복: '${m[1]}'` });
     }
 
-    // 이중 수동
+    // 이중 수동 — 탐지 후 alts(단일수동/능동 수정안) 첨부
+    const beforePassive = issues.length;
     addAll(DOUBLE_PASSIVE_PATS, text, page);
+    for (let i = beforePassive; i < issues.length; i++) {
+      const alts = makePassiveAlts(issues[i].found);
+      if (alts) issues[i].alts = alts;
+    }
     // 군더더기
     addAll(REDUNDANT_PATS, text, page);
     // 접속사 중복
@@ -648,6 +697,12 @@ function checkSurface(extracted) {
     addAll(PUNCT_PATS, text, page);
     // 외래어 오표기
     addAll(LOANWORD_PATS, text, page);
+    // 번역체·일본식 표현 (표면)
+    addAll(JSTYLE_PATS, text, page);
+    // 내용보완필요 (표면)
+    addAll(CITE_PATS, text, page);
+    // 문단연결불량 (표면)
+    addAll(TRANSITION_PATS, text, page);
   }
   return issues;
 }
@@ -675,7 +730,7 @@ function checkTermConsistency(extracted) {
   const tokenMap = {};
 
   for (const { page, text } of extracted.pages) {
-    for (const m of (text.matchAll(/\b([A-Za-z][A-Za-z0-9\-]{2,})\b/g) || [])) {
+    for (const m of (text.matchAll(/\b([A-Za-z][A-Za-z0-9\-]{1,})\b/g) || [])) {
       const tok = m[1];
       const key = tok.toLowerCase();
       if (COMMON_EN.has(key)) continue;
@@ -706,8 +761,10 @@ function checkTermConsistency(extracted) {
     for (const variant of variantList) {
       if (variant === canonical) continue;
       const pages = variants[variant];
-      // 문장 첫 글자 대문자(1회성) 제외 — 2회 이상만 플래그
-      if (pages.length < 2) continue;
+      const canonOcc = variants[canonical].length;
+      // 비표준 표기가 최소 1회 이상 + canonical이 2배 이상 등장해야 플래그
+      if (pages.length < 1) continue;
+      if (canonOcc < pages.length * 2) continue;
 
       const pairKey = canonical + '|' + variant;
       if (seenPairs.has(pairKey)) continue;
@@ -967,7 +1024,7 @@ Return ONLY raw JSON — no markdown fences, no explanation, no text before or a
 If no issues found: {"issues":[]}
 DO NOT wrap in markdown code blocks. Start your response directly with { and end with }.
 
-Type names to use exactly: 비문, 주술호응오류, 잘못된표현, 사실오류, 번역체, 일본식표현, 수동태과용, 외래어표기오류, 용어불일치, 문체불일치, 윤문필요, 내용보완필요, 문단연결불량, 중의적표현, 저자확인필요
+Type names to use exactly: 비문, 주술호응오류, 잘못된표현, 사실오류, 번역체, 일본식표현, 수동태과용, 외래어표기오류, 용어불일치, 문체불일치, 윤문필요, 내용보완필요, 문단연결불량, 중의적표현, 저자확인필요, 띄어쓰기, 맞춤법
 
 IMPORTANT:
 - "found" must be an exact substring from the input text
@@ -980,7 +1037,13 @@ IMPORTANT:
   - 비문/주술호응오류/잘못된표현: rewrite the corrected sentence
   - 사실오류: describe what the correct information should be
   - 저자확인필요: write the specific question to ask the author
-- Report every issue you find — do not skip borderline cases`;
+- Report every issue you find — do not skip borderline cases
+
+HALLUCINATION PREVENTION (CRITICAL):
+- "found" MUST be copied character-by-character from the input text. Do NOT paraphrase, summarize, or reconstruct.
+- If you cannot find the exact phrase in the text, do NOT report the issue. Omit it entirely.
+- Do NOT invent issues that do not exist in the given text.
+- Every "found" value must pass this test: it appears verbatim in the input text you received.`;
 
 async function callClaude(apiKey, text, rulesContext = '') {
   const systemPrompt = rulesContext
@@ -988,7 +1051,8 @@ async function callClaude(apiKey, text, rulesContext = '') {
     : SYS;
   const payload = JSON.stringify({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 4096,
+    max_tokens: 8192,
+    temperature: 0,
     system: systemPrompt,
     messages: [{ role:'user', content: text }]
   });
@@ -1058,6 +1122,17 @@ function _parseClaudeJson(raw) {
       const fixed = text.replace(/,\s*([}\]])/g, '$1');
       return JSON.parse(fixed);
     } catch (e2) {
+      // 7) 응답 잘림 복구: 마지막 완전한 issue 객체 찾기
+      // },{  또는  }] 기준으로 끝을 잘라내고 닫아줌
+      const lastClose = text.lastIndexOf('"}');
+      if (lastClose > start) {
+        const truncFixed = text.slice(0, lastClose + 2).replace(/,\s*$/, '') + ']}';
+        try {
+          const r = JSON.parse(truncFixed);
+          console.info(`JSON 잘림 복구 성공 — ${(r.issues||[]).length}건 구출`);
+          return r;
+        } catch (e3) { /* 복구 실패 시 null 반환 */ }
+      }
       console.warn('JSON 파싱 실패:', e2.message, '\n원본 응답:', raw.slice(0, 300));
       return null;
     }
@@ -1108,7 +1183,7 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
     if (onError) onError('추출된 텍스트가 없거나 너무 짧습니다.');
     return issues;
   }
-  const batchSize = 5;
+  const batchSize = 3;
   const total = Math.ceil(pages.length / batchSize);
   let firstError = '';
   let successCount = 0;
@@ -1124,9 +1199,12 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
       const raw = await callClaude(apiKey, '교정:\n' + txt, rulesCtx);
       const parsed = _parseClaudeJson(raw);
       if (parsed) {
+        const batchText = batch.map(p => p.text).join('\n');
         for (const iss of (parsed.issues || [])) {
-          const found = iss.found || '';
-          iss.page = batch.find(p => found && p.text.includes(found))?.page || batch[0].page;
+          const found = (iss.found || '').trim();
+          // 할루시네이션 필터: found가 실제 텍스트에 없으면 제외
+          if (!found || !batchText.includes(found)) continue;
+          iss.page = batch.find(p => p.text.includes(found))?.page || batch[0].page;
           issues.push(iss);
         }
       }
@@ -1319,7 +1397,7 @@ async function p8_startProofread() {
     stepRun(4, aiOnlyRun ? 'AI 검사 실행 (캐시 미포함 항목)…' : 'Claude API 호출 준비 중…');
     try {
       const totalBatches = Math.ceil(
-        extracted.pages.filter(p => p.text.trim().length >= 20).length / 5
+        extracted.pages.filter(p => p.text.trim().length >= 20).length / 3
       );
       let batchApiError = '';
       linguisticIssues = await checkLinguistic(extracted, apiKey,
@@ -1540,23 +1618,32 @@ function p8_pvGoTo(n) {
 // 결과 렌더링
 // ──────────────────────────────────────────────
 // 유형별 카테고리 분류
-const SURFACE_TYPES   = ['조사중복','단어반복','이중수동','중복군더더기','접속사중복','한자남용','문장부호오류','불필요한공백','외래어오표기','용어불일치'];
-const LINGUISTIC_TYPES= ['번역체','일본식표현','수동태과용','비문','주술호응오류','잘못된표현','외래어표기오류','문체불일치','윤문필요','중의적표현'];
+const SURFACE_TYPES   = ['조사중복','단어반복','이중수동','중복군더더기','접속사중복','한자남용','문장부호오류','불필요한공백','외래어오표기','용어불일치','번역체','일본식표현','내용보완필요','문단연결불량'];
+const LINGUISTIC_TYPES= ['번역체','일본식표현','수동태과용','비문','주술호응오류','잘못된표현','외래어표기오류','문체불일치','윤문필요','중의적표현','띄어쓰기','맞춤법'];
 const CONTENT_TYPES   = ['내용보완필요','문단연결불량','사실오류'];
 const AUTHOR_TYPES    = ['저자확인필요'];
 const STRUCT_TYPES    = ['목차불일치'];
 
 // 편집 카테고리 현황 정의 — 항상 표시 (없음 포함)
 const EDIT_CATEGORIES = [
-  { key:'윤문필요',    label:'윤문 필요',     sub:'어색한 문장·표현',      types:['윤문필요'] },
-  { key:'내용보완필요', label:'내용 보완 필요', sub:'설명 부족·맥락 누락',    types:['내용보완필요'] },
-  { key:'문단연결불량', label:'문단 연결 불량', sub:'전환 불량·연결어 누락',   types:['문단연결불량'] },
-  { key:'저자확인필요', label:'저자 확인 필요', sub:'수치·인용·기술 검증 필요', types:['저자확인필요'] },
-  { key:'비문',        label:'비문',          sub:'문법 오류·구조 파손',     types:['비문','주술호응오류'] },
-  { key:'번역체',      label:'번역체·일본식',  sub:'부자연스러운 표현',       types:['번역체','일본식표현'] },
-  { key:'외래어',      label:'외래어 표기',    sub:'표준 표기 오류',         types:['외래어표기오류','외래어오표기'] },
-  { key:'용어불일치',  label:'용어 표기 불일치', sub:'대소문자·영/한 혼재',   types:['용어불일치'] },
-  { key:'사실오류',    label:'사실 오류',      sub:'텍스트 내 모순',         types:['사실오류'] },
+  { key:'맞춤법비문',  label:'맞춤법·비문',    sub:'문법·조사·이중수동·반복·띄어쓰기',
+    types:['비문','주술호응오류','잘못된표현','조사중복','단어반복','이중수동','중복군더더기','접속사중복','한자남용','문장부호오류','불필요한공백','띄어쓰기','맞춤법'] },
+  { key:'윤문필요',    label:'윤문 필요',     sub:'어색한 문장·중의적 표현',
+    types:['윤문필요','중의적표현'] },
+  { key:'번역체',      label:'번역체·일본식',  sub:'부자연스러운 번역투·수동',
+    types:['번역체','일본식표현','수동태과용'] },
+  { key:'내용보완필요', label:'내용 보완 필요', sub:'설명 부족·출처 누락',
+    types:['내용보완필요'] },
+  { key:'문단연결불량', label:'문단 연결 불량', sub:'전환 불량·연결어 누락',
+    types:['문단연결불량'] },
+  { key:'표기불일치',  label:'표기 불일치',    sub:'용어·문체 혼재',
+    types:['용어불일치','문체불일치'] },
+  { key:'외래어',      label:'외래어 표기',    sub:'표준 표기 오류',
+    types:['외래어표기오류','외래어오표기'] },
+  { key:'사실오류',    label:'사실 오류',      sub:'텍스트 내 모순',
+    types:['사실오류'] },
+  { key:'저자확인필요', label:'저자 확인 필요', sub:'수치·인용·기술 검증 필요',
+    types:['저자확인필요'] },
 ];
 
 function renderResults(extracted, aiUsed, aiSkipped) {
@@ -1602,7 +1689,7 @@ function renderResults(extracted, aiUsed, aiSkipped) {
                placeholder="sk-ant-api03-..."
                style="flex:1;min-width:220px;padding:5px 10px;border:1px solid var(--border2);
                       border-radius:6px;font-size:.82rem;background:var(--bg2);color:var(--fg);">
-        <button onclick="p8_rerunAI()"
+        <button id="p8_rerunAiBtn" onclick="p8_rerunAI()"
                 style="padding:5px 16px;background:var(--accent);color:#fff;border:none;
                        border-radius:6px;cursor:pointer;font-size:.82rem;white-space:nowrap;
                        font-weight:600;">
@@ -1639,35 +1726,55 @@ function renderResults(extracted, aiUsed, aiSkipped) {
   }
 
   // 편집 카테고리 현황 렌더링 — 항상 표시, 없으면 "없음"
+  // onclick 속성은 JSON 큰따옴표 충돌을 피하기 위해 data-idx 인덱스 방식 사용
   const catGrid = document.getElementById('p8_catGrid');
-  catGrid.innerHTML = EDIT_CATEGORIES.map(cat => {
+
+  // 모든 카테고리 타입 집합 — 미분류 이슈 탐지용
+  const allCatTypes = new Set(EDIT_CATEGORIES.flatMap(c => c.types));
+  const uncategorized = allIssues.filter(i => !allCatTypes.has(i.type));
+  if (uncategorized.length > 0) {
+    const utypes = [...new Set(uncategorized.map(i => i.type))];
+    console.warn('[교정] 미분류 이슈:', uncategorized.length + '건, 타입:', utypes.join(', '));
+  }
+
+  const catBoxes = EDIT_CATEGORIES.map((cat, catIdx) => {
     const count = allIssues.filter(i => cat.types.includes(i.type)).length;
-    // 카테고리 내 모든 유형이 표면/구조 검사 전용일 때만 "AI 불필요". 하나라도 AI 유형이면 isAiType.
-    // 단, 표면 유형이 섞인 혼합 카테고리는 표면 결과는 이미 있으므로 isAiType=false 처리.
     const hasOnlySurface = cat.types.every(t => SURFACE_TYPES.includes(t) || STRUCT_TYPES.includes(t));
     const isAiType = !hasOnlySurface && !cat.types.some(t => SURFACE_TYPES.includes(t) || STRUCT_TYPES.includes(t));
     const notChecked = isAiType && !aiUsed;
 
-    if (notChecked) {
-      return `<div class="cat-box not-checked" title="API 키를 입력하면 AI가 이 항목을 검사합니다">
+    // onclick: data-cat-idx 인덱스로 전달 → JSON 따옴표 충돌 없음
+    if (count > 0) {
+      return `<div class="cat-box has-issues" data-cat-idx="${catIdx}" onclick="p8_filterByCatIdx(this)">
         <div class="cat-name">${cat.label}</div>
-        <div class="cat-count">미검사</div>
-        <div class="cat-sub">API 키 필요</div>
-      </div>`;
-    }
-    if (count === 0) {
-      return `<div class="cat-box no-issues" onclick="p8_filterByTypes(${JSON.stringify(cat.types)})">
-        <div class="cat-name">${cat.label}</div>
-        <div class="cat-count">✓ 없음</div>
+        <div class="cat-count">${count}건</div>
         <div class="cat-sub">${cat.sub}</div>
       </div>`;
     }
-    return `<div class="cat-box has-issues" onclick="p8_filterByTypes(${JSON.stringify(cat.types)})">
+    if (notChecked) {
+      return `<div class="cat-box not-checked" title="API 키를 입력하면 AI가 이 항목을 검사합니다">
+        <div class="cat-name">${cat.label}</div>
+        <div class="cat-count">불필요</div>
+        <div class="cat-sub">API 키 필요</div>
+      </div>`;
+    }
+    return `<div class="cat-box no-issues" data-cat-idx="${catIdx}" onclick="p8_filterByCatIdx(this)">
       <div class="cat-name">${cat.label}</div>
-      <div class="cat-count">${count}건</div>
+      <div class="cat-count">✓ 없음</div>
       <div class="cat-sub">${cat.sub}</div>
     </div>`;
-  }).join('');
+  });
+
+  // 미분류 카테고리 박스 — 집계 누락 이슈 시각화
+  if (uncategorized.length > 0) {
+    catBoxes.push(`<div class="cat-box has-issues cat-uncategorized" onclick="p8_filterUncategorized()">
+      <div class="cat-name">미분류</div>
+      <div class="cat-count">${uncategorized.length}건</div>
+      <div class="cat-sub">카테고리 미매핑 유형</div>
+    </div>`);
+  }
+
+  catGrid.innerHTML = catBoxes.join('');
 
   // 유형 드롭다운 채우기
   const types = [...new Set(allIssues.map(i=>i.type))].sort();
@@ -1699,6 +1806,18 @@ function renderIssues(issues) {
       : STRUCT_TYPES.includes(iss.type)  ? 'struct'
       : 'linguistic';
     const hasSuggestion = iss.suggestion && iss.suggestion.trim();
+    // 이중수동: alts가 있으면 단일수동/능동 두 칩 렌더링
+    // data-text 속성으로 텍스트 전달 — onclick 속성 안 따옴표 충돌 방지
+    const altsHtml = iss.alts ? `
+      <div class="alts-box">
+        <span class="alts-label">수정 방안 선택</span>
+        <button class="alt-chip passive" data-text="${esc(iss.alts.passive)}" onclick="p8_copyChip(this.dataset.text)" title="클릭하면 복사됩니다">
+          단일수동: ${esc(iss.alts.passive)}
+        </button>
+        <button class="alt-chip active" data-text="${esc(iss.alts.active)}" onclick="p8_copyChip(this.dataset.text)" title="클릭하면 복사됩니다">
+          능동형: ${esc(iss.alts.active)}
+        </button>
+      </div>` : '';
     return `<div class="issue-card sev-${sev}" id="card-${idx}">
       <div class="card-head">
         <span class="badge-page" onclick="p8_renderPage(${iss.page})" title="페이지 ${iss.page} 보기">p.${iss.page}</span>
@@ -1712,7 +1831,8 @@ function renderIssues(issues) {
           <span class="diff-label">원문</span>
           <span class="diff-content">${ctxHtml}</span>
         </div>
-        ${hasSuggestion ? `<div class="diff-row diff-after">
+        ${altsHtml}
+        ${!iss.alts && hasSuggestion ? `<div class="diff-row diff-after">
           <span class="diff-label">수정안</span>
           <span class="diff-content diff-suggestion">${esc(iss.suggestion)}</span>
           <button class="btn-copy" onclick="p8_copyText(${idx})" title="수정안 복사">복사</button>
@@ -1732,6 +1852,17 @@ function p8_toggleResolve(idx, btn) {
   const card = document.getElementById('card-'+idx);
   card.classList.toggle('resolved');
   btn.textContent = card.classList.contains('resolved') ? '취소' : '해결됨';
+}
+
+function p8_copyChip(text) {
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(() => _p8Toast(`"${text}" 복사됨`))
+      .catch(() => _p8FallbackCopy(text));
+  } else {
+    _p8FallbackCopy(text);
+  }
 }
 
 function p8_copyText(idx) {
@@ -1792,6 +1923,21 @@ function p8_filterSevChip(sev, chip) {
 
 // 카테고리 박스 클릭 시 설정되는 유형 OR 필터 (검색창과 독립)
 let activeTypeFilter = null;
+
+// data-cat-idx 방식 래퍼 — onclick="..." 속성 안의 JSON 큰따옴표 충돌 방지
+function p8_filterByCatIdx(el) {
+  const idx = parseInt(el.dataset.catIdx, 10);
+  if (!isNaN(idx) && EDIT_CATEGORIES[idx]) {
+    p8_filterByTypes(EDIT_CATEGORIES[idx].types);
+  }
+}
+
+// 미분류 이슈 필터 — 모든 카테고리에 속하지 않는 이슈
+function p8_filterUncategorized() {
+  const allCatTypes = new Set(EDIT_CATEGORIES.flatMap(c => c.types));
+  const uncatTypes = [...new Set(allIssues.filter(i => !allCatTypes.has(i.type)).map(i => i.type))];
+  p8_filterByTypes(uncatTypes);
+}
 
 function p8_filterByTypes(types) {
   activeTypeFilter = types.length ? types : null;
@@ -1942,7 +2088,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3. 버튼 로딩 상태
-    const btn = document.querySelector('[onclick="p8_rerunAI()"]');
+    const btn = document.getElementById('p8_rerunAiBtn');
     const origText = btn ? btn.textContent : '';
     if (btn) { btn.textContent = 'AI 검사 중…'; btn.disabled = true; }
 
@@ -2021,6 +2167,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.p8_copyText = p8_copyText;
   window.p8_filterSevChip = p8_filterSevChip;
   window.p8_filterByTypes = p8_filterByTypes;
+  window.p8_filterByCatIdx = p8_filterByCatIdx;
+  window.p8_filterUncategorized = p8_filterUncategorized;
+  window.p8_copyChip = p8_copyChip;
   window.p8_onClearThisCache = p8_onClearThisCache;
   window.p8_rerunAI = p8_rerunAI;
 })();
