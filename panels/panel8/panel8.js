@@ -43,6 +43,8 @@ let pdfDoc = null;       // PDF.js document (페이지 뷰어용)
 let pvCurrentPage = 1;  // 현재 뷰어 페이지
 let pvRendering = false; // 렌더링 중 플래그
 let rulesChunks = null;  // 교정 규칙 청크 (RAG)
+// 해결됨 상태 — allIssues 인덱스 기준, 필터 변경 후에도 유지
+const resolvedIndices = new Set();
 
 // ──────────────────────────────────────────────
 // 캐시 시스템 (localStorage)
@@ -1002,42 +1004,61 @@ HIGH severity (명백한 오류):
 - 비문: Ungrammatical sentences — broken structure, missing subject/predicate, dangling modifiers
 - 주술호응오류: Subject-predicate disagreement — e.g. "원인은 ~때문입니다" is correct; "원인은 ~했습니다" is wrong
 - 잘못된표현: Wrong expressions — incorrect idioms, wrong word choice, unclear pronoun referents
-- 사실오류: Factually incorrect or self-contradictory statements within the text
+- 사실오류: Factually incorrect statements or internal contradictions within the text — wrong technical facts, incorrect definitions, contradictory claims between sentences
 
 MEDIUM severity (개선 필요):
+- 윤문필요: Polishing needed — awkward rhythm, convoluted sentence structure, weak word choice, overly long sentences that should be split, or passages that are technically correct but significantly impair readability
+- 내용보완필요: Content supplement needed — concept explained incompletely or too superficially, missing prerequisite knowledge that would confuse readers, abrupt topic transition, logical gap between ideas, claim made without supporting explanation
 - 번역체: Unnatural translation-style Korean — ~함에 있어서, ~에 대해서, ~의 경우에 있어서, ~라고 하는, ~적(的) 남용, ~를 통해서
 - 일본식표현: Japanese-influenced — ~에 있어서, ~로 인하여, ~에 의한, ~하는 바이다, ~(이)라고 하는
 - 수동태과용: Excessive passive — -어지다/-되어지다(high), ~에 의해 ~되다, ~받다 남용
 - 외래어표기오류: Foreign word spelling errors per Korean standard orthography (e.g., 컨텐츠→콘텐츠, 메세지→메시지, 리더쉽→리더십)
-- 용어불일치: Inconsistent term notation — same concept written differently in the SAME batch (Old vs old, GitHub vs Github, API vs api, English term vs Korean transliteration for the same word e.g. "Old" vs "올드", "Model" vs "모델" used interchangeably). Report each pair once with the dominant form as canonical.
-- 문체불일치: Inconsistent register — mixing formal(합쇼체/하십시오체) with informal(해요체), or literary(문어체) with colloquial(구어체) within same section
+- 용어불일치: Inconsistent term notation — same concept written differently in the SAME batch
+- 문체불일치: Inconsistent register — mixing formal and informal within same section
 
-LOW severity (윤문 권장):
-- 윤문필요: Polishing needed — awkward rhythm, convoluted sentence structure, weak word choice, sentences that are technically correct but read poorly
-- 내용보완필요: Content supplement needed — incomplete explanation leaving readers confused, missing context, abrupt topic change, logical gap between sentences
+LOW severity (검토 권장):
 - 문단연결불량: Poor paragraph transition — abrupt topic shift without connector, missing transitional sentence
 - 중의적표현: Ambiguous expression — sentence with two or more valid interpretations
-- 저자확인필요: Content requiring author verification — specific statistics/numbers without source, technical claims that could be incorrect, dates/versions that may be outdated, code snippets or formulas needing validation, references to studies/papers without citation, product names or specs that may have changed
+- 저자확인필요: Content requiring author verification — specific statistics/numbers without source, technical claims that could be incorrect, dates/versions that may be outdated
 
 Return ONLY raw JSON — no markdown fences, no explanation, no text before or after:
-{"issues":[{"type":"유형명","severity":"high|medium|low","found":"exact verbatim phrase from text (≤60 chars)","description":"한국어 설명 — 왜 문제인지 구체적으로","suggestion":"found를 대체하는 완성된 수정문 — 편집자가 바로 복사해 쓸 수 있는 구체적 문장"}]}
+{"issues":[{"type":"유형명","severity":"high|medium|low","found":"exact verbatim substring from text (≤120 chars; up to 150 chars for 윤문필요·내용보완필요·사실오류)","description":"한국어 설명 — 왜 문제인지 구체적으로","suggestion":"완성된 수정 내용 (길이 제한 없음 — 아래 지침 참조)"}]}
 If no issues found: {"issues":[]}
 DO NOT wrap in markdown code blocks. Start your response directly with { and end with }.
 
 Type names to use exactly: 비문, 주술호응오류, 잘못된표현, 사실오류, 번역체, 일본식표현, 수동태과용, 외래어표기오류, 용어불일치, 문체불일치, 윤문필요, 내용보완필요, 문단연결불량, 중의적표현, 저자확인필요, 띄어쓰기, 맞춤법
 
-IMPORTANT:
-- "found" must be an exact substring from the input text
-- "suggestion" must be a concrete rewritten version the editor can copy and paste directly — NOT a vague direction like "표현 개선 필요". Write the actual corrected sentence or phrase.
-  - 윤문필요: rewrite the sentence with better rhythm and word choice
-  - 내용보완필요: write the specific content that should be added, in the form "예: [보완 문장]"
-  - 문단연결불량: write the transitional sentence to insert between paragraphs
-  - 번역체/일본식표현: rewrite the phrase in natural Korean
-  - 외래어표기오류: write the correctly spelled Korean word
-  - 비문/주술호응오류/잘못된표현: rewrite the corrected sentence
-  - 사실오류: describe what the correct information should be
-  - 저자확인필요: write the specific question to ask the author
-- Report every issue you find — do not skip borderline cases
+IMPORTANT — suggestion 작성 기준:
+"suggestion"은 편집자가 바로 복사해 사용할 수 있는 완성된 수정 내용이어야 한다. "표현 개선 필요" 같은 방향 제시는 금지.
+
+▶ 윤문필요 (적극적 윤문):
+  - 단어 교체가 아니라 문장 전체를 다시 쓸 것. 필요하면 두 문장으로 나누거나 구조 자체를 바꿔도 됨.
+  - 리듬·간결성·독자 이해도를 기준으로 완성도 높은 대안 문장을 제시할 것.
+  - CRITICAL: suggestion이 found와 실질적으로 동일하면 이슈를 보고하지 말 것. 진짜로 더 나은 문장을 쓸 수 없다면 이 이슈를 생략할 것.
+  - 예: found="이러한 방식으로 구성된 시스템은 여러 가지 복잡한 요인들로 인해 성능 저하가 발생할 수 있다는 점에서 주의가 필요합니다"
+       suggestion="이 시스템은 복잡한 요인이 많아 성능이 저하될 수 있으므로 주의가 필요합니다."
+
+▶ 내용보완필요 (구체적 보완 내용 작성):
+  - 독자에게 실제로 필요한 설명을 2~4문장으로 직접 작성할 것. "출처 추가 필요" 같은 지시는 금지.
+  - 어떤 개념이 빠졌는지 파악한 뒤 그 내용을 편집자가 삽입할 수 있는 형태로 완성된 문장으로 제공할 것.
+  - 예: found="이 알고리즘은 효율적입니다"
+       suggestion="이 알고리즘은 O(log n)의 시간 복잡도를 가지므로, 데이터가 많아질수록 선형 탐색(O(n)) 대비 처리 속도가 크게 빨라집니다. 예를 들어 100만 개의 데이터를 탐색할 때 선형 탐색은 최대 100만 번 비교가 필요하지만, 이 알고리즘은 약 20번만에 완료됩니다."
+
+▶ 사실오류 (정확한 교정 내용 작성):
+  - 무엇이 왜 틀렸는지 설명하고, 올바른 사실을 구체적으로 기술할 것.
+  - 단순히 "사실 확인 필요"가 아니라 정확한 정보를 제공할 것.
+  - 텍스트 내 모순(앞에서 A라 했는데 뒤에서 B라 함)은 어느 쪽이 맞는지 판단 근거와 함께 제시.
+  - 예: found="Python은 C보다 빠릅니다"
+       suggestion="[오류] Python은 일반적으로 C보다 느립니다. Python은 인터프리터 언어로 실행 시 바이트코드를 해석하는 오버헤드가 있어, 연산 집약적 작업에서는 C 대비 수십~수백 배 느릴 수 있습니다. 다만 NumPy 등 C 확장 라이브러리 사용 시 성능 차이를 줄일 수 있습니다."
+
+▶ 기타 유형:
+  - 문단연결불량: 삽입할 전환 문장을 직접 작성
+  - 번역체/일본식표현: 자연스러운 한국어로 바꾼 문장 제시
+  - 외래어표기오류: 표준 표기 단어
+  - 비문/주술호응오류/잘못된표현: 교정된 완성 문장
+  - 저자확인필요: 저자에게 보낼 구체적인 확인 질문
+
+- Report every issue you find — do not skip borderline cases. Be aggressive: if a sentence is hard to read, report it. If explanation is thin, report it.
 
 HALLUCINATION PREVENTION (CRITICAL):
 - "found" MUST be copied character-by-character from the input text. Do NOT paraphrase, summarize, or reconstruct.
@@ -1094,6 +1115,29 @@ async function callClaude(apiKey, text, rulesContext = '') {
 /**
  * Claude 응답에서 JSON 파싱 — 마크다운 코드블록, 앞뒤 텍스트, 제어문자 등 방어 처리
  */
+/**
+ * suggestion과 found가 실질적으로 같은지 확인.
+ * 공백·구두점 제거 후 비교 — AI가 원문을 그대로 반환하는 경우를 걸러낸다.
+ */
+function _isSameSuggestion(found, suggestion) {
+  const norm = s => s.replace(/[\s\u00A0.,!?·…。、]/g, '').toLowerCase();
+  const f = norm(found);
+  const s = norm(suggestion);
+  if (!f || !s) return false;
+  if (f === s) return true;
+  // suggestion이 found를 완전히 포함하고 10% 이내로만 길면 실질 동일 취급
+  // (예: "원문입니다." → "원문입니다. (수정 없음)" 같은 패턴)
+  if (s.includes(f) && s.length <= f.length * 1.10) return true;
+  // 편집 거리 기반: 두 문자열이 95% 이상 유사하면 동일 취급
+  const longer = f.length >= s.length ? f : s;
+  const shorter = f.length < s.length ? f : s;
+  if (longer.length === 0) return true;
+  // 간단한 공통 접두 비율 체크 (완전한 Levenshtein 대신 빠른 근사)
+  let same = 0;
+  for (let i = 0; i < shorter.length; i++) { if (shorter[i] === longer[i]) same++; }
+  return (same / longer.length) >= 0.95;
+}
+
 function _parseClaudeJson(raw) {
   if (!raw) return null;
 
@@ -1204,6 +1248,13 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
           const found = (iss.found || '').trim();
           // 할루시네이션 필터: found가 실제 텍스트에 없으면 제외
           if (!found || !batchText.includes(found)) continue;
+          // 동일 내용 필터: suggestion이 found와 실질적으로 같으면 제외
+          // (윤문필요 등에서 AI가 원문을 그대로 돌려주는 경우 방어)
+          const sugg = (iss.suggestion || '').trim();
+          if (sugg && _isSameSuggestion(found, sugg)) {
+            console.info(`[교정] suggestion≈found 제거 (${iss.type}): "${found.slice(0,40)}"`);
+            continue;
+          }
           iss.page = batch.find(p => p.text.includes(found))?.page || batch[0].page;
           issues.push(iss);
         }
@@ -1519,6 +1570,7 @@ async function p8_startProofread() {
       aiUsed,
       aiSkipped,
       currentFileKey,
+      resolvedIndices: [...resolvedIndices],
       extracted: {
         filename: extracted.filename,
         total_pages: extracted.total_pages,
@@ -1792,7 +1844,11 @@ function renderIssues(issues) {
     el.innerHTML = '<div class="no-issues"><div class="big">✅</div>이슈가 없습니다</div>';
     return;
   }
-  el.innerHTML = issues.map((iss, idx) => {
+  el.innerHTML = issues.map((iss) => {
+    // 전역 인덱스: 필터 변경 후에도 resolved 상태를 올바르게 복원하는 기준
+    const globalIdx = allIssues.indexOf(iss);
+    const isResolved = resolvedIndices.has(globalIdx);
+
     const sev = iss.severity || 'low';
     const sevLabel = {high:'높음', medium:'중간', low:'낮음'}[sev] || sev;
     const ctx = iss.ctx || {};
@@ -1818,12 +1874,12 @@ function renderIssues(issues) {
           능동형: ${esc(iss.alts.active)}
         </button>
       </div>` : '';
-    return `<div class="issue-card sev-${sev}" id="card-${idx}">
+    return `<div class="issue-card sev-${sev}${isResolved ? ' resolved' : ''}" data-global-idx="${globalIdx}">
       <div class="card-head">
         <span class="badge-page" onclick="p8_renderPage(${iss.page})" title="페이지 ${iss.page} 보기">p.${iss.page}</span>
         <span class="badge-type ${typeClass}">${esc(iss.type)}</span>
         <span class="badge-sev ${sev}">${sevLabel}</span>
-        <button class="btn-resolve" onclick="p8_toggleResolve(${idx},this)">해결됨</button>
+        <button class="btn-resolve" onclick="p8_toggleResolve(${globalIdx},this)">${isResolved ? '취소' : '해결됨'}</button>
       </div>
       ${iss.description ? `<div class="card-desc">${esc(iss.description)}</div>` : ''}
       <div class="diff-block">
@@ -1835,7 +1891,7 @@ function renderIssues(issues) {
         ${!iss.alts && hasSuggestion ? `<div class="diff-row diff-after">
           <span class="diff-label">수정안</span>
           <span class="diff-content diff-suggestion">${esc(iss.suggestion)}</span>
-          <button class="btn-copy" onclick="p8_copyText(${idx})" title="수정안 복사">복사</button>
+          <button class="btn-copy" data-global-idx="${globalIdx}" onclick="p8_copyText(this.dataset.globalIdx)" title="수정안 복사">복사</button>
         </div>` : ''}
       </div>
     </div>`;
@@ -1848,10 +1904,17 @@ function esc(s) {
     .replace(/"/g,'&quot;');
 }
 
-function p8_toggleResolve(idx, btn) {
-  const card = document.getElementById('card-'+idx);
-  card.classList.toggle('resolved');
-  btn.textContent = card.classList.contains('resolved') ? '취소' : '해결됨';
+function p8_toggleResolve(globalIdx, btn) {
+  // resolvedIndices에 전역 인덱스 기준으로 토글 — 필터 변경 후에도 상태 유지
+  if (resolvedIndices.has(globalIdx)) {
+    resolvedIndices.delete(globalIdx);
+  } else {
+    resolvedIndices.add(globalIdx);
+  }
+  const resolved = resolvedIndices.has(globalIdx);
+  const card = btn.closest('.issue-card');
+  if (card) card.classList.toggle('resolved', resolved);
+  btn.textContent = resolved ? '취소' : '해결됨';
 }
 
 function p8_copyChip(text) {
@@ -1866,7 +1929,7 @@ function p8_copyChip(text) {
 }
 
 function p8_copyText(idx) {
-  const issue = allIssues[idx];
+  const issue = allIssues[parseInt(idx, 10)];
   if (!issue || !issue.suggestion) return;
   const text = issue.suggestion;
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1985,6 +2048,7 @@ function p8_reset() {
   activeTypeFilter = null;
   currentFileKey = null;
   pdfDoc = null;
+  resolvedIndices.clear();
   pvCurrentPage = 1;
   pvRendering = false;
   document.getElementById('p8_fileName').textContent = '';
@@ -2047,6 +2111,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     allIssues = sess.allIssues;
     currentFileKey = sess.currentFileKey || null;
+    resolvedIndices.clear();
+    if (Array.isArray(sess.resolvedIndices)) {
+      sess.resolvedIndices.forEach(i => resolvedIndices.add(i));
+    }
 
     const ext = sess.extracted;
     renderResults(
@@ -2149,6 +2217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         aiUsed: true,
         aiSkipped: false,
         currentFileKey: cacheKey,
+        resolvedIndices: [...resolvedIndices],
         extracted: { filename: extracted.filename, total_pages: extracted.total_pages },
       }));
     } catch(e) {}
