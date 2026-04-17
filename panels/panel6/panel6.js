@@ -454,7 +454,13 @@ async function generateMeetingSummary(){
     const btn = document.querySelector('.meet-section[data-modes="summary"] button');
     if (btn) { btn.disabled = true; btn.textContent = '생성 중…'; }
     try {
-      const prompt = `당신은 IT 도서 편집자입니다. 아래 미팅 기록을 바탕으로 저자에게 발송할 미팅 결과 요약을 작성해주세요.
+      const prompt = `당신은 IT 도서 편집자입니다. 저자에게 발송할 미팅 결과 요약을 작성하세요.
+
+[글쓰기 원칙]
+- 편집자가 저자에게 메일 쓰듯이 정중하면서도 따뜻하게. 관료적 문장 금지.
+- "~하겠습니다", "~드리겠습니다" 남발하지 말고 간결하게.
+- 합의 사항은 명확히, 다음 단계는 구체적 날짜/행동으로.
+
 
 [저자]: ${author}
 [도서(안)]: ${title}
@@ -489,6 +495,10 @@ async function generateMeetingSummary(){
           messages:[{role:'user',content:prompt}]
         })
       });
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error('API 오류 ' + resp.status + ': ' + (errData.error?.message || ''));
+      }
       const data = await resp.json();
       const text = data.content?.[0]?.text || '';
       const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -496,7 +506,7 @@ async function generateMeetingSummary(){
         _generatedSummary = JSON.parse(jsonMatch[0]);
         showToast('미팅 결과 요약이 AI로 생성되었습니다.', 'green');
       } else {
-        throw new Error('JSON 파싱 실패');
+        throw new Error('AI 응답에서 JSON을 찾을 수 없습니다');
       }
     } catch(e) {
       console.error('AI summary error:', e);
@@ -574,7 +584,7 @@ function meetDownloadPdf() {
 <title>${docTitle.replace(/[<>&"]/g, '')}</title>
 <link rel="stylesheet" href="${base}shared/styles.css">
 <link rel="stylesheet" href="${base}panels/panel6/panel6.css">
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="${base}libs/pretendard.min.css" rel="stylesheet">
 <style>
 /* 대시보드 레이아웃 해제 */
 body { height: auto !important; overflow: visible !important; display: block !important;
@@ -648,7 +658,13 @@ async function generateMeetingWithAI() {
     }
   }
 
-  const prompt = `당신은 10년 경력의 IT 도서 편집자입니다. 아래 정보를 바탕으로 저자 미팅 준비 자료의 각 항목을 작성해주세요.
+  const prompt = `당신은 10년 경력의 IT 도서 편집자입니다. 저자 미팅 준비 자료를 작성하세요.
+
+[글쓰기 원칙]
+- 편집자 동료에게 브리핑하듯 간결하고 핵심적으로. 형식적인 수식 금지.
+- 질문은 저자가 편하게 답할 수 있도록 구체적이되 개방적으로.
+- 아젠다는 실제 미팅에서 바로 꺼낼 수 있는 현실적인 내용.
+
 
 [기획 정보]
 도서 제목(안): ${bookTitle}

@@ -29,7 +29,7 @@ function pInitFields(){
   loadApiKey().then(savedKey => {
     const keyEl=document.getElementById('ai-api-key');
     if(keyEl&&savedKey)keyEl.value=savedKey;
-  });
+  }).catch(function(){});
 
   const wf=document.getElementById('pwhy-fields');
   P_WHY_DEF.forEach((d,i)=>{
@@ -245,7 +245,7 @@ function pPrintPDF() {
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="${base}shared/styles.css">
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="${base}libs/pretendard.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 /* 대시보드 레이아웃 해제 */
@@ -300,7 +300,7 @@ function dlGuidePDF() {
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="${base}shared/styles.css">
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="${base}libs/pretendard.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 body { height: auto !important; overflow: visible !important; display: block !important;

@@ -3,27 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>출판 도우미 v1.9.4 업데이트 날짜 2026-04-16</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<title>출판 도우미 v1.9.25 업데이트 날짜 2026-04-18</title>
+<script src="libs/xlsx.full.min.js"></script>
+<script src="libs/chart.umd.min.js"></script>
+<script src="libs/d3.v7.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="libs/pretendard.min.css" rel="stylesheet">
 <link rel="stylesheet" href="shared/styles.css">
 <link rel="stylesheet" href="panels/panel5/panel5.css">
 <link rel="stylesheet" href="panels/panel6/panel6.css">
 <link rel="stylesheet" href="panels/panel7/panel7.css">
 <link rel="stylesheet" href="panels/panel8/panel8.css">
 <link rel="stylesheet" href="panels/panel9/panel9.css">
-<!-- panel8/9 external deps -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link rel="stylesheet" href="panels/panel10/panel10.css">
+<link rel="stylesheet" href="panels/panel11/panel11.css">
+<!-- panel8/9 external deps (로컬 libs/ — CDN Tracking Prevention 우회) -->
+<script src="libs/pdf.min.js"></script>
+<script src="libs/mammoth.browser.min.js"></script>
+<script src="libs/jszip.min.js"></script>
 </head>
 <body>
 
 <div class="hdr">
   <div class="hdr-left">
-    <div class="tag">출판 도우미 v1.9.4 업데이트 날짜 2026-04-16</div>
+    <div class="tag">출판 도우미 v1.9.25 업데이트 날짜 2026-04-18</div>
     <h1>출판 <span>도우미</span></h1>
   </div>
   <div class="hdr-right" style="display:flex;gap:.5rem;align-items:center;">
@@ -41,16 +44,23 @@
   <button class="nav-item active" data-icon="📊" onclick="switchTab(0,this)"><span class="nav-label">데이터 업로드</span></button>
   <button class="nav-item locked" data-icon="📈" id="tab1" onclick="switchTab(1,this)"><span class="nav-label">통합 현황 🔒</span></button>
   <button class="nav-item locked" data-icon="👥" id="tab2" onclick="switchTab(2,this)"><span class="nav-label">저자풀 🔒</span></button>
+  <button class="nav-item" data-icon="🔑" id="tab10" onclick="switchTab(10,this)"><span class="nav-label">키워드 분석</span></button>
   <button class="nav-item locked" data-icon="📺" id="tab7" onclick="switchTab(7,this)"><span class="nav-label">유튜버 분석 🔒</span></button>
 
   <div class="nav-section">outputs</div>
   <button class="nav-item locked" data-icon="📝" id="tab3" onclick="switchTab(3,this)"><span class="nav-label">저자 제안서 🔒</span></button>
-  <button class="nav-item" data-icon="🔄" id="tab4" onclick="switchTab(4,this)"><span class="nav-label">프로세스 출력 </span></button>
+  <button class="nav-item" data-icon="🔄" id="tab4" onclick="switchTab(4,this)"><span class="nav-label">출판 프로세스</span></button>
   <button class="nav-item locked" data-icon="🤝" id="tab6" onclick="switchTab(6,this)"><span class="nav-label">미팅 자료 🔒</span></button>
-  <button class="nav-item locked" data-icon="📋" id="tab5" onclick="switchTab(5,this)"><span class="nav-label">출판 기획서🔒</span></button>
+  <button class="nav-item locked" data-icon="📋" id="tab5" onclick="switchTab(5,this)"><span class="nav-label">출판 기획서 🔒</span></button>
+
   <div class="nav-section">Proofreading</div>
   <button class="nav-item" data-icon="✏️" id="tab8" onclick="switchTab(8,this)"><span class="nav-label">원고 및 조판 교정</span></button>
   <button class="nav-item" data-icon="📋" id="tab9" onclick="switchTab(9,this)"><span class="nav-label">조판 목차 비교</span></button>
+  <!-- ── 개발자 콘솔 (Ctrl+Alt+Enter로 활성화) ── -->
+  <div class="nav-section nav-section-admin" id="nav-admin-sep" style="display:none;position:absolute;bottom:calc(1.5rem + 46px);left:0;width:100%;">debug</div>
+  <button class="nav-item nav-item-admin" data-icon="⚙️" id="tab11" onclick="switchTab(11,this)" style="display:none;position:absolute;bottom:1.5rem;left:0;width:100%;">
+    <span class="nav-label">개발자 콘솔</span>
+  </button>
 </nav>
 <main class="main-content">
 
@@ -1033,7 +1043,7 @@
 
   <div class="upload-grid">
     <!-- TOC upload -->
-    <div class="upload-zone" id="p9_tocZone" ondragover="p9_onDrag(event,'tocZone')" ondragleave="p9_offDrag('tocZone')" ondrop="p9_onDrop(event,'toc')">
+    <div class="upload-zone" id="p9_tocZone" ondragover="p9_onDrag(event,'p9_tocZone')" ondragleave="p9_offDrag('p9_tocZone')" ondrop="p9_onDrop(event,'toc')">
       <input type="file" accept=".pdf,.txt" onchange="p9_onFile(event,'toc')" id="p9_tocInput">
       <div class="upload-icon">📋</div>
       <div><span class="upload-tag toc">목차 파일</span></div>
@@ -1044,7 +1054,7 @@
     </div>
 
     <!-- Body upload -->
-    <div class="upload-zone" id="p9_bodyZone" ondragover="p9_onDrag(event,'bodyZone')" ondragleave="p9_offDrag('bodyZone')" ondrop="p9_onDrop(event,'body')">
+    <div class="upload-zone" id="p9_bodyZone" ondragover="p9_onDrag(event,'p9_bodyZone')" ondragleave="p9_offDrag('p9_bodyZone')" ondrop="p9_onDrop(event,'body')">
       <input type="file" accept=".pdf" onchange="p9_onFile(event,'body')" id="p9_bodyInput">
       <div class="upload-icon">📖</div>
       <div><span class="upload-tag body">본문 파일</span></div>
@@ -1060,7 +1070,7 @@
 </div>
 
 <!-- ═══ LOADING PANEL ═══ -->
-<div id="p9_loadingPanel">
+<div id="p9_loadingPanel" style="display:none;">
   <div class="loading-card">
     <div class="loading-title">🔍 비교 분석 중...</div>
     <div class="loading-sub">목차와 본문의 제목·페이지를 추출하고 있습니다</div>
@@ -1069,7 +1079,7 @@
 </div>
 
 <!-- ═══ RESULT PANEL ═══ -->
-<div id="p9_resultPanel">
+<div id="p9_resultPanel" style="display:none;">
   <div class="result-header">
     <div class="result-header-left">
       <div class="match-ring">
@@ -1115,6 +1125,106 @@
 
 </div>
 </div>
+
+<!-- ═══════ 키워드 분석 패널 (panel10) ═══════ -->
+<div class="panel panel10-scope" id="panel10">
+  <div class="kw-layout">
+    <!-- 좌측 사이드바 -->
+    <aside class="kw-sidebar">
+      <div class="kw-logo">
+        <div class="logo-title">🔑 키워드 분석</div>
+        <div class="logo-sub">IT/AI 도서 출판 키워드 도출기</div>
+      </div>
+
+      <!-- 연결 / 데이터 상태 -->
+      <div>
+        <div class="s-label">연결 상태</div>
+        <div id="kwApiStatus" style="font-size:11px;color:var(--kw-text2);font-family:var(--kw-mono);line-height:2;background:var(--kw-surface2);border-radius:6px;padding:8px 10px;"></div>
+      </div>
+
+      <!-- 분류 체계 (자동 생성) -->
+      <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;gap:8px;min-height:0;">
+        <div class="s-label" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>분석 카테고리</span>
+          <button id="kwRefreshBtn" class="tax-all-btn" onclick="kwRefreshTaxonomy()" style="font-size:10px;padding:3px 8px;">🔄 갱신</button>
+        </div>
+        <div class="tax-all-btns">
+          <button class="tax-all-btn" onclick="kwTaxSelectAll()">전체 선택</button>
+          <button class="tax-all-btn" onclick="kwTaxSelectNone()">전체 해제</button>
+        </div>
+        <div id="kwTaxTree" class="tax-section" style="overflow-y:auto;flex:1;"></div>
+      </div>
+
+      <!-- 실행 버튼 -->
+      <button class="btn-run" id="kwRunBtn" onclick="kwRunAnalysis()">🚀 키워드 분석 시작</button>
+    </aside>
+
+    <!-- 우측 메인 영역 -->
+    <div class="kw-main">
+      <div class="main-header">
+        <div class="main-title">IT/AI 출판 키워드 추천</div>
+        <div class="main-sub" id="kwResultSub">카테고리를 선택하고 분석을 시작하세요</div>
+      </div>
+
+      <div id="kwCacheBanner"></div>
+
+      <!-- 빈 상태 -->
+      <div id="kwEmptyState" class="empty-state">
+        <div class="empty-emoji">📡</div>
+        <div class="empty-title">YouTube 트렌드 분석 대기 중</div>
+        <div class="empty-desc">좌측에서 카테고리 선택 후 "분석 시작" 버튼을 누르세요</div>
+      </div>
+
+      <!-- 로딩 상태 -->
+      <div id="kwLoadingState" class="loading-state" style="display:none;">
+        <div class="kw-spinner"></div>
+        <div class="loading-text" id="kwLoadingText">준비 중...</div>
+        <div class="loading-steps" id="kwLoadingSteps"></div>
+      </div>
+
+      <!-- 결과 영역 -->
+      <div id="kwResultArea" style="display:none;">
+        <div class="summary-bar" id="kwSummaryBar"></div>
+
+        <div class="tab-bar">
+          <button class="kw-tab-btn active" data-tab="kwTabCards" onclick="kwSwitchResultTab(this)">기획 카드</button>
+          <button class="kw-tab-btn" data-tab="kwTabGraph" onclick="kwSwitchResultTab(this)">관계도</button>
+          <button class="kw-tab-btn" data-tab="kwTabChart" onclick="kwSwitchResultTab(this)">조회수 차트</button>
+        </div>
+
+        <div id="kwTabCards" class="kw-tab-panel active">
+          <div class="sort-bar">
+            <span class="sort-label">정렬:</span>
+            <button class="sort-btn active" onclick="kwSortCards('urgency',this)">선점 급도</button>
+            <button class="sort-btn" onclick="kwSortCards('views',this)">조회수</button>
+            <button class="sort-btn" onclick="kwSortCards('gap',this)">공백 높음</button>
+          </div>
+          <div class="cards-grid" id="kwCardsGrid"></div>
+        </div>
+
+        <div id="kwTabGraph" class="kw-tab-panel">
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button class="sort-btn active" onclick="kwGraphAutoLayout(this)">자동 정렬</button>
+            <button class="sort-btn" onclick="kwGraphResetZoom(this)">초기화</button>
+          </div>
+          <div class="graph-container" id="kwGraphContainer"></div>
+        </div>
+
+        <div id="kwTabChart" class="kw-tab-panel">
+          <div class="chart-box">
+            <div class="chart-box-title">카테고리별 YouTube 조회수</div>
+            <div class="chart-wrap"><canvas id="kwChartBar"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="kwD3Tooltip"></div>
+
+<!-- ═══════ 개발자 콘솔 패널 (panel11 — 숨겨진 관리자 패널) ═══════ -->
+<div class="panel" id="panel11"></div>
+
 </main>
 
 <!-- ───── AI 사전 설정 마법사 모달 ───── -->
@@ -1326,5 +1436,48 @@
 <script src="panels/panel7/panel7.js"></script>
 <script src="panels/panel8/panel8.js"></script>
 <script src="panels/panel9/panel9.js"></script>
+<script src="panels/panel10/panel10.js"></script>
+<script src="panels/panel11/panel11.js"></script>
+<script>
+/* ── Ctrl+Alt+Enter: 개발자 콘솔 토글 ── */
+(function(){
+  var _prevEl  = null; // 콘솔 열기 전 활성 nav-item 버튼
+  var _prevIdx = 0;    // 콘솔 열기 전 패널 인덱스
+
+  function _getIdx(el) {
+    if (!el) return 0;
+    var m = (el.getAttribute('onclick') || '').match(/switchTab\((\d+)/);
+    return m ? parseInt(m[1]) : 0;
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (!e.ctrlKey || !e.altKey || e.key !== 'Enter') return;
+    e.preventDefault();
+    var sep = document.getElementById('nav-admin-sep');
+    var tab = document.getElementById('tab11');
+    if (!sep || !tab) return;
+
+    var isOpen = sep.style.display !== 'none';
+
+    if (!isOpen) {
+      // 열기 — 현재 활성 탭 저장 후 콘솔로 전환
+      _prevEl  = document.querySelector('.nav-item.active:not(#tab11)');
+      _prevIdx = _getIdx(_prevEl);
+      sep.style.display = 'block';
+      tab.style.display = 'flex';
+      if (typeof switchTab === 'function') switchTab(11, tab);
+    } else {
+      // 닫기 — 콘솔 숨기고 이전 패널로 복귀
+      sep.style.display = 'none';
+      tab.style.display = 'none';
+      tab.classList.remove('active');
+      if (typeof switchTab === 'function') {
+        var restoreEl = _prevEl || document.querySelector('.nav-item:not(#tab11)');
+        switchTab(_prevIdx, restoreEl);
+      }
+    }
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,7 +1,11 @@
 (function(){
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+try {
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      location.href.replace(/\/[^/]*$/, '/') + 'libs/pdf.worker.min.js';
+  }
+} catch(e) { console.warn('panel9: PDF.js 초기화 실패:', e.message); }
 
 // ─── State ───────────────────────────────────────────────────────────────────
 let tocFile = null, bodyFile = null;
@@ -16,14 +20,16 @@ function p9_onFile(e, which) {
 }
 function p9_onDrag(e, zoneId) {
   e.preventDefault();
-  document.getElementById(zoneId).classList.add('active');
+  var el = document.getElementById(zoneId) || document.getElementById('p9_' + zoneId);
+  if (el) el.classList.add('active');
 }
 function p9_offDrag(zoneId) {
-  document.getElementById(zoneId).classList.remove('active');
+  var el = document.getElementById(zoneId) || document.getElementById('p9_' + zoneId);
+  if (el) el.classList.remove('active');
 }
 function p9_onDrop(e, which) {
   e.preventDefault();
-  p9_offDrag(which === 'toc' ? 'tocZone' : 'bodyZone');
+  p9_offDrag(which === 'toc' ? 'p9_tocZone' : 'p9_bodyZone');
   const f = e.dataTransfer.files[0];
   if (!f) return;
   const name = f.name.toLowerCase();
@@ -326,6 +332,7 @@ async function extractTOCFromText(pdf) {
   for (let p = 1; p <= numPages; p++) {
     const page = await pdf.getPage(p);
     const content = await page.getTextContent({ includeMarkedContent: false });
+    page.cleanup();
 
     // Build full page text
     const rawItems = content.items.filter(i => i.str && i.str.trim());
@@ -416,13 +423,21 @@ function titleFoundInPage(title, pageText) {
   const np = normForMatch(pageText);
   if (!nt || !np) return false;
 
-  // 공백 포함 직접 매칭
+  // 1) 공백 포함 직접 매칭
   if (np.includes(nt)) return true;
 
-  // 공백 제거 매칭 (4글자 이상일 때만 — 너무 짧으면 오탐 위험)
+  // 2) 공백 제거 매칭 (4글자 이상)
   const ntNoSp = nt.replace(/\s/g, '');
   const npNoSp = np.replace(/\s/g, '');
   if (ntNoSp.length >= 4 && npNoSp.includes(ntNoSp)) return true;
+
+  // 3) 핵심 단어 매칭 — 제목의 단어 중 3글자 이상인 단어의 60% 이상이 페이지에 포함되면 매칭
+  const words = nt.split(/\s+/).filter(w => w.length >= 2);
+  if (words.length >= 2) {
+    const matchedWords = words.filter(w => np.includes(w) || npNoSp.includes(w.replace(/\s/g, '')));
+    const ratio = matchedWords.length / words.length;
+    if (ratio >= 0.6 && matchedWords.length >= 2) return true;
+  }
 
   return false;
 }
@@ -505,9 +520,14 @@ async function extractBodyPageTexts(pdf, onProgress) {
 // pdfOffset = pdfIndex - printedPage (전문 페이지 수, 자동 감지)
 function compareEntries(tocEntries, bodyData) {
   const { byPdfPage, byPrintedPage, totalPages, pdfOffset = 0 } = bodyData;
-  const hasPrintedMap = Object.keys(byPrintedPage).length > 0;
+  const printedKeys = Object.keys(byPrintedPage).map(Number);
+  const hasPrintedMap = printedKeys.length > 0;
+  const maxPrintedPage = hasPrintedMap ? Math.max.apply(null, printedKeys) : 0;
+  const minPrintedPage = hasPrintedMap ? Math.min.apply(null, printedKeys) : 0;
+  console.log('[panel9] 비교 설정: totalPages=' + totalPages + ', offset=' + pdfOffset +
+    ', 인쇄번호=' + (hasPrintedMap ? minPrintedPage + '~' + maxPrintedPage : '없음') +
+    ', PDF페이지텍스트=' + Object.keys(byPdfPage).length + '개');
 
-  // 검색 범위: ±3 (인쇄 번호 맵), ±5 (PDF 인덱스 폴백)
   function nearPages(center, range, max) {
     const result = [];
     for (let d = 0; d <= range; d++) {
@@ -515,6 +535,12 @@ function compareEntries(tocEntries, bodyData) {
       if (d > 0 && center - d >= 1 && center - d <= max) result.push(center - d);
     }
     return result;
+  }
+
+  // 본문 전체 텍스트 (페이지 번호 무시하고 전체에서 검색하는 폴백용)
+  var allBodyText = '';
+  for (var pk = 1; pk <= totalPages; pk++) {
+    allBodyText += ' ' + (byPdfPage[pk] || '');
   }
 
   const rows = [];
@@ -535,9 +561,20 @@ function compareEntries(tocEntries, bodyData) {
 
     let foundPage = null;
 
-    // 1) 인쇄 페이지 번호 맵 우선 검색 (±3 범위)
+    // 디버그: 처음 3개 항목의 매칭 과정 출력
+    if (rows.length < 3) {
+      var estPdfDbg = tocPage + pdfOffset;
+      var printedText = byPrintedPage[tocPage] ? byPrintedPage[tocPage].slice(0, 80) : '(없음)';
+      var pdfText = byPdfPage[estPdfDbg] ? byPdfPage[estPdfDbg].slice(0, 80) : '(없음)';
+      console.log('[panel9] 매칭 #' + (rows.length+1) + ': "' + te.title.slice(0, 30) + '" tocPage=' + tocPage +
+        '\n  인쇄맵[' + tocPage + ']=' + printedText +
+        '\n  PDF[' + estPdfDbg + ']=' + pdfText +
+        '\n  norm제목="' + normForMatch(te.title) + '"');
+    }
+
+    // 1) 인쇄 페이지 번호 맵 검색 (±5 범위, max = 인쇄 페이지 최대값)
     if (hasPrintedMap) {
-      for (const p of nearPages(tocPage, 3, totalPages)) {
+      for (const p of nearPages(tocPage, 5, maxPrintedPage)) {
         if (byPrintedPage[p] && titleFoundInPage(te.title, byPrintedPage[p])) {
           foundPage = p;
           break;
@@ -545,15 +582,26 @@ function compareEntries(tocEntries, bodyData) {
       }
     }
 
-    // 2) PDF 인덱스 폴백: pdfOffset을 적용하여 올바른 PDF 페이지 위치 추정
-    //    예) 전문 10페이지 → 인쇄1p = PDF11p → pdfOffset=10
+    // 2) PDF 인덱스 폴백: pdfOffset 적용
     if (foundPage === null) {
       const estPdf = tocPage + pdfOffset;
       for (const p of nearPages(estPdf, 5, totalPages)) {
         if (titleFoundInPage(te.title, byPdfPage[p] || '')) {
-          // 결과는 인쇄 페이지 번호로 환산해서 저장
           foundPage = p - pdfOffset;
-          if (foundPage < 1) { foundPage = null; continue; } // 오프셋 계산 오류 방어
+          if (foundPage < 1) { foundPage = null; continue; }
+          break;
+        }
+      }
+    }
+
+    // 3) 전체 본문 텍스트 폴백 — 페이지 특정 불가하지만 존재 여부는 확인
+    if (foundPage === null && titleFoundInPage(te.title, allBodyText)) {
+      // 제목이 본문 어딘가에 존재 → 페이지 번호는 모르지만 match로 간주
+      // 실제 페이지를 찾기 위해 전체 페이지 순회
+      for (var sp = 1; sp <= totalPages; sp++) {
+        if (titleFoundInPage(te.title, byPdfPage[sp] || '')) {
+          foundPage = hasPrintedMap ? (sp - pdfOffset) : sp;
+          if (foundPage < 1) foundPage = sp;
           break;
         }
       }
@@ -588,6 +636,7 @@ function compareEntries(tocEntries, bodyData) {
 
 // ─── Main flow ────────────────────────────────────────────────────────────────
 async function p9_startCompare() {
+  console.log('[panel9] 비교 시작 — toc:', tocFile?.name, 'body:', bodyFile?.name);
   showPanel('loadingPanel');
   initSteps();
   await tick();
@@ -678,9 +727,11 @@ async function p9_startCompare() {
     // Step 5: Compare — TOC 인쇄 페이지 번호 → 본문 해당 페이지 텍스트 내 제목 검색
     stepRun('s5', '비교 분석 중...');
     await tick();
+    console.log('[panel9] TOC 항목:', tocEntries.length, '본문 페이지:', bodyData.totalPages, 'offset:', bodyData.pdfOffset);
     allRows = compareEntries(tocEntries, bodyData);
     const matched = allRows.filter(r => r.status === 'match').length;
     const total   = allRows.filter(r => r.tocPage).length;
+    console.log('[panel9] 비교 결과:', allRows.length, '행, 일치:', matched, '/', total);
     stepDone('s5', `비교 완료 — 일치 ${matched}/${total}건`);
 
     await new Promise(r => setTimeout(r, 400));
@@ -696,8 +747,8 @@ async function p9_startCompare() {
     } catch (e) { /* 무시 */ }
 
   } catch(e) {
-    console.error(e);
-    alert('처리 중 오류가 발생했습니다: ' + e.message);
+    console.error('[panel9] 비교 오류:', e);
+    alert('처리 중 오류가 발생했습니다:\n' + e.message + (e.stack ? '\n\n' + e.stack.split('\n').slice(0,3).join('\n') : ''));
     showPanel('uploadPanel');
   }
 }
@@ -872,8 +923,12 @@ function p9_reset() {
   showPanel('uploadPanel');
 }
 
-// ── 탭 복원: 세션 스토리지에 저장된 결과가 있으면 즉시 복원 ──────────────
+// ── 초기 상태: 로딩/결과 패널 숨기기 + 세션 복원 ──────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // 초기 상태 — 업로드 패널만 표시
+  showPanel('uploadPanel');
+
+  // 세션 복원
   try {
     const raw = sessionStorage.getItem('toc_session');
     if (!raw) return;
@@ -881,7 +936,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!sess || !Array.isArray(sess.allRows) || !sess.allRows.length) return;
 
     allRows = sess.allRows;
-    // renderResults가 tocFile.name / bodyFile.name을 사용하므로 stub 생성
     if (sess.tocFileName)  tocFile  = { name: sess.tocFileName };
     if (sess.bodyFileName) bodyFile = { name: sess.bodyFileName };
 

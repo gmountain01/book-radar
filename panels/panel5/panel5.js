@@ -118,6 +118,7 @@ function renderPropCats() {
     el.innerHTML = '<div style="color:var(--muted);font-size:.78rem;">분석 데이터가 없습니다. 먼저 분석을 실행해주세요.</div>';
     return;
   }
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const statusLabel = {gap:'공백',behind:'우리 열세',leading:'우위',  'plan-only':'수요'};
   const statusBg = {gap:'#fdf0ee',behind:'#fdf5e0',leading:'#eaf5ed','plan-only':'#eef4ff'};
   const statusFg = {gap:'#c0392b',behind:'#c07a00',leading:'#1a6b3c','plan-only':'#2563eb'};
@@ -528,12 +529,18 @@ async function generatePlan5WithAI() {
     ctx = `기획 대상: ${currentTitle || currentField}`;
   }
 
-  const prompt = `당신은 한빛미디어 IT 도서 기획 전문가입니다. 아래 시장 데이터를 바탕으로 집필 기획안 항목을 작성해주세요.
+  const prompt = `당신은 한빛미디어에서 10년간 IT 도서를 기획해온 편집자입니다. 집필 기획안을 작성하세요.
+
+[글쓰기 원칙]
+- 출판 실무자가 사내 기획회의에서 발표하는 톤. 딱딱한 보고서가 아니라 설득력 있는 피칭.
+- "~입니다", "~할 수 있습니다" 반복 금지. 문장 구조를 다양하게.
+- 시장 수치를 문장 안에 자연스럽게 녹일 것. 수치 나열만 하지 말고 의미를 해석.
+- 기획의도·차별점은 "이 책이 왜 지금 필요한가"를 독자 입장에서 서술.
 
 [시장/기획 데이터]
 ${ctx}
 
-아래 JSON 형식으로만 응답하세요. 한국어로, 실무적이고 구체적으로 작성하세요.
+아래 JSON 형식으로만 응답하세요.
 
 {
   "title": "도서명(가제) — 실무형 제목 (30자 이내)",

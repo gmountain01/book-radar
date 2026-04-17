@@ -1,35 +1,82 @@
 // ━━━ Claude API 키 설정 ━━━
-// 아래 CLAUDE_API_KEY에 실제 키를 입력하면 UI 입력 없이 자동 사용됩니다.
-// 키는 이 파일에만 저장되므로 파일을 공유할 때 주의하세요.
 const CLAUDE_API_KEY = '';  // 예: 'sk-ant-api03-...'
 
-// ━━━ API 키 세션 저장소 ━━━
-// sessionStorage 사용: 탭/창 닫으면 자동 삭제 — 다중 사용자 환경에 적합.
-// 같은 탭 내에서는 패널 이동 후에도 유지됨.
-const _SESSION_AK = 'ub_session_ak';
+// ━━━ YouTube API 키 (공통) ━━━
+// 모든 패널(panel7·panel10·panel11)이 이 배열을 참조한다.
+const YT_API_KEYS_SHARED = [
+  'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo',
+  'AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c',
+  'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM',
+  'AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
+  'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis',
+  'AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc'
+];
+
+// ━━━ 공통 유틸 ━━━
+function escHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+// ━━━ API 키 저장소 ━━━
+// localStorage 사용: 브라우저를 닫아도 유지됨.
+// file:// 로컬 환경에서 sessionStorage는 탭 닫으면 소실되어 불편하므로 localStorage로 전환.
+const _SESSION_AK = 'ub_claude_ak';
 // 이전 버전 호환성용 키 이름 (마이그레이션 후 삭제)
 const _AK_STORE = 'ub_ak_enc';
 const _AK_SALT_STORE = 'ub_ak_salt';
 
 async function saveApiKey(rawKey) {
   if (!rawKey || !rawKey.trim()) {
-    sessionStorage.removeItem(_SESSION_AK);
+    _cachedApiKey = null;
+    localStorage.removeItem(_SESSION_AK);
+    sessionStorage.removeItem('ub_session_ak');
     return;
   }
-  sessionStorage.setItem(_SESSION_AK, rawKey.trim());
-  // 이전 localStorage 잔재 정리 (보안)
+  var key = rawKey.trim();
+  _cachedApiKey = key;
+  localStorage.setItem(_SESSION_AK, key);
+  // 이전 잔재 정리
   try {
+    sessionStorage.removeItem('ub_session_ak');
     localStorage.removeItem(_AK_STORE);
     localStorage.removeItem(_AK_SALT_STORE);
     localStorage.removeItem('ub_apikey');
   } catch(e) {}
+  // 모든 API 키 입력 필드에 자동 동기화
+  _syncApiKeyInputs(key);
 }
 
+var _lastSyncedKey = '';
+function _syncApiKeyInputs(key) {
+  if (!key || key === _lastSyncedKey) return;
+  _lastSyncedKey = key;
+  var masked = key.slice(0, 7) + '····' + key.slice(-4);
+  // ai-api-key: 실제 키 (이 필드는 직접 API 호출에 .value를 읽으므로)
+  var mainEl = document.getElementById('ai-api-key');
+  if (mainEl && !mainEl.value) mainEl.value = key;
+  // api-input 클래스 필드: 마스킹 표시 + data-api-synced로 실제 키 전달
+  document.querySelectorAll('.api-input').forEach(function(el) {
+    if (!el.value && !el.dataset.apiSynced) {
+      el.dataset.apiSynced = key;
+      el.value = '';
+      el.placeholder = '✓ API 키 연동됨 (' + masked + ')';
+      el.style.borderColor = '#1a7a5e';
+    }
+  });
+}
+
+var _cachedApiKey = null;
 async function loadApiKey() {
-  if (CLAUDE_API_KEY) return CLAUDE_API_KEY;
-  // sessionStorage 우선
-  const session = sessionStorage.getItem(_SESSION_AK);
-  if (session) return session;
+  // 메모리 캐시 우선 (localStorage 접근 최소화)
+  if (_cachedApiKey) return _cachedApiKey;
+  if (CLAUDE_API_KEY) { _cachedApiKey = CLAUDE_API_KEY; if (document.readyState !== 'loading') _syncApiKeyInputs(CLAUDE_API_KEY); return CLAUDE_API_KEY; }
+  // localStorage 우선
+  const saved = localStorage.getItem(_SESSION_AK);
+  if (saved) { _cachedApiKey = saved; if (document.readyState !== 'loading') _syncApiKeyInputs(saved); return saved; }
+  // 이전 sessionStorage 마이그레이션
+  const session = sessionStorage.getItem('ub_session_ak');
+  if (session) { await saveApiKey(session); return session; }
   // 이전 localStorage 평문 마이그레이션
   try {
     const plain = localStorage.getItem('ub_apikey');
@@ -226,6 +273,10 @@ function normalizeMonth(raw){
 let bestRows=[], plannedRows=[], lectureRows=[], myPub='', compPubs=[];
 let analysisData=[];
 
+// panel10(키워드 분석)에서 접근하는 게터 — let 변수는 window에 자동 노출 안 됨
+window.getKwBestRows = function() { return bestRows; };
+window.getKwLectureRows = function() { return lectureRows; };
+
 // ── 탭 전환 ──
 function switchTab(i,btn){
   if(btn.classList.contains('locked'))return;
@@ -246,14 +297,6 @@ function toggleSidebar(){
 }
 
 // ── 파일 읽기 ──
-function readFile(file){
-  return new Promise(r=>{
-    const fr=new FileReader();
-    fr.onload=e=>{const wb=XLSX.read(e.target.result,{type:'array'});r(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}));};
-    fr.readAsArrayBuffer(file);
-  });
-}
-
 // ── 드래그&드롭 (출간 예정 파일만) ──
 {
   const z=document.getElementById('zone2');
@@ -436,14 +479,14 @@ function closePWModal(){
 }
 
 function unlockTabs(){
-  ['tab1','tab2','tab3','tab4','tab5','tab6'].forEach(id=>{
+  ['tab1','tab2','tab3','tab4','tab5','tab6','tab7'].forEach(id=>{
     const btn = document.getElementById(id);
     if(!btn) return;
     btn.classList.remove('locked');
     // nav-label span만 업데이트 — textContent 직접 교체 시 span이 사라져 축소 시 텍스트 노출됨
     const label = btn.querySelector('.nav-label');
-    if(label) label.textContent = label.textContent.replace(' 🔒','');
-    else btn.textContent = btn.textContent.replace(' 🔒','');
+    if(label) label.textContent = label.textContent.replace(/\s?🔒/g,'');
+    else btn.textContent = btn.textContent.replace(/\s?🔒/g,'');
   });
 }
 
@@ -1890,12 +1933,19 @@ ${compTop?`경쟁 1위: "${compTop.title||''}" (${compTop.pub||''}, ${compTop.ye
 우리 도서 목록: ${d.mine.slice(0,4).map(b=>`"${b.title||''}"(${b.rank||''}위)`).join(' / ')||'없음'}
 인기 강의: ${d.lecture.slice(0,3).map(l=>`"${l.title||''}"(${(l.pop||0).toLocaleString()}명)`).join(' / ')||'없음'}`;
 
-  const prompt=`당신은 출판사 기획편집자입니다. 아래 시장 분석 데이터를 바탕으로, 저자에게 보내는 출판 기획 제안서 내용을 작성해주세요.
+  const prompt=`당신은 15년 경력의 출판사 기획편집자입니다. 저자에게 보내는 출판 기획 제안서를 작성하세요.
+
+[글쓰기 원칙]
+- 사람이 쓴 것처럼 자연스럽고 따뜻하게. "~할 수 있습니다", "~것으로 판단됩니다" 같은 AI 투 문장 금지.
+- 편집자가 커피 한 잔 하면서 저자에게 이야기하듯이 쓸 것. 격식체보다 정중하되 친근한 톤.
+- 구체적 수치(베스트셀러 순위, 강의 수강생 수, 경쟁 도서 출간일)를 자연스럽게 녹여서 신뢰감 부여.
+- 빈말·수식어 최소화. "혁신적인", "획기적인" 대신 데이터로 말할 것.
+- 각 문장이 구체적 정보를 담을 것. 내용 없이 길기만 한 문장 금지.
 
 [시장 데이터]
 ${ctx}
 
-아래 JSON 형식으로만 응답하세요. 한국어로, 따뜻하고 전문적인 편집자 톤으로 작성하세요. 실제 수치와 도서명을 최대한 활용하세요.
+아래 JSON 형식으로만 응답하세요.
 
 {
   "title1": "헤더 첫째줄 — 저자/분야 관련 짧은 문구 (쉼표로 끝남, 20자 이내)",

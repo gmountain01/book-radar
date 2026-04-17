@@ -46,6 +46,9 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 /* panel7(유튜버 분석)은 main 밖에 있으므로 fixed로 직접 배치 */
 #panel7{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;background:#F8F9FC;}
 #panel7.active{display:block;height:auto;overflow:hidden;}
+/* panel10(키워드 분석) — panel7과 동일 패턴 */
+#panel10{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;background:#f4f3ef;padding:0!important;}
+#panel10.active{display:block;overflow:hidden;}
 
 /* 업로드 */
 .upload-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:1rem;}
@@ -133,7 +136,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .ai-wiz-sec-title{font-size:.62rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);}
 .ai-wiz-rows{display:flex;flex-direction:column;gap:.4rem;}
 .ai-wiz-row{display:flex;align-items:flex-start;gap:.5rem;font-size:.78rem;}
-.ai-wiz-row .ic{flex-shrink:0;width:17px;text-align:center;font-size:.82rem;margin-top:.05rem;}
+.ai-wiz-row .ic{flex-shrink:0;width:0px;text-align:center;font-size:.82rem;margin-top:.05rem;}
 .ai-wiz-row .info .lbl{font-weight:600;color:var(--text);}
 .ai-wiz-row .info .val{font-size:.7rem;color:var(--muted);margin-top:1px;}
 .ai-wiz-row.ok .info .lbl{color:var(--green);}

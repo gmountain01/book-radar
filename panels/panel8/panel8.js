@@ -6,7 +6,7 @@
 try {
   if (typeof pdfjsLib !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      location.href.replace(/\/[^/]*$/, '/') + 'libs/pdf.worker.min.js';
   }
 } catch(e) { console.warn('PDF.js 초기화 실패:', e.message); }
 
@@ -184,8 +184,8 @@ async function p8_handleRulesFile(file) {
   try {
     const count = await loadRulesFile(file);
     document.getElementById('p8_rulesLabel').textContent = `✓ ${file.name} (${count}개 섹션 로드됨)`;
-    document.querySelector('.rules-badge-default').className = 'rules-badge-loaded';
-    document.querySelector('.rules-badge-loaded').textContent = '사용자 규칙 적용 중';
+    var badge = document.querySelector('.rules-badge-default');
+    if (badge) { badge.className = 'rules-badge-loaded'; badge.textContent = '사용자 규칙 적용 중'; }
   } catch(e) {
     alert('규칙 파일 읽기 실패: ' + e.message);
   }
@@ -213,12 +213,83 @@ function groupTextIntoLines(items, yTol = 3) {
       cur = { y, x, text: it.str, items: [it] };
       lines.push(cur);
     } else {
-      // filtered는 이미 y→x 순으로 정렬됐으므로 추가 sort 불필요
       cur.items.push(it);
-      cur.text = cur.items.map(i => i.str).join('');
+      // X좌표 간격으로 띄어쓰기 판단
+      cur.text = _joinItemsWithSpacing(cur.items);
     }
   }
   return lines;
+}
+
+/** 같은 줄의 텍스트 블록을 X좌표 간격 기반으로 연결 */
+function _joinItemsWithSpacing(items) {
+  if (items.length <= 1) return items[0]?.str || '';
+  let result = items[0].str;
+  for (let i = 1; i < items.length; i++) {
+    const prev = items[i - 1];
+    const curr = items[i];
+    // 이전 블록의 끝 X = 시작X + 글자폭(width)
+    const prevEndX = prev.transform[4] + (prev.width || 0);
+    const currStartX = curr.transform[4];
+    const gap = currStartX - prevEndX;
+    // 폰트 크기 기준 간격 판단
+    const fontSize = Math.abs(curr.transform[0]) || 10;
+    const spaceThreshold = fontSize * 0.25; // 폰트의 25% 이상 간격이면 띄어쓰기
+    // 이전 블록이 공백으로 끝나거나 현재가 공백으로 시작하면 추가 공백 불필요
+    const prevEndsSpace = /\s$/.test(prev.str);
+    const currStartsSpace = /^\s/.test(curr.str);
+    if (prevEndsSpace || currStartsSpace) {
+      result += curr.str;
+    } else if (gap > spaceThreshold) {
+      result += ' ' + curr.str;
+    } else {
+      result += curr.str;
+    }
+  }
+  return result;
+}
+
+/**
+ * 줄 목록을 하나의 텍스트로 연결 — 강제 개행 vs 문단 구분 자동 판단
+ * - 줄 간 Y간격이 행간(lineHeight)의 1.6배 이상 → 문단 구분 (\n)
+ * - 이전 줄이 마침표/물음표/느낌표/콜론으로 끝남 → 문장 끝 (\n)
+ * - 그 외 → 강제 개행 → 공백으로 연결 (문장 이어붙이기)
+ */
+function _joinLinesSmartly(lines, pageH) {
+  if (!lines.length) return '';
+  if (lines.length === 1) return lines[0].text;
+  // 줄 간격(행간) 추정: 전체 줄 간격의 중앙값
+  const gaps = [];
+  for (let i = 1; i < lines.length; i++) {
+    var g = Math.abs(lines[i - 1].y - lines[i].y);
+    if (g > 0 && g < pageH * 0.15) gaps.push(g);
+  }
+  gaps.sort(function(a, b) { return a - b; });
+  var medianGap = gaps.length ? gaps[Math.floor(gaps.length / 2)] : 14;
+  var paraThreshold = medianGap * 1.6; // 행간의 1.6배 이상이면 문단 구분
+
+  var parts = [lines[0].text];
+  for (var i = 1; i < lines.length; i++) {
+    var prevText = lines[i - 1].text.trimEnd();
+    var yGap = Math.abs(lines[i - 1].y - lines[i].y);
+    // 문단 구분 조건
+    var isParagraphBreak =
+      yGap > paraThreshold ||                         // Y 간격 큼
+      /[.!?:;。]\s*$/.test(prevText) ||               // 문장 종결 부호
+      /^[\s]*$/.test(prevText) ||                      // 빈 줄
+      /^(Chapter|CHAPTER|Part|PART|\d+[.-]\d+|제\s*\d+)/.test(lines[i].text.trim()); // 헤딩 시작
+    if (isParagraphBreak) {
+      parts.push('\n' + lines[i].text);
+    } else {
+      // 강제 개행 → 공백으로 연결
+      // 한글-한글 사이에 불필요한 공백 방지
+      var lastChar = prevText.slice(-1);
+      var firstChar = lines[i].text.trimStart().charAt(0);
+      var needSpace = !(/[가-힣]/.test(lastChar) && /[가-힣]/.test(firstChar) && prevText.length > 15);
+      parts.push(needSpace ? ' ' + lines[i].text : lines[i].text);
+    }
+  }
+  return parts.join('');
 }
 
 /** 줄 목록에서 페이지 헤딩과 레벨을 추출 */
@@ -462,9 +533,9 @@ async function extractPDF(file) {
     const pageH = vp.height;
     pg.cleanup(); // 렌더링 리소스 해제
 
-    // 줄 단위 그룹핑
+    // 줄 단위 그룹핑 + 강제 개행 제거
     const lines = groupTextIntoLines(content.items);
-    const text = lines.map(l => l.text).join('\n');
+    const text = _joinLinesSmartly(lines, pageH);
 
     // 본문 페이지 번호: 하단 12% 영역에 단독으로 있는 숫자
     let bodyPageNum = null;
@@ -615,14 +686,28 @@ const PUNCT_PATS = [
 
 // 8. 외래어 오표기 (1팀 교정 규칙 §7 기반)
 const LOANWORD_PATS = [
-  [/컨텐츠/g,         '외래어오표기', 'medium', '콘텐츠 (표준 표기)'],
-  [/워크플로우/g,     '외래어오표기', 'medium', '워크플로 (표준 표기)'],
-  [/어플리케이션/g,   '외래어오표기', 'medium', '애플리케이션 (표준 표기)'],
-  [/섀도우(?!박스)/g, '외래어오표기', 'low',    '섀도 (표준 표기)'],
-  [/메세지/g,         '외래어오표기', 'medium', '메시지 (표준 표기)'],
-  [/리더쉽/g,         '외래어오표기', 'medium', '리더십 (표준 표기)'],
-  [/페이지(?=\s*수)/g,'외래어오표기', 'low',    '쪽 수 또는 페이지 수 (문맥 확인)'],
-  [/니즈/g,           '외래어오표기', 'medium', '"요구" 또는 "필요"로 한국어 표현 권장'],
+  // 표준국어대사전 기준 외래어 오표기 → 올바른 표기
+  [/컨텐츠/g,         '외래어오표기', 'medium', '콘텐츠'],
+  [/메세지/g,         '외래어오표기', 'medium', '메시지'],
+  [/리더쉽/g,         '외래어오표기', 'medium', '리더십'],
+  [/파트너쉽/g,       '외래어오표기', 'medium', '파트너십'],
+  [/멤버쉽/g,         '외래어오표기', 'medium', '멤버십'],
+  [/워크플로우/g,     '외래어오표기', 'medium', '워크플로'],
+  [/어플리케이션/g,   '외래어오표기', 'medium', '애플리케이션'],
+  [/어플(?=[^리]|$)/g,'외래어오표기', 'medium', '앱 또는 애플리케이션'],
+  [/데스크탑/g,       '외래어오표기', 'medium', '데스크톱'],
+  [/프리젠테이션/g,   '외래어오표기', 'medium', '프레젠테이션'],
+  [/네비게이션/g,     '외래어오표기', 'medium', '내비게이션'],
+  [/악세서리/g,       '외래어오표기', 'medium', '액세서리'],
+  [/다이나믹/g,       '외래어오표기', 'low',    '다이내믹'],
+  [/로보트/g,         '외래어오표기', 'medium', '로봇'],
+  [/싸이트/g,         '외래어오표기', 'medium', '사이트'],
+  [/시뮬레이팅/g,     '외래어오표기', 'medium', '시뮬레이션'],
+  [/인터렉티브/g,     '외래어오표기', 'medium', '인터랙티브'],
+  [/브라우져/g,       '외래어오표기', 'medium', '브라우저'],
+  [/서버(?=\s*사이드)/g,'외래어오표기', 'low',  '서버 사이드 (띄어쓰기 확인)'],
+  [/섀도우(?!박스)/g, '외래어오표기', 'low',    '섀도'],
+  [/니즈/g,           '외래어오표기', 'low',    '"요구" 또는 "필요" (한국어 표현 권장)'],
 ];
 
 // 9. 번역체·일본식 표현 (표면 정규식)
@@ -996,7 +1081,15 @@ rulesChunks = parseRulesIntoChunks(DEFAULT_RULES_MD);
 // ──────────────────────────────────────────────
 // 언어 검사 (Claude API)
 // ──────────────────────────────────────────────
-const SYS = `You are a professional Korean book editor with expertise in publishing proofreading (교정교열). Analyze the given text thoroughly and return ONLY valid JSON.
+const SYS = `You are a professional Korean book editor with 15+ years in IT/tech publishing. Your writing philosophy: every sentence should sound like a real person wrote it, not a machine. Analyze the given text thoroughly and return ONLY valid JSON.
+
+[윤문 핵심 원칙]
+When suggesting rewrites (suggestion), follow these writing principles:
+- Natural Korean rhythm: vary sentence length, avoid monotonous ~입니다 endings
+- No AI clichés: ban "~할 수 있습니다", "~것으로 판단됩니다", "~에 대해서", "혁신적인", "획기적인"
+- Human touch: write as if an experienced editor is polishing, not a template filling blanks
+- Concrete over abstract: replace vague modifiers with specific examples or data
+- Reader-first: every rewrite should be clearer and more engaging for the reader
 
 Check ALL of the following issue types:
 
@@ -1012,7 +1105,7 @@ MEDIUM severity (개선 필요):
 - 번역체: Unnatural translation-style Korean — ~함에 있어서, ~에 대해서, ~의 경우에 있어서, ~라고 하는, ~적(的) 남용, ~를 통해서
 - 일본식표현: Japanese-influenced — ~에 있어서, ~로 인하여, ~에 의한, ~하는 바이다, ~(이)라고 하는
 - 수동태과용: Excessive passive — -어지다/-되어지다(high), ~에 의해 ~되다, ~받다 남용
-- 외래어표기오류: Foreign word spelling errors per Korean standard orthography (e.g., 컨텐츠→콘텐츠, 메세지→메시지, 리더쉽→리더십)
+- 외래어표기오류: WRONG loanword spelling per Korean standard orthography rules. IMPORTANT: Using a loanword itself is NOT an error. Only flag when the SPELLING is wrong. 컨텐츠→콘텐츠, 메세지→메시지, 리더쉽→리더십, 악세서리→액세서리, 카페인→카페인(OK), 인터페이스(OK — do NOT flag correct loanwords). Common errors: 데스크탑→데스크톱, 프리젠테이션→프레젠테이션, 컴퓨팅(OK), 소프트웨어(OK), 어플→앱/애플리케이션, 시뮬레이션(OK), 커뮤니케이션(OK), 콘텐트→콘텐츠, 다이나믹→다이내믹, 로보트→로봇, 싸이트→사이트, 웹사이트(OK), 매니저→매니저(OK), 네비게이션→내비게이션, 가이드라인(OK)
 - 용어불일치: Inconsistent term notation — same concept written differently in the SAME batch
 - 문체불일치: Inconsistent register — mixing formal and informal within same section
 
@@ -1276,12 +1369,12 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
 // ──────────────────────────────────────────────
 // 컨텍스트 추출
 // ──────────────────────────────────────────────
-function getCtx(text, found, window=90) {
+function getCtx(text, found, ctxWindow=90) {
   if (!found || !text) return { before:'', target:found, after:'' };
   const idx = text.indexOf(found);
-  if (idx === -1) return { before:'', target:'', after: text.slice(0, window) + '…' };
-  const bs = Math.max(0, idx - window);
-  const ae = Math.min(text.length, idx + found.length + window);
+  if (idx === -1) return { before:'', target:'', after: text.slice(0, ctxWindow) + '…' };
+  const bs = Math.max(0, idx - ctxWindow);
+  const ae = Math.min(text.length, idx + found.length + ctxWindow);
   return {
     before: (bs > 0 ? '…' : '') + text.slice(bs, idx),
     target: text.slice(idx, idx + found.length),
@@ -1345,7 +1438,7 @@ async function p8_startProofread() {
   }
   if (!apiKey) {
     const keyInput = document.getElementById('p8_apiKey');
-    if (keyInput) apiKey = keyInput.value.trim();
+    if (keyInput) apiKey = keyInput.value.trim() || keyInput.dataset.apiSynced || '';
   }
   // API 키가 입력됐는데 형식이 틀린 경우 즉시 오류 안내
   if (apiKey && !isValidApiKeyFormat(apiKey)) {

@@ -1,0 +1,245 @@
+/* ══════════════════════════════════════════════════════
+   panel11 — 개발자 디버그 콘솔 (숨겨진 관리자 패널)
+   scoped under #panel11 / .p11-* prefixes
+   ══════════════════════════════════════════════════════ */
+
+/* 패널 루트 — 다크 터미널 테마
+   display:flex를 여기에 쓰면 ID 명시도가 .panel{display:none}을 이겨버리므로
+   반드시 #panel11.active에서만 display:flex를 선언한다 */
+#panel11 {
+  background: #0d1117;
+  color: #c9d1d9;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+#panel11.active {
+  display: flex !important;
+}
+
+/* ─── 헤더 ─── */
+#panel11 .p11-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem 0.75rem;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  flex-shrink: 0;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+#panel11 .p11-header h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #a78bfa;
+  margin: 0;
+  white-space: nowrap;
+  font-family: 'DM Mono', monospace;
+}
+
+#panel11 .p11-controls {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ─── 버튼 ─── */
+#panel11 .p11-btn {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  background: #161b22;
+  color: #8b949e;
+  font-size: 0.7rem;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+#panel11 .p11-btn:hover { background: #21262d; color: #e6edf3; }
+#panel11 .p11-btn.p11-active { background: #4f46b8; color: #fff; border-color: #4f46b8; }
+#panel11 .p11-btn-clear  { color: #f87171 !important; border-color: #3d1f1f !important; }
+#panel11 .p11-btn-clear:hover  { background: #2d1515 !important; }
+#panel11 .p11-btn-copy   { color: #34d399 !important; border-color: #1a3325 !important; }
+#panel11 .p11-btn-copy:hover   { background: #112219 !important; }
+#panel11 .p11-btn-save   { color: #a78bfa !important; border-color: #3b3170 !important; }
+#panel11 .p11-btn-save:hover   { background: #1a1730 !important; }
+#panel11 .p11-btn-export { color: #60a5fa !important; border-color: #1a2d4a !important; }
+#panel11 .p11-btn-export:hover { background: #0e1f38 !important; }
+
+/* ─── 통계 바 ─── */
+#panel11 .p11-stats {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.45rem 1.5rem;
+  background: #13161f;
+  border-bottom: 1px solid #21262d;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+}
+#panel11 .p11-stat { display: flex; align-items: center; gap: 0.35rem; }
+#panel11 .p11-stat-dot {
+  width: 6px; height: 6px; border-radius: 50%; display: inline-block;
+}
+#panel11 .p11-stat-error .p11-stat-dot { background: #f87171; }
+#panel11 .p11-stat-warn  .p11-stat-dot { background: #fbbf24; }
+#panel11 .p11-stat-info  .p11-stat-dot { background: #6b7280; }
+#panel11 .p11-stat-nav   .p11-stat-dot { background: #a78bfa; }
+#panel11 .p11-stat-error { color: #f87171; }
+#panel11 .p11-stat-warn  { color: #fbbf24; }
+#panel11 .p11-stat-info  { color: #6b7280; }
+#panel11 .p11-stat-nav   { color: #a78bfa; }
+
+/* ─── 로그 목록 ─── */
+#panel11 .p11-log-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.25rem 0;
+}
+#panel11 .p11-log-list::-webkit-scrollbar { width: 5px; }
+#panel11 .p11-log-list::-webkit-scrollbar-track { background: #0d1117; }
+#panel11 .p11-log-list::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+
+#panel11 .p11-empty {
+  text-align: center;
+  color: #3b4149;
+  padding: 4rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+/* ─── 로그 항목 ─── */
+#panel11 .p11-log-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.28rem 1.25rem;
+  font-size: 0.7rem;
+  line-height: 1.55;
+  border-bottom: 1px solid #161b22;
+  transition: background 0.1s;
+}
+#panel11 .p11-log-entry:hover { background: #13161f; }
+
+/* 레벨별 왼쪽 강조선 */
+#panel11 .p11-level-error { border-left: 2px solid #f87171; padding-left: calc(1.25rem - 2px); }
+#panel11 .p11-level-warn  { border-left: 2px solid #fbbf24; padding-left: calc(1.25rem - 2px); }
+#panel11 .p11-level-info  { border-left: 2px solid #21262d; padding-left: calc(1.25rem - 2px); }
+#panel11 .p11-level-nav   { border-left: 2px solid #4f46b8; padding-left: calc(1.25rem - 2px); }
+
+#panel11 .p11-ts {
+  color: #3b4149;
+  white-space: nowrap;
+  font-family: 'DM Mono', monospace;
+  min-width: 78px;
+  font-size: 0.66rem;
+  padding-top: 0.1rem;
+}
+
+#panel11 .p11-badge {
+  font-size: 0.6rem;
+  padding: 0.08rem 0.3rem;
+  border-radius: 3px;
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 42px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.03em;
+}
+#panel11 .p11-badge-error  { background: #2d1515; color: #f87171; }
+#panel11 .p11-badge-warn   { background: #2d230f; color: #fbbf24; }
+#panel11 .p11-badge-info   { background: #1c2128; color: #6b7280; }
+#panel11 .p11-badge-nav    { background: #1a1730; color: #a78bfa; }
+
+#panel11 .p11-source {
+  color: #444c56;
+  font-size: 0.62rem;
+  white-space: nowrap;
+  padding-top: 0.12rem;
+}
+
+#panel11 .p11-msg {
+  color: #c9d1d9;
+  word-break: break-all;
+  flex: 1;
+  white-space: pre-wrap;
+}
+#panel11 .p11-level-error .p11-msg { color: #fca5a5; }
+#panel11 .p11-level-warn  .p11-msg { color: #fde68a; }
+
+/* ─── 사이드바 어드민 버튼 스타일 ─── */
+.nav-item-admin {
+  border-top: 1px dashed rgba(167, 139, 250, 0.2) !important;
+  margin-top: 2px;
+}
+.nav-item-admin .nav-label { color: #a78bfa !important; }
+.nav-item-admin:hover { background: rgba(79, 70, 184, 0.15) !important; }
+.nav-item-admin.active { background: rgba(79, 70, 184, 0.25) !important; border-left-color: #a78bfa !important; }
+
+.nav-section-admin {
+  color: rgba(167, 139, 250, 0.5) !important;
+  border-top: none !important;
+}
+
+/* 사이드바 축소 시 어드민 버튼 아이콘 */
+.sidebar.collapsed .nav-item-admin.active { border-left-color: transparent !important; }
+
+/* ─── API 키 관리 패널 ─── */
+#panel11 .p11-key-section {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+#panel11 .p11-key-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #e6edf3;
+  margin-bottom: 8px;
+  font-family: 'DM Mono', monospace;
+}
+#panel11 .p11-key-input {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  background: #0d1117;
+  color: #c9d1d9;
+  font-size: 0.68rem;
+  font-family: 'DM Mono', monospace;
+  outline: none;
+}
+#panel11 .p11-key-input:focus { border-color: #4f46b8; }
+#panel11 .p11-key-masked { -webkit-text-security: disc; text-security: disc; }
+#panel11 .p11-key-masked:focus { -webkit-text-security: none; text-security: none; }
+#panel11 .p11-key-status {
+  font-size: 0.65rem;
+  margin-top: 6px;
+  font-family: 'DM Mono', monospace;
+  line-height: 1.6;
+}
+#panel11 .p11-key-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #30363d;
+  background: #1c2128;
+  color: #6b7280;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+#panel11 .p11-key-hint {
+  font-size: 0.6rem;
+  color: #444c56;
+  margin-top: 6px;
+  font-family: 'DM Mono', monospace;
+}

@@ -6,13 +6,10 @@
 // 상수 & 상태
 // ═══════════════════════════════════════════════════════════════
 // 여섯 API 키 — 할당량 소진 시 자동 전환
-const API_KEYS = [
-  'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo',
-  'AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c',
-  'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM',
-  'AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
-  'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis',
-  'AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc'
+const API_KEYS = typeof YT_API_KEYS_SHARED !== 'undefined' ? YT_API_KEYS_SHARED : [
+  'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo','AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c',
+  'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM','AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
+  'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis','AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc'
 ];
 const YT_BASE = 'https://www.googleapis.com/youtube/v3';
 const YT_LS = { saved: 'yt_saved', compare: 'yt_compare' };
@@ -219,15 +216,7 @@ function timeSince(s) {
   return Math.floor(d / 365) + '년 전';
 }
 
-function escHtml(s) {
-  if (s == null) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+// escHtml — shared/app.js에 전역 정의됨
 
 function destroyChart(key) {
   if (YT_S.charts[key]) { YT_S.charts[key].destroy(); delete YT_S.charts[key]; }
@@ -1933,28 +1922,30 @@ document.getElementById('apiModal').addEventListener('click', function(e) {
 // ═══════════════════════════════════════════════════════════════
 const TREND_CACHE_KEY = 'yt_trend_keywords_v5';
 const TREND_CACHE_TTL = 30 * 60 * 1000; // 30분
-// IT 출판 키워드 30개 — 6개 카테고리
-const STATIC_IT_KEYWORDS = [
-  // AI 핵심 툴 (제품명)
+// IT 출판 키워드 — panel10(키워드 분석) taxonomy L3에서 자동 공급
+// panel10 로드 전이거나 taxonomy가 비어있으면 폴백 사용
+const _FALLBACK_IT_KEYWORDS = [
   'AI', 'ChatGPT', 'Claude', 'Gemini', 'Grok', '딥시크',
-  // AI 코딩 패러다임
   '바이브코딩', '클로드코드', '커서', '코파일럿', 'GPT',
-  // AI 개념·기술
   'LLM', 'RAG', 'AI에이전트', 'MCP', '파인튜닝', '멀티모달', '벡터DB',
-  // AI 활용 실무
-  '생성형AI', '프롬프트엔지니어링', '노코드AI', 'AI자동화', '로컬LLM', '안티그래비티',
-  // 뜨는 언어·환경
+  '생성형AI', '프롬프트엔지니어링', '노코드AI', 'AI자동화', '로컬LLM',
   '파이썬', 'TypeScript', '러스트', 'Go언어',
-  // 기반 기술
   '머신러닝', '데이터분석'
 ];
+function getITKeywords() {
+  if (typeof window.getKwTrendKeywords === 'function') {
+    var kws = window.getKwTrendKeywords();
+    if (kws && kws.length >= 5) return kws;
+  }
+  return _FALLBACK_IT_KEYWORDS;
+}
 
 // 큐레이션된 키워드 목록을 유지하되, 트렌딩 영상 텍스트에서
 // 각 키워드의 언급 횟수를 세어 순위를 조정한다.
 // 임의 단어 추출은 노이즈가 많아 사용하지 않는다.
 function rankByTrending(corpus) {
   const text = corpus.toLowerCase();
-  return STATIC_IT_KEYWORDS
+  return getITKeywords()
     .map(kw => {
       // 공백 포함 키워드('클로드 코드' 등)도 처리
       const pattern = kw.toLowerCase().replace(/[+#()[\]]/g, '\\$&');
@@ -2007,7 +1998,7 @@ async function loadTrendKeywords(forceRefresh = false) {
 
   // API 키 없으면 정적 목록 사용
   if (!getApiKey()) {
-    renderKeywordChips(STATIC_IT_KEYWORDS);
+    renderKeywordChips(getITKeywords());
     return;
   }
 
@@ -2025,14 +2016,14 @@ async function loadTrendKeywords(forceRefresh = false) {
       .map(v => (v.snippet?.title || '') + ' ' + (v.snippet?.description || ''))
       .join(' ');
 
-    // STATIC_IT_KEYWORDS 순서를 트렌딩 언급 횟수 기준으로 재정렬
+    // getITKeywords() 순서를 트렌딩 언급 횟수 기준으로 재정렬
     const keywords = rankByTrending(corpus);
 
     localStorage.setItem(TREND_CACHE_KEY, JSON.stringify({ ts: Date.now(), keywords }));
     renderKeywordChips(keywords);
   } catch (e) {
     // API 실패 시 정적 목록 원래 순서 그대로 표시
-    renderKeywordChips(STATIC_IT_KEYWORDS);
+    renderKeywordChips(getITKeywords());
   }
 }
 
