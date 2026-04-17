@@ -1,0 +1,182 @@
+/* ══════════════════════════════════════════════════════
+   panel12 — 원고 작성 에디터
+   scoped under .panel12-scope
+   ══════════════════════════════════════════════════════ */
+.panel12-scope {
+  --ms-bg: #fafaf8;
+  --ms-surface: #ffffff;
+  --ms-border: #e5e3db;
+  --ms-border2: #d0cdc4;
+  --ms-text: #1a1917;
+  --ms-text2: #56544e;
+  --ms-text3: #9b9890;
+  --ms-accent: #3B3F8C;
+  --ms-accent-light: #eeedfb;
+  font-family: 'Pretendard', 'IBM Plex Sans KR', sans-serif;
+  background: var(--ms-bg);
+  padding: 0 !important;
+  overflow: hidden;
+}
+.panel12-scope * { box-sizing: border-box; }
+
+/* Layout */
+.panel12-scope .ms-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: 100%;
+}
+
+/* ── Sidebar (목차 트리) ── */
+.panel12-scope .ms-sidebar {
+  background: var(--ms-surface);
+  border-right: 1px solid var(--ms-border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.panel12-scope .ms-sidebar-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--ms-border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel12-scope .ms-sidebar-title {
+  font-size: 14px; font-weight: 700; color: var(--ms-text);
+}
+.panel12-scope .ms-sidebar-btns { display: flex; gap: 4px; }
+.panel12-scope .ms-sb-btn {
+  padding: 3px 8px; font-size: 11px; border: 1px solid var(--ms-border);
+  border-radius: 4px; background: none; color: var(--ms-text2);
+  cursor: pointer; font-family: inherit;
+}
+.panel12-scope .ms-sb-btn:hover { background: var(--ms-accent-light); color: var(--ms-accent); }
+
+.panel12-scope .ms-tree {
+  flex: 1; overflow-y: auto; padding: 8px 0;
+}
+.panel12-scope .ms-tree-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px 5px calc(12px + var(--indent, 0px));
+  font-size: 12px; color: var(--ms-text2); cursor: pointer;
+  border-left: 2px solid transparent; transition: all 0.1s;
+}
+.panel12-scope .ms-tree-item:hover { background: #f5f4f0; }
+.panel12-scope .ms-tree-item.active {
+  background: var(--ms-accent-light); color: var(--ms-accent);
+  border-left-color: var(--ms-accent); font-weight: 600;
+}
+.panel12-scope .ms-tree-item .ms-level {
+  font-size: 9px; font-weight: 700; color: var(--ms-text3);
+  min-width: 16px; text-align: center;
+}
+.panel12-scope .ms-tree-item .ms-tree-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel12-scope .ms-tree-item .ms-tree-del {
+  font-size: 10px; color: var(--ms-text3); opacity: 0; cursor: pointer; padding: 2px;
+}
+.panel12-scope .ms-tree-item:hover .ms-tree-del { opacity: 1; }
+.panel12-scope .ms-tree-item .ms-tree-del:hover { color: #c23d2f; }
+
+/* ── Editor Main ── */
+.panel12-scope .ms-editor {
+  padding: 32px 40px;
+  overflow-y: auto; height: 100%;
+}
+.panel12-scope .ms-editor-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; gap: 12px;
+}
+.panel12-scope .ms-editor-title {
+  font-size: 18px; font-weight: 700; color: var(--ms-text);
+}
+.panel12-scope .ms-editor-actions { display: flex; gap: 8px; }
+.panel12-scope .ms-btn {
+  padding: 7px 16px; font-size: 12px; border-radius: 6px;
+  border: 1px solid var(--ms-border); background: var(--ms-surface);
+  color: var(--ms-text2); cursor: pointer; font-family: inherit; font-weight: 500;
+  transition: all 0.15s;
+}
+.panel12-scope .ms-btn:hover { border-color: var(--ms-accent); color: var(--ms-accent); }
+.panel12-scope .ms-btn-primary {
+  background: var(--ms-accent); color: #fff; border-color: var(--ms-accent);
+}
+.panel12-scope .ms-btn-primary:hover { background: #2d3070; }
+
+/* ── Section Card ── */
+.panel12-scope .ms-section {
+  background: var(--ms-surface);
+  border: 1px solid var(--ms-border);
+  border-radius: 8px; margin-bottom: 16px;
+  overflow: hidden;
+}
+.panel12-scope .ms-section-header {
+  padding: 10px 16px;
+  background: #f8f7f4;
+  border-bottom: 1px solid var(--ms-border);
+  display: flex; align-items: center; gap: 8px;
+}
+.panel12-scope .ms-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--ms-text3);
+}
+.panel12-scope .ms-section-body { padding: 16px; }
+
+.panel12-scope .ms-input-title {
+  width: 100%; font-size: 20px; font-weight: 700;
+  border: none; outline: none; background: none;
+  color: var(--ms-text); font-family: inherit;
+  padding: 4px 0;
+}
+.panel12-scope .ms-input-title::placeholder { color: var(--ms-border2); }
+
+.panel12-scope .ms-textarea {
+  width: 100%; min-height: 80px; font-size: 14px;
+  border: none; outline: none; background: none; resize: vertical;
+  color: var(--ms-text); font-family: inherit; line-height: 1.8;
+  padding: 4px 0;
+}
+.panel12-scope .ms-textarea::placeholder { color: var(--ms-border2); }
+.panel12-scope .ms-textarea-body { min-height: 200px; }
+
+/* ── Word count ── */
+.panel12-scope .ms-wordcount {
+  font-size: 10px; color: var(--ms-text3); text-align: right;
+  padding: 4px 16px 8px; font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ── Empty state ── */
+.panel12-scope .ms-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 100%; color: var(--ms-text3);
+  gap: 8px;
+}
+.panel12-scope .ms-empty-icon { font-size: 32px; }
+.panel12-scope .ms-empty-text { font-size: 13px; }
+
+/* ── Footer bar ── */
+/* ── Style selector bar ── */
+.panel12-scope .ms-style-bar {
+  display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.panel12-scope .ms-style-chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 12px; font-size: 11px; border-radius: 20px;
+  border: 1px solid var(--ms-border); background: var(--ms-surface);
+  color: var(--ms-text2); cursor: pointer; font-family: inherit;
+  transition: all 0.15s;
+}
+.panel12-scope .ms-style-chip:hover { border-color: var(--chip-color, var(--ms-accent)); }
+.panel12-scope .ms-style-chip.active {
+  background: var(--chip-color, var(--ms-accent)); color: #fff;
+  border-color: var(--chip-color, var(--ms-accent)); font-weight: 600;
+}
+.panel12-scope .ms-style-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.panel12-scope .ms-style-chip.active .ms-style-dot { background: #fff !important; }
+
+.panel12-scope .ms-footer {
+  padding: 8px 16px;
+  border-top: 1px solid var(--ms-border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10px; color: var(--ms-text3);
+  font-family: 'IBM Plex Mono', monospace;
+  gap: 8px;
+}

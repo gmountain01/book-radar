@@ -1,0 +1,53 @@
+/* panel15 — 앞부속 작성 */
+.panel15-scope {
+  font-family: 'Pretendard', 'IBM Plex Sans KR', sans-serif;
+  background: #fafaf8; padding: 0 !important; overflow-y: auto;
+}
+.panel15-scope .fm-wrap { max-width: 760px; margin: 0 auto; padding: 32px 40px 60px; }
+.panel15-scope .fm-header { margin-bottom: 24px; }
+.panel15-scope .fm-title { font-size: 20px; font-weight: 700; color: #1a1917; }
+.panel15-scope .fm-sub { font-size: 12px; color: #9b9890; margin-top: 4px; }
+
+/* tabs */
+.panel15-scope .fm-tabs { display: flex; gap: 0; border-bottom: 1px solid #e5e3db; margin-bottom: 24px; }
+.panel15-scope .fm-tab {
+  padding: 9px 18px; font-size: 12px; font-weight: 500; color: #9b9890;
+  border: none; background: none; cursor: pointer; font-family: inherit;
+  border-bottom: 2px solid transparent; transition: all 0.15s;
+}
+.panel15-scope .fm-tab:hover { color: #56544e; }
+.panel15-scope .fm-tab.active { color: #3B3F8C; border-bottom-color: #3B3F8C; font-weight: 600; }
+
+/* card */
+.panel15-scope .fm-card {
+  background: #fff; border: 1px solid #e5e3db; border-radius: 10px;
+  padding: 24px; margin-bottom: 16px;
+}
+.panel15-scope .fm-card-title {
+  font-size: 14px; font-weight: 700; color: #3B3F8C; margin-bottom: 6px;
+}
+.panel15-scope .fm-card-desc { font-size: 11px; color: #9b9890; margin-bottom: 14px; }
+
+.panel15-scope .fm-textarea {
+  width: 100%; min-height: 120px; border: 1px solid #e5e3db; border-radius: 6px;
+  padding: 10px 12px; font-size: 13px; color: #1a1917; font-family: inherit;
+  line-height: 1.8; resize: vertical; outline: none; background: #fafaf8;
+}
+.panel15-scope .fm-textarea:focus { border-color: #3B3F8C; background: #fff; }
+.panel15-scope .fm-textarea::placeholder { color: #c6c4ba; }
+
+.panel15-scope .fm-wordcount {
+  font-size: 10px; color: #9b9890; text-align: right; margin-top: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* actions */
+.panel15-scope .fm-actions { display: flex; gap: 8px; margin-top: 20px; }
+.panel15-scope .fm-btn {
+  padding: 8px 16px; font-size: 12px; border-radius: 6px;
+  border: 1px solid #e5e3db; background: #fff; color: #56544e;
+  cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s;
+}
+.panel15-scope .fm-btn:hover { border-color: #3B3F8C; color: #3B3F8C; }
+.panel15-scope .fm-btn-primary { background: #3B3F8C; color: #fff; border-color: #3B3F8C; }
+.panel15-scope .fm-btn-primary:hover { background: #2d3070; }

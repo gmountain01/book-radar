@@ -636,10 +636,14 @@ function calcViewsPerDay(views, publishedDate) {
 var YT_CACHE_KEY = 'kw_yt_cache';
 var YT_CACHE_TTL = 24 * 60 * 60 * 1000; // 24시간
 
+var _ytCacheMem = null;
 function _loadYtCache() {
-  try { return JSON.parse(localStorage.getItem(YT_CACHE_KEY) || '{}'); } catch (e) { return {}; }
+  if (_ytCacheMem) return _ytCacheMem;
+  try { _ytCacheMem = JSON.parse(localStorage.getItem(YT_CACHE_KEY) || '{}'); } catch (e) { _ytCacheMem = {}; }
+  return _ytCacheMem;
 }
 function _saveYtCache(cache) {
+  _ytCacheMem = cache;
   try {
     // 오래된 항목 정리 (100개 넘으면 가장 오래된 것부터 삭제)
     var keys = Object.keys(cache);

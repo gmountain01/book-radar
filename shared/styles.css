@@ -49,6 +49,14 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 /* panel10(키워드 분석) — panel7과 동일 패턴 */
 #panel10{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;background:#f4f3ef;padding:0!important;}
 #panel10.active{display:block;overflow:hidden;}
+#panel12{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;}
+#panel12.active{display:block;overflow:hidden;}
+#panel13{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;}
+#panel13.active{display:block;overflow-y:auto;}
+#panel14{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;}
+#panel14.active{display:block;overflow-y:auto;}
+#panel15{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;}
+#panel15.active{display:block;overflow-y:auto;}
 
 /* 업로드 */
 .upload-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:1rem;}
@@ -524,12 +532,17 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
   height: calc(100vh - var(--hdr-h));
   background: var(--sidebar-dark);
   border-right: none;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   z-index: 90;
   padding: 1rem 0 1.5rem;
   box-shadow: 2px 0 12px rgba(0,0,0,.1);
   transition: width .22s cubic-bezier(.4,0,.2,1);
 }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.3); }
 .sidebar-toggle {
   display: flex;
   align-items: center;

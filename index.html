@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>출판 도우미 v1.9.25 업데이트 날짜 2026-04-18</title>
+<title>출판 도우미 v1.9.32 업데이트 날짜 2026-04-18</title>
 <script src="libs/xlsx.full.min.js"></script>
 <script src="libs/chart.umd.min.js"></script>
 <script src="libs/d3.v7.min.js"></script>
@@ -17,6 +17,10 @@
 <link rel="stylesheet" href="panels/panel9/panel9.css">
 <link rel="stylesheet" href="panels/panel10/panel10.css">
 <link rel="stylesheet" href="panels/panel11/panel11.css">
+<link rel="stylesheet" href="panels/panel12/panel12.css">
+<link rel="stylesheet" href="panels/panel13/panel13.css">
+<link rel="stylesheet" href="panels/panel14/panel14.css">
+<link rel="stylesheet" href="panels/panel15/panel15.css">
 <!-- panel8/9 external deps (로컬 libs/ — CDN Tracking Prevention 우회) -->
 <script src="libs/pdf.min.js"></script>
 <script src="libs/mammoth.browser.min.js"></script>
@@ -26,7 +30,7 @@
 
 <div class="hdr">
   <div class="hdr-left">
-    <div class="tag">출판 도우미 v1.9.25 업데이트 날짜 2026-04-18</div>
+    <div class="tag">출판 도우미 v1.9.32 업데이트 날짜 2026-04-18</div>
     <h1>출판 <span>도우미</span></h1>
   </div>
   <div class="hdr-right" style="display:flex;gap:.5rem;align-items:center;">
@@ -53,12 +57,18 @@
   <button class="nav-item locked" data-icon="🤝" id="tab6" onclick="switchTab(6,this)"><span class="nav-label">미팅 자료 🔒</span></button>
   <button class="nav-item locked" data-icon="📋" id="tab5" onclick="switchTab(5,this)"><span class="nav-label">출판 기획서 🔒</span></button>
 
+  <div class="nav-section">Writing</div>
+  <button class="nav-item" data-icon="💡" id="tab13" onclick="switchTab(13,this)"><span class="nav-label">컨셉 작성</span></button>
+  <button class="nav-item" data-icon="📖" id="tab15" onclick="switchTab(15,this)"><span class="nav-label">앞부속 작성</span></button>
+  <button class="nav-item" data-icon="📑" id="tab14" onclick="switchTab(14,this)"><span class="nav-label">목차 작성</span></button>
+  <button class="nav-item" data-icon="📝" id="tab12" onclick="switchTab(12,this)"><span class="nav-label">원고 작성</span></button>
+
   <div class="nav-section">Proofreading</div>
   <button class="nav-item" data-icon="✏️" id="tab8" onclick="switchTab(8,this)"><span class="nav-label">원고 및 조판 교정</span></button>
   <button class="nav-item" data-icon="📋" id="tab9" onclick="switchTab(9,this)"><span class="nav-label">조판 목차 비교</span></button>
   <!-- ── 개발자 콘솔 (Ctrl+Alt+Enter로 활성화) ── -->
-  <div class="nav-section nav-section-admin" id="nav-admin-sep" style="display:none;position:absolute;bottom:calc(1.5rem + 46px);left:0;width:100%;">debug</div>
-  <button class="nav-item nav-item-admin" data-icon="⚙️" id="tab11" onclick="switchTab(11,this)" style="display:none;position:absolute;bottom:1.5rem;left:0;width:100%;">
+  <div class="nav-section nav-section-admin" id="nav-admin-sep" style="display:none;margin-top:12px;">debug</div>
+  <button class="nav-item nav-item-admin" data-icon="⚙️" id="tab11" onclick="switchTab(11,this)" style="display:none;">
     <span class="nav-label">개발자 콘솔</span>
   </button>
 </nav>
@@ -1222,6 +1232,18 @@
 </div>
 <div id="kwD3Tooltip"></div>
 
+<!-- ═══════ 컨셉 작성 패널 (panel13) ═══════ -->
+<div class="panel panel13-scope" id="panel13"></div>
+
+<!-- ═══════ 목차 작성 패널 (panel14) ═══════ -->
+<div class="panel panel14-scope" id="panel14"></div>
+
+<!-- ═══════ 앞부속 작성 패널 (panel15) ═══════ -->
+<div class="panel panel15-scope" id="panel15"></div>
+
+<!-- ═══════ 원고 작성 패널 (panel12) ═══════ -->
+<div class="panel panel12-scope" id="panel12"></div>
+
 <!-- ═══════ 개발자 콘솔 패널 (panel11 — 숨겨진 관리자 패널) ═══════ -->
 <div class="panel" id="panel11"></div>
 
@@ -1437,6 +1459,10 @@
 <script src="panels/panel8/panel8.js"></script>
 <script src="panels/panel9/panel9.js"></script>
 <script src="panels/panel10/panel10.js"></script>
+<script src="panels/panel13/panel13.js"></script>
+<script src="panels/panel14/panel14.js"></script>
+<script src="panels/panel15/panel15.js"></script>
+<script src="panels/panel12/panel12.js"></script>
 <script src="panels/panel11/panel11.js"></script>
 <script>
 /* ── Ctrl+Alt+Enter: 개발자 콘솔 토글 ── */
