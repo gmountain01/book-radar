@@ -1,0 +1,470 @@
+/* ═══════════════════════════════════════════════════════════════════
+   UNIFY PATCH — book-radar 전체 패널 통일
+   적용법: 기존 shared/styles.css, 모든 panel*.css 뒤에 이 파일 하나만 <link>
+   덮어쓰는 방식 — 기존 파일 수정 필요 없음
+   팔레트: panel10 스타일(베이지 + 딥 인디고 + Pretendard + IBM Plex Mono)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 폰트 로드 (이미 pretendard.min.css가 로드되어 있으면 생략해도 됨) ── */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* ═══════════════════════════════════════════════════════════════════
+   1. 전역 토큰 오버라이드
+   ═══════════════════════════════════════════════════════════════════ */
+:root{
+  /* 배경 — 베이지 계열 */
+  --bg: #F4F3EF !important;
+  --surface: #FFFFFF !important;
+  --surface2: #EDECE7 !important;
+
+  /* 텍스트 */
+  --text: #1A1917 !important;
+  --muted: #56544E !important;
+  --muted2: #9B9890 !important;
+
+  /* 테두리 */
+  --border: #DDDBD2 !important;
+  --border2: #C6C4BA !important;
+
+  /* 액센트 — 딥 인디고 + 연보라 톤 */
+  --accent: #4F46B8 !important;
+  --accent-light: #EEEDFB !important;
+  --accent-hover: #3F38A0 !important;
+  --accent-border: rgba(79,70,184,.18) !important;
+  --accent-shadow: 0 2px 8px rgba(79,70,184,.18) !important;
+  --accent-shadow-lg: 0 4px 14px rgba(79,70,184,.28) !important;
+  --accent-hover-bg: rgba(79,70,184,.25) !important;
+
+  /* 시맨틱 — 차분한 톤으로 통일 */
+  --green: #0C7A5E !important;
+  --green-bg: #DFF4EC !important;
+  --green-bd: #A8D9C7 !important;
+  --red: #C23D2F !important;
+  --red-bg: #FDECEA !important;
+  --red-bd: #F0C0BA !important;
+  --yellow: #B85A00 !important;
+  --yellow-bg: #FEF0DC !important;
+  --yellow-bd: #F0D0A0 !important;
+  --blue: #1E4A8A !important;
+  --blue-bg: #E6EEF9 !important;
+  --blue-bd: #B0C6E4 !important;
+  --purple: #6B3AA0 !important;
+  --purple-bg: #F0EAF9 !important;
+  --purple-bd: #C8AFE0 !important;
+  --teal: #0C7A5E !important;
+  --teal-bg: #DFF4EC !important;
+  --teal-bd: #A8D9C7 !important;
+  --gray-bg: #EDECE7 !important;
+
+  /* 사이드바 — 더 부드러운 짙은 톤 */
+  --sidebar-dark: #1A1917 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. 전역 타이포그래피
+   ═══════════════════════════════════════════════════════════════════ */
+body,
+body *{
+  font-family: 'Pretendard', 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+code, pre, .badge, .tag,
+[style*="DM Mono"], [style*="monospace"]{
+  font-family: 'IBM Plex Mono', 'DM Mono', ui-monospace, monospace !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. 공통 radius·shadow 통일
+   ═══════════════════════════════════════════════════════════════════ */
+.panel .cfg-card,
+.panel .stat,
+.panel .cat-block,
+.panel .upload-label,
+.panel .upload-status,
+.panel .chart-section,
+.panel .chart-box,
+.panel .workload-card,
+.panel .ic,
+.hint,
+.hdr,
+.form-panel,
+.meet-form-panel,
+.prop-form-panel{
+  border-radius: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. panel5 (기획서 작성) — 보라 액센트 적용
+   ═══════════════════════════════════════════════════════════════════ */
+.prop-form-header,
+.meet-form-header,
+.form-header{
+  background: var(--sidebar-dark) !important;
+  color: #fff;
+}
+.prop-form-header .prop-form-tag,
+.meet-form-header .meet-form-tag,
+.form-header .ftag{
+  background: var(--accent) !important;
+  color: #fff;
+}
+.prop-doc .pd2-header,
+.meet-doc .md-header{
+  background: var(--sidebar-dark) !important;
+}
+.pd2-block-title,
+.md-block-title{ color: var(--accent) !important; }
+.pd2-concept,
+.md-diff-box{ border-left-color: var(--accent) !important; }
+.pd2-kp-num,
+.pd2-comp-table th{ background: var(--accent) !important; }
+/* .md-check-item은 체크리스트 한 줄 전체라 배경을 칠하면 안 됨 */
+.md-check-item{ color: #1A1917 !important; }
+.md-check-item .check-icon{ filter: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. panel7 (유튜버 분석) — 자체 토큰 덮어쓰기
+   ═══════════════════════════════════════════════════════════════════ */
+.yt-scope{
+  --sidebar-bg: var(--sidebar-dark) !important;
+  --accent: #4F46B8 !important;
+  --accent-light: #6C63D8 !important;
+  --bg: #F4F3EF !important;
+  --card-bg: #FFFFFF !important;
+  --text: #1A1917 !important;
+  --text-muted: #56544E !important;
+  --border: #DDDBD2 !important;
+  --radius: 10px !important;
+  --danger: #C23D2F !important;
+  --success: #0C7A5E !important;
+  --warning: #B85A00 !important;
+  font-family: 'Pretendard','IBM Plex Sans KR',sans-serif !important;
+}
+.yt-scope #sidebar{ background: #4F46B8 !important; }
+.yt-scope .nav-item.active{ border-left-color: #FFFFFF !important; }
+.yt-scope .kw-chip{
+  background: #EEEDFB !important;
+  color: #4F46B8 !important;
+  border-color: #C8C3F0 !important;
+}
+.yt-scope #toast{ background: #1A1917 !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   6. panel8 (교정 교열) — 남색 헤더 → 짙은 차콜
+   ═══════════════════════════════════════════════════════════════════ */
+.panel8-scope{
+  font-family: 'Pretendard','IBM Plex Sans KR',sans-serif !important;
+  background: #F4F3EF !important;
+  color: #1A1917 !important;
+}
+.panel8-scope .hd{
+  background: #1A1917 !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,.18) !important;
+}
+.panel8-scope .hd-tab.active{ border-bottom-color: #6C63D8 !important; }
+.panel8-scope .drop-zone:hover,
+.panel8-scope .drop-zone.over,
+.panel8-scope .rules-drop:hover,
+.panel8-scope .rules-drop.over{
+  border-color: #4F46B8 !important;
+  background: #EEEDFB !important;
+}
+.panel8-scope .btn-start{ background: #4F46B8 !important; }
+.panel8-scope .btn-start:hover{ background: #3F38A0 !important; }
+.panel8-scope .step-icon.running{ border-color: #4F46B8 !important; color: #4F46B8 !important; background: #EEEDFB !important; }
+.panel8-scope .step-icon.done{ background: #DFF4EC !important; color: #0C7A5E !important; }
+.panel8-scope .step-icon.error{ background: #FDECEA !important; color: #C23D2F !important; }
+.panel8-scope .step-detail{ color: #4F46B8 !important; }
+.panel8-scope .loading-bar{ background: linear-gradient(90deg,#4F46B8,#0C7A5E) !important; }
+.panel8-scope .summary-bar{ background: #1A1917 !important; }
+.panel8-scope .chip.high{ background: #C23D2F !important; }
+.panel8-scope .chip.med{ background: #B85A00 !important; }
+.panel8-scope .chip.low{ background: #0C7A5E !important; }
+.panel8-scope .chip.ai{ background: #4F46B8 !important; }
+.panel8-scope .sev-btn.active{ background: #4F46B8 !important; border-color: #4F46B8 !important; }
+.panel8-scope .pv-header{ background: #1A1917 !important; }
+.panel8-scope .btn-new{ background: #4F46B8 !important; }
+.panel8-scope .btn-new:hover{ background: #3F38A0 !important; }
+.panel8-scope .badge-page{ background: #1A1917 !important; }
+.panel8-scope .issue-card.sev-high{ border-left-color: #C23D2F !important; }
+.panel8-scope .issue-card.sev-medium{ border-left-color: #B85A00 !important; }
+.panel8-scope .issue-card.sev-low{ border-left-color: #0C7A5E !important; }
+.panel8-scope .diff-after{ border-left-color: #0C7A5E !important; background: #DFF4EC !important; }
+.panel8-scope .diff-before{ border-left-color: #C23D2F !important; background: #FDECEA !important; }
+.panel8-scope .btn-copy{ background: #0C7A5E !important; }
+.panel8-scope .btn-copy:hover{ background: #086048 !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   7. panel9 (TOC 비교) — 남색 헤더 → 짙은 차콜
+   ═══════════════════════════════════════════════════════════════════ */
+.panel9-scope{
+  font-family: 'Pretendard','IBM Plex Sans KR',sans-serif !important;
+  background: #F4F3EF !important;
+  color: #1A1917 !important;
+}
+.panel9-scope .hd,
+.panel9-scope .result-header{
+  background: #1A1917 !important;
+}
+.panel9-scope .hd-tab.active{ border-bottom-color: #6C63D8 !important; }
+.panel9-scope .flow-chip.toc{ background: #EEEDFB !important; color: #4F46B8 !important; }
+.panel9-scope .flow-chip.body{ background: #F0EAF9 !important; color: #6B3AA0 !important; }
+.panel9-scope .flow-chip.result{ background: #DFF4EC !important; color: #0C7A5E !important; }
+.panel9-scope .upload-zone:hover{ border-color: #4F46B8 !important; background: #EEEDFB !important; }
+.panel9-scope .upload-zone.active{ border-color: #4F46B8 !important; background: #EEEDFB !important; }
+.panel9-scope .upload-zone.has-file{ border-color: #0C7A5E !important; background: #DFF4EC !important; }
+.panel9-scope .upload-tag.toc{ background: #EEEDFB !important; color: #4F46B8 !important; }
+.panel9-scope .upload-tag.body{ background: #F0EAF9 !important; color: #6B3AA0 !important; }
+.panel9-scope .upload-hint b{ color: #4F46B8 !important; }
+.panel9-scope .upload-filename{ color: #0C7A5E !important; }
+.panel9-scope .start-btn{
+  background: #4F46B8 !important;
+  box-shadow: 0 4px 15px rgba(79,70,184,0.28) !important;
+}
+.panel9-scope .start-btn:hover:not(:disabled){ box-shadow: 0 6px 20px rgba(79,70,184,0.35) !important; }
+.panel9-scope .loading-spinner{ border-top-color: #4F46B8 !important; }
+.panel9-scope .step-item.running{ background: #EEEDFB !important; }
+.panel9-scope .step-icon.running{ background: #4F46B8 !important; }
+.panel9-scope .step-icon.done{ background: #0C7A5E !important; }
+.panel9-scope .step-icon.error{ background: #C23D2F !important; }
+.panel9-scope .ring-fill{ stroke: #0C7A5E !important; }
+.panel9-scope .file-tag.toc{ background: rgba(79,70,184,0.28) !important; color: #C8C3F0 !important; }
+.panel9-scope .file-tag.body{ background: rgba(107,58,160,0.28) !important; color: #E0A8E8 !important; }
+.panel9-scope .stat-card.ok{ border-left-color: #0C7A5E !important; }
+.panel9-scope .stat-card.ok .stat-num{ color: #0C7A5E !important; }
+.panel9-scope .stat-card.warn{ border-left-color: #B85A00 !important; }
+.panel9-scope .stat-card.warn .stat-num{ color: #B85A00 !important; }
+.panel9-scope .stat-card.err{ border-left-color: #C23D2F !important; }
+.panel9-scope .stat-card.err .stat-num{ color: #C23D2F !important; }
+.panel9-scope .stat-card.info{ border-left-color: #4F46B8 !important; }
+.panel9-scope .stat-card.info .stat-num{ color: #4F46B8 !important; }
+.panel9-scope .filter-btn.all.active,
+.panel9-scope .filter-btn.all:hover{ background: #1A1917 !important; border-color: #1A1917 !important; }
+.panel9-scope .filter-btn.match{ background: #DFF4EC !important; color: #0C7A5E !important; border-color: #A8D9C7 !important; }
+.panel9-scope .filter-btn.match.active,
+.panel9-scope .filter-btn.match:hover{ background: #0C7A5E !important; color: #fff !important; }
+.panel9-scope .filter-btn.page-mismatch{ background: #FEF0DC !important; color: #B85A00 !important; border-color: #F0D0A0 !important; }
+.panel9-scope .filter-btn.page-mismatch.active,
+.panel9-scope .filter-btn.page-mismatch:hover{ background: #B85A00 !important; color: #fff !important; }
+.panel9-scope .filter-btn.missing-body{ background: #FDECEA !important; color: #C23D2F !important; border-color: #F0C0BA !important; }
+.panel9-scope .filter-btn.missing-body.active,
+.panel9-scope .filter-btn.missing-body:hover{ background: #C23D2F !important; color: #fff !important; }
+.panel9-scope thead th{ background: #1A1917 !important; }
+.panel9-scope tbody tr.status-match td.td-status{ border-left-color: #0C7A5E !important; }
+.panel9-scope tbody tr.status-page-mismatch td.td-status{ border-left-color: #B85A00 !important; }
+.panel9-scope tbody tr.status-missing-body td.td-status{ border-left-color: #C23D2F !important; }
+.panel9-scope .level-1{ background: #1A1917 !important; }
+.panel9-scope .level-2{ background: #4F46B8 !important; }
+.panel9-scope .level-3{ background: #A8A3E6 !important; color: #1A1917 !important; }
+.panel9-scope .level-4{ background: #EEEDFB !important; color: #4F46B8 !important; }
+.panel9-scope .level-5{ background: #F7F5FE !important; color: #6C63D8 !important; border-color: #C8C3F0 !important; }
+.panel9-scope .page-chip.ok,
+.panel9-scope .pill-match{ background: #DFF4EC !important; color: #0C7A5E !important; }
+.panel9-scope .page-chip.warn,
+.panel9-scope .pill-page-mismatch{ background: #FEF0DC !important; color: #B85A00 !important; }
+.panel9-scope .page-chip.bad,
+.panel9-scope .pill-missing-body{ background: #FDECEA !important; color: #C23D2F !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   8. panel10 (키워드) — 이미 일치하므로 Pretendard만 보강
+   ═══════════════════════════════════════════════════════════════════ */
+.panel10-scope{
+  font-family: 'Pretendard','IBM Plex Sans KR',sans-serif !important;
+}
+.panel10-scope .logo-sub,
+.panel10-scope .s-label,
+.panel10-scope .i-label,
+.panel10-scope .main-sub,
+.panel10-scope .file-status,
+.panel10-scope .summary-chip-label,
+.panel10-scope .sort-label,
+.panel10-scope .loading-text,
+.panel10-scope .empty-desc,
+.panel10-scope .card-section-title,
+.panel10-scope .info-label,
+.panel10-scope .yt-bar-label,
+.panel10-scope .yt-bar-val,
+.panel10-scope .comp-pub,
+.panel10-scope .no-comp,
+.panel10-scope .card-vid-views,
+.panel10-scope .yt-total,
+.panel10-scope .cat-pill,
+.panel10-scope .gap-pill,
+.panel10-scope .kw-signal,
+.panel10-scope .src-badge,
+.panel10-scope .insight-box,
+.panel10-scope .card-breadcrumb,
+.panel10-scope .summary-chip-val{
+  font-family: 'IBM Plex Mono','DM Mono',monospace !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   10. panel4 (출판 프로세스 가이드) — weight/색상 보정
+   기존에 font-weight:300이 남발돼 유독 얇아 보이던 문제 수정
+   ═══════════════════════════════════════════════════════════════════ */
+.guide-page{
+  font-family: 'Pretendard','IBM Plex Sans KR',sans-serif !important;
+  --gp-navy: #1A1917 !important;
+  --gp-blue: #4F46B8 !important;
+  --gp-blue-lt: #EEEDFB !important;
+}
+.guide-page .gp-h-title{ font-weight: 600 !important; letter-spacing: -.01em !important; }
+.guide-page .gp-h-label{ font-weight: 500 !important; font-family:'IBM Plex Mono',monospace !important; }
+.guide-page .gp-h-org,
+.guide-page .gp-h-year{ font-weight: 400 !important; }
+.guide-page .gp-sec-title{ font-weight: 600 !important; font-family:'IBM Plex Mono',monospace !important; }
+.guide-page .gp-step-no{ font-weight: 500 !important; font-family:'IBM Plex Mono',monospace !important; }
+.guide-page .gp-step-name{ font-weight: 600 !important; }
+.guide-page .gp-step-desc{ font-weight: 400 !important; color: #56544E !important; }
+.guide-page .gp-step-badge{ font-weight: 500 !important; }
+.guide-page .gp-kpi-label{ font-weight: 600 !important; font-family:'IBM Plex Mono',monospace !important; }
+.guide-page .gp-kpi-val{ font-weight: 600 !important; }
+.guide-page .gp-kpi-sub{ font-weight: 400 !important; }
+.guide-page .gp-formula-item{ font-weight: 600 !important; }
+.guide-page .gp-formula-op{ font-weight: 400 !important; }
+.guide-page .gp-example-label{ font-weight: 600 !important; font-family:'IBM Plex Mono',monospace !important; }
+.guide-page .gp-var-item{ font-weight: 400 !important; }
+.guide-page .gp-example-calc{ font-weight: 400 !important; }
+.guide-page .gp-note-num{ font-weight: 700 !important; font-family:'IBM Plex Mono',monospace !important; }
+.guide-page .gp-note-text{ font-weight: 400 !important; }
+.guide-page .gp-footer-note{ font-weight: 400 !important; }
+.guide-page .gp-footer-brand{ font-weight: 500 !important; letter-spacing: .05em !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   11. panel5 (출판 기획서) · panel6 (미팅 자료) — 폰트 폴백 통일
+   ═══════════════════════════════════════════════════════════════════ */
+.prop-doc,
+.meet-doc{
+  font-family: 'Pretendard','IBM Plex Sans KR',sans-serif !important;
+}
+
+/* panel6 블록 제목 색상 통일 — 인라인 style 덮어쓰기 */
+.meet-doc .md-block-title[style*="6b21a8"],
+.meet-doc .md-block-title[style*="2563eb"]{
+  color: #4F46B8 !important;
+}
+.meet-doc .md-block-title[style*="1a6b3c"]{
+  color: #0C7A5E !important;
+}
+.meet-doc .md-block-title[style*="b45309"]{
+  color: #B85A00 !important;
+}
+.meet-doc .md-block-title[style*="dc2626"]{
+  color: #C23D2F !important;
+}
+.meet-doc .md-agenda-item{
+  border-left-color: #4F46B8 !important;
+  background: #EEEDFB !important;
+}
+.meet-doc [style*="background:#f0f7ff"]{
+  background: #EEEDFB !important;
+  border-left-color: #4F46B8 !important;
+}
+.meet-doc [style*="background:#2563eb"]{
+  background: #4F46B8 !important;
+}
+.meet-doc [style*="background:#c53030"]{
+  background: #C23D2F !important;
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   12. 문서 헤더 통일 — 기획서(panel5) / 미팅자료(panel6) / 출판프로세스(panel3)
+       세 문서가 동일한 "한빛미디어 포맷"이 되도록 정렬
+   ═════════════════════════════════════════════════════════════════ */
+
+/* 공통 헤더 바 — 딥 인디고 배경, 동일 패딩 */
+.prop-doc .pd2-header,
+.meet-doc .md-header,
+.guide-page .gp-header-bar{
+  background: var(--sidebar-dark) !important;
+  padding: 28px 44px 22px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+}
+
+/* 상단 서브 라벨 (좌측 작은 글씨) — 9.5px / uppercase / .15em */
+.prop-doc .pd2-header-sub,
+.meet-doc .md-header-left .md-sub,
+.guide-page .gp-h-label{
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: .15em !important;
+  text-transform: uppercase !important;
+  color: rgba(255,255,255,.55) !important;
+  margin-bottom: 6px !important;
+  font-family: 'IBM Plex Mono','DM Mono',monospace !important;
+}
+
+/* 메인 타이틀 — 20px / weight 300 / .06em */
+.prop-doc .pd2-header-title,
+.meet-doc .md-header-left .md-title,
+.guide-page .gp-h-title{
+  font-size: 20px !important;
+  font-weight: 300 !important;
+  letter-spacing: .06em !important;
+  color: #fff !important;
+  line-height: 1.2 !important;
+  font-family: 'Pretendard','IBM Plex Sans KR',sans-serif !important;
+}
+
+/* 우측 메타 영역 */
+.prop-doc .pd2-header-right,
+.meet-doc .md-header-right,
+.guide-page .gp-h-right{
+  text-align: right !important;
+}
+
+/* 우측 메타 본문 — 9.5px / opacity .55 / line-height 1.7 */
+.prop-doc .pd2-header-dept,
+.meet-doc .md-header-right,
+.guide-page .gp-h-org{
+  font-size: 9.5px !important;
+  font-weight: 300 !important;
+  letter-spacing: .08em !important;
+  color: rgba(255,255,255,.55) !important;
+  line-height: 1.7 !important;
+}
+
+/* guide-page 전용 연도 — 살짝 더 흐리게 유지 */
+.guide-page .gp-h-year{
+  font-size: 9.5px !important;
+  font-weight: 300 !important;
+  color: rgba(255,255,255,.35) !important;
+  letter-spacing: .18em !important;
+  margin-top: 2px !important;
+}
+
+/* 본문 영역 공통 패딩 통일 */
+.prop-doc .pd2-body,
+.meet-doc .md-body,
+.guide-page .gp-body{
+  padding: 28px 44px !important;
+}
+
+/* 푸터 공통 */
+.prop-doc .pd2-footer,
+.meet-doc .md-footer,
+.guide-page .gp-footer{
+  padding: 16px 44px !important;
+  font-size: 9.5px !important;
+  color: #9B9890 !important;
+  border-top: 1px solid #E8E5DD !important;
+  letter-spacing: .08em !important;
+}
+
+/* 섹션 블록 제목 — 세 문서 모두 동일 스타일 (9.5px uppercase mono) */
+.prop-doc .pd2-block-title,
+.meet-doc .md-block-title,
+.guide-page .gp-sec-title{
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: .2em !important;
+  text-transform: uppercase !important;
+  color: var(--accent) !important;
+  font-family: 'IBM Plex Mono','DM Mono',monospace !important;
+}
+
+::-webkit-scrollbar{ width: 6px; height: 6px; }
+::-webkit-scrollbar-track{ background: transparent; }
+::-webkit-scrollbar-thumb{ background: #C6C4BA; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover{ background: #9B9890; }
