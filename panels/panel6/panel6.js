@@ -490,8 +490,9 @@ async function generateMeetingSummary(){
           'anthropic-dangerous-direct-browser-access':'true'
         },
         body: JSON.stringify({
-          model:'claude-sonnet-4-20250514',
-          max_tokens:2000,
+          model:'claude-haiku-4-5-20251001',
+          max_tokens:1500,
+          system: typeof _cachedSystem==='function'?_cachedSystem(PUBLISHING_PERSONA||''):undefined,
           messages:[{role:'user',content:prompt}]
         })
       });
@@ -575,7 +576,7 @@ function meetDownloadPdf() {
   const modeLabel = {'brief':'사전안내','discuss':'미팅진행','notes':'편집자정리','summary':'미팅결과요약'}[_meetDocMode] || '미팅자료';
   const docTitle = `${modeLabel}_${author}_${title}`;
 
-  const base = location.href.substring(0, location.href.lastIndexOf('/') + 1);
+  const base = getBaseUrl();
 
   const html = `<!DOCTYPE html>
 <html lang="ko">
@@ -603,29 +604,7 @@ ${docEl.outerHTML}
 </body>
 </html>`;
 
-  const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none;visibility:hidden;';
-  document.body.appendChild(iframe);
-
-  const doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open();
-  doc.write(html);
-  doc.close();
-
-  let printed = false;
-  const pw = iframe.contentWindow;
-  const doPrint = () => {
-    if (printed) return;
-    printed = true;
-    pw.focus();
-    pw.print();
-    setTimeout(() => { try { document.body.removeChild(iframe); } catch(e) {} }, 500);
-  };
-  if (pw.document && pw.document.fonts) {
-    pw.document.fonts.ready.then(() => setTimeout(doPrint, 150));
-  } else {
-    setTimeout(doPrint, 800);
-  }
+  openPrintPopup(html);
 }
 
 async function generateMeetingWithAI() {
@@ -699,7 +678,7 @@ ${analysisCtx ? '분석 데이터: '+analysisCtx : ''}
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1500, system: typeof _cachedSystem==='function'?_cachedSystem(PUBLISHING_PERSONA||''):undefined, messages: [{ role: 'user', content: prompt }] })
     });
     if (!resp.ok) { const e = await resp.json().catch(()=>({})); throw new Error(e.error?.message||`HTTP ${resp.status}`); }
     const res = await resp.json();

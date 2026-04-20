@@ -434,7 +434,7 @@ ${excerpt}
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1500, system: typeof _cachedSystem==='function'?_cachedSystem(PUBLISHING_PERSONA||''):undefined, messages: [{ role: 'user', content: prompt }] })
     });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const res = await resp.json();
@@ -567,7 +567,7 @@ ${ctx}
         'x-api-key': apiKey, 'anthropic-version': '2023-06-01',
         'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true'
       },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1500, system: typeof _cachedSystem==='function'?_cachedSystem(PUBLISHING_PERSONA||''):undefined, messages: [{ role: 'user', content: prompt }] })
     });
     if (!resp.ok) { const e = await resp.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${resp.status}`); }
     const res = await resp.json();

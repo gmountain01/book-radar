@@ -69,6 +69,7 @@ function render() {
         '<button class="tc-btn" onclick="tcAdd(5)">+ 소소절</button>' +
         '<button class="tc-btn" onclick="tcAddSub()">+ 선택항목 하위</button>' +
         '<span style="flex:1;"></span>' +
+        '<label class="tc-btn tc-btn-upload" style="cursor:pointer;" title="txt/md/docx 파일에서 목차 가져오기">📂 파일 가져오기<input type="file" accept=".txt,.md,.docx,.doc" style="display:none" onchange="tcImportFile(this)"></label>' +
         '<button class="tc-btn tc-btn-apply" onclick="tcApplyToManuscript()">📝 원고에 적용</button>' +
         '<button class="tc-btn tc-btn-dl" onclick="tcExportTxt()">📋 텍스트 복사</button>' +
       '</div>' +
@@ -172,6 +173,165 @@ window.tcExportTxt = function() {
     alert('목차가 클립보드에 복사되었습니다.');
   }
 };
+
+// ─── 파일 가져오기 (txt/md/docx → 목차 자동 생성) ─────────
+window.tcImportFile = function(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  input.value = ''; // 같은 파일 재선택 가능
+
+  var ext = file.name.split('.').pop().toLowerCase();
+  if (ext === 'docx' || ext === 'doc') {
+    // DOCX: mammoth.js가 있으면 사용, 없으면 JSZip으로 직접 파싱
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var buf = e.target.result;
+      if (typeof mammoth !== 'undefined') {
+        mammoth.extractRawText({ arrayBuffer: buf }).then(function(r) {
+          _parseTocText(r.value, file.name);
+        });
+      } else if (typeof JSZip !== 'undefined') {
+        JSZip.loadAsync(buf).then(function(zip) {
+          var docXml = zip.file('word/document.xml');
+          if (!docXml) { alert('DOCX에서 본문을 찾을 수 없습니다.'); return; }
+          return docXml.async('string');
+        }).then(function(xml) {
+          if (!xml) return;
+          // XML에서 텍스트 추출 (간이 파서)
+          var text = xml.replace(/<w:br[^>]*\/>/g, '\n')
+                       .replace(/<\/w:p>/g, '\n')
+                       .replace(/<[^>]+>/g, '')
+                       .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+          _parseTocText(text, file.name);
+        });
+      } else {
+        alert('DOCX 파싱에 필요한 라이브러리가 없습니다.\ntxt 또는 md 파일을 사용해주세요.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    // TXT / MD: 텍스트로 읽기
+    var reader = new FileReader();
+    reader.onload = function(e) { _parseTocText(e.target.result, file.name); };
+    reader.readAsText(file, 'utf-8');
+  }
+};
+
+function _parseTocText(text, filename) {
+  if (!text || text.trim().length < 5) { alert('파일 내용이 비어있습니다.'); return; }
+
+  var lines = text.split('\n').map(function(l) { return l.replace(/\r/g, ''); }).filter(function(l) { return l.trim().length > 0; });
+  var parsed = [];
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    var trimmed = line.trim();
+    if (!trimmed) continue;
+    // 빈 줄, 구분선(---), 주석 건너뛰기
+    if (/^[-=]{3,}$/.test(trimmed) || /^\/\//.test(trimmed)) continue;
+
+    var level = 1;
+    var title = trimmed;
+    var detected = false;
+
+    // 1) Markdown 헤딩: # ~ ##### (들여쓰기 포함해도 인식)
+    var mdMatch = trimmed.match(/^(#{1,5})\s+(.+)/);
+    if (mdMatch) {
+      level = mdMatch[1].length;
+      title = mdMatch[2].trim();
+      detected = true;
+    }
+
+    // 2) 숫자 패턴: "1장", "1.1", "1.2.3", "Chapter 1"
+    if (!detected && /^\d+장\b/.test(trimmed)) {
+      level = 1;
+      title = trimmed;
+      detected = true;
+    }
+    if (!detected && /^\d+\.\d+\.\d+\.\d+/.test(trimmed)) {
+      level = 4;
+      title = trimmed.replace(/^\d+\.\d+\.\d+\.\d+\.?\s*/, '').trim() || trimmed;
+      detected = true;
+    }
+    if (!detected && /^\d+\.\d+\.\d+/.test(trimmed)) {
+      level = 3;
+      title = trimmed.replace(/^\d+\.\d+\.\d+\.?\s*/, '').trim() || trimmed;
+      detected = true;
+    }
+    if (!detected && /^\d+\.\d+/.test(trimmed)) {
+      level = 2;
+      title = trimmed.replace(/^\d+\.\d+\.?\s*/, '').trim() || trimmed;
+      detected = true;
+    }
+    if (!detected && /^\d+\.?\s/.test(trimmed) && trimmed.length > 3) {
+      level = 1;
+      title = trimmed.replace(/^\d+\.?\s*/, '').trim() || trimmed;
+      detected = true;
+    }
+
+    // 3) 리스트 기호: "- ", "* ", "+ " (들여쓰기 레벨 반영)
+    if (!detected && /^[-*+]\s/.test(trimmed)) {
+      var listIndent = line.match(/^(\s*)/)[1];
+      var listTabs = (listIndent.match(/\t/g) || []).length;
+      var listSpaces = listIndent.replace(/\t/g, '').length;
+      level = Math.min(Math.max(listTabs + Math.floor(listSpaces / 4) + 2, 2), 5);
+      title = trimmed.replace(/^[-*+]\s+/, '').trim();
+      detected = true;
+    }
+
+    // 4) 들여쓰기 기반 (탭 또는 스페이스, 번호/마크다운 아닌 경우)
+    if (!detected) {
+      var indent = line.match(/^(\s*)/)[1];
+      var tabs = (indent.match(/\t/g) || []).length;
+      var spaces = indent.replace(/\t/g, '').length;
+      // 4칸 = 1레벨 (일반적인 들여쓰기), 탭 = 1레벨
+      var indentLevel = tabs + Math.floor(spaces / 4);
+      level = Math.min(Math.max(indentLevel + 1, 1), 5);
+    }
+
+    // 5) "PART", "부록", "Chapter" 등은 level 1로 강제
+    if (/^(PART|Part|부록|Appendix|Chapter|챕터)/i.test(title)) level = 1;
+
+    // 6) 페이지 수 추출 (끝에 "30p", "(30p)", "30페이지", "[30p]" 패턴)
+    var pages = 0;
+    var pgMatch = title.match(/[\(\[]\s*(\d+)\s*[pP페이지]*\s*[\)\]]\s*$/);
+    if (!pgMatch) pgMatch = title.match(/\s+(\d+)\s*[pP]\s*$/);
+    if (pgMatch) {
+      pages = parseInt(pgMatch[1]);
+      title = title.replace(pgMatch[0], '').trim();
+    }
+
+    // 7) 메모 추출 (— 긴 대시 또는 " - " 양쪽 공백 하이픈 뒤)
+    var memo = '';
+    var memoMatch = title.match(/\s+[—]\s+(.+)$/);
+    if (!memoMatch) memoMatch = title.match(/\s+-\s+(.+)$/);
+    if (memoMatch && title.indexOf(memoMatch[0]) > 3) {
+      memo = memoMatch[1].trim();
+      title = title.substring(0, title.indexOf(memoMatch[0])).trim();
+    }
+
+    // 빈 제목 건너뛰기
+    if (!title || title.length < 1) continue;
+    // 너무 긴 줄은 본문으로 간주 (단, level 1은 장 제목이므로 허용)
+    if (title.length > 100 && level > 1) continue;
+
+    parsed.push({ id: Date.now() + i, level: level, title: title, memo: memo, pages: pages });
+  }
+
+  if (parsed.length === 0) {
+    alert('목차 항목을 인식하지 못했습니다.\n각 줄에 제목을 입력하거나, # 마크다운 헤딩을 사용해주세요.');
+    return;
+  }
+
+  if (!confirm(filename + '에서 ' + parsed.length + '개 항목을 인식했습니다.\n현재 목차를 교체합니다. 계속하시겠습니까?')) return;
+
+  items = parsed;
+  activeIdx = 0;
+  save();
+  render();
+
+  if (typeof showToast === 'function') showToast(parsed.length + '개 목차 항목을 가져왔습니다.', 'green');
+}
 
 var _init14 = false;
 function initPanel14() {

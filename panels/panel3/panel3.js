@@ -203,43 +203,12 @@ function pRender(){
 }
 
 // index.html 기준 절대 베이스 URL (CSS <link> href에 사용)
-function _baseUrl() {
-  return location.href.substring(0, location.href.lastIndexOf('/') + 1);
-}
-
-// 숨겨진 iframe으로 인쇄 — 새 창 없이 print() 1회만 호출
-// onload 미사용 (이중 발사 원천 차단), doc.fonts.ready로 폰트 대기
-function _openPrintPopup(html) {
-  const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none;visibility:hidden;';
-  document.body.appendChild(iframe);
-
-  const doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open();
-  doc.write(html);
-  doc.close();
-
-  let printed = false;
-  const pw = iframe.contentWindow;
-  const doPrint = () => {
-    if (printed) return;
-    printed = true;
-    pw.focus();
-    pw.print();
-    setTimeout(() => { try { document.body.removeChild(iframe); } catch(e) {} }, 500);
-  };
-  // onload 불사용 — doc.fonts.ready로 폰트 완료 시점 감지
-  if (pw.document && pw.document.fonts) {
-    pw.document.fonts.ready.then(() => setTimeout(doPrint, 150));
-  } else {
-    setTimeout(doPrint, 800);
-  }
-}
+// PDF 인쇄 → shared/app.js의 getBaseUrl(), openPrintPopup() 직접 사용
 
 function pPrintPDF() {
   const content = document.getElementById('proposal-output');
   if (!content || !content.innerHTML.trim()) { alert('먼저 내용을 입력해주세요.'); return; }
-  const base = _baseUrl();
+  const base = getBaseUrl();
   const html = `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -262,7 +231,7 @@ body { height: auto !important; overflow: visible !important; display: block !im
 ${content.outerHTML}
 </body>
 </html>`;
-  _openPrintPopup(html);
+  openPrintPopup(html);
 }
 
 // ── 출판 가이드 PDF 저장 ──
@@ -294,7 +263,7 @@ function dlGuidePDF() {
     } catch(e) {}
   }
 
-  const base = _baseUrl();
+  const base = getBaseUrl();
   const html = `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -327,7 +296,7 @@ ${root.outerHTML}
 </body>
 </html>`;
 
-  _openPrintPopup(html);
+  openPrintPopup(html);
 }
 
 // ── 출판 가이드 색상 설정 ──

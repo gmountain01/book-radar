@@ -418,7 +418,15 @@ async function extractFile(file) {
   if (ext === 'hwpx') return extractHWPX(file);
   if (ext === 'hwp')  return extractHWP(file);
   if (ext === 'doc')  return extractDOC(file);
-  throw new Error(`지원하지 않는 파일 형식: .${ext}`);
+  if (ext === 'txt' || ext === 'md') return extractTXT(file);
+  throw new Error(`지원하지 않는 파일 형식: .${ext}\n지원 형식: PDF, DOCX, HWPX, HWP, DOC, TXT`);
+}
+
+/** TXT/MD 파일 — 텍스트 그대로 추출 */
+async function extractTXT(file) {
+  const text = await file.text();
+  if (!text || text.trim().length < 10) throw new Error('텍스트 파일 내용이 비어있습니다.');
+  return textToExtracted(file.name, text);
 }
 
 /**
@@ -1013,10 +1021,17 @@ function parseRulesIntoChunks(mdText) {
   const lines = mdText.split('\n');
   const chunks = [];
   let current = null;
+  let parentHeading = '';
   for (const line of lines) {
     if (line.startsWith('## ')) {
       if (current) chunks.push(current);
-      current = { heading: line.replace(/^## /, '').trim(), text: line + '\n', keywords: [] };
+      parentHeading = line.replace(/^## /, '').trim();
+      current = { heading: parentHeading, text: line + '\n', keywords: [] };
+    } else if (line.startsWith('### ')) {
+      // 하위 섹션을 별도 청크로 분리 (RAG 정확도 향상)
+      if (current) chunks.push(current);
+      var subHeading = line.replace(/^### /, '').trim();
+      current = { heading: parentHeading + ' > ' + subHeading, text: line + '\n', keywords: [] };
     } else if (current) {
       current.text += line + '\n';
     }
@@ -1027,19 +1042,22 @@ function parseRulesIntoChunks(mdText) {
 
 // 섹션별 키워드 — 배치 텍스트에 이 단어가 있으면 해당 규칙 섹션 포함
 const CHUNK_KEYWORDS = {
-  '화면 표기': ['메뉴', '버튼', '탭', '대화상자', '아이콘', '단축키', '인터페이스', '화면', '팝업'],
-  '띄어쓰기': ['보조용언', '의존명사', '때', '것', '수', '만큼', '대로', '뿐', '채', '듯', '단위'],
-  '맞춤법': ['되다', '돼', '돼야', '됩니다', '로서', '로써', '데', '든지', '던지'],
-  '사이시옷': ['최댓값', '최솟값', '사이시옷', '합성어', '성공률'],
-  '문장 부호': ['쌍점', '괄호', '가운뎃점', '줄표', '빗금', '마침표', '물음표', '쉼표'],
-  '고유 명사': ['인명', '지명', '브랜드', '상표', '전문용어', '전문 용어', '키캡', '키보드', 'macOS', 'iOS', '운영체제'],
-  '외래어': ['외래어', '워크플로', '애플리케이션', '컨텐츠', '콘텐츠', '섀도', '메시지', '리더십'],
+  '화면 표기': ['메뉴', '버튼', '탭', '대화상자', '아이콘', '단축키', '인터페이스', '화면', '팝업', '클릭', '경로', '대괄호', '작은따옴표', '큰따옴표', '코드', '백틱', '꺽쇠'],
+  '띄어쓰기': ['보조용언', '의존명사', '때', '것', '수', '만큼', '대로', '뿐', '채', '듯', '단위', '접사', '조사', '어미', '합성어', '숫자', '값', '간', '별', '순', '드리다', '시키다', '못하다', '안되다'],
+  '맞춤법': ['되다', '돼', '돼야', '됩니다', '로서', '로써', '데', '든지', '던지', '다달이', '짭짤', '영락없이', '바라다', '얼마예요', '부스스', '맞추다', '맞히다', '들르다', '다르다', '틀리다'],
+  '사이시옷': ['최댓값', '최솟값', '사이시옷', '합성어', '성공률', '초깃값', '결괏값', '근삿값', '기본값', '정숫값'],
+  '문장 부호': ['쌍점', '괄호', '가운뎃점', '줄표', '빗금', '마침표', '물음표', '쉼표', '따옴표', '말줄임표', '소괄호', '대괄호', '붙임표'],
+  '고유 명사': ['인명', '지명', '브랜드', '상표', '전문용어', '전문 용어', '키캡', '키보드', 'macOS', 'iOS', '운영체제', '수식', '매개변수'],
+  '외래어': ['외래어', '워크플로', '애플리케이션', '컨텐츠', '콘텐츠', '섀도', '메시지', '리더십', '인터체인지', '케이크', '윈도', '파일', '주스', '서비스'],
+  '출처 표기': ['출처', '인용', '블로그', '참고', '링크'],
   '교정 작업 원칙': [],  // 항상 포함
   '충돌 규칙': [],        // 항상 포함
+  '100제': ['발음', '맞춤법', '사이시옷', '띄어쓰기', '외래어', '혼동', '율', '렬', '깨끗이', '며칠'],
 };
 
 function findRelevantChunks(chunks, batchText) {
   const result = [];
+  const textLower = batchText.toLowerCase();
   for (const chunk of chunks) {
     const h = chunk.heading;
     // 항상 포함
@@ -1047,17 +1065,40 @@ function findRelevantChunks(chunks, batchText) {
       result.push(chunk);
       continue;
     }
-    // 헤딩 키워드 매칭
+    // 1단계: 헤딩 키워드 매칭 (부모 > 자식 형태도 부모 섹션 매칭)
     let matched = false;
+    const hParts = h.split(' > ');
     for (const [section, kws] of Object.entries(CHUNK_KEYWORDS)) {
-      if (!h.includes(section)) continue;
-      if (kws.length === 0 || kws.some(kw => batchText.includes(kw))) {
+      if (!hParts.some(p => p.includes(section))) continue;
+      if (kws.length === 0 || kws.some(kw => textLower.includes(kw.toLowerCase()))) {
         matched = true;
         break;
       }
     }
+    // 2단계: 본문 내 교정 대상 단어 직접 매칭 (RAG 정확도 향상)
+    // 규칙 텍스트에서 '올바른 표기 | 틀린 표기' 표의 틀린 표기가 배치 텍스트에 있는지 확인
+    if (!matched && chunk.text) {
+      const lines = chunk.text.split('\n');
+      for (const line of lines) {
+        if (!line.includes('|')) continue;
+        const cells = line.split('|').map(c => c.trim()).filter(Boolean);
+        // 표 행에서 틀린 표기 / 예시 단어가 텍스트에 있으면 해당 규칙 포함
+        for (const cell of cells) {
+          if (cell.length >= 2 && cell.length <= 20 && cell !== '---' && !cell.startsWith('#') && textLower.includes(cell.toLowerCase())) {
+            matched = true;
+            break;
+          }
+        }
+        if (matched) break;
+      }
+    }
     if (matched) result.push(chunk);
   }
+  // 토큰 제한: 너무 많은 청크가 매칭되면 상위 8개로 제한 (항상 포함 제외)
+  const isAlways = c => c.heading.includes('교정 작업 원칙') || c.heading.includes('충돌') || c.heading.includes('부록');
+  const always = result.filter(isAlways);
+  const others = result.filter(c => !isAlways(c));
+  if (others.length > 8) return always.concat(others.slice(0, 8));
   return result;
 }
 
@@ -1075,8 +1116,24 @@ function loadRulesFile(file) {
   });
 }
 
-// 기본 규칙 초기화 (페이지 로드 시)
+// 기본 규칙 초기화 (페이지 로드 시) — 요약본 먼저 적용, 상세 파일 자동 로드 시도
 rulesChunks = parseRulesIntoChunks(DEFAULT_RULES_MD);
+
+// 상세 규칙 로드 — 교정규칙.js (<script> 태그)가 window.FULL_RULES_MD를 설정함
+// file:// 환경에서 fetch/XHR 모두 CORS 차단되므로 JS 임베드 방식 사용
+(function _loadFullRules() {
+  if (typeof window.FULL_RULES_MD === 'string' && window.FULL_RULES_MD.length > 500) {
+    var chunks = parseRulesIntoChunks(window.FULL_RULES_MD);
+    if (chunks.length >= 5) {
+      rulesChunks = chunks;
+      var badge = document.getElementById('p8_rulesBadge');
+      if (badge) { badge.className = 'rules-badge-loaded'; badge.textContent = '상세 규칙 ' + chunks.length + '섹션'; }
+      console.log('[panel8] 상세 규칙 로드 완료: ' + chunks.length + '섹션, ' + window.FULL_RULES_MD.length + '자');
+    }
+  } else {
+    console.log('[panel8] FULL_RULES_MD 미발견 — 요약본 사용');
+  }
+})();
 
 // ──────────────────────────────────────────────
 // 언어 검사 (Claude API)
@@ -1114,12 +1171,15 @@ LOW severity (검토 권장):
 - 중의적표현: Ambiguous expression — sentence with two or more valid interpretations
 - 저자확인필요: Content requiring author verification — specific statistics/numbers without source, technical claims that could be incorrect, dates/versions that may be outdated
 
+HALLUCINATION CHECK (할루시네이션 — HIGH severity):
+- 할루시네이션: AI-generated false facts, fabricated statistics, non-existent tools/libraries/APIs, wrong version numbers, fictional research citations, or plausible-sounding but incorrect technical claims. For each hallucination issue, add a "verifyUrl" field with a URL to an authoritative source (official docs, Wikipedia, etc.) where the correct information can be verified.
+
 Return ONLY raw JSON — no markdown fences, no explanation, no text before or after:
-{"issues":[{"type":"유형명","severity":"high|medium|low","found":"exact verbatim substring from text (≤120 chars; up to 150 chars for 윤문필요·내용보완필요·사실오류)","description":"한국어 설명 — 왜 문제인지 구체적으로","suggestion":"완성된 수정 내용 (길이 제한 없음 — 아래 지침 참조)"}]}
+{"issues":[{"type":"유형명","severity":"high|medium|low","found":"exact verbatim substring from text (≤120 chars; up to 150 chars for 윤문필요·내용보완필요·사실오류·할루시네이션)","description":"한국어 설명 — 왜 문제인지 구체적으로","suggestion":"완성된 수정 내용 (길이 제한 없음 — 아래 지침 참조)","verifyUrl":"검증 URL (할루시네이션·사실오류 전용, 없으면 빈 문자열)"}]}
 If no issues found: {"issues":[]}
 DO NOT wrap in markdown code blocks. Start your response directly with { and end with }.
 
-Type names to use exactly: 비문, 주술호응오류, 잘못된표현, 사실오류, 번역체, 일본식표현, 수동태과용, 외래어표기오류, 용어불일치, 문체불일치, 윤문필요, 내용보완필요, 문단연결불량, 중의적표현, 저자확인필요, 띄어쓰기, 맞춤법
+Type names to use exactly: 비문, 주술호응오류, 잘못된표현, 사실오류, 할루시네이션, 번역체, 일본식표현, 수동태과용, 외래어표기오류, 용어불일치, 문체불일치, 윤문필요, 내용보완필요, 문단연결불량, 중의적표현, 저자확인필요, 띄어쓰기, 맞춤법
 
 IMPORTANT — suggestion 작성 기준:
 "suggestion"은 편집자가 바로 복사해 사용할 수 있는 완성된 수정 내용이어야 한다. "표현 개선 필요" 같은 방향 제시는 금지.
@@ -1159,50 +1219,20 @@ HALLUCINATION PREVENTION (CRITICAL):
 - Do NOT invent issues that do not exist in the given text.
 - Every "found" value must pass this test: it appears verbatim in the input text you received.`;
 
+// callClaude — callClaudeApi(shared/app.js) 래핑
 async function callClaude(apiKey, text, rulesContext = '') {
   const systemPrompt = rulesContext
     ? SYS + '\n\n---\n## 📋 1팀 교정 규칙 (아래 규칙을 우선 적용할 것)\n' + rulesContext
     : SYS;
-  const payload = JSON.stringify({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 8192,
-    temperature: 0,
+  return callClaudeApi({
+    apiKey: apiKey,
+    prompt: text,
     system: systemPrompt,
-    messages: [{ role:'user', content: text }]
+    model: 'claude-haiku-4-5-20251001',
+    maxTokens: 8192,
+    temperature: 0,
+    noPersona: true
   });
-
-  let res;
-  try {
-    res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: payload,
-    });
-  } catch (e) {
-    throw new Error(
-      'API 연결 실패 (네트워크 오류)\n\n' +
-      '인터넷 연결을 확인하거나 잠시 후 다시 시도하세요.\n' +
-      `(${e.message})`
-    );
-  }
-
-  if (!res.ok) {
-    let errMsg = `API 오류 ${res.status}`;
-    try {
-      const j = await res.json();
-      if (j.error?.message) errMsg += ': ' + j.error.message;
-    } catch {}
-    if (res.status === 401 || res.status === 403) errMsg += '\n→ API 키가 올바른지 확인하세요.';
-    else if (res.status === 429) errMsg += '\n→ 요청 한도 초과 — 잠시 후 재시도하세요.';
-    throw new Error(errMsg);
-  }
-  const data = await res.json();
-  return data.content[0].text;
 }
 
 /**
@@ -1765,7 +1795,7 @@ function p8_pvGoTo(n) {
 // 유형별 카테고리 분류
 const SURFACE_TYPES   = ['조사중복','단어반복','이중수동','중복군더더기','접속사중복','한자남용','문장부호오류','불필요한공백','외래어오표기','용어불일치','번역체','일본식표현','내용보완필요','문단연결불량'];
 const LINGUISTIC_TYPES= ['번역체','일본식표현','수동태과용','비문','주술호응오류','잘못된표현','외래어표기오류','문체불일치','윤문필요','중의적표현','띄어쓰기','맞춤법'];
-const CONTENT_TYPES   = ['내용보완필요','문단연결불량','사실오류'];
+const CONTENT_TYPES   = ['내용보완필요','문단연결불량','사실오류','할루시네이션'];
 const AUTHOR_TYPES    = ['저자확인필요'];
 const STRUCT_TYPES    = ['목차불일치'];
 
@@ -1787,6 +1817,8 @@ const EDIT_CATEGORIES = [
     types:['외래어표기오류','외래어오표기'] },
   { key:'사실오류',    label:'사실 오류',      sub:'텍스트 내 모순',
     types:['사실오류'] },
+  { key:'할루시네이션', label:'할루시네이션',   sub:'AI 생성 허위 사실·검증 필요',
+    types:['할루시네이션'] },
   { key:'저자확인필요', label:'저자 확인 필요', sub:'수치·인용·기술 검증 필요',
     types:['저자확인필요'] },
 ];
@@ -1985,6 +2017,10 @@ function renderIssues(issues) {
           <span class="diff-label">수정안</span>
           <span class="diff-content diff-suggestion">${esc(iss.suggestion)}</span>
           <button class="btn-copy" data-global-idx="${globalIdx}" onclick="p8_copyText(this.dataset.globalIdx)" title="수정안 복사">복사</button>
+        </div>` : ''}
+        ${iss.verifyUrl ? `<div class="diff-row" style="background:#fef3c7;border-left:3px solid #f59e0b;padding:4px 8px;margin-top:2px;border-radius:4px;">
+          <span class="diff-label" style="color:#b45309;">검증</span>
+          <a href="${esc(iss.verifyUrl)}" target="_blank" rel="noopener" style="color:#1d4ed8;text-decoration:underline;font-size:0.78rem;word-break:break-all;">${esc(iss.verifyUrl)}</a>
         </div>` : ''}
       </div>
     </div>`;

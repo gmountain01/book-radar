@@ -60,9 +60,16 @@
     .yt-scope .nav-item.active{ color: #fff; background: rgba(255,255,255,0.1); border-left-color: #6C72FF; }
     .yt-scope .nav-item .icon{ font-size: 16px; width: 20px; text-align: center; }
     .yt-scope .sidebar-footer{
-      padding: 16px 20px;
+      padding: 12px 16px;
       border-top: 1px solid rgba(255,255,255,0.08);
+      max-height: 200px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.15) transparent;
     }
+    .yt-scope .sidebar-footer::-webkit-scrollbar { width: 4px; }
+    .yt-scope .sidebar-footer::-webkit-scrollbar-track { background: transparent; }
+    .yt-scope .sidebar-footer::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
     .yt-scope .api-key-btn{
       width: 100%;
       background: rgba(255,255,255,0.06);

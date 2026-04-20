@@ -5,125 +5,53 @@
 // ═══════════════════════════════════════════════════════════════
 // 상수 & 상태
 // ═══════════════════════════════════════════════════════════════
-// 여섯 API 키 — 할당량 소진 시 자동 전환
-const API_KEYS = typeof YT_API_KEYS_SHARED !== 'undefined' ? YT_API_KEYS_SHARED : [
-  'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo','AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c',
-  'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM','AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
-  'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis','AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc'
-];
-const YT_BASE = 'https://www.googleapis.com/youtube/v3';
+// API 키/캐시/fetch — shared/youtube.js에서 통합 관리
+// ytApiState.getKeys(), ytApiFetch(), ytApiState.refreshKeys() 등 사용
 const YT_LS = { saved: 'yt_saved', compare: 'yt_compare' };
 
-// ── API 결과 캐시 ──────────────────────────────────────────────
-// YouTube API 할당량 절감: 동일 요청은 TTL 내에 로컬스토리지에서 반환
-const API_CACHE_PREFIX = 'yt_apicache_';
-const API_CACHE_TTL = {
-  '/search':        60 * 60 * 1000,  // 검색 결과 60분 (기존 10분 → 할당량 절감)
-  '/channels':      60 * 60 * 1000,  // 채널 통계 60분 (기존 30분)
-  '/playlistItems': 60 * 60 * 1000,  // 영상 목록 60분 (기존 30분)
-  '/videos':        60 * 60 * 1000,  // 영상 통계 60분 (기존 30분)
-};
+// ── API 유닛 사용량 트래킹 ──────────────────────────────────
+// shared/youtube.js가 관리하는 상태를 panel7 UI에서 표시하기 위한 브릿지
 
-// ── API 유닛 사용량 트래킹 (키별) ──────────────────────────────
-// /search = 100유닛, 나머지 = 1유닛. 캐시 히트 시 소모 안 함.
-const YT_UNIT_COST = { '/search': 100, '/channels': 1, '/playlistItems': 1, '/videos': 1 };
-
-// 키별 세션 사용량 [key0유닛, key1유닛, key2유닛, ...]
-let ytUnitsPerKey = (() => {
-  try {
-    const saved = JSON.parse(sessionStorage.getItem('yt_units_pk') || 'null');
-    if (Array.isArray(saved) && saved.length === API_KEYS.length) return saved;
-    return API_KEYS.map(() => 0);
-  } catch { return API_KEYS.map(() => 0); }
-})();
-// 할당량 소진 키 인덱스 집합 (오늘 소진된 키는 다음날까지 사용 불가)
-let ytExhaustedKeys = (() => {
-  try { return new Set(JSON.parse(sessionStorage.getItem('yt_exhausted_pk') || '[]')); }
-  catch { return new Set(); }
-})();
-let ytUnitsUsed = ytUnitsPerKey.reduce((a, b) => a + b, 0); // 합계 (하위 호환)
-
-function _trackUnit(endpoint, keyIdx) {
-  const cost = YT_UNIT_COST[endpoint] || 1;
-  ytUnitsPerKey[keyIdx] = (ytUnitsPerKey[keyIdx] || 0) + cost;
-  ytUnitsUsed = ytUnitsPerKey.reduce((a, b) => a + b, 0);
-  sessionStorage.setItem('yt_units_pk', JSON.stringify(ytUnitsPerKey));
-  _updateQuotaDisplay();
-}
-
-function _saveKeyState() {
-  sessionStorage.setItem('yt_units_pk', JSON.stringify(ytUnitsPerKey));
-  sessionStorage.setItem('yt_exhausted_pk', JSON.stringify([...ytExhaustedKeys]));
-}
-
-function _getActiveKeyIndices() {
-  // 소진되지 않은 키를 사용량 적은 순으로 반환
-  return API_KEYS.map((_, i) => i)
-    .filter(i => !ytExhaustedKeys.has(i))
-    .sort((a, b) => ytUnitsPerKey[a] - ytUnitsPerKey[b]);
-}
-
+// ── 쿼터 UI 표시 (shared/youtube.js 상태 참조) ───────────────
 function _updateQuotaDisplay() {
   const el = document.getElementById('yt-quota-display');
   if (!el) return;
-  const lines = API_KEYS.map((_, i) => {
-    const used = ytUnitsPerKey[i] || 0;
-    const remaining = Math.max(0, 10000 - used);
-    const exhausted = ytExhaustedKeys.has(i);
-    const statusIcon = exhausted ? '⛔' : remaining < 500 ? '⚠️' : '✓';
-    const statusText = exhausted ? '소진' : '활성';
-    const pctBar = Math.min(100, Math.round(used / 100));
-    return `<div style="margin-bottom:5px;">
-      <span style="opacity:.7;">키${i + 1}</span> ${statusIcon}<span style="opacity:.55;font-size:10px;">${statusText}</span>
-      <div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;">
-        <div style="background:${exhausted?'#C0392B':used>7000?'#F39C12':'#2ECC71'};height:100%;width:${pctBar}%;border-radius:3px;"></div>
+  const keys = ytApiState.getKeys();
+  const units = ytApiState.getUnitsPerKey();
+  const exhausted = ytApiState.getExhaustedKeys();
+  const activeCount = keys.filter((_, i) => !exhausted.has(i)).length;
+  const totalUsed = units.reduce((a, b) => a + b, 0);
+
+  // 컴팩트 요약 + 그리드 키 목록
+  let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 2px;">
+    <span style="font-size:10px;opacity:.7;">${activeCount}/${keys.length} 활성</span>
+    <span style="font-size:9px;opacity:.45;">${totalUsed.toLocaleString()} 유닛 사용</span>
+  </div>`;
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;">';
+  html += keys.map((_, i) => {
+    const used = units[i] || 0;
+    const isExhausted = exhausted.has(i);
+    const pct = Math.min(100, Math.round(used / 100));
+    const color = isExhausted ? '#C0392B' : used > 7000 ? '#F39C12' : '#2ECC71';
+    const icon = isExhausted ? '⛔' : '✓';
+    return `<div style="text-align:center;padding:2px 0;" title="키${i+1}: ${used.toLocaleString()}/10,000 유닛${isExhausted?' (소진)':''}">
+      <div style="font-size:9px;opacity:.6;">키${i+1} ${icon}</div>
+      <div style="background:rgba(255,255,255,.12);border-radius:2px;height:3px;margin:2px auto;width:90%;">
+        <div style="background:${color};height:100%;width:${pct}%;border-radius:2px;"></div>
       </div>
-      <span style="font-size:10px;opacity:.5;">${used.toLocaleString()} / 10,000 유닛 (잔여 ${remaining.toLocaleString()})</span>
     </div>`;
-  });
-  el.innerHTML = lines.join('');
+  }).join('');
+  html += '</div>';
+  el.innerHTML = html;
 }
 
-function _cacheKey(endpoint, params) {
-  // API 키 제외한 파라미터로 캐시 키 생성
-  const p = { ...params };
-  delete p.key;
-  return API_CACHE_PREFIX + endpoint + '|' + JSON.stringify(p);
-}
+// shared/youtube.js가 유닛 변경 시 호출하는 콜백 등록
+window._ytOnQuotaChange = _updateQuotaDisplay;
 
-function _cacheGet(key, ttl) {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const { ts, data } = JSON.parse(raw);
-    if (Date.now() - ts > ttl) { localStorage.removeItem(key); return null; }
-    return data;
-  } catch { return null; }
-}
-
-function _cacheSet(key, data) {
-  try {
-    localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
-  } catch (e) {
-    // 스토리지 용량 초과 시 캐시 전체 비우고 재시도
-    _cachePurge();
-    try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
-  }
-}
-
-function _cachePurge() {
-  const keys = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (k && k.startsWith(API_CACHE_PREFIX)) keys.push(k);
-  }
-  keys.forEach(k => localStorage.removeItem(k));
-}
-
-// 캐시 수동 초기화 (UI에서 호출 가능)
+// 캐시 수동 초기화 (UI에서 호출 가능) — shared/youtube.js 위임
 function clearApiCache() {
-  _cachePurge();
-  showToast('API 캐시가 초기화되었습니다.');
+  ytApiState.clearCache();
+  toast('API 캐시가 초기화되었습니다.');
 }
 
 const YT_S = {
@@ -140,7 +68,7 @@ const YT_S = {
   rookieSortMode: 'score' // 루키 정렬 기준: score|subs|views|country
 };
 
-function getApiKey(keyIdx) { return API_KEYS[keyIdx] || API_KEYS[0]; }
+function getApiKey(keyIdx) { const keys = ytApiState.getKeys(); return keys[keyIdx] || keys[0]; }
 
 // 국가 코드 → 한국어 국가명
 const COUNTRY_NAMES = {
@@ -237,49 +165,10 @@ function scoreTag(n) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// YouTube API
+// YouTube API — shared/youtube.js의 ytApiFetch를 래핑
 // ═══════════════════════════════════════════════════════════════
 async function ytFetch(endpoint, params) {
-  // 캐시 확인 — 히트 시 유닛 소모 없음
-  const ttl = API_CACHE_TTL[endpoint];
-  if (ttl) {
-    const ckey = _cacheKey(endpoint, params);
-    const hit = _cacheGet(ckey, ttl);
-    if (hit) return hit;
-  }
-
-  // 사용 가능한 키 목록 (사용량 적은 순)
-  const tryKeys = _getActiveKeyIndices();
-  if (tryKeys.length === 0) {
-    throw new Error('모든 API 키의 일일 할당량이 소진되었습니다. 내일 다시 시도하거나 Google Cloud Console에서 할당량을 확인하세요.');
-  }
-
-  for (const keyIdx of tryKeys) {
-    const url = new URL(YT_BASE + endpoint);
-    Object.entries({ ...params, key: API_KEYS[keyIdx] }).forEach(([k, v]) => url.searchParams.set(k, v));
-    const res = await fetch(url.toString());
-    const data = await res.json();
-
-    if (data.error) {
-      const reason = data.error.errors?.[0]?.reason || '';
-      // 할당량 초과 → 이 키를 소진으로 표시하고 다음 키 시도
-      if (data.error.code === 403 && (reason === 'quotaExceeded' || reason === 'dailyLimitExceeded')) {
-        ytExhaustedKeys.add(keyIdx);
-        _saveKeyState();
-        _updateQuotaDisplay();
-        showToast(`키 ${keyIdx + 1} 할당량 소진 — 키 ${keyIdx === 0 ? 2 : 1}로 전환`, 'yellow');
-        continue; // 다음 키 시도
-      }
-      throw new Error(`YouTube API 오류: ${data.error.message}`);
-    }
-
-    // 성공 — 유닛 차감 후 캐시 저장
-    _trackUnit(endpoint, keyIdx);
-    if (ttl) _cacheSet(_cacheKey(endpoint, params), data);
-    return data;
-  }
-
-  throw new Error('모든 API 키의 일일 할당량이 소진되었습니다. 내일 다시 시도해주세요.');
+  return ytApiFetch(endpoint, params);
 }
 
 // ── 한국 채널 최소 N개 보장 페이지네이션 검색 ──
@@ -1871,21 +1760,28 @@ function exportCsv() {
 // API Key Modal
 // ═══════════════════════════════════════════════════════════════
 function openApiModal() {
+  ytApiState.refreshKeys(); // 개발자 콘솔에서 추가한 키 반영
   const list = document.getElementById('apiKeyStatusList');
   if (list) {
-    list.innerHTML = API_KEYS.map((key, i) => {
-      const used = ytUnitsPerKey[i] || 0;
+    const keys = ytApiState.getKeys();
+    const units = ytApiState.getUnitsPerKey();
+    const exhaustedSet = ytApiState.getExhaustedKeys();
+    const builtinLen = ytApiState.getBuiltinCount();
+    list.innerHTML = keys.map((key, i) => {
+      const used = units[i] || 0;
       const remaining = Math.max(0, 10000 - used);
-      const exhausted = ytExhaustedKeys.has(i);
+      const exhausted = exhaustedSet.has(i);
       const pct = Math.min(100, (used / 10000) * 100);
       const statusColor = exhausted ? '#C0392B' : used > 7000 ? '#B07000' : '#1A6B3C';
       const statusText = exhausted ? '⛔ 소진' : used > 7000 ? '⚠️ 주의' : '✓ 정상';
       const maskedKey = key.slice(0, 10) + '…' + key.slice(-4);
       const searchCalls = Math.floor(used / 100);
       const otherCalls = used % 100;
-      return `<div style="border:1px solid #E4E2D8;border-radius:10px;padding:10px 14px;">
+      const isExtra = i >= builtinLen;
+      const typeLabel = isExtra ? '<span style="color:#a78bfa;font-size:.6rem;margin-left:4px;">추가</span>' : '';
+      return `<div style="border:1px solid ${isExtra ? '#d8b4fe33' : '#E4E2D8'};border-radius:10px;padding:10px 14px;${isExtra ? 'background:rgba(167,139,250,.04);' : ''}">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span style="font-size:.78rem;font-weight:700;">키 ${i + 1} <code style="font-size:.7rem;color:#6B6860;">${maskedKey}</code></span>
+          <span style="font-size:.78rem;font-weight:700;">키 ${i + 1}${typeLabel} <code style="font-size:.7rem;color:#6B6860;">${maskedKey}</code></span>
           <span style="font-size:.72rem;font-weight:700;color:${statusColor};">${statusText}</span>
         </div>
         <div style="background:#F0EFE8;border-radius:4px;height:6px;overflow:hidden;margin-bottom:5px;">
@@ -1905,13 +1801,10 @@ function closeApiModal() {
   document.getElementById('apiModal').classList.remove('open');
 }
 function resetExhaustedKeys() {
-  ytExhaustedKeys.clear();
-  ytUnitsPerKey = API_KEYS.map(() => 0);
-  ytUnitsUsed = 0;
-  _saveKeyState();
+  ytApiState.resetExhausted();
   _updateQuotaDisplay();
-  openApiModal(); // refresh display
-  toast('키 소진 상태가 초기화되었습니다 🔄');
+  openApiModal();
+  toast('키 소진 상태가 초기화되었습니다');
 }
 document.getElementById('apiModal').addEventListener('click', function(e) {
   if (e.target === this) closeApiModal();
@@ -2049,8 +1942,8 @@ let _trendInterval = setInterval(() => loadTrendKeywords(true), 30 * 60 * 1000);
 
 /* switchTab 후크: panel7 진입 시 초기화 + 탭 잠금 해제, 비활성 시 인터벌 정리 */
 (function(){
-  const _origSwitchTabYT = switchTab;
-  switchTab = function(i, btn){
+  const _origSwitchTabYT = window.switchTab;
+  window.switchTab = function(i, btn){
     _origSwitchTabYT(i, btn);
     if(i === 7){
       if(typeof loadTrendKeywords === "function") loadTrendKeywords();

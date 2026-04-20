@@ -863,9 +863,7 @@ function statusPill(status) {
   return `<span class="status-pill ${cls}">${label}</span>`;
 }
 
-function escHtml(s) {
-  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+// escHtml — shared/app.js의 전역 escHtml 사용 (", ' 치환 포함)
 
 function renderTable() {
   const filtered = activeFilter === 'all'

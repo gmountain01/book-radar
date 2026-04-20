@@ -9,13 +9,140 @@ const YT_API_KEYS_SHARED = [
   'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM',
   'AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
   'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis',
-  'AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc'
+  'AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc',
+  'AIzaSyDskh4OhwBoBYfl-LHUiN1HEbaLFgO_hsk',
+  'AIzaSyAXY7UnvqS0qT44o7StAHE3QoSScYH_0Ts',
+  'AIzaSyDLKaH0_N8t3ROU5Y_oOqLdwxBOEtt2n8g'
 ];
+
+// 내장 + localStorage 추가 키를 병합하여 전체 YouTube API 키 목록 반환
+// 모든 패널(panel7·panel10·panel11)이 이 함수를 사용해야 함
+function getAllYtKeys() {
+  try {
+    var extra = JSON.parse(localStorage.getItem('p11_extra_yt_keys') || '[]');
+    return YT_API_KEYS_SHARED.concat(extra);
+  } catch (e) { return YT_API_KEYS_SHARED.slice(); }
+}
 
 // ━━━ 공통 유틸 ━━━
 function escHtml(s) {
   if (s == null) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+// ━━━ 공통 인쇄 유틸 ━━━
+// panel3·panel6 등에서 PDF 인쇄 시 공유
+function getBaseUrl() {
+  return location.href.substring(0, location.href.lastIndexOf('/') + 1);
+}
+
+function openPrintPopup(html) {
+  var iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none;visibility:hidden;';
+  document.body.appendChild(iframe);
+  var doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open();
+  doc.write(html);
+  doc.close();
+  var printed = false;
+  var pw = iframe.contentWindow;
+  var doPrint = function() {
+    if (printed) return;
+    printed = true;
+    pw.focus();
+    pw.print();
+    setTimeout(function() { try { document.body.removeChild(iframe); } catch(e) {} }, 500);
+  };
+  if (pw.document && pw.document.fonts) {
+    pw.document.fonts.ready.then(function() { setTimeout(doPrint, 150); });
+  } else {
+    setTimeout(doPrint, 800);
+  }
+}
+
+// ━━━ 멀티 페르소나 시스템 프롬프트 ━━━
+// 출판 기획·마케팅·콘텐츠 개발·소비자 심리·편집 5인 드림팀
+var PUBLISHING_PERSONA =
+  '당신은 출판 드림팀 — 5가지 전문가 페르소나가 하나로 합쳐진 존재입니다:\n' +
+  '1. 출판 기획자 (15년 경력): 시장 감각, 손익 본능, 팔리는 책과 안 팔리는 책을 즉시 구분\n' +
+  '2. 마케팅 전략가: 소비자 심리 분석, 포지셔닝, 독자가 "이건 내 책이다"라고 느끼는 훅 설계\n' +
+  '3. 콘텐츠 연금술사: 기존 콘텐츠를 새로운 것과 믹싱하여 참신한 결과물 창조. 잡스처럼 두 분야의 교차점에서 혁신을 찾음\n' +
+  '4. 편집 장인: 구조, 리듬, 명확성. 모든 문장이 제 자리를 차지하도록\n' +
+  '5. 실행 엔진: 머스크처럼 분석 마비 없이 구체적이고 즉시 실행 가능한 결과물\n\n' +
+  '글쓰기 원칙:\n' +
+  '- 사람이 쓴 것처럼 자연스럽게. AI 투 문장 금지: "~할 수 있습니다", "혁신적인", "획기적인"\n' +
+  '- 데이터 기반: 숫자, 트렌드, 근거를 자연스럽게 녹여 넣기\n' +
+  '- 의외성: 독자가 예상 못한 각도, 신선한 비유, 반직관적 인사이트\n' +
+  '- 구체성: 이름, 도구, 버전, 실제 사례 — 뭉뚱그리지 않기\n';
+
+// Prompt Caching용 system 배열 생성 헬퍼
+// 직접 fetch 호출하는 곳에서 system 필드에 이 함수 결과를 넣으면 캐싱 적용
+function _cachedSystem(text) {
+  if (!text) return undefined;
+  return [{ type: 'text', text: text, cache_control: { type: 'ephemeral' } }];
+}
+
+// ━━━ 범용 Claude API 호출 ━━━
+// 모든 패널이 이 함수를 사용해야 함 (panel8·panel10 등)
+// opts: { apiKey, prompt, system?, model?, maxTokens?, temperature?, noPersona? }
+async function callClaudeApi(opts) {
+  var key = opts.apiKey;
+  if (!key) throw new Error('API 키가 필요합니다.');
+  // max_tokens 최적화 — 용도별 적정값 사용
+  var mt = opts.maxTokens || 2000;
+  var body = {
+    model: opts.model || 'claude-haiku-4-5-20251001',
+    max_tokens: mt,
+    messages: [{ role: 'user', content: opts.prompt }]
+  };
+  // 페르소나 시스템 프롬프트 적용 + Prompt Caching
+  // system을 배열 형태로 전달하면 cache_control 블록 사용 가능
+  var sysText = '';
+  if (!opts.noPersona) {
+    sysText = opts.system ? (PUBLISHING_PERSONA + '\n---\n' + opts.system) : PUBLISHING_PERSONA;
+  } else if (opts.system) {
+    sysText = opts.system;
+  }
+  if (sysText) {
+    // Prompt Caching: system을 배열 형태 + cache_control로 전달
+    // 반복 호출 시 TTFT 감소 + 캐시된 토큰 비용 90% 절감
+    body.system = [
+      { type: 'text', text: sysText, cache_control: { type: 'ephemeral' } }
+    ];
+  }
+  if (opts.temperature !== undefined) body.temperature = opts.temperature;
+  var res;
+  try {
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify(body)
+    });
+  } catch (e) {
+    throw new Error(
+      'API 연결 실패 (네트워크 오류)\n\n' +
+      '인터넷 연결을 확인하거나 잠시 후 다시 시도하세요.\n' +
+      '(' + e.message + ')'
+    );
+  }
+  if (!res.ok) {
+    var errMsg = 'API 오류 ' + res.status;
+    try {
+      var j = await res.json();
+      if (j.error && j.error.message) errMsg += ': ' + j.error.message;
+    } catch (e2) {}
+    if (res.status === 401 || res.status === 403) errMsg += '\n→ API 키가 올바른지 확인하세요.';
+    else if (res.status === 429) errMsg += '\n→ 요청 한도 초과 — 잠시 후 재시도하세요.';
+    throw new Error(errMsg);
+  }
+  var data = await res.json();
+  if (data.error) throw new Error(data.error.message || 'Claude API 오류');
+  return data.content[0].text;
 }
 
 // ━━━ API 키 저장소 ━━━
@@ -1991,7 +2118,7 @@ ${ctx}
         'content-type':'application/json',
         'anthropic-dangerous-direct-browser-access':'true'
       },
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:4000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:2000,system:_cachedSystem(PUBLISHING_PERSONA),messages:[{role:'user',content:prompt}]})
     });
     if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${resp.status}`);}
     const res=await resp.json();

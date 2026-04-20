@@ -18,6 +18,8 @@
 .panel14-scope .tc-btn:hover { border-color: #3B3F8C; color: #3B3F8C; }
 .panel14-scope .tc-btn-apply { background: #3B3F8C; color: #fff; border-color: #3B3F8C; }
 .panel14-scope .tc-btn-apply:hover { background: #2d3070; }
+.panel14-scope .tc-btn-upload { background: #f0efe8; border: 1.5px dashed #b0ada5; color: #6B6860; display: inline-flex; align-items: center; gap: 4px; }
+.panel14-scope .tc-btn-upload:hover { border-color: #3B3F8C; color: #3B3F8C; background: #eeedf8; }
 
 /* ── Row ── */
 .panel14-scope .tc-list { display: flex; flex-direction: column; gap: 2px; }

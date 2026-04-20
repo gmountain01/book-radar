@@ -12,29 +12,8 @@ function $$(sel) { return ROOT.querySelectorAll(sel); }
    YouTube API 키 — 유튜버 분석(panel7)과 동일한 6개 키
    할당량 소진 시 자동 순환
    ═══════════════════════════════════════════ */
-var KW_YT_KEYS = typeof YT_API_KEYS_SHARED !== 'undefined' ? YT_API_KEYS_SHARED : [
-  'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo','AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c',
-  'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM','AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
-  'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis','AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc'
-];
-var _kwYtKeyIdx = 0;
-var _kwYtExhausted = new Set();
-
-function _getYtKey() {
-  for (var i = 0; i < KW_YT_KEYS.length; i++) {
-    var idx = (_kwYtKeyIdx + i) % KW_YT_KEYS.length;
-    if (!_kwYtExhausted.has(idx)) { _kwYtKeyIdx = idx; return KW_YT_KEYS[idx]; }
-  }
-  // 모든 키 소진 → 첫 번째 키로 재시도
-  _kwYtExhausted.clear();
-  _kwYtKeyIdx = 0;
-  return KW_YT_KEYS[0];
-}
-
-function _markYtKeyExhausted() {
-  _kwYtExhausted.add(_kwYtKeyIdx);
-  _kwYtKeyIdx = (_kwYtKeyIdx + 1) % KW_YT_KEYS.length;
-}
+// YouTube API — shared/youtube.js 통합 레이어 사용
+// ytApiFetch(), ytSearchWithStats(), ytApiState 참조
 
 /* ═══════════════════════════════════════════
    Globals & Constants
@@ -186,12 +165,9 @@ var KEYWORD_TAXONOMY = {
 
 function getL1Class(l1) { return (KEYWORD_TAXONOMY[l1] || {}).cls || 'cat-ai'; }
 function getL1Color(l1) { return (KEYWORD_TAXONOMY[l1] || {}).color || '#4f46b8'; }
-function kwLog() {}
+// kwLog 삭제됨 — 실행 로그 기능 제거 완료
 
-function escHtml(s) {
-  if (s == null) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-}
+// escHtml — shared/app.js의 전역 escHtml 사용
 
 /* ═══════════════════════════════════════════
    Tab Switching (scoped)
@@ -232,7 +208,9 @@ async function showApiKeyStatus() {
   var el = $('kwApiStatus');
   if (!el) return;
   var claudeKey = typeof loadApiKey === 'function' ? await loadApiKey() : '';
-  var ytCount = KW_YT_KEYS.length - _kwYtExhausted.size;
+  var ytKeys = ytApiState.getKeys();
+  var ytExh = ytApiState.getExhaustedKeys();
+  var ytCount = ytKeys.length - ytExh.size;
   var claudeOk = claudeKey && claudeKey.startsWith('sk-');
   var bestOk = aladinData.length > 0;
   var lecOk  = lectureData.length > 0;
@@ -392,12 +370,13 @@ async function generateTaxonomy(claudeKey) {
     '프로그래밍 강좌 인기', 'AI 수익화 방법 2025', '코딩 자동화 최신'
   ];
   var titles = [];
-  for (var si = 0; si < seeds.length; si++) {
-    try {
-      var vids = await fetchYT(seeds[si], _getYtKey());
-      vids.forEach(function(v) { if (v.title) titles.push(v.title); });
-    } catch (e) { /* 실패 시 해당 시드 skip */ }
-  }
+  var seedTasks = seeds.map(function(seed) {
+    return function() { return fetchYT(seed).catch(function() { return []; }); };
+  });
+  var seedResults = await _parallelLimit(seedTasks, YT_PARALLEL);
+  seedResults.forEach(function(vids) {
+    (vids || []).forEach(function(v) { if (v.title) titles.push(v.title); });
+  });
 
   // 2. 베스트셀러 + 강의 컨텍스트
   var bestCtx = aladinData.slice(0, 20).map(function(b) { return b['상품명']; }).filter(Boolean).join(', ');
@@ -578,7 +557,6 @@ function extractCardsIndividually(s) {
 /* ═══════════════════════════════════════════
    Helpers
    ═══════════════════════════════════════════ */
-function getMonthsAgo(n) { var d = new Date(); d.setMonth(d.getMonth() - n); return d.toISOString(); }
 function fmtNum(n) {
   if (n >= 10000000) return (n / 10000000).toFixed(1) + '천만';
   if (n >= 10000) return Math.round(n / 10000) + '만';
@@ -587,127 +565,29 @@ function fmtNum(n) {
 }
 
 /* ═══════════════════════════════════════════
-   YouTube API
+   YouTube API — shared/youtube.js 통합 사용
+   fetchYT(query) → ytSearchWithStats(query, opts) 위임
+   _parallelLimit → _ytParallelLimit (shared)
    ═══════════════════════════════════════════ */
-var _allYtKeysExhausted = false;
 
-function _checkAllKeysExhausted() {
-  _allYtKeysExhausted = _kwYtExhausted.size >= KW_YT_KEYS.length;
-  return _allYtKeysExhausted;
-}
-
-async function _ytSearch(query, apiKey, order, months) {
-  if (_allYtKeysExhausted) return []; // 모든 키 소진 시 빈 배열
-  var url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=' +
-    encodeURIComponent(query) + '&type=video&order=' + order + '&publishedAfter=' + getMonthsAgo(months) +
-    '&maxResults=15&key=' + apiKey + '&relevanceLanguage=ko';
-  var res = await fetch(url); var data = await res.json();
-  if (data.error) {
-    var msg = data.error.message || '';
-    if (data.error.code === 403 || msg.toLowerCase().indexOf('quota') !== -1) {
-      _markYtKeyExhausted();
-      _checkAllKeysExhausted();
-    }
-    return []; // throw 대신 빈 배열 반환 — 다른 쿼리는 계속 진행
-  }
-  return data.items || [];
-}
-
-async function _ytStats(ids, apiKey) {
-  if (!ids.length || _allYtKeysExhausted) return {};
-  var map = {};
-  for (var i = 0; i < ids.length; i += 50) {
-    var batch = ids.slice(i, i + 50);
-    try {
-      var res = await fetch('https://www.googleapis.com/youtube/v3/videos?part=statistics&id=' + batch.join(',') + '&key=' + apiKey);
-      var data = await res.json();
-      if (data.error) { _markYtKeyExhausted(); _checkAllKeysExhausted(); break; }
-      (data.items || []).forEach(function(v) { map[v.id] = v.statistics; });
-    } catch (e) { break; }
-  }
-  return map;
-}
-
-function calcViewsPerDay(views, publishedDate) {
-  var days = Math.max(1, Math.round((Date.now() - new Date(publishedDate).getTime()) / 86400000));
-  return Math.round(views / days);
-}
-
-var YT_CACHE_KEY = 'kw_yt_cache';
-var YT_CACHE_TTL = 24 * 60 * 60 * 1000; // 24시간
-
-var _ytCacheMem = null;
-function _loadYtCache() {
-  if (_ytCacheMem) return _ytCacheMem;
-  try { _ytCacheMem = JSON.parse(localStorage.getItem(YT_CACHE_KEY) || '{}'); } catch (e) { _ytCacheMem = {}; }
-  return _ytCacheMem;
-}
-function _saveYtCache(cache) {
-  _ytCacheMem = cache;
+// shared/youtube.js의 ytSearchWithStats를 panel10 인터페이스로 래핑
+async function fetchYT(query) {
+  if (ytApiState.isAllExhausted()) return [];
   try {
-    // 오래된 항목 정리 (100개 넘으면 가장 오래된 것부터 삭제)
-    var keys = Object.keys(cache);
-    if (keys.length > 100) {
-      keys.sort(function(a, b) { return (cache[a].ts || 0) - (cache[b].ts || 0); });
-      keys.slice(0, keys.length - 80).forEach(function(k) { delete cache[k]; });
-    }
-    localStorage.setItem(YT_CACHE_KEY, JSON.stringify(cache));
-  } catch (e) { /* localStorage 용량 초과 시 무시 */ }
+    return await ytSearchWithStats(query, { order: 'relevance', months: 6, maxResults: 15 });
+  } catch (e) { return []; }
 }
 
-async function fetchYT(query, apiKey) {
-  // 1) 캐시 확인 (24시간 내 같은 쿼리 결과가 있으면 재사용)
-  var cacheKey = query.toLowerCase().trim();
-  var cache = _loadYtCache();
-  if (cache[cacheKey] && cache[cacheKey].ts && (Date.now() - cache[cacheKey].ts < YT_CACHE_TTL)) {
-    return cache[cacheKey].data || [];
-  }
-
-  // 2) API 호출
-  if (_allYtKeysExhausted) return [];
-  var key = apiKey || _getYtKey();
-  var allItems = [];
-  var searches = [['relevance', 6]];
-  for (var si = 0; si < searches.length; si++) {
-    if (_allYtKeysExhausted) break;
-    try {
-      var items = await _ytSearch(query, key, searches[si][0], searches[si][1]);
-      allItems = allItems.concat(items);
-    } catch (e) { /* skip */ }
-  }
-  var seen = new Set(); var unique = [];
-  allItems.forEach(function(item) {
-    var vid = item.id && item.id.videoId;
-    if (vid && !seen.has(vid)) { seen.add(vid); unique.push(item); }
-  });
-  if (!unique.length) return [];
-  var ids = unique.map(function(i) { return i.id.videoId; });
-  var sMap = await _ytStats(ids, key);
-  var result = unique.map(function(item) {
-    var vid = item.id.videoId;
-    var views = parseInt((sMap[vid] || {}).viewCount || 0);
-    var pub = item.snippet.publishedAt.slice(0, 10);
-    return { title: item.snippet.title, channel: item.snippet.channelTitle, published: pub, views: views, viewsPerDay: calcViewsPerDay(views, pub), videoId: vid };
-  }).sort(function(a, b) { return b.viewsPerDay - a.viewsPerDay; });
-
-  // 3) 캐시 저장
-  cache[cacheKey] = { data: result, ts: Date.now() };
-  _saveYtCache(cache);
-  return result;
-}
+// shared/youtube.js의 _ytParallelLimit, YT_PARALLEL_LIMIT 사용
+var _parallelLimit = window._ytParallelLimit;
+var YT_PARALLEL = window.YT_PARALLEL_LIMIT || 4;
 
 /* ═══════════════════════════════════════════
    Claude API
    ═══════════════════════════════════════════ */
+// callClaude — callClaudeApi(shared/app.js) 래핑
 async function callClaude(prompt, apiKey) {
-  var res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
-  });
-  var data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.content[0].text;
+  return callClaudeApi({ apiKey: apiKey, prompt: prompt, model: 'claude-haiku-4-5-20251001', maxTokens: 4000 });
 }
 
 /* ═══════════════════════════════════════════
@@ -798,33 +678,49 @@ async function runAnalysis() {
     setStep(steps, 0);
     $('kwLoadingText').textContent = 'YouTube 데이터 수집 중... (0/' + activeLeaves.length + ')';
 
-    _allYtKeysExhausted = false; // 분석 시작 시 리셋
-    _kwYtExhausted.clear();
+    // 키 목록 새로고침 + 소진 상태 리셋
+    ytApiState.refreshKeys();
     var catData = {};
     var ytFailed = false;
-    for (var li = 0; li < activeLeaves.length; li++) {
-      if (_allYtKeysExhausted) {
-        $('kwLoadingText').textContent = 'YouTube API 할당량 소진 — 수집된 데이터로 진행…';
-        ytFailed = true;
-        break;
-      }
-      $('kwLoadingText').textContent = 'YouTube 수집 중… (' + (li + 1) + '/' + activeLeaves.length + ')';
-      var pathKey = activeLeaves[li];
-      var parts = pathKey.split('|');
-      var taxL1 = KEYWORD_TAXONOMY[parts[0]] || {};
-      var taxL2 = (taxL1.l2 || {})[parts[1]] || {};
-      var taxL3 = (taxL2.l3 || {})[parts[2]] || {};
-      var queries = taxL3.q || [];
-      var allVideos = [];
-      for (var qi = 0; qi < queries.length; qi++) {
-        if (_allYtKeysExhausted) break;
-        var vids = await fetchYT(queries[qi], _getYtKey());
-        allVideos.push.apply(allVideos, vids);
-      }
+    var doneCount = 0;
+
+    // 각 L3 카테고리를 병렬 태스크로 변환
+    var catTasks = activeLeaves.map(function(pathKey) {
+      return function() {
+        if (ytApiState.isAllExhausted()) return Promise.resolve({ pathKey: pathKey, videos: [] });
+        var parts = pathKey.split('|');
+        var taxL1 = KEYWORD_TAXONOMY[parts[0]] || {};
+        var taxL2 = (taxL1.l2 || {})[parts[1]] || {};
+        var taxL3 = (taxL2.l3 || {})[parts[2]] || {};
+        var queries = taxL3.q || [];
+        // 각 L3 내부 쿼리도 병렬 실행
+        var qTasks = queries.map(function(q) {
+          return function() {
+            if (ytApiState.isAllExhausted()) return Promise.resolve([]);
+            return fetchYT(q).catch(function() { return []; });
+          };
+        });
+        return _parallelLimit(qTasks, YT_PARALLEL).then(function(qResults) {
+          var allVideos = [];
+          qResults.forEach(function(vids) { if (vids) allVideos.push.apply(allVideos, vids); });
+          doneCount++;
+          $('kwLoadingText').textContent = 'YouTube 수집 중… (' + doneCount + '/' + activeLeaves.length + ')';
+          return { pathKey: pathKey, videos: allVideos };
+        });
+      };
+    });
+
+    var catResults = await _parallelLimit(catTasks, YT_PARALLEL);
+    catResults.forEach(function(r) {
+      if (!r) return;
       var seen = new Set(); var unique = [];
-      allVideos.forEach(function(v) { if (v.videoId && !seen.has(v.videoId)) { seen.add(v.videoId); unique.push(v); } });
+      r.videos.forEach(function(v) { if (v.videoId && !seen.has(v.videoId)) { seen.add(v.videoId); unique.push(v); } });
       unique.sort(function(a, b) { return b.viewsPerDay - a.viewsPerDay; });
-      catData[pathKey] = unique.slice(0, 50);
+      catData[r.pathKey] = unique.slice(0, 50);
+    });
+    if (ytApiState.isAllExhausted()) {
+      $('kwLoadingText').textContent = 'YouTube API 할당량 소진 — 수집된 데이터로 진행…';
+      ytFailed = true;
     }
 
     setStep(steps, 1);

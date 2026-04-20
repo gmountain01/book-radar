@@ -124,9 +124,7 @@ function _hookSwitchTab() {
 }
 
 // ─── 렌더링 ────────────────────────────────────────────
-function _escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+// _escHtml 제거 — shared/app.js의 전역 escHtml 사용
 
 function _renderLogs() {
   if (!ROOT) return;
@@ -142,10 +140,10 @@ function _renderLogs() {
 
   container.innerHTML = filtered.map(function(l) {
     return '<div class="p11-log-entry p11-level-' + l.level + '">' +
-      '<span class="p11-ts">' + _escHtml(l.ts) + '</span>' +
+      '<span class="p11-ts">' + escHtml(l.ts) + '</span>' +
       '<span class="p11-badge p11-badge-' + l.level + '">' + l.level.toUpperCase() + '</span>' +
-      (l.source ? '<span class="p11-source">' + _escHtml(l.source) + '</span>' : '') +
-      '<span class="p11-msg">' + _escHtml(l.msg) + '</span>' +
+      (l.source ? '<span class="p11-source">' + escHtml(l.source) + '</span>' : '') +
+      '<span class="p11-msg">' + escHtml(l.msg) + '</span>' +
     '</div>';
   }).join('');
 }
@@ -233,7 +231,7 @@ function initPanel11() {
       '<div class="p11-key-section" style="margin-top:16px;">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
           '<div class="p11-key-label" style="margin:0;">YouTube Data API v3</div>' +
-          '<div id="p11-yt-badge" class="p11-key-badge">내장 6개</div>' +
+          '<div id="p11-yt-badge" class="p11-key-badge">내장 9개</div>' +
         '</div>' +
         '<div style="font-size:0.6rem;color:#444c56;margin-bottom:8px;font-family:\'DM Mono\',monospace;">유튜버 분석 · 키워드 분석</div>' +
         '<div id="p11-yt-keys-list"></div>' +
@@ -317,15 +315,16 @@ function _renderKeyStatus() {
   var ytList = ROOT.querySelector('#p11-yt-keys-list');
   if (ytList) {
     var ytKeys = _getYtKeyList();
-    var extraCount = Math.max(0, ytKeys.length - 6);
-    _setBadge('p11-yt-badge', 'ok', '내장 6개' + (extraCount ? ' + 추가 ' + extraCount + '개' : ''));
+    var builtinCount = typeof YT_API_KEYS_SHARED !== 'undefined' ? YT_API_KEYS_SHARED.length : 0;
+    var extraCount = Math.max(0, ytKeys.length - builtinCount);
+    _setBadge('p11-yt-badge', 'ok', '내장 ' + builtinCount + '개' + (extraCount ? ' + 추가 ' + extraCount + '개' : ''));
     ytList.innerHTML = ytKeys.map(function(key, i) {
-      var isExtra = i >= 6;
+      var isExtra = i >= builtinCount;
       return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">' +
         '<span style="color:' + (isExtra ? '#a78bfa' : '#34d399') + ';font-size:0.62rem;font-family:\'DM Mono\',monospace;">' +
         (isExtra ? '추가' : 'KEY') + ' ' + (i+1) + '</span>' +
         '<span style="color:#6b7280;font-size:0.62rem;font-family:\'DM Mono\',monospace;">' + key.slice(0, 10) + '…' + key.slice(-4) + '</span>' +
-        (isExtra ? '<span style="color:#f87171;font-size:0.58rem;cursor:pointer;" onclick="p11_removeYtKey(' + (i-6) + ')">삭제</span>' : '') +
+        (isExtra ? '<span style="color:#f87171;font-size:0.58rem;cursor:pointer;" onclick="p11_removeYtKey(' + (i-builtinCount) + ')">삭제</span>' : '') +
         '</div>';
     }).join('');
   }
@@ -378,7 +377,7 @@ window.p11_saveClaudeKey = async function() {
       var errData = await res.json().catch(function() { return {}; });
       var errMsg = (errData.error && errData.error.message) || ('HTTP ' + res.status);
       _setBadge('p11-claude-badge', 'error', '미연결');
-      if (statusEl) statusEl.innerHTML = '<span style="color:#f87171;">✗ 인증 실패: ' + _escHtml(errMsg) + '</span><br><span style="color:#444c56;font-size:0.6rem;">키가 저장되었으나 API 인증에 실패했습니다. 키를 확인하세요.</span>';
+      if (statusEl) statusEl.innerHTML = '<span style="color:#f87171;">✗ 인증 실패: ' + escHtml(errMsg) + '</span><br><span style="color:#444c56;font-size:0.6rem;">키가 저장되었으나 API 인증에 실패했습니다. 키를 확인하세요.</span>';
       _push('error', ['Claude API 미연결: ' + errMsg], 'panel11');
     }
   } catch (e) {
@@ -419,7 +418,7 @@ window.p11_addYtKey = async function() {
     var data = await res.json();
     if (data.error) {
       var errMsg = data.error.message || ('코드 ' + data.error.code);
-      if (statusEl) statusEl.innerHTML = '<span style="color:#f87171;">✗ ' + _escHtml(errMsg) + '</span>';
+      if (statusEl) statusEl.innerHTML = '<span style="color:#f87171;">✗ ' + escHtml(errMsg) + '</span>';
       _push('warn', ['YouTube 키 검증 실패: ' + errMsg], 'panel11');
     } else {
       if (statusEl) statusEl.innerHTML = '<span style="color:#34d399;">✓ 연결 확인 완료</span>';

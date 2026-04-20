@@ -866,7 +866,7 @@
       <div class="hint">최대 50MB · PDF / DOCX / HWPX / HWP / DOC 지원</div>
       <div class="file-name" id="p8_fileName"></div>
     </label>
-    <input type="file" id="p8_fileInput" accept=".pdf,.docx,.hwpx,.hwp,.doc">
+    <input type="file" id="p8_fileInput" accept=".pdf,.docx,.hwpx,.hwp,.doc,.txt,.md">
 
     <div class="api-row">
       <label>Claude API Key (선택)</label>
@@ -1297,13 +1297,8 @@
         </div>
       </div>
       <div class="sidebar-footer">
-        <div id="yt-quota-display" style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;line-height:1.5;padding:0 4px;">
-          <div style="margin-bottom:5px;"><span style="opacity:.7;">키1</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
-          <div style="margin-bottom:5px;"><span style="opacity:.7;">키2</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
-          <div style="margin-bottom:5px;"><span style="opacity:.7;">키3</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
-          <div style="margin-bottom:5px;"><span style="opacity:.7;">키4</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
-          <div style="margin-bottom:5px;"><span style="opacity:.7;">키5</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
-          <div style="margin-bottom:5px;"><span style="opacity:.7;">키6</span> ✓<span style="opacity:.55;font-size:10px;">활성</span><div style="background:rgba(255,255,255,.15);border-radius:3px;height:4px;margin:2px 0;"><div style="background:#2ECC71;height:100%;width:0%;border-radius:3px;"></div></div><span style="font-size:10px;opacity:.5;">0 / 10,000 유닛 (잔여 10,000)</span></div>
+        <div id="yt-quota-display" style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;line-height:1.5;padding:0 2px;">
+          <span style="opacity:.5;font-size:10px;">로딩 중…</span>
         </div>
         <button class="api-key-btn" onclick="openApiModal()">
           <span>🔑</span> API 키 설정
@@ -1428,7 +1423,7 @@
 <div class="modal-overlay" id="apiModal">
   <div class="modal">
     <h3>🔑 YouTube API 키 상태</h3>
-    <p class="modal-desc">여섯 개의 API 키가 내장되어 있습니다. 할당량 소진 시 자동으로 전환됩니다.<br>
+    <p class="modal-desc">9개의 API 키가 내장되어 있습니다. 개발자 콘솔(Ctrl+Alt+Enter)에서 추가 가능합니다.<br>할당량 소진 시 자동으로 전환됩니다.<br>
     일일 할당량은 키당 10,000 유닛이며 매일 자정(태평양 표준시)에 초기화됩니다.<br>
     <small style="color:#999;">유닛: 검색=100, 채널/영상 조회=1 / 캐시 히트 시 소모 없음</small></p>
     <div id="apiKeyStatusList" style="margin:12px 0;display:flex;flex-direction:column;gap:8px;"></div>
@@ -1450,12 +1445,14 @@
 <script src="shared/config.js"></script>
 <script src="shared/store.js"></script>
 <script src="shared/app.js"></script>
+<script src="shared/youtube.js"></script>
 <script src="shared/router.js"></script>
 <script src="panels/panel2/panel2-data.js"></script>
 <script src="panels/panel3/panel3.js"></script>
 <script src="panels/panel5/panel5.js"></script>
 <script src="panels/panel6/panel6.js"></script>
 <script src="panels/panel7/panel7.js"></script>
+<script src="panels/panel8/교정규칙.js"></script>
 <script src="panels/panel8/panel8.js"></script>
 <script src="panels/panel9/panel9.js"></script>
 <script src="panels/panel10/panel10.js"></script>
