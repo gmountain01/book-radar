@@ -340,7 +340,7 @@ const LECTURE_CAT_MAP={
 };
 
 function catLecture(r){
-  const byTitle=cat(r.title);
+  const byTitle=cat(r.title||'');
   if(byTitle!=='기타')return byTitle;
   if(r.cat2&&LECTURE_CAT_MAP[r.cat2])return LECTURE_CAT_MAP[r.cat2];
   if(r.cat1&&LECTURE_CAT_MAP[r.cat1])return LECTURE_CAT_MAP[r.cat1];
@@ -377,6 +377,7 @@ const SUBJECT_FIRST_MAP=[
 const AI_TOOL_KW=['챗gpt','chatgpt','제미나이','gemini','클로드','claude','코파일럿','copilot','ai로','with ai'];
 
 function cat(t){
+  if(!t)return '기타';
   const s=t.toLowerCase();
   // 바이브코딩 제목에 다른 도구 키워드가 함께 있으면 도구 카테고리 우선
   if(VIBE_KW.some(k=>s.includes(k))){
@@ -684,6 +685,7 @@ function parseCsvText(text) {
 
 // HTML 응답 감지 헬퍼 — Google 로그인/에러 페이지 등 모든 HTML 응답 탐지
 function _isHtmlResponse(text) {
+  if (!text) return false;
   const t = text.trim().toLowerCase();
   return t.startsWith('<!') || t.startsWith('<html') || t.startsWith('<head') ||
          t.startsWith('<body') || t.startsWith('<script') || t.startsWith('<meta');
@@ -1127,11 +1129,11 @@ function drawWithSearch(filter,q){
     :filter==='planning'?analysisData.filter(d=>d.planned.some(p=>p.status==='기획예정'))
     :analysisData.filter(d=>d.status===filter);
   arr=arr.filter(d=>
-    d.cat.toLowerCase().includes(q)||
-    d.comp.some(b=>b.title.toLowerCase().includes(q))||
-    d.mine.some(b=>b.title.toLowerCase().includes(q))||
-    d.planned.some(p=>p.title.toLowerCase().includes(q))||
-    d.lecture.some(l=>l.title.toLowerCase().includes(q))
+    (d.cat||'').toLowerCase().includes(q)||
+    d.comp.some(b=>(b.title||'').toLowerCase().includes(q))||
+    d.mine.some(b=>(b.title||'').toLowerCase().includes(q))||
+    d.planned.some(p=>(p.title||'').toLowerCase().includes(q))||
+    d.lecture.some(l=>(l.title||'').toLowerCase().includes(q))
   );
   const sorted=sortArr(arr);
   const container=document.getElementById('results');
@@ -1860,7 +1862,7 @@ function showCatAuthors(catName,blockId){
   if(existing){existing.remove();return;}
 
   // 키워드 추출 (카테고리명 토크나이즈)
-  const keywords=catName.toLowerCase().replace(/[\/·\s]+/g,' ').split(' ').filter(k=>k.length>1);
+  const keywords=(catName||'').toLowerCase().replace(/[\/·\s]+/g,' ').split(' ').filter(k=>k.length>1);
 
   // AUTHOR_DATA에서 태그 매칭
   let matched=[];

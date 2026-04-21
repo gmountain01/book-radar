@@ -430,4 +430,60 @@
 .panel10-scope .bc-sep { color: var(--kw-border2); font-size: 8px; }
 .panel10-scope .bc-l3 { font-weight: 600; color: var(--kw-text2); }
 
+/* ── Pick Type Pills ── */
+.panel10-scope .pick-pill {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.2px; padding: 2px 8px;
+  border-radius: 3px; font-family: var(--kw-mono); text-transform: uppercase;
+}
+.panel10-scope .pick-hook {
+  background: #c23d2f; color: #fff;
+}
+.panel10-scope .pick-safe {
+  background: var(--kw-teal-light); color: var(--kw-teal);
+}
+
+/* ── Hook Card 강조 ── */
+.panel10-scope .plan-card.card-hook {
+  border-color: #e8a0a0; border-width: 2px;
+  background: linear-gradient(180deg, #fef7f7 0%, var(--kw-surface) 60px);
+}
+.panel10-scope .plan-card.card-hook:hover {
+  border-color: var(--kw-coral); box-shadow: 0 2px 12px rgba(194,61,47,0.1);
+}
+
+/* ── Card Top Row ── */
+.panel10-scope .card-top-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  margin-bottom: 6px;
+}
+.panel10-scope .card-top-row .card-breadcrumb { margin-bottom: 0; }
+
+/* ── Hook Idea ── */
+.panel10-scope .card-hook-idea {
+  margin-top: 8px; padding: 8px 10px;
+  background: #fff5f5; border-left: 3px solid var(--kw-coral);
+  font-size: 12px; line-height: 1.6; color: #8b2020;
+  border-radius: 0 6px 6px 0; font-weight: 500;
+}
+.panel10-scope .plan-card:not(.card-hook) .card-hook-idea {
+  background: var(--kw-purple-light); border-left-color: var(--kw-purple);
+  color: #2d278a;
+}
+
+/* ── Target Reader ── */
+.panel10-scope .card-target-reader {
+  margin-top: 6px; font-size: 11px; color: var(--kw-text2);
+  line-height: 1.5; display: flex; gap: 4px; align-items: flex-start;
+}
+.panel10-scope .target-icon { flex-shrink: 0; font-size: 13px; }
+
+/* ── Summary Chip 색상 ── */
+.panel10-scope .chip-hook .summary-chip-val { color: var(--kw-coral); }
+.panel10-scope .chip-hook .summary-chip-label { color: var(--kw-coral); }
+.panel10-scope .chip-safe .summary-chip-val { color: var(--kw-teal); }
+.panel10-scope .chip-safe .summary-chip-label { color: var(--kw-teal); }
+
+/* ── kw-signal 위치 조정 ── */
+.panel10-scope .kw-signal { margin-top: 6px; }
+
 /* Panel10 positioning은 index.html 인라인 <style>에서 정의 (panel7과 동일 패턴) */

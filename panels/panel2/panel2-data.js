@@ -96,7 +96,7 @@ function filterAuthors() {
   const pub = document.getElementById('authorPub').value;
 
   const filtered = AUTHOR_DATA.filter(r => {
-    const matchQ = !q || r.저자명.toLowerCase().includes(q) || (r.태그||'').toLowerCase().includes(q) || (r.담당자||'').toLowerCase().includes(q);
+    const matchQ = !q || (r.저자명||'').toLowerCase().includes(q) || (r.태그||'').toLowerCase().includes(q) || (r.담당자||'').toLowerCase().includes(q);
     const matchKind = !kind || (r['전문서/활용서']||'').includes(kind);
     const matchMgr = !mgr || r.담당자 === mgr;
     const matchPub = !pub || (pub==='미' ? (!r.출간여부||!r.출간여부.includes('출간')) : (r.출간여부||'').includes(pub));

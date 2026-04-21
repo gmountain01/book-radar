@@ -755,15 +755,28 @@ async function runAnalysis() {
 
     var totalCards = activeLeaves.length * 3;
     var pathListStr = activeLeaves.map(function(p) { return p.split('|').join(' > '); }).join(', ');
-    var prompt = '당신은 IT/AI 분야 출판 기획 전문가입니다. YouTube 트렌드를 분석해 출판 기획 가치가 높은 키워드를 도출하세요.\n\n' +
-      '**분석 기준**: 일평균 조회수(성장속도)가 핵심. 절대 조회수보다 최근 급성장 주제가 출판 가치 높음.\n\n' +
-      '[글쓰기 원칙] subtitle_suggestion과 trend_vs_supply, yt_keyword_signal은 사람이 쓴 것처럼 자연스럽게. "~할 수 있습니다" 같은 AI 투 문장 금지. 편집자가 기획회의에서 한마디로 설명하듯 간결하고 구체적으로.\n\n' +
+    var prompt = '당신은 10년차 IT 출판 편��자입니다. YouTube 트렌드 데이터를 보고, 편집장에게 "이거 지금 안 하면 다른 출판사에 뺏깁니다"라고 말할 수 있는 기획 키워드를 도출하세요.\n\n' +
+      '**핵심 원칙**:\n' +
+      '1. 키워드마다 "이 책을 살 사람"이 눈에 보여야 한다. "개발자"처럼 뭉뚱그리지 말 것.\n' +
+      '2. 각 키워드를 두 가지 유형 중 하나로 분류하라:\n' +
+      '   - **safe** (안전 기획): 수요가 검증됐고 경쟁 도서가 있지만 더 잘 만들 수 있는 것\n' +
+      '   - **hook** (혹할 기획): 아직 책이 없거나, 관점 자체가 새로워서 편집자가 혹할 것\n' +
+      '3. hook_idea는 이 책이 왜 지금 나와야 하는지, 서점에서 뭐가 다른지를 편집자에게 설득하는 한 마디.\n\n' +
+      '[글쓰기 원칙] AI 투 문장 금지(~할 수 있습니다/혁신적인/필수적인). 편집자가 기획회의에서 실제로 쓰는 말투로. 구어체 OK.\n\n' +
       '[YouTube 트렌드 - 최근 6개월, 성장속도순]\n' + ytSummary + '\n\n' +
       '[' + aladinSummary + ']\n\n' +
       (lectureSummary ? '[' + lectureSummary + ']\n\n' : '') +
-      '총 ' + totalCards + '개의 기획 추천 키워드를 도출하세요. 반드시 아래 JSON 배열만 출력하세요.\n\n활성 경로 목록: ' + pathListStr + '\n\n' +
-      '키워드 품질 기준:\n- 구체적 롱테일 키워드 (25자 이내)\n- path의 L1/L2/L3 계층 반영\n- 각 L3 소분류당 2-3개\n- **키워드 고유성 필수**: 동일 keyword 문자열 2개 이상 금지\n- **competitor_books 필수**: 위 예스24 베스트셀러 목록에서 해당 키워드와 주제가 겹치는 도서를 1~3권 찾아 title+publisher를 반드시 기입하라. 없으면 빈 배열 []. 절대 생략하지 마라.\n- aladin_gap: 예스24에 유사 도서가 많으면 "낮음", 1~2권이면 "보통", 없으면 "높음"\n\n' +
-      '[\n  {\n    "keyword": "구체적 롱테일 키워드",\n    "path": ["L1", "L2", "L3"],\n    "category": "L3 소분류명",\n    "subtitle_suggestion": "부제 한 문장",\n    "trend_vs_supply": "불균형 한 줄",\n    "yt_keyword_signal": "트렌드 근거 한 문장",\n    "readers": ["독자층1", "독자층2"],\n    "aladin_gap": "높음 또는 보통 또는 낮음",\n    "competitor_books": [{"title": "도서명", "publisher": "출판사"}],\n    "top_videos": [{"title": "영상 제목", "views": 1234567}],\n    "urgency": "지금 또는 3개월 내 또는 6개월 내",\n    "author_type": "현업 개발자 / IT 유튜버 / 연구자 / 컨설턴트"\n  }\n]\n\n' +
+      '총 ' + totalCards + '개 키워드. 반드시 아래 JSON 배열만 출력하세요.\n\n활성 경로: ' + pathListStr + '\n\n' +
+      '키워드 품질 기준:\n' +
+      '- 구체적 롱테일 키워드 (25자 이내). "AI 활용법" 같은 막연한 것 금지.\n' +
+      '- 각 L3 소분류당 2-3개\n' +
+      '- **키워드 고유성 필수**: 동일 keyword 문자열 2개 이상 금지\n' +
+      '- **competitor_books 필수**: 위 예스24 목록에서 겹치는 도서 1~3권. 없으면 [].\n' +
+      '- aladin_gap: 유사 도서 많으면 "낮음", 1~2권 "보통", 없으면 "높음"\n' +
+      '- **target_reader**: "3년차 백엔드 개발자인데 AI로 생산성 올리고 싶은 사람"처럼 직급/경력/상황/욕구를 구체적으로. "개발자" "학생" 같은 한 단어 금지.\n' +
+      '- **hook_idea**: 편집장을 설득하는 한 마디. "유튜브에서 월 50만뷰인데 한국어 책이 0권" / "기존 책들은 전부 이론인데 이건 실전 프로젝트 3개로 끝냄" 같은 구체적 근거.\n' +
+      '- **pick_type**: "safe" 또는 "hook". safe=검증된 수요+개선 가능, hook=새 관점+시장 공백.\n\n' +
+      '[\n  {\n    "keyword": "구체적 롱테일 키워드",\n    "path": ["L1", "L2", "L3"],\n    "category": "L3 소분류명",\n    "subtitle_suggestion": "서점 띠지에 들어갈 부제 한 문장",\n    "pick_type": "safe 또는 hook",\n    "hook_idea": "편집장 설득 한 마디 — 왜 지금, 왜 우리가",\n    "target_reader": "이 책을 살 사람의 직급+경력+상황+욕구",\n    "trend_vs_supply": "수요 대비 공급 불균형 한 줄",\n    "yt_keyword_signal": "YouTube 트렌드 근거 한 줄",\n    "readers": ["구체적 독자층1", "구체적 독자층2"],\n    "aladin_gap": "높음 또는 보통 또는 낮음",\n    "competitor_books": [{"title": "도서명", "publisher": "출판사"}],\n    "top_videos": [{"title": "영상 제목", "views": 1234567}],\n    "urgency": "지금 또는 3개월 내 또는 6개월 내",\n    "author_type": "현업 개발자 / IT 유튜버 / 연구자 / 컨설턴트"\n  }\n]\n\n' +
       '[JSON 형식 규칙]\n1. 문자열 값 한 줄. 줄바꿈 금지.\n2. 큰따옴표(") 사용 금지.\n3. views는 정수만.\n4. path는 3개 요소 배열.';
 
     var raw = await callClaude(prompt, claudeKey);
@@ -803,6 +816,10 @@ function urgencyPill(u) {
   var map = { '지금': 'gap-high', '3개월 내': 'gap-mid', '6개월 내': 'gap-low' };
   return '<span class="gap-pill ' + (map[u] || 'gap-mid') + '">\u23F1 ' + u + '</span>';
 }
+function pickTypePill(type) {
+  if (type === 'hook') return '<span class="pick-pill pick-hook">HOOK</span>';
+  return '<span class="pick-pill pick-safe">SAFE</span>';
+}
 
 function renderCards(cards, catData) {
   $('kwLoadingState').style.display = 'none';
@@ -820,12 +837,14 @@ function renderCards(cards, catData) {
   var highGap = cards.filter(function(c) { return c.aladin_gap === '높음'; }).length;
   var leafCount = Object.keys(catData).length;
 
+  var hookCount = cards.filter(function(c) { return c.pick_type === 'hook'; }).length;
+  var safeCount = cards.length - hookCount;
   $('kwSummaryBar').innerHTML =
     '<div class="summary-chip"><div class="summary-chip-val">' + cards.length + '</div><div class="summary-chip-label">도출된 키워드</div></div>' +
-    '<div class="summary-chip"><div class="summary-chip-val">' + totalVids + '</div><div class="summary-chip-label">수집 영상 (L3 ' + leafCount + '개 x 최대 50)</div></div>' +
-    '<div class="summary-chip"><div class="summary-chip-val">' + fmtNum(totalViews) + '</div><div class="summary-chip-label">총 조회수 (6개월 내)</div></div>' +
+    '<div class="summary-chip chip-hook"><div class="summary-chip-val">' + hookCount + '</div><div class="summary-chip-label">HOOK 기획</div></div>' +
+    '<div class="summary-chip chip-safe"><div class="summary-chip-val">' + safeCount + '</div><div class="summary-chip-label">SAFE 기획</div></div>' +
     '<div class="summary-chip"><div class="summary-chip-val">' + highGap + '</div><div class="summary-chip-label">공백 높음</div></div>' +
-    '<div class="summary-chip"><div class="summary-chip-val">' + (aladinData.length || '-') + '</div><div class="summary-chip-label">yes24 도서</div></div>';
+    '<div class="summary-chip"><div class="summary-chip-val">' + fmtNum(totalViews) + '</div><div class="summary-chip-label">총 조회수</div></div>';
 
   var maxViews = Math.max.apply(null, cards.flatMap(function(c) { return (c.top_videos || []).map(function(v) { return v.views || 0; }); }).concat([1]));
 
@@ -838,7 +857,7 @@ function renderCards(cards, catData) {
     // yes24 경쟁 도서: Claude가 준 것 + aladinData에서 키워드 쪼개기 매칭
     var compArr = (card.competitor_books || []).slice();
     if (compArr.length < 3 && aladinData.length > 0) {
-      var kwParts = card.keyword.toLowerCase().replace(/[^\w가-힣\s]/g, '').split(/\s+/).filter(function(w) { return w.length >= 2; });
+      var kwParts = (card.keyword||'').toLowerCase().replace(/[^\w가-힣\s]/g, '').split(/\s+/).filter(function(w) { return w.length >= 2; });
       aladinData.forEach(function(b) {
         if (compArr.length >= 3) return;
         var title = (b['상품명'] || '').toLowerCase();
@@ -858,32 +877,58 @@ function renderCards(cards, catData) {
     // YouTube 영상 (링크 포함)
     var topVids = (card.top_videos || []).slice(0, 3);
     var totalCardViews = topVids.reduce(function(s, v) { return s + (parseInt(v.views, 10) || 0); }, 0);
-    if (totalCardViews === 0 && catData) {
-      var pathKey = path.join('|') || card.category;
-      var catVids = catData[pathKey] || catData[card.category] || [];
-      catVids.slice(0, 3).forEach(function(v) { totalCardViews += (v.views || 0); });
+    // catData에서 실제 YouTube 영상 데이터 가져오기 (videoId 매칭용)
+    var pathKey = path.join('|') || card.category;
+    var realVids = (catData && (catData[pathKey] || catData[card.category])) || [];
+    if (totalCardViews === 0 && realVids.length) {
+      realVids.slice(0, 3).forEach(function(v) { totalCardViews += (v.views || 0); });
+    }
+    // Claude 응답의 top_videos 제목을 실제 YouTube 데이터와 매칭하여 videoId 복원
+    function _findVideoId(title) {
+      if (!title || !realVids.length) return '';
+      var tLow = title.toLowerCase();
+      for (var ri = 0; ri < realVids.length; ri++) {
+        if ((realVids[ri].title || '').toLowerCase() === tLow) return realVids[ri].videoId || '';
+      }
+      // 정확 매칭 실패 시 부분 매칭
+      for (var ri = 0; ri < realVids.length; ri++) {
+        var rt = (realVids[ri].title || '').toLowerCase();
+        if (rt.includes(tLow) || tLow.includes(rt)) return realVids[ri].videoId || '';
+      }
+      return '';
     }
     var vidHtml = topVids.length
       ? topVids.map(function(v) {
-          var ytUrl = v.videoId ? 'https://youtu.be/' + v.videoId : '#';
+          var vid = v.videoId || _findVideoId(v.title);
+          var ytUrl = vid ? 'https://youtu.be/' + vid
+            : 'https://www.youtube.com/results?search_query=' + encodeURIComponent(v.title || card.keyword || '');
           return '<div class="card-vid-link"><a href="' + ytUrl + '" target="_blank" title="' + escHtml(v.title || '') + '">' + escHtml(v.title || '') + '</a><span class="card-vid-views">' + fmtNum(parseInt(v.views, 10) || 0) + '</span></div>';
         }).join('')
       : '<div class="no-comp">영상 데이터 없음</div>';
     // 독자 + 저자
     var meta = [];
     if (card.readers && card.readers.length) meta.push(card.readers.slice(0, 3).map(function(r) { return escHtml(r); }).join(', '));
-    if (card.author_type) meta.push('✍ ' + escHtml(card.author_type));
+    if (card.author_type) meta.push(escHtml(card.author_type));
     var signalText = card.yt_keyword_signal || card.trend_vs_supply || '';
-    return '<div class="plan-card">' +
+    var hookIdea = card.hook_idea || '';
+    var targetReader = card.target_reader || '';
+    var pickType = card.pick_type || 'safe';
+    var isHook = pickType === 'hook';
+    return '<div class="plan-card' + (isHook ? ' card-hook' : '') + '">' +
       '<div class="card-head">' +
-        (bc ? '<div class="card-breadcrumb" style="margin-bottom:4px;"><span class="bc-l1">' + escHtml(bc) + '</span></div>' : '') +
+        '<div class="card-top-row">' +
+          (bc ? '<span class="card-breadcrumb"><span class="bc-l1">' + escHtml(bc) + '</span></span>' : '') +
+          pickTypePill(pickType) +
+        '</div>' +
         '<div class="card-keyword">' + escHtml(card.keyword) + '</div>' +
         (card.subtitle_suggestion ? '<div class="card-subtitle">' + escHtml(card.subtitle_suggestion) + '</div>' : '') +
         '<div class="card-cat-row">' +
           '<span class="cat-pill ' + catCls + '">' + escHtml(l1) + '</span>' +
           gapPill(card.aladin_gap) + urgencyPill(card.urgency) +
         '</div>' +
-        (signalText ? '<div class="kw-signal" style="margin-top:6px;">' + escHtml(signalText) + '</div>' : '') +
+        (hookIdea ? '<div class="card-hook-idea">' + escHtml(hookIdea) + '</div>' : '') +
+        (targetReader ? '<div class="card-target-reader"><span class="target-icon">&#x1F3AF;</span> ' + escHtml(targetReader) + '</div>' : '') +
+        (signalText ? '<div class="kw-signal">' + escHtml(signalText) + '</div>' : '') +
       '</div>' +
       '<div class="card-body">' +
         '<div><div class="card-section-title">YouTube 트렌드 <span class="src-badge src-yt">YT</span> <span style="font-weight:400;letter-spacing:0;">합산 ' + (totalCardViews > 0 ? fmtNum(totalCardViews) : '-') + '</span></div>' + vidHtml + '</div>' +
@@ -1121,6 +1166,7 @@ window.kwSortCards = function(mode, btn) {
   if (!lastCards.length) return;
   var urgencyOrder = { '지금': 0, '3개월 내': 1, '6개월 내': 2 };
   var gapOrder = { '높음': 0, '보통': 1, '낮음': 2 };
+  var pickOrder = { 'hook': 0, 'safe': 1 };
   var sorted = lastCards.slice();
   if (mode === 'urgency') {
     sorted.sort(function(a, b) { return (urgencyOrder[a.urgency] || 9) - (urgencyOrder[b.urgency] || 9); });
@@ -1132,6 +1178,8 @@ window.kwSortCards = function(mode, btn) {
     });
   } else if (mode === 'gap') {
     sorted.sort(function(a, b) { return (gapOrder[a.aladin_gap] || 9) - (gapOrder[b.aladin_gap] || 9); });
+  } else if (mode === 'hook') {
+    sorted.sort(function(a, b) { return (pickOrder[a.pick_type] || 9) - (pickOrder[b.pick_type] || 9); });
   }
   renderCards(sorted, lastCatData);
 };
