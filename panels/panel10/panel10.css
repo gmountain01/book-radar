@@ -486,4 +486,132 @@
 /* ── kw-signal 위치 조정 ── */
 .panel10-scope .kw-signal { margin-top: 6px; }
 
+/* ── Card Actions (기획 초안 버튼) ── */
+.panel10-scope .card-actions {
+  padding: 8px 14px;
+  border-top: 1px dashed var(--kw-border2);
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.panel10-scope .kw-proposal-btn {
+  font-size: 11px; font-weight: 600; font-family: var(--kw-font);
+  padding: 5px 14px; border-radius: 6px;
+  border: 1.5px solid var(--kw-purple); background: var(--kw-purple-light);
+  color: var(--kw-purple); cursor: pointer; transition: all .15s;
+}
+.panel10-scope .kw-proposal-btn:hover {
+  background: var(--kw-purple); color: #fff;
+}
+.panel10-scope .kw-proposal-btn:disabled {
+  opacity: .6; cursor: wait;
+}
+.panel10-scope .card-hook .kw-proposal-btn {
+  border-color: var(--kw-coral); background: #fff5f5; color: var(--kw-coral);
+}
+.panel10-scope .card-hook .kw-proposal-btn:hover {
+  background: var(--kw-coral); color: #fff;
+}
+
+/* ── Proposal Container ── */
+.panel10-scope .card-proposal {
+  display: none;
+}
+.panel10-scope .proposal-inner {
+  margin: 0 14px 10px; padding: 16px;
+  background: linear-gradient(135deg, #fafafe 0%, #f5f3ff 100%);
+  border: 1.5px solid var(--kw-purple); border-radius: 10px;
+}
+.panel10-scope .card-hook .proposal-inner {
+  background: linear-gradient(135deg, #fefafa 0%, #fff5f3 100%);
+  border-color: #e8a0a0;
+}
+.panel10-scope .proposal-header {
+  margin-bottom: 14px; padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+.panel10-scope .proposal-title {
+  font-size: 16px; font-weight: 800; color: var(--kw-text);
+  line-height: 1.4; margin-bottom: 4px;
+}
+.panel10-scope .proposal-subtitle {
+  font-size: 12px; color: var(--kw-text2); font-style: italic;
+}
+.panel10-scope .proposal-section {
+  margin-bottom: 12px;
+}
+.panel10-scope .proposal-label {
+  font-size: 10px; font-weight: 700; color: var(--kw-purple);
+  text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px;
+}
+.panel10-scope .card-hook .proposal-label {
+  color: var(--kw-coral);
+}
+.panel10-scope .proposal-text {
+  font-size: 12px; line-height: 1.7; color: var(--kw-text);
+}
+.panel10-scope .proposal-row {
+  display: flex; gap: 12px;
+}
+.panel10-scope .proposal-half { flex: 1; }
+.panel10-scope .proposal-third { flex: 1; }
+
+/* ── Proposal TOC ── */
+.panel10-scope .proposal-toc {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.panel10-scope .proposal-toc-item {
+  display: grid; grid-template-columns: 40px 1fr;
+  gap: 4px; padding: 6px 8px;
+  background: rgba(255,255,255,.7); border-radius: 6px;
+  border: 1px solid rgba(0,0,0,.04);
+}
+.panel10-scope .proposal-toc-num {
+  font-size: 10px; font-weight: 700; color: var(--kw-purple);
+  font-family: var(--kw-mono);
+}
+.panel10-scope .card-hook .proposal-toc-num { color: var(--kw-coral); }
+.panel10-scope .proposal-toc-title {
+  font-size: 12px; font-weight: 600; color: var(--kw-text);
+}
+.panel10-scope .proposal-toc-sub {
+  grid-column: 2; font-size: 10px; color: var(--kw-text3);
+  line-height: 1.4;
+}
+
+/* ── Proposal Actions ── */
+.panel10-scope .proposal-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+.panel10-scope .proposal-send-btn {
+  font-size: 11px; font-weight: 700; font-family: var(--kw-font);
+  padding: 6px 16px; border-radius: 6px; border: none;
+  background: var(--kw-purple); color: #fff; cursor: pointer;
+  transition: all .15s;
+}
+.panel10-scope .proposal-send-btn:hover {
+  background: #4a3fb0; transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(88,80,186,.25);
+}
+.panel10-scope .card-hook .proposal-send-btn {
+  background: var(--kw-coral);
+}
+.panel10-scope .card-hook .proposal-send-btn:hover {
+  background: #a83020; box-shadow: 0 3px 8px rgba(194,61,47,.25);
+}
+.panel10-scope .proposal-close-btn {
+  font-size: 11px; font-family: var(--kw-font); font-weight: 500;
+  padding: 6px 12px; border-radius: 6px;
+  border: 1px solid var(--kw-border2); background: var(--kw-surface);
+  color: var(--kw-text2); cursor: pointer; transition: all .15s;
+}
+.panel10-scope .proposal-close-btn:hover {
+  background: var(--kw-bg); border-color: var(--kw-text3);
+}
+.panel10-scope .proposal-error {
+  margin: 8px 14px; padding: 10px 12px;
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: 6px; font-size: 11px; color: #991b1b;
+}
+
 /* Panel10 positioning은 index.html 인라인 <style>에서 정의 (panel7과 동일 패턴) */
