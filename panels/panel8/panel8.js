@@ -614,7 +614,7 @@ async function extractPDF(file) {
 // 표면 검사 (정규식) — 출판 교정 전 항목
 // ──────────────────────────────────────────────
 
-// 1. 조사 중복
+// 1-a. 조사 인접 오타 (을를, 은는 등 붙어 있는 경우 — 단순 타이핑 실수)
 const PARTICLE_PATTERNS = [
   [/을를|를을/g,         '조사중복', 'high',   '을/를 중 하나만 사용'],
   [/이가|가이(?=[^나])/g,'조사중복', 'high',   '이/가 중 하나만 사용'],
@@ -622,6 +622,54 @@ const PARTICLE_PATTERNS = [
   [/와과|과와/g,         '조사중복', 'high',   '와/과 중 하나만 사용'],
   [/에서서|에게서서/g,   '조사중복', 'high',   '조사 중복 삭제'],
 ];
+
+// 1-b. 한 문장 내 같은 조사 반복 (예: "이것을 했고 핸드폰을 했다" — 을/를 반복)
+// 문장을 마침표/줄바꿈 단위로 분리한 뒤, 동일 조사가 2회 이상 나오면 감지
+function checkParticleRepeat(text, page) {
+  const issues = [];
+  // 문장 단위 분리
+  const sentences = text.split(/[.!?\n]+/).filter(s => s.trim().length > 10);
+  // 감지할 조사 패턴: 어절 끝에 붙는 조사 (앞에 한글이 있어야 함)
+  const JOSA_PAIRS = [
+    { re: /[가-힣]을\s/g, name: '을' },
+    { re: /[가-힣]를\s/g, name: '를' },
+    { re: /[가-힣]은\s/g, name: '은' },
+    { re: /[가-힣]는\s/g, name: '는' },
+    { re: /[가-힣]이\s/g, name: '이' },
+    { re: /[가-힣]가\s/g, name: '가' },
+    { re: /[가-힣]에서\s/g, name: '에서' },
+    { re: /[가-힣]으로\s/g, name: '으로' },
+    { re: /[가-힣]로\s/g, name: '로' },
+  ];
+  // 같은 기능의 조사 그룹 (을/를, 은/는, 이/가는 같은 조사)
+  const JOSA_GROUPS = [['을','를'],['은','는'],['이','가'],['에서'],['으로','로']];
+
+  for (const sent of sentences) {
+    const trimmed = sent.trim();
+    if (trimmed.length < 15) continue;
+    // 각 조사 출현 횟수 세기
+    const counts = {};
+    for (const jp of JOSA_PAIRS) {
+      jp.re.lastIndex = 0;
+      const matches = trimmed.match(jp.re);
+      if (matches) counts[jp.name] = (counts[jp.name] || 0) + matches.length;
+    }
+    // 같은 그룹의 조사 합산
+    for (const group of JOSA_GROUPS) {
+      const total = group.reduce((s, j) => s + (counts[j] || 0), 0);
+      if (total >= 3) {
+        // 3회 이상이면 확실한 조사 반복
+        const found = trimmed.length > 80 ? trimmed.slice(0, 80) + '…' : trimmed;
+        issues.push({
+          type: '조사중복', severity: 'medium', page,
+          found, description: `한 문장에서 '${group.join('/')}' 조사가 ${total}회 반복됨 — 일부를 다른 표현으로 변경`,
+          suggestion: ''
+        });
+      }
+    }
+  }
+  return issues;
+}
 
 // 2. 단어/어구 반복 — \n 제외(PDF 줄바꿈은 반복이 아님), 3글자 이상 어절만 탐지(2글자는 오탐 다수)
 const REPEAT_RE = /([가-힣]{3,})[ \t]*\1/g;
@@ -762,8 +810,11 @@ function checkSurface(extracted) {
     const { page, text } = pd;
     if (text.length < 20) continue;
 
-    // 조사 중복
+    // 조사 인접 오타 (을를, 이가 등)
     addAll(PARTICLE_PATTERNS, text, page);
+
+    // 조사 반복 (한 문장에서 같은 조사 3회 이상)
+    issues.push(...checkParticleRepeat(text, page));
 
     // 단어 반복
     REPEAT_RE.lastIndex = 0;
