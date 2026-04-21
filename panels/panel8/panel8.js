@@ -615,13 +615,56 @@ async function extractPDF(file) {
 // ──────────────────────────────────────────────
 
 // 1-a. 조사 인접 오타 (을를, 은는 등 붙어 있는 경우 — 단순 타이핑 실수)
+// suggestion에 구체적 수정안 포함: 앞말 받침 유무에 따라 올바른 조사 결정
 const PARTICLE_PATTERNS = [
-  [/을를|를을/g,         '조사중복', 'high',   '을/를 중 하나만 사용'],
-  [/이가|가이(?=[^나])/g,'조사중복', 'high',   '이/가 중 하나만 사용'],
-  [/은는|는은/g,         '조사중복', 'high',   '은/는 중 하나만 사용'],
-  [/와과|과와/g,         '조사중복', 'high',   '와/과 중 하나만 사용'],
-  [/에서서|에게서서/g,   '조사중복', 'high',   '조사 중복 삭제'],
+  [/을를|를을/g,         '조사중복', 'high',   '을/를 중 하나만 사용 (받침 있으면 "을", 없으면 "를")'],
+  [/이가|가이(?=[^나])/g,'조사중복', 'high',   '이/가 중 하나만 사용 (받침 있으면 "이", 없으면 "가")'],
+  [/은는|는은/g,         '조사중복', 'high',   '은/는 중 하나만 사용 (받침 있으면 "은", 없으면 "는")'],
+  [/와과|과와/g,         '조사중복', 'high',   '와/과 중 하나만 사용 (받침 있으면 "과", 없으면 "와")'],
+  [/에서서|에게서서/g,   '조사중복', 'high',   '"서" 하나 삭제 → "에서" 또는 "에게서"'],
 ];
+
+/**
+ * 조사 인접 중복(1-a)에 대해 앞 글자 받침을 보고 구체적 수정안을 생성한다.
+ * addAll이 만든 issue를 후처리하여 suggestion을 교체한다.
+ * @param {object} issue - { found, ... }
+ * @param {string} text  - 해당 페이지 전문
+ * @param {object} match - regex match (m.index 사용)
+ * @returns {string} 구체적 수정안 (예: "데이터를")
+ */
+function makeParticleFix(found, text, matchIndex) {
+  // 중복 조사 앞의 글자를 찾아 받침 유무 판별
+  const prevChar = matchIndex > 0 ? text[matchIndex - 1] : '';
+  const hasBatchim = _hasFinalConsonant(prevChar);
+
+  // 매핑: 중복 패턴 → [받침O 조사, 받침X 조사]
+  const fixes = {
+    '을를': ['을', '를'], '를을': ['을', '를'],
+    '이가': ['이', '가'], '가이': ['이', '가'],
+    '은는': ['은', '는'], '는은': ['은', '는'],
+    '와과': ['과', '와'], '과와': ['과', '와'],
+    '에서서': ['에서', '에서'], '에게서서': ['에게서', '에게서'],
+  };
+
+  const pair = fixes[found];
+  if (!pair) return null;
+
+  if (found === '에서서' || found === '에게서서') {
+    return `${prevChar}${pair[0]}`;
+  }
+
+  const correct = hasBatchim === null ? `${pair[0]}(받침O) 또는 ${pair[1]}(받침X)`
+                : hasBatchim ? pair[0] : pair[1];
+  return `${prevChar}${correct}`;
+}
+
+/** 한글 글자의 받침(종성) 유무 판별. 한글이 아니면 null 반환. */
+function _hasFinalConsonant(ch) {
+  if (!ch) return null;
+  const code = ch.charCodeAt(0);
+  if (code < 0xAC00 || code > 0xD7A3) return null; // 한글 범위 밖
+  return (code - 0xAC00) % 28 !== 0; // 종성 인덱스 0이면 받침 없음
+}
 
 // 1-b. 한 문장 내 같은 조사 반복 (예: "이것을 했고 핸드폰을 했다" — 을/를 반복)
 // 문장을 마침표/줄바꿈 단위로 분리한 뒤, 동일 조사가 2회 이상 나오면 감지
@@ -660,10 +703,23 @@ function checkParticleRepeat(text, page) {
       if (total >= 3) {
         // 3회 이상이면 확실한 조사 반복
         const found = trimmed.length > 80 ? trimmed.slice(0, 80) + '…' : trimmed;
+        // 조사별 대체 표현 제안
+        const ALT_MAP = {
+          '을': '목적어 생략, 피동형 전환, "~에 대해"로 교체',
+          '를': '목적어 생략, 피동형 전환, "~에 대해"로 교체',
+          '은': '"~의 경우" 전환, 주어 생략, 문장 분리',
+          '는': '"~의 경우" 전환, 주어 생략, 문장 분리',
+          '이': '주어 생략, 문장 합치기',
+          '가': '주어 생략, 문장 합치기',
+          '에서': '"~에" 축약, "~(으)로부터", 장소 부사 활용',
+          '으로': '"~을 통해", "~에 의해", "~로써" 교체',
+          '로': '"~을 통해", "~에 의해" 교체',
+        };
+        const altHint = ALT_MAP[group[0]] || '일부를 다른 표현으로 교체';
         issues.push({
           type: '조사중복', severity: 'medium', page,
-          found, description: `한 문장에서 '${group.join('/')}' 조사가 ${total}회 반복됨 — 일부를 다른 표현으로 변경`,
-          suggestion: ''
+          found, description: `한 문장에서 '${group.join('/')}' 조사가 ${total}회 반복됨`,
+          suggestion: `${total}회 중 1~2회를 다른 표현으로 변경: ${altHint}`
         });
       }
     }
@@ -810,8 +866,21 @@ function checkSurface(extracted) {
     const { page, text } = pd;
     if (text.length < 20) continue;
 
-    // 조사 인접 오타 (을를, 이가 등)
-    addAll(PARTICLE_PATTERNS, text, page);
+    // 조사 인접 오타 (을를, 이가 등) — 후처리로 구체적 수정안 첨부
+    const beforeParticle = issues.length;
+    {
+      for (const [pat, type, severity, sugg] of PARTICLE_PATTERNS) {
+        pat.lastIndex = 0;
+        let m;
+        while ((m = pat.exec(text)) !== null) {
+          const found = m[0].slice(0, 60);
+          const fix = makeParticleFix(m[0], text, m.index);
+          issues.push({ type, severity, page, found,
+            suggestion: fix ? `→ "${fix}" ${sugg}` : sugg,
+            description: `${type}: '${found}'` });
+        }
+      }
+    }
 
     // 조사 반복 (한 문장에서 같은 조사 3회 이상)
     issues.push(...checkParticleRepeat(text, page));
