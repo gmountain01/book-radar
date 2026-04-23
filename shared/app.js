@@ -2350,7 +2350,7 @@ function dlHTML(){
       <tbody>${rows}</tbody>
     </table>
   </div>
-  <div class="foot">한빛미디어 출판 도우미 · ${date} 생성 · 내부 자료 — 외부 유출 금지</div>
+  <div class="foot">한빛미디어 리리가 도와줌 · ${date} 생성 · 내부 자료 — 외부 유출 금지</div>
 </div></body></html>`;
 
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});

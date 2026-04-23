@@ -572,10 +572,25 @@ function fmtNum(n) {
    ═══════════════════════════════════════════ */
 
 // shared/youtube.js의 ytSearchWithStats를 panel10 인터페이스로 래핑
+// 2중 검색: relevance(관련성) + date(최신) 병합 → 기존 인기 + 신규 트렌드 모두 포착
 async function fetchYT(query) {
   if (ytApiState.isAllExhausted()) return [];
   try {
-    return await ytSearchWithStats(query, { order: 'relevance', months: 6, maxResults: 15 });
+    // 관련성순 2페이지(100개) + 최신순 1페이지(50개) 병합
+    var tasks = [
+      ytSearchWithStats(query, { order: 'relevance', months: 12, maxResults: 50, pages: 2 }).catch(function() { return []; }),
+      ytSearchWithStats(query, { order: 'date', months: 6, maxResults: 50, pages: 1 }).catch(function() { return []; })
+    ];
+    var results = await Promise.all(tasks);
+    // 중복 제거 후 병합
+    var seen = new Set(); var merged = [];
+    results.forEach(function(arr) {
+      (arr || []).forEach(function(v) {
+        if (v.videoId && !seen.has(v.videoId)) { seen.add(v.videoId); merged.push(v); }
+      });
+    });
+    merged.sort(function(a, b) { return b.viewsPerDay - a.viewsPerDay; });
+    return merged;
   } catch (e) { return []; }
 }
 
@@ -717,7 +732,7 @@ async function runAnalysis() {
       var seen = new Set(); var unique = [];
       r.videos.forEach(function(v) { if (v.videoId && !seen.has(v.videoId)) { seen.add(v.videoId); unique.push(v); } });
       unique.sort(function(a, b) { return b.viewsPerDay - a.viewsPerDay; });
-      catData[r.pathKey] = unique.slice(0, 50);
+      catData[r.pathKey] = unique.slice(0, 100);
     });
     if (ytApiState.isAllExhausted()) {
       $('kwLoadingText').textContent = 'YouTube API 할당량 소진 — 수집된 데이터로 진행…';
@@ -731,7 +746,7 @@ async function runAnalysis() {
     var ytSummary = activeLeaves.map(function(pathKey) {
       var parts = pathKey.split('|');
       var vids = catData[pathKey] || [];
-      var topTitles = vids.slice(0, 8).map(function(v) {
+      var topTitles = vids.slice(0, 15).map(function(v) {
         return '  - "' + v.title + '" (' + fmtNum(v.views) + '회, 일평균 ' + fmtNum(v.viewsPerDay || 0) + '회/일, ' + v.published + ')';
       }).join('\n');
       var totalViews = vids.reduce(function(s, v) { return s + v.views; }, 0);
@@ -759,12 +774,18 @@ async function runAnalysis() {
     var prompt = '당신은 10년차 IT 출판 편��자입니다. YouTube 트렌드 데이터를 보고, 편집장에게 "이거 지금 안 하면 다른 출판사에 뺏깁니다"라고 말할 수 있는 기획 키워드를 도출하세요.\n\n' +
       '**핵심 원칙**:\n' +
       '1. 키워드마다 "이 책을 살 사람"이 눈에 보여야 한다. "개발자"처럼 뭉뚱그리지 말 것.\n' +
-      '2. 각 키워드를 두 가지 유형 중 하나로 분류하라:\n' +
-      '   - **safe** (안전 기획): 수요가 검증됐고 경쟁 도서가 있지만 더 잘 만들 수 있는 것\n' +
-      '   - **hook** (혹할 기획): 아직 책이 없거나, 관점 자체가 새로워서 편집자가 혹할 것\n' +
-      '3. hook_idea는 이 책이 왜 지금 나와야 하는지, 서점에서 뭐가 다른지를 편집자에게 설득하는 한 마디.\n\n' +
+      '2. 각 키워드를 세 가지 유형 중 하나로 분류하라:\n' +
+      '   - **preempt** (선점 기획): YouTube에서 조회수/성장속도가 높은데 한국어 책이 아예 없거나 1권뿐인 것. "지금 안 하면 뺏기는" 키워드. 최우선 분류.\n' +
+      '   - **hook** (혹할 기획): 책이 1~2권 있지만, 관점·포맷·타겟이 새로워서 편집자가 혹할 것\n' +
+      '   - **safe** (안전 기획): 수요가 검증됐고 경쟁 도서가 3권 이상 있지만 더 잘 만들 수 있는 것\n' +
+      '3. **preempt 분류 기준** (엄격히 따를 것):\n' +
+      '   - YouTube 관련 영상의 일평균 조회수 합이 높다 (최소 500회/일 이상)\n' +
+      '   - 위 예스24 목록에서 직접적으로 겹치는 도서가 0~1권\n' +
+      '   - "이 주제로 지금 책을 내면 시장을 선점할 수 있다"고 확신할 수 있는 근거 필수\n' +
+      '   - 전체 키워드 중 최소 30%는 preempt로 분류하라. 선점 기회를 적극 발굴할 것.\n' +
+      '4. hook_idea는 이 책이 왜 지금 나와야 하는지, 서점에서 뭐가 다른지를 편집자에게 설득하는 한 마디.\n\n' +
       '[글쓰기 원칙] AI 투 문장 금지(~할 수 있습니다/혁신적인/필수적인). 편집자가 기획회의에서 실제로 쓰는 말투로. 구어체 OK.\n\n' +
-      '[YouTube 트렌드 - 최근 6개월, 성장속도순]\n' + ytSummary + '\n\n' +
+      '[YouTube 트렌드 - 최근 12개월, 성장속도순]\n' + ytSummary + '\n\n' +
       '[' + aladinSummary + ']\n\n' +
       (lectureSummary ? '[' + lectureSummary + ']\n\n' : '') +
       '총 ' + totalCards + '개 키워드. 반드시 아래 JSON 배열만 출력하세요.\n\n활성 경로: ' + pathListStr + '\n\n' +
@@ -776,8 +797,8 @@ async function runAnalysis() {
       '- aladin_gap: 유사 도서 많으면 "낮음", 1~2권 "보통", 없으면 "높음"\n' +
       '- **target_reader**: "3년차 백엔드 개발자인데 AI로 생산성 올리고 싶은 사람"처럼 직급/경력/상황/욕구를 구체적으로. "개발자" "학생" 같은 한 단어 금지.\n' +
       '- **hook_idea**: 편집장을 설득하는 한 마디. "유튜브에서 월 50만뷰인데 한국어 책이 0권" / "기존 책들은 전부 이론인데 이건 실전 프로젝트 3개로 끝냄" 같은 구체적 근거.\n' +
-      '- **pick_type**: "safe" 또는 "hook". safe=검증된 수요+개선 가능, hook=새 관점+시장 공백.\n\n' +
-      '[\n  {\n    "keyword": "구체적 롱테일 키워드",\n    "path": ["L1", "L2", "L3"],\n    "category": "L3 소분류명",\n    "subtitle_suggestion": "서점 띠지에 들어갈 부제 한 문장",\n    "pick_type": "safe 또는 hook",\n    "hook_idea": "편집장 설득 한 마디 — 왜 지금, 왜 우리가",\n    "target_reader": "이 책을 살 사람의 직급+경력+상황+욕구",\n    "trend_vs_supply": "수요 대비 공급 불균형 한 줄",\n    "yt_keyword_signal": "YouTube 트렌드 근거 한 줄",\n    "readers": ["구체적 독자층1", "구체적 독자층2"],\n    "aladin_gap": "높음 또는 보통 또는 낮음",\n    "competitor_books": [{"title": "도서명", "publisher": "출판사"}],\n    "top_videos": [{"title": "영상 제목", "views": 1234567}],\n    "urgency": "지금 또는 3개월 내 또는 6개월 내",\n    "author_type": "현업 개발자 / IT 유튜버 / 연구자 / 컨설턴트"\n  }\n]\n\n' +
+      '- **pick_type**: "preempt" 또는 "hook" 또는 "safe". preempt=책이 없는데 YouTube 수요 폭발(선점 기회), hook=새 관점+시장 공백, safe=검증된 수요+개선 가능. 최소 30%는 preempt.\n\n' +
+      '[\n  {\n    "keyword": "구체적 롱테일 키워드",\n    "path": ["L1", "L2", "L3"],\n    "category": "L3 소분류명",\n    "subtitle_suggestion": "서점 띠지에 들어갈 부제 한 문장",\n    "pick_type": "preempt 또는 hook 또는 safe",\n    "hook_idea": "편집장 설득 한 마디 — 왜 지금, 왜 우리가",\n    "target_reader": "이 책을 살 사람의 직급+경력+상황+욕구",\n    "trend_vs_supply": "수요 대비 공급 불균형 한 줄",\n    "yt_keyword_signal": "YouTube 트렌드 근거 한 줄",\n    "readers": ["구체적 독자층1", "구체적 독자층2"],\n    "aladin_gap": "높음 또는 보통 또는 낮음",\n    "competitor_books": [{"title": "도서명", "publisher": "출판사"}],\n    "top_videos": [{"title": "영상 제목", "views": 1234567}],\n    "urgency": "지금 또는 3개월 내 또는 6개월 내",\n    "author_type": "현업 개발자 / IT 유튜버 / 연구자 / 컨설턴트"\n  }\n]\n\n' +
       '[JSON 형식 규칙]\n1. 문자열 값 한 줄. 줄바꿈 금지.\n2. 큰따옴표(") 사용 금지.\n3. views는 정수만.\n4. path는 3개 요소 배열.';
 
     var raw = await callClaude(prompt, claudeKey);
@@ -818,6 +839,7 @@ function urgencyPill(u) {
   return '<span class="gap-pill ' + (map[u] || 'gap-mid') + '">\u23F1 ' + u + '</span>';
 }
 function pickTypePill(type) {
+  if (type === 'preempt') return '<span class="pick-pill pick-preempt">PREEMPT</span>';
   if (type === 'hook') return '<span class="pick-pill pick-hook">HOOK</span>';
   return '<span class="pick-pill pick-safe">SAFE</span>';
 }
@@ -833,17 +855,19 @@ function renderCards(cards, catData) {
   var subParts = activeCats.size > 0
     ? [].concat(Array.from(new Set(Array.from(activeCats).map(function(p) { return p.split('|')[0]; }))))
     : [].concat(Array.from(new Set(cards.map(function(c) { return (c.path && c.path[0]) || c.category; }))));
-  $('kwResultSub').textContent = now + ' 기준 \xB7 ' + subParts.join(', ') + ' \xB7 YouTube 최근 6개월 \xB7 성장속도순';
+  $('kwResultSub').textContent = now + ' 기준 \xB7 ' + subParts.join(', ') + ' \xB7 YouTube 최근 12개월 \xB7 성장속도순';
 
   var totalVids = Object.values(catData).reduce(function(s, v) { return s + v.length; }, 0);
   var totalViews = Object.values(catData).reduce(function(s, v) { return s + v.reduce(function(a, b) { return a + b.views; }, 0); }, 0);
   var highGap = cards.filter(function(c) { return c.aladin_gap === '높음'; }).length;
   var leafCount = Object.keys(catData).length;
 
+  var preemptCount = cards.filter(function(c) { return c.pick_type === 'preempt'; }).length;
   var hookCount = cards.filter(function(c) { return c.pick_type === 'hook'; }).length;
-  var safeCount = cards.length - hookCount;
+  var safeCount = cards.length - preemptCount - hookCount;
   $('kwSummaryBar').innerHTML =
     '<div class="summary-chip"><div class="summary-chip-val">' + cards.length + '</div><div class="summary-chip-label">도출된 키워드</div></div>' +
+    '<div class="summary-chip chip-preempt"><div class="summary-chip-val">' + preemptCount + '</div><div class="summary-chip-label">PREEMPT 선점</div></div>' +
     '<div class="summary-chip chip-hook"><div class="summary-chip-val">' + hookCount + '</div><div class="summary-chip-label">HOOK 기획</div></div>' +
     '<div class="summary-chip chip-safe"><div class="summary-chip-val">' + safeCount + '</div><div class="summary-chip-label">SAFE 기획</div></div>' +
     '<div class="summary-chip"><div class="summary-chip-val">' + highGap + '</div><div class="summary-chip-label">공백 높음</div></div>' +
@@ -917,7 +941,9 @@ function renderCards(cards, catData) {
     var targetReader = card.target_reader || '';
     var pickType = card.pick_type || 'safe';
     var isHook = pickType === 'hook';
-    return '<div class="plan-card' + (isHook ? ' card-hook' : '') + '">' +
+    var isPreempt = pickType === 'preempt';
+    var cardClass = isPreempt ? ' card-preempt' : isHook ? ' card-hook' : '';
+    return '<div class="plan-card' + cardClass + '">' +
       '<div class="card-head">' +
         '<div class="card-top-row">' +
           (bc ? '<span class="card-breadcrumb"><span class="bc-l1">' + escHtml(bc) + '</span></span>' : '') +
@@ -1173,9 +1199,17 @@ window.kwSortCards = function(mode, btn) {
   if (!lastCards.length) return;
   var urgencyOrder = { '지금': 0, '3개월 내': 1, '6개월 내': 2 };
   var gapOrder = { '높음': 0, '보통': 1, '낮음': 2 };
-  var pickOrder = { 'hook': 0, 'safe': 1 };
+  var pickOrder = { 'preempt': 0, 'hook': 1, 'safe': 2 };
   var sorted = lastCards.slice();
-  if (mode === 'urgency') {
+  if (mode === 'preempt') {
+    sorted.sort(function(a, b) {
+      // preempt 우선, 그 안에서 urgency 순
+      var pa = pickOrder[a.pick_type] !== undefined ? pickOrder[a.pick_type] : 9;
+      var pb = pickOrder[b.pick_type] !== undefined ? pickOrder[b.pick_type] : 9;
+      if (pa !== pb) return pa - pb;
+      return (urgencyOrder[a.urgency] || 9) - (urgencyOrder[b.urgency] || 9);
+    });
+  } else if (mode === 'urgency') {
     sorted.sort(function(a, b) { return (urgencyOrder[a.urgency] || 9) - (urgencyOrder[b.urgency] || 9); });
   } else if (mode === 'views') {
     sorted.sort(function(a, b) {
@@ -1228,7 +1262,7 @@ window.kwGenerateProposal = async function(idx, btn) {
   var prompt = '당신은 한빛미디어 10년차 IT 도서 편집자입니다. 아래 키워드 분석 결과를 보고, 편집장에게 바로 올릴 수 있는 출판 기획 초안을 작성하세요.\n\n' +
     '[키워드 분석 결과]\n' +
     '키워드: ' + (card.keyword || '') + '\n' +
-    '유형: ' + (card.pick_type === 'hook' ? 'HOOK (시장 공백/새 관점)' : 'SAFE (검증된 수요)') + '\n' +
+    '유형: ' + (card.pick_type === 'preempt' ? 'PREEMPT (선점 기회 — 책 없음+YouTube 수요 폭발)' : card.pick_type === 'hook' ? 'HOOK (시장 공백/새 관점)' : 'SAFE (검증된 수요)') + '\n' +
     '편집자 소견: ' + (card.hook_idea || '') + '\n' +
     '타겟 독자: ' + (card.target_reader || '') + '\n' +
     '시장 공백: ' + (card.aladin_gap || '') + '\n' +

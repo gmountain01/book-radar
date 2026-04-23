@@ -167,18 +167,31 @@ function _ytParallelLimit(tasks, limit) {
 async function ytSearchWithStats(query, opts) {
   opts = opts || {};
   var order = opts.order || 'relevance';
-  var months = opts.months || 6;
-  var maxResults = opts.maxResults || 15;
+  var months = opts.months || 12;
+  var maxResults = opts.maxResults || 50;
+  var pages = opts.pages || 2;
 
   var publishedAfter = new Date();
   publishedAfter.setMonth(publishedAfter.getMonth() - months);
 
-  var data = await ytApiFetch('/search', {
-    part: 'snippet', q: query, type: 'video', order: order,
-    publishedAfter: publishedAfter.toISOString(),
-    maxResults: String(maxResults), relevanceLanguage: 'ko'
-  });
-  var items = (data && data.items) || [];
+  // 멀티페이지 검색 — 더 많은 결과 수집
+  var allItems = [];
+  var pageToken = null;
+  for (var pg = 0; pg < pages; pg++) {
+    var params = {
+      part: 'snippet', q: query, type: 'video', order: order,
+      publishedAfter: publishedAfter.toISOString(),
+      maxResults: String(maxResults), relevanceLanguage: 'ko',
+      regionCode: 'KR'
+    };
+    if (pageToken) params.pageToken = pageToken;
+    var data = await ytApiFetch('/search', params);
+    var pageItems = (data && data.items) || [];
+    if (pageItems.length) allItems.push.apply(allItems, pageItems);
+    if (!data || !data.nextPageToken) break;
+    pageToken = data.nextPageToken;
+  }
+  var items = allItems;
   if (!items.length) return [];
 
   // 중복 제거

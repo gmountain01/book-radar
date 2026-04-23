@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>출판 도우미 v1.9.34 업데이트 날짜 2026-04-22</title>
+<title>리리가 도와줌 v1.9.35 업데이트 날짜 2026-04-23</title>
 <script src="libs/xlsx.full.min.js"></script>
 <script src="libs/chart.umd.min.js"></script>
 <script src="libs/d3.v7.min.js"></script>
@@ -31,8 +31,8 @@
 
 <div class="hdr">
   <div class="hdr-left">
-    <div class="tag">출판 도우미 v1.9.34 업데이트 날짜 2026-04-22</div>
-    <h1>출판 <span>도우미</span></h1>
+    <div class="tag">리리가 도와줌 v1.9.35 업데이트 날짜 2026-04-23</div>
+    <h1>리리가 <span>도와줌</span></h1>
   </div>
   <div class="hdr-right" style="display:flex;gap:.5rem;align-items:center;">
     <button class="dl-btn" style="background:none;border:1px solid var(--border2);color:var(--muted);font-size:.72rem;" onclick="resetDefaults()" title="저장된 파일 캐시를 초기화하고 내장 기본 파일로 재시작">🔄 기본값 초기화</button>
@@ -1206,8 +1206,9 @@
         <div id="kwTabCards" class="kw-tab-panel active">
           <div class="sort-bar">
             <span class="sort-label">정렬:</span>
+            <button class="sort-btn active" onclick="kwSortCards('preempt',this)">선점 가능</button>
             <button class="sort-btn" onclick="kwSortCards('hook',this)">HOOK 우선</button>
-            <button class="sort-btn active" onclick="kwSortCards('urgency',this)">선점 급도</button>
+            <button class="sort-btn" onclick="kwSortCards('urgency',this)">선점 급도</button>
             <button class="sort-btn" onclick="kwSortCards('views',this)">조회수</button>
             <button class="sort-btn" onclick="kwSortCards('gap',this)">공백 높음</button>
           </div>

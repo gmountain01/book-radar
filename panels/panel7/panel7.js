@@ -762,7 +762,7 @@ async function searchRookie() {
     // 최근에 활발히 업로드 중인 채널을 발굴
     const oneYearAgo = new Date(now - 365 * 24 * 60 * 60 * 1000).toISOString();
     let pageToken = null;
-    for (let p = 0; p < 3; p++) {
+    for (let p = 0; p < 4; p++) {
       const params = {
         part: 'snippet', type: 'video', q,
         order: 'date',              // 최신 업로드순 — 최근 활동 채널
@@ -787,7 +787,7 @@ async function searchRookie() {
     // 최근에 갑자기 폭발한 영상을 만든 채널 발굴
     const sixMonthsAgo = new Date(now - 180 * 24 * 60 * 60 * 1000).toISOString();
     pageToken = null;
-    for (let p = 0; p < 2; p++) {
+    for (let p = 0; p < 3; p++) {
       const params = {
         part: 'snippet', type: 'video', q,
         order: 'viewCount',           // 조회수순 — 최근 바이럴
