@@ -424,6 +424,16 @@ function toggleSidebar(){
   document.documentElement.style.setProperty('--sb-w', w);
 }
 
+// 사이드바 기본 collapsed + 호버 확장
+document.addEventListener('DOMContentLoaded', function() {
+  var sb = document.getElementById('mainSidebar');
+  if (sb && !sb.classList.contains('collapsed')) {
+    sb.classList.add('collapsed');
+    document.documentElement.style.setProperty('--sb-w', '52px');
+    document.documentElement.style.setProperty('--sb-w-full', '210px');
+  }
+});
+
 // ── 파일 읽기 ──
 // ── 드래그&드롭 (출간 예정 파일만) ──
 {
@@ -904,15 +914,6 @@ const LS_KEYS={best:'ub_best',lecture:'ub_lecture',planned:'ub_planned',bestShee
 // 내장 파일 버전 — 기본 파일 교체 시 자동으로 localStorage 무효화
 const LS_VERSION_KEY='ub_version';
 const CURRENT_VERSION=DEFAULT_FILES.best.name+'|'+DEFAULT_FILES.lecture.name+'|'+DEFAULT_SHEET_URLS.best;
-
-function resetDefaults(){
-  if(!confirm('저장된 파일 캐시와 Google Sheets URL을 초기화하고 내장 기본 파일로 재시작할까요?')) return;
-  try{
-    Object.values(LS_KEYS).forEach(k=>localStorage.removeItem(k));
-    localStorage.removeItem(LS_VERSION_KEY);
-  }catch(e){}
-  location.reload();
-}
 
 function checkLSVersion(){
   try{
@@ -2112,19 +2113,7 @@ ${ctx}
 }`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'x-api-key':apiKey,
-        'anthropic-version':'2023-06-01',
-        'content-type':'application/json',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:2000,system:_cachedSystem(PUBLISHING_PERSONA),messages:[{role:'user',content:prompt}]})
-    });
-    if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${resp.status}`);}
-    const res=await resp.json();
-    const text=res.content[0].text;
+    const text=await callClaudeApi({apiKey,prompt,model:'claude-haiku-4-5-20251001',maxTokens:2000});
     const m=text.match(/\{[\s\S]*\}/);
     if(!m)throw new Error('JSON 형식 응답을 받지 못했습니다.');
     const r=JSON.parse(m[0]);

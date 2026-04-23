@@ -85,7 +85,11 @@ function meetRender(){
 function _renderMeetPrep(d){
   const {type,author,affil,career,books,influence,title,sub,concept,pages,period,reader,editor,place,market,diff,royalty,print_,support,schedule,reaction,agreement,action,dateStr,tocItems,careerItems,agendaHtml,ctxBand,mcExp,mcExcl,mcSample,mcTime,mcExpNote,mcExclNote,mcSampleNote,mcTimeNote,checkItem,hasFieldNotes} = d;
   const mapQ = encodeURIComponent(place || '');
-  const mapIframe = place ? `<iframe src="https://maps.google.com/maps?q=${mapQ}&output=embed&z=17&hl=ko" width="100%" height="200" style="border:1px solid #e2e8f0;border-radius:6px;display:block;margin-top:8px;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div style="margin-top:5px;font-size:9px;color:#555;display:flex;align-items:center;gap:6px;">📍 <span>${place}</span> <a href="https://maps.google.com/?q=${mapQ}" target="_blank" style="color:#2563eb;text-decoration:none;margin-left:auto;flex-shrink:0;">지도 앱에서 열기 ↗</a></div>` : '';
+  const isFileProto = location.protocol === 'file:';
+  const mapIframe = place ? (isFileProto
+    ? `<div style="margin-top:8px;padding:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;font-size:.85rem;">📍 ${place} <a href="https://maps.google.com/?q=${mapQ}" target="_blank" style="color:#2563eb;text-decoration:none;margin-left:8px;">지도 열기 ↗</a></div>`
+    : `<iframe src="https://maps.google.com/maps?q=${mapQ}&output=embed&z=17&hl=ko" width="100%" height="200" style="border:1px solid #e2e8f0;border-radius:6px;display:block;margin-top:8px;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div style="margin-top:5px;font-size:9px;color:#555;display:flex;align-items:center;gap:6px;">📍 <span>${place}</span> <a href="https://maps.google.com/?q=${mapQ}" target="_blank" style="color:#2563eb;text-decoration:none;margin-left:auto;flex-shrink:0;">지도 앱에서 열기 ↗</a></div>`
+  ) : '';
 
   const authorName = author && author !== '저자명' ? author : '저자';
   document.getElementById('meet-doc').innerHTML = `

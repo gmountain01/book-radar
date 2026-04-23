@@ -576,7 +576,13 @@ async function doSearch() {
         _contentMatch: true
       };
     });
-    YT_S.searchResults = YT_S.searchResults.slice(0, 40);
+    // 품질 필터: 구독자 500 미만 + 한국어 아닌 채널 제거
+    YT_S.searchResults = YT_S.searchResults.filter(ch => {
+      if (!ch._isKorean) return false;
+      if (ch._subs < 500) return false;
+      return true;
+    });
+    YT_S.searchResults = YT_S.searchResults.slice(0, 50);
     YT_S.sortBy = 'relevance';
     renderSortedResults();
   } catch (e) {
@@ -600,29 +606,6 @@ function calcPublishTier(isKorean, subs, avgV, vidCount, contentMatch) {
   return 3;
 }
 
-function applyKoreanBias(items, ratio = 0.7) {
-  const kr    = items.filter(i => i._isKorean);
-  const other = items.filter(i => !i._isKorean);
-  // 한쪽이 비어있으면 재배열 불필요
-  if (!kr.length || !other.length) return items;
-
-  const result = [];
-  let ki = 0, oi = 0;
-  for (let i = 0; i < items.length; i++) {
-    const placed   = result.length;
-    const krPlaced = result.filter(x => x._isKorean).length;
-    // 현재 KR 비율이 목표보다 낮거나 해외 채널이 소진됐으면 KR 배치
-    const curRatio = placed > 0 ? krPlaced / placed : 0;
-    if (ki < kr.length && (curRatio < ratio || oi >= other.length)) {
-      result.push(kr[ki++]);
-    } else if (oi < other.length) {
-      result.push(other[oi++]);
-    } else {
-      result.push(kr[ki++]);
-    }
-  }
-  return result;
-}
 
 // 정확도 점수: 채널명/설명 키워드 매칭 + 직접 채널 검색 매칭 + 관련 영상 등장 + 규모 보너스
 function relevanceScore(item) {
@@ -646,9 +629,12 @@ function relevanceScore(item) {
 
   const subs  = item._subs  || parseInt(item._stats?.subscriberCount  || 0);
   const views = item._views || parseInt(item._stats?.viewCount || 0);
-  const subBonus  = subs  >= 1000000 ? 30 : subs  >= 100000 ? 15 : subs  >= 10000 ? 8 : subs  >= 1000 ? 3 : 0;
-  const viewBonus = views >= 500000000 ? 20 : views >= 50000000 ? 12 : views >= 5000000 ? 6 : views >= 500000 ? 3 : 0;
-  return directBonus + nameScore + descScore + (item._videoCount * 5) + subBonus + viewBonus;
+  // 구독자·조회수 가중치 대폭 상향 — 양질의 채널 우선
+  const subBonus  = subs >= 1000000 ? 200 : subs >= 500000 ? 150 : subs >= 100000 ? 100 : subs >= 50000 ? 60 : subs >= 10000 ? 30 : subs >= 5000 ? 10 : 0;
+  const viewBonus = views >= 500000000 ? 50 : views >= 50000000 ? 30 : views >= 5000000 ? 15 : views >= 500000 ? 5 : 0;
+  // 영상 등장 횟수 보너스 상향 (해당 키워드 영상을 많이 만든 채널)
+  const videoBonus = Math.min(item._videoCount * 15, 100);
+  return directBonus + nameScore + descScore + videoBonus + subBonus + viewBonus;
 }
 
 function setSort(key) {

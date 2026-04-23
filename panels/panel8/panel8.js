@@ -666,95 +666,8 @@ function _hasFinalConsonant(ch) {
   return (code - 0xAC00) % 28 !== 0; // 종성 인덱스 0이면 받침 없음
 }
 
-// 1-b. 한 문장 내 같은 조사 반복 (예: "이것을 했고 핸드폰을 했다" — 을/를 반복)
-// 문장을 마침표/줄바꿈 단위로 분리한 뒤, 동일 조사가 2회 이상 나오면 감지
-function checkParticleRepeat(text, page) {
-  const issues = [];
-  // 문장 단위 분리
-  const sentences = text.split(/[.!?\n]+/).filter(s => s.trim().length > 10);
-  // 감지할 조사 패턴: 어절 끝에 붙는 조사 (앞에 한글이 있어야 함)
-  const JOSA_PAIRS = [
-    { re: /[가-힣]을\s/g, name: '을' },
-    { re: /[가-힣]를\s/g, name: '를' },
-    { re: /[가-힣]은\s/g, name: '은' },
-    { re: /[가-힣]는\s/g, name: '는' },
-    { re: /[가-힣]이\s/g, name: '이' },
-    { re: /[가-힣]가\s/g, name: '가' },
-    { re: /[가-힣]에서\s/g, name: '에서' },
-    { re: /[가-힣]으로\s/g, name: '으로' },
-    { re: /[가-힣]로\s/g, name: '로' },
-  ];
-  // 같은 기능의 조사 그룹 (을/를, 은/는, 이/가는 같은 조사)
-  const JOSA_GROUPS = [['을','를'],['은','는'],['이','가'],['에서'],['으로','로']];
-
-  for (const sent of sentences) {
-    const trimmed = sent.trim();
-    if (trimmed.length < 15) continue;
-    // 각 조사 출현 횟수 세기
-    const counts = {};
-    for (const jp of JOSA_PAIRS) {
-      jp.re.lastIndex = 0;
-      const matches = trimmed.match(jp.re);
-      if (matches) counts[jp.name] = (counts[jp.name] || 0) + matches.length;
-    }
-    // 같은 그룹의 조사 합산
-    for (const group of JOSA_GROUPS) {
-      const total = group.reduce((s, j) => s + (counts[j] || 0), 0);
-      if (total >= 3) {
-        // 3회 이상이면 확실한 조사 반복
-        const found = trimmed.length > 80 ? trimmed.slice(0, 80) + '…' : trimmed;
-        // 조사별 대체 표현 + before→after 예시문
-        const ALT_MAP = {
-          '을': {
-            hint: '목적어 생략, 피동형 전환, "~에 대해"로 교체',
-            example: '원문: "데이터를 수집하고 결과를 분석하고 보고서를 작성했다"\n수정: "데이터를 수집하고 결과 분석 후 보고서를 작성했다"'
-          },
-          '를': {
-            hint: '목적어 생략, 피동형 전환, "~에 대해"로 교체',
-            example: '원문: "시스템을 구축하고 서버를 배포하고 모니터링을 설정했다"\n수정: "시스템을 구축한 뒤 서버 배포와 모니터링을 설정했다"'
-          },
-          '은': {
-            hint: '"~의 경우" 전환, 주어 생략, 문장 분리',
-            example: '원문: "Python은 간결하고 Java는 안정적이며 Go는 빠르다"\n수정: "Python은 간결하고 Java의 경우 안정적이며, Go가 속도 면에서 앞선다"'
-          },
-          '는': {
-            hint: '"~의 경우" 전환, 주어 생략, 문장 분리',
-            example: '원문: "프론트엔드는 React를, 백엔드는 Node를, DB는 MongoDB를 사용한다"\n수정: "프론트엔드는 React를, 백엔드에 Node를, DB로 MongoDB를 사용한다"'
-          },
-          '이': {
-            hint: '주어 생략, 문장 합치기',
-            example: '원문: "오류가 발생하면 로그가 기록되고 알림이 전송된다"\n수정: "오류 발생 시 로그를 기록하고 알림을 전송한다"'
-          },
-          '가': {
-            hint: '주어 생략, 문장 합치기',
-            example: '원문: "성능이 좋고 안정성이 높으며 확장성이 뛰어나다"\n수정: "성능이 좋고 안정성 높으며 확장에도 유리하다"'
-          },
-          '에서': {
-            hint: '"~에" 축약, "~(으)로부터", 장소 부사 활용',
-            example: '원문: "서버에서 데이터를 가져와 클라이언트에서 처리하고 화면에서 보여준다"\n수정: "서버에서 데이터를 가져와 클라이언트가 처리한 뒤 화면에 표시한다"'
-          },
-          '으로': {
-            hint: '"~을 통해", "~에 의해", "~로써" 교체',
-            example: '원문: "파일로 저장하고 이메일로 전송하며 링크로 공유한다"\n수정: "파일로 저장하고 이메일을 통해 전송하며 링크를 공유한다"'
-          },
-          '로': {
-            hint: '"~을 통해", "~에 의해" 교체',
-            example: '원문: "API로 호출하고 JSON으로 변환하며 파일로 저장한다"\n수정: "API를 호출해 JSON으로 변환하고 파일에 저장한다"'
-          },
-        };
-        const alt = ALT_MAP[group[0]] || { hint: '일부를 다른 표현으로 교체', example: '' };
-        const suggText = `${total}회 중 1~2회를 다른 표현으로 변경: ${alt.hint}` +
-          (alt.example ? `\n\n[수정 예시]\n${alt.example}` : '');
-        issues.push({
-          type: '조사중복', severity: 'medium', page,
-          found, description: `한 문장에서 '${group.join('/')}' 조사가 ${total}회 반복됨`,
-          suggestion: suggText
-        });
-      }
-    }
-  }
-  return issues;
-}
+// 1-b. 조사 반복 — 정규식으로는 해당 문장에 맞는 수정안을 생성할 수 없으므로
+// AI 검사(checkLinguistic)에서 '조사중복' type으로 문맥 기반 판단+수정안 생성
 
 // 2. 단어/어구 반복 — \n 제외(PDF 줄바꿈은 반복이 아님), 3글자 이상 어절만 탐지(2글자는 오탐 다수)
 const REPEAT_RE = /([가-힣]{3,})[ \t]*\1/g;
@@ -858,6 +771,14 @@ const JSTYLE_PATS = [
   [/[가-힣]+를?\s*통해서\b/g,         '번역체',     'low',    '"통해"로 줄이세요 (통해서 → 통해)'],
   [/(?:그것|이것)은\s+[가-힣]+이기도/g,'번역체',    'medium', '영어식 주어 반복 — "또한 ~이다"로 통합하세요'],
   [/[가-힣]{2,}적인\s+[가-힣]+에서/g, '일본식표현','low',    '"~에서" 또는 명사 직접 사용 권장 (기술적인 → 기술)'],
+  // 다중조사 중첩 (번역투) — 한국어_다중조사_자료집.txt 기반
+  [/[가-힣]+에서의\s/g,               '번역체',     'medium', '"~에서의"는 삭제하거나 동사로 풀기 ("에서의 협업" → "에서 협업한")'],
+  [/[가-힣]+로부터의\s/g,             '번역체',     'medium', '"~로부터의"는 "~의" 또는 "~가 준"으로 축약'],
+  [/[가-힣]+에게서의\s/g,             '번역체',     'medium', '"~에게서의"는 "~의" 또는 "~가 보낸"으로 축약'],
+  [/[가-힣]+로서의\s/g,               '번역체',     'low',    '"~로서의"는 90% 생략 가능 ("편집자로서의 방향" → "편집 방향")'],
+  [/[가-힣]+에\s*관해서의\s/g,        '번역체',     'medium', '"~에 관해서의"는 삭제 또는 "~의"로 축약'],
+  [/[가-힣]+을\s*통해서의\s/g,        '번역체',     'medium', '"~을 통해서의"는 "~을 통한" 또는 문장 재구성'],
+  [/[가-힣]+에\s*따라서의\s/g,        '번역체',     'medium', '"~에 따라서의"는 "~에 따른"으로 축약'],
 ];
 
 // 10. AI투 상투어 — AI 판독기에서 가장 신뢰도 높은 단서
@@ -897,6 +818,29 @@ const AI_CLICHE_PATS = [
   [/라고\s*할\s*수\s*있다/g,                 'AI투', 'medium', 'AI 단정 회피 — "~다"로 단정하세요. 자신감 있게'],
 ];
 
+// 10-b. 편집 통일안 (통일안 검색기 ver.3.xlsx 기반)
+const UNITY_PATS = [
+  // 맞춤법 혼동어
+  [/따라하기/g,           '맞춤법', 'high',   '따라 하기 (본동사+본동사는 띄어 씀)'],
+  [/그리고는\b/g,         '맞춤법', 'medium', '그러고는 (그리고는 X)'],
+  [/그리고\s*나서/g,      '맞춤법', 'medium', '그러고 나서 (그리고 나서 X)'],
+  [/그럴려고/g,           '맞춤법', 'high',   '그러려고 (그럴려고 X)'],
+  [/길다란/g,             '맞춤법', 'medium', '기다란 (길다란 X)'],
+  [/어플리케이션/g,       '외래어표기오류', 'medium', '애플리케이션'],
+  // 보조용언 띄어쓰기
+  [/내려\s+받/g,          '띄어쓰기', 'medium', '내려받다 (붙여쓰기)'],
+  [/하지\s*마라/g,        '띄어쓰기', 'low',    '하지 마라 (-지 말다는 띄어 씀)'],
+  // 값 띄어쓰기 (한글명사+값)
+  [/목표값/g,             '띄어쓰기', 'medium', '목표 값 (띄어 씀)'],
+  [/결과값/g,             '띄어쓰기', 'medium', '결과 값 (띄어 씀)'],
+  [/논리값/g,             '띄어쓰기', 'medium', '논리 값 (띄어 씀)'],
+  [/기준값/g,             '띄어쓰기', 'medium', '기준 값 (띄어 씀)'],
+  [/단위값/g,             '띄어쓰기', 'medium', '단위 값 (띄어 씀)'],
+  [/텍스트값/g,           '띄어쓰기', 'medium', '텍스트 값 (띄어 씀)'],
+  [/인덱스값/g,           '띄어쓰기', 'medium', '인덱스 값 (띄어 씀)'],
+  [/셀값/g,               '띄어쓰기', 'medium', '셀 값 (띄어 씀)'],
+];
+
 // 11. 내용보완필요 (표면 정규식)
 const CITE_PATS = [
   [/(?:최근|일부|한)\s*연구에\s*따르면/g,     '내용보완필요', 'medium', '연구 출처(기관·논문명·연도) 명시 필요'],
@@ -933,7 +877,6 @@ function checkSurface(extracted) {
     if (text.length < 20) continue;
 
     // 조사 인접 오타 (을를, 이가 등) — 후처리로 구체적 수정안 첨부
-    const beforeParticle = issues.length;
     {
       for (const [pat, type, severity, sugg] of PARTICLE_PATTERNS) {
         pat.lastIndex = 0;
@@ -947,9 +890,6 @@ function checkSurface(extracted) {
         }
       }
     }
-
-    // 조사 반복 (한 문장에서 같은 조사 3회 이상)
-    issues.push(...checkParticleRepeat(text, page));
 
     // 단어 반복
     REPEAT_RE.lastIndex = 0;
@@ -982,6 +922,8 @@ function checkSurface(extracted) {
     addAll(JSTYLE_PATS, text, page);
     // AI투 상투어·번역투·수식과잉
     addAll(AI_CLICHE_PATS, text, page);
+    // 편집 통일안 (띄어쓰기·맞춤법·외래어)
+    addAll(UNITY_PATS, text, page);
     // 내용보완필요 (표면)
     addAll(CITE_PATS, text, page);
     // 문단연결불량 (표면)
@@ -1339,7 +1281,22 @@ When suggesting rewrites (suggestion), follow these writing principles:
 - Concrete over abstract: replace vague modifiers with specific examples or data
 - Reader-first: every rewrite should be clearer and more engaging for the reader
 
+TYPE CLASSIFICATION RULES (type 분류를 반드시 지킬 것):
+같은 문장에 여러 문제가 겹칠 수 있다. 이때 가장 구체적인 type을 선택하라:
+- 같은 조사(을/를, 은/는, 이/가, 에서, 으로 등)가 한 문장에서 2회 이상 반복 → type="조사중복" (절대 "윤문필요"로 분류하지 말 것)
+- '-에서의', '-로부터의', '-에 대한' 등 번역투 다중조사 중첩 → type="번역체" (절대 "윤문필요"로 분류하지 말 것)
+- 문법적으로 틀린 문장 (주어-서술어 불일치, 조사 오용) → type="비문" 또는 "주술호응오류"
+- 문법은 맞지만 어색하거나 장황한 문장 → type="윤문필요"
+- 핵심: "윤문필요"는 위 3가지에 해당하지 않을 때만 사용. 조사 반복이 원인이면 반드시 "조사중복"으로 분류.
+
 Check ALL of the following issue types:
+
+MEDIUM severity — 조사중복 (가장 적극적으로 검사할 것):
+같은 조사가 한 문장에서 2회 이상 반복되면 잡을 것.
+- 을/를, 은/는, 이/가, 에서, 으로/로, 와/과, 에 등
+- found: 해당 문장 전체를 복사
+- suggestion: 조사 1~2개를 다른 표현으로 바꾼 수정 문장을 직접 작성
+- 예: found="데이터를 수집하고 결과를 분석하고 보고서를 작성했다" → suggestion="데이터를 수집하고 결과 분석 후 보고서를 작성했다"
 
 HIGH severity (명백한 오류):
 - 비문: Ungrammatical sentences — broken structure, missing subject/predicate, dangling modifiers
@@ -1375,7 +1332,7 @@ Return ONLY raw JSON — no markdown fences, no explanation, no text before or a
 If no issues found: {"issues":[]}
 DO NOT wrap in markdown code blocks. Start your response directly with { and end with }.
 
-Type names to use exactly: 비문, 주술호응오류, 잘못된표현, 사실오류, 할루시네이션, 번역체, 일본식표현, 수동태과용, 외래어표기오류, 용어불일치, 문체불일치, 윤문필요, 내용보완필요, 문단연결불량, 중의적표현, 저자확인필요, 띄어쓰기, 맞춤법, 문장부호오류
+Type names to use exactly: 비문, 주술호응오류, 잘못된표현, 사실오류, 할루시네이션, 번역체, 일본식표현, 수동태과용, 외래어표기오류, 용어불일치, 문체불일치, 윤문필요, 내용보완필요, 조사중복, 문단연결불량, 중의적표현, 저자확인필요, 띄어쓰기, 맞춤법, 문장부호오류
 
 IMPORTANT — suggestion 작성 기준:
 "suggestion"은 편집자가 바로 복사해 사용할 수 있는 완성된 수정 내용이어야 한다. "표현 개선 필요" 같은 방향 제시는 금지.
@@ -1400,6 +1357,11 @@ IMPORTANT — suggestion 작성 기준:
   - 예: found="Python은 C보다 빠릅니다"
        suggestion="[오류] Python은 일반적으로 C보다 느립니다. Python은 인터프리터 언어로 실행 시 바이트코드를 해석하는 오버헤드가 있어, 연산 집약적 작업에서는 C 대비 수십~수백 배 느릴 수 있습니다. 다만 NumPy 등 C 확장 라이브러리 사용 시 성능 차이를 줄일 수 있습니다."
 
+▶ 조사중복:
+  - found: 해당 문장 전체를 복사 (절대 잘라내지 말 것)
+  - suggestion: 조사 1~2개를 다른 표현으로 바꾼 완성된 수정 문장. 원문의 의미를 유지하면서 반복되는 조사를 줄일 것.
+  - 절대 "~를 줄이세요" 같은 방향 제시를 하지 말 것. 직접 고쳐 쓴 문장을 줘야 함.
+
 ▶ 기타 유형:
   - 문단연결불량: 삽입할 전환 문장을 직접 작성
   - 번역체/일본식표현: 자연스러운 한국어로 바꾼 문장 제시
@@ -1408,6 +1370,7 @@ IMPORTANT — suggestion 작성 기준:
   - 저자확인필요: 저자에게 보낼 구체적인 확인 질문
 
 - Report every issue you find — do not skip borderline cases. Be aggressive: if a sentence is hard to read, report it. If explanation is thin, report it.
+- 조사중복은 특히 적극적으로 찾을 것. IT 기술서 원고에서 가장 흔한 문제이며, 편집자가 가장 많이 수정하는 항목이다.
 
 HALLUCINATION PREVENTION (CRITICAL):
 - "found" MUST be copied character-by-character from the input text. Do NOT paraphrase, summarize, or reconstruct.
@@ -1677,6 +1640,17 @@ async function p8_startProofread() {
   const fileKey = currentFileKey || getCacheKey(selectedFile);
 
   show('loadingPanel');
+  // 이전 실행의 "교정 완료!" 텍스트 초기화
+  document.getElementById('p8_loadingTitle').textContent = '교정 진행 중…';
+  // 스텝 아이콘·텍스트 초기화 (이전 실행 잔재 제거)
+  for (let i = 1; i <= 5; i++) {
+    const icon = document.getElementById(`p8_step${i}-icon`);
+    const name = document.getElementById(`p8_step${i}-name`);
+    const det  = document.getElementById(`p8_step${i}-detail`);
+    if (icon) { icon.className = 'step-icon pending'; icon.textContent = (i); }
+    if (name) name.className = 'step-name pending';
+    if (det) { det.textContent = ''; det.style.color = ''; }
+  }
   setBar(5);
 
   // ── 캐시 확인 ──────────────────────────────────
@@ -2010,11 +1984,11 @@ function p8_pvGoTo(n) {
 // 유형별 카테고리 분류
 // ── type 분류 (검사 출처 기반) ──
 // 표면검사(정규식)에서만 생성되는 type
-const SURFACE_ONLY    = ['조사중복','단어반복','이중수동','중복군더더기','접속사중복','한자남용','불필요한공백','AI투'];
+const SURFACE_ONLY    = ['단어반복','이중수동','중복군더더기','접속사중복','한자남용','불필요한공백','AI투'];
 // AI검사에서만 생성되는 type
 const AI_ONLY         = ['비문','주술호응오류','잘못된표현','수동태과용','윤문필요','중의적표현','문체불일치','사실오류','할루시네이션','저자확인필요'];
-// 표면+AI 양쪽에서 생성 가능 (크로스 중복 제거 대상)
-const CROSS_TYPES     = ['번역체','일본식표현','외래어표기오류','용어불일치','내용보완필요','문단연결불량','문장부호오류','띄어쓰기','맞춤법'];
+// 표면(인접오타)+AI(문맥반복) 양쪽에서 생성 가능 (크로스 중복 제거: AI 우선)
+const CROSS_TYPES     = ['조사중복','번역체','일본식표현','외래어표기오류','용어불일치','내용보완필요','문단연결불량','문장부호오류','띄어쓰기','맞춤법'];
 // 구조검사에서 생성
 const STRUCT_TYPES    = ['목차불일치'];
 // 호환용 집합 (기존 렌더링 코드와 호환)
@@ -2089,6 +2063,8 @@ function renderResults(extracted, aiUsed, aiSkipped) {
       <span class="chip" style="background:#d35400" title="저자확인">저자확인 ${auth}</span>
       <span class="chip" style="background:#16a085" title="구조">구조 ${stru}</span>
       ${term > 0 ? `<span class="chip" style="background:#795548" title="용어불일치" onclick="p8_filterByTypes(['용어불일치'])">용어 ${term}</span>` : ''}
+      <span class="chip" style="background:#059669" title="해결됨 필터" onclick="p8_filterResolved('resolved',this)">해결됨 ${resolvedIndices.size}</span>
+      <span class="chip" style="background:#b45309" title="미해결 필터" onclick="p8_filterResolved('unresolved',this)">미해결 ${total - resolvedIndices.size}</span>
       ${aiUsed ? '<span class="chip" style="background:#2980b9">AI 검사 완료</span>' : '<span class="chip" style="background:#c0392b" title="비문·사실오류·주술호응 등 의미 오류는 API 키 입력 후 재검사하세요">⚠️ AI 미실행</span>'}
       ${getCache(currentFileKey || '') ? '<span class="chip" style="background:#27ae60" title="캐시 재사용">⚡ 캐시</span>' : ''}
     </div>`;
@@ -2245,7 +2221,7 @@ function renderIssues(issues) {
         <span class="badge-page" onclick="p8_renderPage(${iss.page})" title="페이지 ${iss.page} 보기">p.${iss.page}</span>
         <span class="badge-type ${typeClass}">${esc(iss.type)}</span>
         <span class="badge-sev ${sev}">${sevLabel}</span>
-        <button class="btn-resolve" onclick="p8_toggleResolve(${globalIdx},this)">${isResolved ? '취소' : '해결됨'}</button>
+        <button class="btn-resolve" onclick="p8_toggleResolve(${globalIdx},this)">${isResolved ? '해결됨' : '미해결'}</button>
       </div>
       ${iss.description ? `<div class="card-desc">${esc(iss.description)}</div>` : ''}
       <div class="diff-block">
@@ -2284,7 +2260,8 @@ function p8_toggleResolve(globalIdx, btn) {
   const resolved = resolvedIndices.has(globalIdx);
   const card = btn.closest('.issue-card');
   if (card) card.classList.toggle('resolved', resolved);
-  btn.textContent = resolved ? '취소' : '해결됨';
+  btn.textContent = resolved ? '해결됨' : '미해결';
+  _updateResolvedChips();
 }
 
 function p8_copyChip(text) {
@@ -2354,6 +2331,27 @@ function p8_filterSevChip(sev, chip) {
   p8_applyFilters();
 }
 
+// 해결됨/미해결 필터
+let activeResolvedFilter = null; // 'resolved' | 'unresolved' | null
+
+function p8_filterResolved(mode, chip) {
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active-filter'));
+  const isActive = activeResolvedFilter === mode;
+  activeResolvedFilter = isActive ? null : mode;
+  if (!isActive && chip) chip.classList.add('active-filter');
+  p8_applyFilters();
+}
+
+// 해결됨/미해결 카운트 칩 업데이트
+function _updateResolvedChips() {
+  const bar = document.getElementById('p8_summaryBar');
+  if (!bar) return;
+  const resolvedChip = bar.querySelector('[title="해결됨 필터"]');
+  const unresolvedChip = bar.querySelector('[title="미해결 필터"]');
+  if (resolvedChip) resolvedChip.textContent = '해결됨 ' + resolvedIndices.size;
+  if (unresolvedChip) unresolvedChip.textContent = '미해결 ' + (allIssues.length - resolvedIndices.size);
+}
+
 // 카테고리 박스 클릭 시 설정되는 유형 OR 필터 (검색창과 독립)
 let activeTypeFilter = null;
 
@@ -2388,6 +2386,13 @@ function p8_applyFilters() {
   if (type) activeTypeFilter = null;
 
   const filtered = allIssues.filter(i => {
+    // 해결됨/미해결 필터
+    if (activeResolvedFilter) {
+      const idx = allIssues.indexOf(i);
+      const isRes = resolvedIndices.has(idx);
+      if (activeResolvedFilter === 'resolved' && !isRes) return false;
+      if (activeResolvedFilter === 'unresolved' && isRes) return false;
+    }
     if (currentSev !== 'all' && i.severity !== currentSev) return false;
     if (type && i.type !== type) return false;
     if (activeTypeFilter) {
@@ -2399,6 +2404,133 @@ function p8_applyFilters() {
     return true;
   });
   renderIssues(filtered);
+}
+
+
+// ──────────────────────────────────────────────
+// 교정 원고 다운로드
+// ──────────────────────────────────────────────
+
+/** suggestion에서 실제 교체할 텍스트만 추출 */
+function _cleanSuggestion(iss) {
+  if (iss.alts) return iss.alts.passive || iss.alts.active || '';
+  const s = iss.suggestion || '';
+  if (!s) return '';
+  // 표면검사: → "교정문" 설명... → 따옴표 안 텍스트만
+  const q = s.match(/^→\s*"([^"]+)"/);
+  if (q) return q[1];
+  // AI검사: suggestion 그대로 사용 (완성된 수정 문장)
+  return s;
+}
+
+/** 해결됨 이슈에서 교정 내용 수집 */
+function _getCorrections() {
+  const list = [];
+  resolvedIndices.forEach(idx => {
+    const iss = allIssues[idx];
+    if (!iss || !iss.found) return;
+    const repl = _cleanSuggestion(iss);
+    if (repl && iss.found !== repl) {
+      list.push({ found: iss.found, repl, page: iss.page });
+    }
+  });
+  list.sort((a, b) => b.found.length - a.found.length);
+  return list;
+}
+
+/** 텍스트에 교정 적용 */
+function _applyAll(text, corrs) {
+  let r = text;
+  for (const c of corrs) {
+    // 모든 출현 치환
+    r = r.split(c.found).join(c.repl);
+  }
+  return r;
+}
+
+function _dlBlob(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 200);
+}
+
+async function p8_downloadCorrected() {
+  if (!selectedFile) {
+    alert('원본 파일이 없습니다. 파일을 다시 업로드해 주세요.');
+    return;
+  }
+  const corrs = _getCorrections();
+  if (!corrs.length) {
+    alert('해결됨으로 표시된 이슈가 없습니다.\n이슈 카드의 [미해결] 버튼을 클릭하여 [해결됨]으로 변경하세요.');
+    return;
+  }
+
+  const ext = selectedFile.name.split('.').pop().toLowerCase();
+  const base = selectedFile.name.replace(/\.[^.]+$/, '');
+
+  try {
+    if (ext === 'txt' || ext === 'md') {
+      const text = await selectedFile.text();
+      _dlBlob(new Blob(['\uFEFF' + _applyAll(text, corrs)], { type: 'text/plain;charset=utf-8' }), base + '_교정.' + ext);
+
+    } else if (ext === 'docx') {
+      if (typeof JSZip === 'undefined') throw new Error('JSZip 필요');
+      const zip = await JSZip.loadAsync(await selectedFile.arrayBuffer());
+      const df = zip.file('word/document.xml');
+      if (!df) throw new Error('document.xml 없음');
+      let xml = await df.async('string');
+      for (const c of corrs) {
+        const ef = c.found.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const er = c.repl.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        xml = xml.split(ef).join(er);
+      }
+      zip.file('word/document.xml', xml);
+      _dlBlob(await zip.generateAsync({ type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }), base + '_교정.docx');
+
+    } else if (ext === 'hwpx') {
+      if (typeof JSZip === 'undefined') throw new Error('JSZip 필요');
+      const zip = await JSZip.loadAsync(await selectedFile.arrayBuffer());
+      const secs = Object.keys(zip.files).filter(n => /^Contents\/section\d+\.xml$/i.test(n)).sort();
+      if (!secs.length) throw new Error('섹션 없음');
+      for (const fn of secs) {
+        let xml = await zip.files[fn].async('string');
+        for (const c of corrs) xml = xml.split(c.found).join(c.repl);
+        zip.file(fn, xml);
+      }
+      _dlBlob(await zip.generateAsync({ type:'blob' }), base + '_교정.hwpx');
+
+    } else if (ext === 'pdf') {
+      // PDF 텍스트 직접 수정 불가 → 교정 보고서 출력
+      const rows = corrs.map(c =>
+        `<tr><td>${c.page||''}</td><td><del style="color:#c0392b;background:#fde8e8">${_esc(c.found)}</del></td><td style="color:#27ae60;background:#e8f8e8">${_esc(c.repl)}</td></tr>`
+      ).join('');
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>교정 보고서</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Pretendard,'Malgun Gothic',sans-serif;font-size:11px;padding:24px;line-height:1.6}
+h1{font-size:16px;margin-bottom:8px}table{width:100%;border-collapse:collapse;font-size:10.5px}
+th,td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;word-break:break-all}
+th{background:#f0f0f0;font-weight:600}del{text-decoration:line-through}
+@media print{body{padding:12px}}</style></head><body>
+<h1>${_esc(base)} — 교정 보고서 (${corrs.length}건)</h1>
+<p style="color:#666;font-size:10px;margin-bottom:12px">${_esc(selectedFile.name)} · ${new Date().toLocaleDateString('ko')}</p>
+<table><thead><tr><th>p.</th><th>원문 (삭제)</th><th>수정 (반영)</th></tr></thead><tbody>${rows}</tbody></table>
+</body></html>`;
+      if (typeof openPrintPopup === 'function') openPrintPopup(html);
+      else { const w = window.open('','_blank'); if(w){w.document.write(html);w.document.close();} }
+
+    } else {
+      alert(ext.toUpperCase() + ' 형식은 교정 다운로드를 지원하지 않습니다.\nTXT, DOCX, HWPX, PDF를 지원합니다.');
+    }
+  } catch (e) {
+    console.error('[교정 다운로드]', e);
+    alert('다운로드 오류: ' + e.message);
+  }
+}
+
+function _esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ──────────────────────────────────────────────
@@ -2416,6 +2548,7 @@ function p8_reset() {
   allIssues = [];
   currentSev = 'all';
   activeTypeFilter = null;
+  activeResolvedFilter = null;
   currentFileKey = null;
   pdfDoc = null;
   resolvedIndices.clear();
@@ -2605,10 +2738,12 @@ document.addEventListener('DOMContentLoaded', () => {
   window.p8_toggleResolve = p8_toggleResolve;
   window.p8_copyText = p8_copyText;
   window.p8_filterSevChip = p8_filterSevChip;
+  window.p8_filterResolved = p8_filterResolved;
   window.p8_filterByTypes = p8_filterByTypes;
   window.p8_filterByCatIdx = p8_filterByCatIdx;
   window.p8_filterUncategorized = p8_filterUncategorized;
   window.p8_copyChip = p8_copyChip;
   window.p8_onClearThisCache = p8_onClearThisCache;
   window.p8_rerunAI = p8_rerunAI;
+  window.p8_downloadCorrected = p8_downloadCorrected;
 })();

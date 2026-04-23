@@ -579,6 +579,20 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
   border-left-color: transparent !important;
 }
 .sidebar.collapsed .nav-item.active { border-left-color: transparent !important; }
+/* 마우스 호버 시 자동 확장 */
+.sidebar.collapsed:hover { width: var(--sb-w-full, 210px); }
+.sidebar.collapsed:hover .nav-section { opacity: 1; pointer-events: auto; }
+.sidebar.collapsed:hover .nav-label { display: inline; }
+.sidebar.collapsed:hover .nav-item {
+  padding: .55rem .9rem .55rem 1.2rem;
+  justify-content: flex-start;
+  gap: .55rem;
+  margin-right: .5rem !important;
+  border-radius: 0 8px 8px 0;
+  margin: 1px .5rem 1px 0;
+}
+.sidebar.collapsed:hover .nav-item.active { border-left-color: var(--accent) !important; }
+.sidebar.collapsed:hover .sidebar-toggle-icon { transform: none; }
 .nav-label { white-space: nowrap; overflow: hidden; transition: opacity .15s; }
 .main-content { transition: margin-left .22s cubic-bezier(.4,0,.2,1); }
 .nav-section {

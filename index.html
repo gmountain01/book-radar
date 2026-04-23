@@ -31,11 +31,9 @@
 
 <div class="hdr">
   <div class="hdr-left">
-    <div class="tag">리리가 도와줌 v1.9.35 업데이트 날짜 2026-04-23</div>
-    <h1>리리가 <span>도와줌</span></h1>
+    <h1><img src="libs/리리_만세.png" alt="리리" style="height:1.6em;vertical-align:middle;margin-right:.3em;border-radius:50%;">리리가 <span>도와줌</span> <span style="font-size:.55em;font-weight:400;color:#a0a0b8;vertical-align:middle;margin-left:.5em;letter-spacing:.3px;">v1.9.35 · 2026-04-23</span></h1>
   </div>
   <div class="hdr-right" style="display:flex;gap:.5rem;align-items:center;">
-    <button class="dl-btn" style="background:none;border:1px solid var(--border2);color:var(--muted);font-size:.72rem;" onclick="resetDefaults()" title="저장된 파일 캐시를 초기화하고 내장 기본 파일로 재시작">🔄 기본값 초기화</button>
     <div id="hdr-btns" style="display:none;"></div>
   </div>
 </div>
@@ -643,11 +641,11 @@
         <div class="prop-section">
           <div class="prop-section-title">독자층</div>
           <div class="prop-field"><label>핵심 독자</label><input type="text" id="pf-reader-core" placeholder="예: AI 입문 초보 직장인 (사무직, 마케터, 기획자)" oninput="propRender()"></div>
+          <div class="prop-field"><label>확산 독자</label><input type="text" id="pf-reader-ext" placeholder="예: AI 경험 보유 직장인, 업그레이드 희망자" oninput="propRender()"></div>
           <div class="prop-field-row">
             <div class="prop-field"><label>구매력</label><input type="text" id="pf-reader-budget" placeholder="예: 중상급 (2-5만원대)" oninput="propRender()"></div>
             <div class="prop-field"><label>니즈</label><input type="text" id="pf-reader-needs" placeholder="예: 업무 효율화, 시간 절약" oninput="propRender()"></div>
           </div>
-          <div class="prop-field"><label>확산 독자</label><input type="text" id="pf-reader-ext" placeholder="예: AI 경험 보유 직장인, 업그레이드 희망자" oninput="propRender()"></div>
         </div>
 
         <!-- 차별화 & 핵심 포인트 -->
@@ -992,6 +990,7 @@
         </select>
         <input class="search-inp" id="p8_searchInp" placeholder="검색…" oninput="p8_applyFilters()">
         <span class="result-count" id="p8_resultCount"></span>
+        <button style="padding:5px 14px;background:#27ae60;color:#fff;border:none;border-radius:6px;font-size:.8em;cursor:pointer;white-space:nowrap;font-weight:600" onclick="p8_downloadCorrected()">교정 원고 다운로드</button>
         <button class="btn-new" onclick="p8_reset()">새 파일</button>
       </div>
       <div class="issues-list" id="p8_issuesList"></div>
@@ -1027,7 +1026,6 @@
   </div><!-- end result-body -->
 </div>
 
-<footer>문서 교정 도우미 · PDF.js + mammoth.js + Claude API · 브라우저에서 직접 실행</footer>
 </div>
 <div class="panel panel9-scope" id="panel9">
 <div class="p9-inner">

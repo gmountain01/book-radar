@@ -1259,41 +1259,52 @@ window.kwGenerateProposal = async function(idx, btn) {
     return '"' + (v.title || '') + '" ' + fmtNum(parseInt(v.views,10)||0) + '회';
   }).join(' / ') || '없음';
 
-  var prompt = '당신은 한빛미디어 10년차 IT 도서 편집자입니다. 아래 키워드 분석 결과를 보고, 편집장에게 바로 올릴 수 있는 출판 기획 초안을 작성하세요.\n\n' +
-    '[키워드 분석 결과]\n' +
+  var prompt = '당신은 베스트셀러 IT 도서를 만드는 편집자입니다. 목표는 서점에서 이 책을 본 사람이 "이거 안 사면 뒤처진다"고 느끼게 만드는 기획입니다.\n\n' +
+    '[분석 데이터]\n' +
     '키워드: ' + (card.keyword || '') + '\n' +
-    '유형: ' + (card.pick_type === 'preempt' ? 'PREEMPT (선점 기회 — 책 없음+YouTube 수요 폭발)' : card.pick_type === 'hook' ? 'HOOK (시장 공백/새 관점)' : 'SAFE (검증된 수요)') + '\n' +
+    '유형: ' + (card.pick_type === 'preempt' ? 'PREEMPT (경쟁서 없음+수요 폭발)' : card.pick_type === 'hook' ? 'HOOK (시장 공백)' : 'SAFE (검증 수요)') + '\n' +
     '편집자 소견: ' + (card.hook_idea || '') + '\n' +
-    '타겟 독자: ' + (card.target_reader || '') + '\n' +
+    '타겟: ' + (card.target_reader || '') + '\n' +
     '시장 공백: ' + (card.aladin_gap || '') + '\n' +
     '긴급도: ' + (card.urgency || '') + '\n' +
-    'YouTube 트렌드: ' + ytInfo + '\n' +
-    'yes24 경쟁 도서: ' + compBooks + '\n' +
-    '부제 제안: ' + (card.subtitle_suggestion || '') + '\n' +
-    '트렌드 신호: ' + (card.yt_keyword_signal || card.trend_vs_supply || '') + '\n\n' +
-    '[글쓰기 원칙]\n' +
-    '- AI투 문장 금지. "혁신적인", "필수적인", "~할 수 있습니다" 쓰지 말 것.\n' +
-    '- 편집자가 기획회의에서 발표하듯 설득력 있게. 구어체 OK.\n' +
-    '- 수치는 문장 안에 자연스럽게.\n\n' +
-    '아래 JSON으로만 응답하세요:\n' +
+    'YouTube: ' + ytInfo + '\n' +
+    '경쟁서: ' + compBooks + '\n' +
+    '트렌드: ' + (card.yt_keyword_signal || card.trend_vs_supply || '') + '\n\n' +
+    '[기획 철학 — 반드시 지킬 것]\n' +
+    '1. 제목은 독자의 욕망을 자극해야 한다. "~입문" "~가이드" 같은 교과서 제목 금지. 독자가 SNS에 인증하고 싶을 만큼 임팩트 있게.\n' +
+    '   - 좋은 예: "퇴근 후 1시간, AI가 내 코드를 짠다", "코딩 없이 앱 만들기: 바이브코딩 실전", "데이터로 말하라: 비개발자의 SQL 무기"\n' +
+    '   - 나쁜 예: "Claude Code 입문", "AI 코딩 도구 가이드", "프롬프트 엔지니어링 개론"\n' +
+    '2. why_now는 "지금 안 배우면 늦는 이유"를 구체적 사건/수치로. 공포+기회 조합.\n' +
+    '3. concept은 "이 책을 읽으면 내가 뭘 할 수 있게 되는지"를 명확하게. 기술 나열 X, 독자 변화 O.\n' +
+    '   - 좋은: "이 책을 끝내면 혼자서 SaaS 하나를 런칭할 수 있다"\n' +
+    '   - 나쁜: "최신 기술 스택을 종합적으로 다룬다"\n' +
+    '4. 목차 제목도 행동 중심. "환경 설정" 대신 "30분 만에 첫 프로젝트 돌리기". 독자가 각 장을 끝내면 뭘 만들었는지 알 수 있어야.\n' +
+    '5. subtitle은 서점 띠지 문구. 15자 이내. 독자의 마음을 때리는 한 줄.\n' +
+    '6. diff는 기존 책들의 구체적 약점을 찌르고, 이 책이 어떻게 다른지.\n\n' +
+    '[금지]\n' +
+    '- "혁신적인", "필수적인", "종합 가이드", "체계적으로", "~할 수 있습니다" 같은 AI투\n' +
+    '- 기술 나열식 목차 (1장 개요, 2장 설치, 3장 기본문법...)\n' +
+    '- 뻔한 부제 ("실전 입문서", "완벽 가이드")\n\n' +
+    '아래 JSON으로만 응답:\n' +
     '{\n' +
-    '  "title": "도서 제목 (가제)",\n' +
-    '  "subtitle": "서점 띠지 부제",\n' +
-    '  "why_now": "왜 지금 이 책인가 — 시장 근거 2~3문장",\n' +
-    '  "concept": "기획 의도 — 이 책만의 차별점 2~3문장",\n' +
-    '  "reader_core": "핵심 독자 — 직급/경력/상황/욕구 구체적으로",\n' +
-    '  "reader_ext": "확장 독자 — 부가 독자층",\n' +
+    '  "title": "서점에서 집어들게 만드는 도서 제목",\n' +
+    '  "subtitle": "띠지 한 줄 (15자 이내, 욕망 자극)",\n' +
+    '  "why_now": "지금 안 배우면 늦는 이유 — 구체적 사건/수치 포함 2~3문장",\n' +
+    '  "concept": "이 책을 끝내면 독자가 할 수 있게 되는 것 — 변화 중심 2~3문장",\n' +
+    '  "reader_core": "가장 절실한 독자 — 구체적 상황과 고통 (예: 3년차 백엔드 개발자, AI 도입 압박받는 중)",\n' +
+    '  "reader_ext": "같이 사는 독자 — 부가 독자층",\n' +
     '  "toc": [\n' +
-    '    {"num": "1장", "title": "장 제목", "sub": "소주제 나열"},\n' +
-    '    {"num": "2장", "title": "장 제목", "sub": "소주제 나열"},\n' +
-    '    {"num": "3장", "title": "장 제목", "sub": "소주제 나열"},\n' +
-    '    {"num": "4장", "title": "장 제목", "sub": "소주제 나열"},\n' +
-    '    {"num": "5장", "title": "장 제목", "sub": "소주제 나열"}\n' +
+    '    {"num": "1장", "title": "행동 중심 장 제목", "sub": "이 장이 끝나면 만드는 것/할 수 있는 것"},\n' +
+    '    {"num": "2장", "title": "행동 중심 장 제목", "sub": "이 장이 끝나면 만드는 것"},\n' +
+    '    {"num": "3장", "title": "행동 중심 장 제목", "sub": "이 장이 끝나면 만드는 것"},\n' +
+    '    {"num": "4장", "title": "행동 중심 장 제목", "sub": "이 장이 끝나면 만드는 것"},\n' +
+    '    {"num": "5장", "title": "행동 중심 장 제목", "sub": "이 장이 끝나면 만드는 것"}\n' +
     '  ],\n' +
-    '  "diff": "경쟁서 대비 차별화 포인트 2~3문장",\n' +
-    '  "author_profile": "이런 저자를 섭외해야 — 조건/유형 구체적으로",\n' +
-    '  "pages": "예상 분량 (예: 320~400쪽)",\n' +
-    '  "timeline": "집필 소요 기간 (예: 4~6개월)"\n' +
+    '  "diff": "경쟁서 약점 + 이 책의 결정적 차이 2~3문장",\n' +
+    '  "hook_line": "독자가 이 책을 사야만 하는 이유 한 문장 (공포 or 기회)",\n' +
+    '  "author_profile": "이런 저자여야 한다 — 조건 구체적으로",\n' +
+    '  "pages": "예상 분량",\n' +
+    '  "timeline": "집필 기간"\n' +
     '}\n\n' +
     '[JSON 규칙] 문자열 내 줄바꿈 금지. 큰따옴표 금지. 순수 JSON만.';
 
@@ -1349,6 +1360,10 @@ function _renderProposal(idx, card, p) {
         '<div class="proposal-label">목차 (가안)</div>' +
         '<div class="proposal-toc">' + tocHtml + '</div>' +
       '</div>' +
+      (p.hook_line ? '<div class="proposal-section" style="background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:8px;padding:10px 14px;margin-bottom:10px">' +
+        '<div class="proposal-label" style="color:#92400e">이 책을 사야만 하는 이유</div>' +
+        '<div class="proposal-text" style="font-weight:700;color:#78350f;font-size:1.05em">' + escHtml(p.hook_line) + '</div>' +
+      '</div>' : '') +
       '<div class="proposal-section">' +
         '<div class="proposal-label">경쟁서 대비 차별화</div>' +
         '<div class="proposal-text">' + escHtml(p.diff || '') + '</div>' +
@@ -1398,7 +1413,37 @@ window.kwSendToProposal = function(idx) {
   sv('pf-reader-core', p.reader_core);
   sv('pf-reader-ext', p.reader_ext);
   sv('pf-diff', p.diff);
-  sv('pf-pages', p.pages);
+  sv('pf-pages', p.pages || '320~400쪽');
+
+  // 기획 초안에서 추출 가능한 추가 필드
+  sv('pf-author', p.author_profile ? '(저자 섭외 필요) ' + p.author_profile : '(저자 섭외 필요)');
+  sv('pf-reader-budget', '중급 (2~4만원대)');
+  sv('pf-reader-needs', card ? (card.hook_idea || card.target_reader || '') : '');
+
+  // 가격·인세 기본값
+  sv('pf-price', '28,000원');
+  sv('pf-advance', '3,000,000');
+  sv('pf-royalty', '8%');
+
+  // 일정 자동 계산 (현재 월 기준 +2/+6/+8/+10개월)
+  var now = new Date();
+  function monthAdd(m) {
+    var d = new Date(now.getFullYear(), now.getMonth() + m, 1);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  }
+  sv('pf-sch-start', monthAdd(2));
+  sv('pf-sch-submit', monthAdd(6));
+  sv('pf-sch-edit', monthAdd(8));
+  sv('pf-sch-pub', monthAdd(10));
+
+  // 작성자·작성일
+  sv('pf-date', now.toISOString().slice(0,10));
+
+  // hook_line이 있으면 concept 앞에 추가
+  if (p.hook_line) {
+    var el = document.getElementById('pf-concept');
+    if (el) el.value = '[이 책을 사야만 하는 이유]\n' + p.hook_line + '\n\n' + (el.value || '');
+  }
 
   // panel5로 이동
   window.switchTab(5, document.getElementById('tab5'));

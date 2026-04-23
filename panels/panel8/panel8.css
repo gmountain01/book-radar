@@ -222,9 +222,13 @@
 .panel8-scope .badge-sev.high{background:#fdecea;color:#c0392b}
 .panel8-scope .badge-sev.medium{background:#fef3e2;color:#d68910}
 .panel8-scope .badge-sev.low{background:#eafaf1;color:#1e8449}
-.panel8-scope .btn-resolve{margin-left:auto;padding:2px 10px;border-radius:12px;border:1px solid #dde;
-             background:#f8f9fa;font-size:.75em;cursor:pointer;transition:all .15s}
-.panel8-scope .btn-resolve:hover{background:#eafaf1;border-color:#27ae60;color:#1e8449}
+/* 미해결 상태 (기본) — 주황 */
+.panel8-scope .btn-resolve{margin-left:auto;padding:2px 10px;border-radius:12px;border:1px solid #e0a858;
+             background:#fff7ed;color:#b45309;font-size:.75em;font-weight:600;cursor:pointer;transition:all .15s}
+.panel8-scope .btn-resolve:hover{background:#fef3c7;border-color:#d97706}
+/* 해결됨 상태 — 초록 */
+.panel8-scope .resolved .btn-resolve{background:#ecfdf5;color:#059669;border-color:#6ee7b7}
+.panel8-scope .resolved .btn-resolve:hover{background:#d1fae5;border-color:#34d399}
 
 /* 컨텍스트 라인 */
 .panel8-scope .ctx-line{font-size:.9em;padding:8px 12px;background:#f8f9fa;border-radius:6px;

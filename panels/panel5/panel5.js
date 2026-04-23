@@ -291,8 +291,8 @@ function propRender() {
         <div class="pd2-block-title">독자층</div>
         <div class="pd2-reader-grid">
           <div class="pd2-reader-card"><div class="pd2-reader-label">핵심 독자</div><div class="pd2-reader-val">${d.readerCore || '—'}</div></div>
-          <div class="pd2-reader-card"><div class="pd2-reader-label">구매력 / 니즈</div><div class="pd2-reader-val">${[d.readerBudget, d.readerNeeds].filter(Boolean).join('<br>') || '—'}</div></div>
-          <div class="pd2-reader-card" style="grid-column:1/-1;"><div class="pd2-reader-label">확산 독자</div><div class="pd2-reader-val">${d.readerExt || '—'}</div></div>
+          <div class="pd2-reader-card"><div class="pd2-reader-label">확산 독자</div><div class="pd2-reader-val">${d.readerExt || '—'}</div></div>
+          <div class="pd2-reader-card" style="grid-column:1/-1;"><div class="pd2-reader-label">구매력 / 니즈</div><div class="pd2-reader-val">${[d.readerBudget, d.readerNeeds].filter(Boolean).join('<br>') || '—'}</div></div>
         </div>
       </div>
 
@@ -671,9 +671,9 @@ function buildWordXml(d) {
   rows.push(wp(wbold('■ 독자층')));
   rows.push(`<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblBorders><w:top w:val="single" w:sz="4"/><w:left w:val="single" w:sz="4"/><w:bottom w:val="single" w:sz="4"/><w:right w:val="single" w:sz="4"/><w:insideH w:val="single" w:sz="4"/><w:insideV w:val="single" w:sz="4"/></w:tblBorders></w:tblPr>
     ${wrow(['핵심 독자', d.readerCore||''])}
+    ${wrow(['확산 독자', d.readerExt||''])}
     ${wrow(['구매력', d.readerBudget||''])}
     ${wrow(['니즈', d.readerNeeds||''])}
-    ${wrow(['확산 독자', d.readerExt||''])}
   </w:tbl>`);
   rows.push(wp(''));
 
