@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>표지 이미지 파이프라인 테스트</title>
+<style>
+*{box-sizing:border-box;margin:0}
+body{font-family:'Pretendard','Noto Sans KR',sans-serif;background:#f7f7f5;color:#1c1c1a;
+  padding:32px;max-width:900px;margin:0 auto;line-height:1.6}
+h1{font-size:18px;margin-bottom:16px}
+.section{background:#fff;border:1px solid #e4e2d8;border-radius:10px;padding:16px 20px;margin-bottom:14px}
+.section-title{font-size:13px;font-weight:700;margin-bottom:10px}
+label{font-size:11px;font-weight:600;color:#6b6860;display:block;margin-bottom:3px}
+input[type=text],textarea{width:100%;padding:6px 10px;border:1px solid #e4e2d8;border-radius:6px;
+  font-size:13px;font-family:inherit;margin-bottom:8px}
+textarea{min-height:60px;resize:vertical}
+button{padding:7px 14px;border-radius:6px;border:none;font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-primary{background:#3b3f8c;color:#fff}
+.btn-primary:hover{background:#2d3170}
+.btn-primary:disabled{background:#e4e2d8;color:#9b9890;cursor:not-allowed}
+.upload-area{border:2px dashed #cccab8;border-radius:8px;padding:16px;text-align:center;
+  cursor:pointer;font-size:11px;color:#6b6860;transition:all .15s}
+.upload-area:hover{border-color:#3b3f8c;color:#3b3f8c}
+.preview-img{max-width:240px;max-height:180px;border-radius:6px;border:1px solid #e4e2d8;margin-top:8px}
+.result-img{max-width:100%;max-height:400px;border-radius:8px;border:1px solid #e4e2d8;margin-top:10px}
+.json-box{background:#1c1c2e;color:#a8c68f;padding:12px;border-radius:8px;font-size:11px;
+  font-family:'DM Mono',monospace;white-space:pre-wrap;max-height:300px;overflow-y:auto;
+  margin-top:8px;line-height:1.5}
+.prompt-box{background:#1b2a4a;color:#c9a84c;padding:12px;border-radius:8px;font-size:11px;
+  font-family:'DM Mono',monospace;white-space:pre-wrap;max-height:300px;overflow-y:auto;
+  margin-top:8px;line-height:1.5}
+.status{font-size:11px;color:#6b6860;margin-top:6px}
+.error{color:#c0392b}
+.step-badge{display:inline-block;background:#3b3f8c;color:#fff;font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:4px;margin-right:6px}
+.row{display:flex;gap:12px;align-items:flex-start}
+.row>*{flex:1}
+</style>
+</head>
+<body>
+
+<h1>표지 이미지 2단계 파이프라인 테스트</h1>
+
+<!-- API 키 -->
+<div class="section">
+  <div class="section-title">OpenAI API 키</div>
+  <input type="text" id="apiKey" placeholder="sk-..." value="">
+  <div style="font-size:10px;color:#9b9890">localStorage에서 자동 로드합니다 (p17_openai_key / p11_openai_key)</div>
+</div>
+
+<!-- 입력 -->
+<div class="section">
+  <div class="section-title">입력</div>
+  <div class="row">
+    <div>
+      <label>참조 이미지</label>
+      <label class="upload-area" id="uploadArea">
+        이미지 파일 선택
+        <input type="file" accept="image/*" style="display:none" id="refFile" onchange="onFileSelect(this)">
+      </label>
+      <img id="refPreview" class="preview-img" style="display:none">
+    </div>
+    <div>
+      <label>추가 요구사항 (선택)</label>
+      <textarea id="extraReq" rows="3" placeholder="예: IT/기술 서적 표지용, 텍스트 영역 우측 40% 확보, 가로 형태"></textarea>
+      <label>Step 1 모델</label>
+      <input type="text" id="visionModel" value="gpt-4o">
+      <label>Step 2 모델</label>
+      <input type="text" id="genModel" value="gpt-image-1">
+    </div>
+  </div>
+</div>
+
+<!-- 실행 -->
+<div class="section">
+  <button class="btn-primary" id="runBtn" onclick="runPipeline()">파이프라인 실행</button>
+  <span class="status" id="statusText"></span>
+</div>
+
+<!-- Step 1 결과 -->
+<div class="section" id="step1Section" style="display:none">
+  <div class="section-title"><span class="step-badge">Step 1</span> Vision 분석 결과</div>
+  <div class="json-box" id="step1Json"></div>
+</div>
+
+<!-- Step 2 결과 -->
+<div class="section" id="step2Section" style="display:none">
+  <div class="section-title"><span class="step-badge">Step 2</span> 조립된 프롬프트</div>
+  <div class="prompt-box" id="step2Prompt"></div>
+  <div class="section-title" style="margin-top:12px">생성 결과</div>
+  <img id="resultImg" class="result-img" style="display:none">
+  <div class="status" id="step2Status"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// API 키 자동 로드
+var keyInput = document.getElementById('apiKey');
+try {
+  var saved = localStorage.getItem('p17_openai_key') || localStorage.getItem('p11_openai_key') || '';
+  if (saved) keyInput.value = saved;
+} catch(e) {}
+
+var _refBase64 = '';  // data:image/...;base64,...
+var _refMediaType = 'image/png';
+
+// ── 파일 선택 ──
+window.onFileSelect = function(input) {
+  var file = input && input.files && input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _refBase64 = e.target.result;
+    var semi = _refBase64.indexOf(';');
+    if (semi > 5) _refMediaType = _refBase64.substring(5, semi);
+    var img = document.getElementById('refPreview');
+    if (img) { img.src = _refBase64; img.style.display = 'block'; }
+    document.getElementById('uploadArea').textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+};
+
+// ── 파이프라인 실행 ──
+window.runPipeline = async function() {
+  var apiKey = keyInput.value.trim();
+  if (!apiKey) { alert('API 키를 입력하세요.'); return; }
+  if (!_refBase64) { alert('참조 이미지를 먼저 업로드하세요.'); return; }
+
+  var btn = document.getElementById('runBtn');
+  var status = document.getElementById('statusText');
+  btn.disabled = true;
+
+  try {
+    // ════════════════════════════════════════════
+    // Step 1: Vision 분석
+    // ════════════════════════════════════════════
+    status.textContent = 'Step 1: Vision 분석 중…';
+    status.className = 'status';
+
+    var visionModel = document.getElementById('visionModel').value.trim() || 'gpt-4o';
+    var b64Data = _refBase64.substring(_refBase64.indexOf(',') + 1);
+
+    var step1Body = {
+      model: visionModel,
+      max_tokens: 1000,
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a visual analysis expert for book cover design.\n' +
+            'Analyze the reference image and return a JSON object with exactly these keys.\n' +
+            'Use concrete nouns, specific numbers, and measurable descriptors — NOT abstract adjectives.\n' +
+            'Example: "warm side light at 45° from upper-left, soft shadows, ~4000K" instead of "beautiful warm lighting".\n\n' +
+            'Required JSON keys:\n' +
+            '{\n' +
+            '  "subject": "피사체의 종류, 형태, 자세, 개수 — be specific about shapes and objects",\n' +
+            '  "composition": "구도, 앵글, 프레이밍, 피사체 배치 — use thirds/golden ratio terms, specify percentages",\n' +
+            '  "lighting": "광원 방향(각도), 세기(soft/hard), 색온도(K), 그림자 특성(sharp/diffuse)",\n' +
+            '  "color_palette": "주요 색상 3-5개 HEX코드 + 채도(low/mid/high) + 명도(dark/mid/bright) 특징",\n' +
+            '  "texture_material": "주요 질감(smooth/rough/grainy), 재질(metal/paper/fabric/glass 등)",\n' +
+            '  "mood_atmosphere": "전반적 분위기 — use sensory words, not emotional adjectives",\n' +
+            '  "style": "매체(photo/illustration/3D render/vector) + 세부 스타일(flat design/isometric/watercolor 등)",\n' +
+            '  "technical": "렌즈 느낌(wide/telephoto/macro), 심도(shallow/deep), 필름/디지털 룩, 후보정 스타일"\n' +
+            '}\n\n' +
+            'Return ONLY the JSON object. No markdown, no explanation.'
+        },
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: { url: 'data:' + _refMediaType + ';base64,' + b64Data, detail: 'high' }
+            },
+            {
+              type: 'text',
+              text: 'Analyze this reference image for book cover design reproduction. Return the JSON.'
+            }
+          ]
+        }
+      ]
+    };
+
+    console.log('[Step 1] Sending to', visionModel);
+    var res1 = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify(step1Body)
+    });
+
+    if (!res1.ok) {
+      var err1 = await res1.text();
+      throw new Error('Step 1 API 오류 (' + res1.status + '): ' + err1.slice(0, 300));
+    }
+
+    var data1 = await res1.json();
+    var rawJson = data1.choices[0].message.content;
+
+    // JSON 파싱
+    var analysis;
+    try {
+      analysis = JSON.parse(rawJson);
+    } catch(e) {
+      // 마크다운 코드블록 제거 후 재시도
+      var cleaned = rawJson.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+      analysis = JSON.parse(cleaned);
+    }
+
+    // 콘솔 로깅
+    console.log('[Step 1] Vision 분석 결과:');
+    console.log(JSON.stringify(analysis, null, 2));
+
+    // UI 표시
+    var s1sec = document.getElementById('step1Section');
+    var s1json = document.getElementById('step1Json');
+    s1sec.style.display = 'block';
+    s1json.textContent = JSON.stringify(analysis, null, 2);
+
+    // ════════════════════════════════════════════
+    // Step 2: 프롬프트 조립 → 이미지 생성
+    // ════════════════════════════════════════════
+    status.textContent = 'Step 2: 프롬프트 조립 + 이미지 생성 중…';
+
+    var extraReq = document.getElementById('extraReq').value.trim();
+    var prompt = _assemblePrompt(analysis, extraReq);
+
+    // 콘솔 로깅
+    console.log('[Step 2] 최종 프롬프트:');
+    console.log(prompt);
+
+    // UI 표시
+    var s2sec = document.getElementById('step2Section');
+    var s2prompt = document.getElementById('step2Prompt');
+    s2sec.style.display = 'block';
+    s2prompt.textContent = prompt;
+
+    // 이미지 생성
+    var genModel = document.getElementById('genModel').value.trim() || 'gpt-image-1';
+    status.textContent = 'Step 2: ' + genModel + ' 이미지 생성 중…';
+
+    var res2 = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model: genModel,
+        prompt: prompt,
+        n: 1,
+        size: '1024x1536',
+        quality: 'high'
+      })
+    });
+
+    if (!res2.ok) {
+      var err2 = await res2.text();
+      throw new Error('Step 2 API 오류 (' + res2.status + '): ' + err2.slice(0, 300));
+    }
+
+    var data2 = await res2.json();
+    var imgUrl = '';
+    if (data2.data && data2.data[0]) {
+      imgUrl = data2.data[0].url || (data2.data[0].b64_json ? 'data:image/png;base64,' + data2.data[0].b64_json : '');
+    }
+
+    if (!imgUrl) throw new Error('이미지를 받지 못했습니다.');
+
+    console.log('[Step 2] 이미지 생성 완료:', genModel);
+
+    var resultImg = document.getElementById('resultImg');
+    resultImg.src = imgUrl;
+    resultImg.style.display = 'block';
+    document.getElementById('step2Status').textContent = '생성 완료 (' + genModel + ')';
+
+    status.textContent = '파이프라인 완료';
+
+  } catch(e) {
+    console.error('[Pipeline] 오류:', e);
+    status.textContent = '오류: ' + e.message;
+    status.className = 'status error';
+  }
+
+  btn.disabled = false;
+};
+
+// ── 프롬프트 조립 ──
+// 순서: 추가 요구사항 → style → subject → composition → lighting →
+//       color_palette → texture → mood → technical
+function _assemblePrompt(a, extra) {
+  var sections = [];
+
+  // 추가 요구사항 (최상단)
+  if (extra) {
+    sections.push('REQUIREMENTS:\n' + extra);
+  }
+
+  // style
+  if (a.style) {
+    sections.push('The image should be rendered as ' + a.style + '.');
+  }
+
+  // subject
+  if (a.subject) {
+    sections.push('The main subject consists of ' + a.subject + '.');
+  }
+
+  // composition
+  if (a.composition) {
+    sections.push('Compose the scene with ' + a.composition + '.');
+  }
+
+  // lighting
+  if (a.lighting) {
+    sections.push('The lighting setup uses ' + a.lighting + '.');
+  }
+
+  // color_palette
+  if (a.color_palette) {
+    sections.push('The color palette features ' + a.color_palette + '.');
+  }
+
+  // texture_material
+  if (a.texture_material) {
+    sections.push('Textures and materials include ' + a.texture_material + '.');
+  }
+
+  // mood_atmosphere
+  if (a.mood_atmosphere) {
+    sections.push('The overall atmosphere conveys ' + a.mood_atmosphere + '.');
+  }
+
+  // technical
+  if (a.technical) {
+    sections.push('Technical look: ' + a.technical + '.');
+  }
+
+  // 글씨 금지 규칙
+  sections.push('CRITICAL: Do NOT include any text, letters, numbers, or words in the image.');
+
+  return sections.join('\n\n');
+}
+
+})();
+</script>
+</body>
+</html>
