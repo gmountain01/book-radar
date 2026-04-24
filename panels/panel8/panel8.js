@@ -429,6 +429,93 @@ async function extractTXT(file) {
   return textToExtracted(file.name, text);
 }
 
+// ──────────────────────────────────────────────
+// 토큰 절감 유틸리티
+// ──────────────────────────────────────────────
+
+/**
+ * 텍스트 압축 — 토큰 소비를 줄이기 위한 전처리
+ * (1) 연속 공백/빈줄 압축 (2) 탭→공백 (3) 무의미한 반복 문자 제거
+ */
+function _compressForTokens(text) {
+  return text
+    .replace(/\t/g, ' ')
+    .replace(/[ ]{3,}/g, '  ')           // 공백 3개 이상 → 2개
+    .replace(/\n{3,}/g, '\n\n')          // 빈줄 3개 이상 → 2개
+    .replace(/([─━═\-]{5,})/g, '───')   // 긴 수평선 → 짧은 대시
+    .replace(/(\u3000)+/g, ' ')          // 전각 공백 → 반각
+    .trim();
+}
+
+/**
+ * 페이지 배열에서 반복되는 머리글/바닥글 패턴을 감지하고 제거
+ * 3페이지 이상에서 동일 텍스트가 첫 줄 또는 마지막 줄에 나타나면 반복 패턴으로 판정
+ */
+function _removeRepeatingHeaders(pages) {
+  if (pages.length < 3) return pages;
+  // 각 페이지의 첫 줄과 마지막 줄 수집
+  const firstLines = [], lastLines = [];
+  for (const p of pages) {
+    const lines = p.text.split('\n').filter(l => l.trim());
+    if (lines.length > 0) firstLines.push(lines[0].trim());
+    if (lines.length > 1) lastLines.push(lines[lines.length - 1].trim());
+  }
+  // 출현 빈도 계산 — 60% 이상 페이지에서 동일하면 반복 패턴
+  const threshold = Math.floor(pages.length * 0.6);
+  const repeatingFirst = new Set();
+  const repeatingLast = new Set();
+  const countMap = (arr) => {
+    const m = {};
+    arr.forEach(v => { if (v.length >= 2 && v.length <= 80) m[v] = (m[v] || 0) + 1; });
+    return m;
+  };
+  for (const [txt, cnt] of Object.entries(countMap(firstLines))) {
+    if (cnt >= threshold) repeatingFirst.add(txt);
+  }
+  for (const [txt, cnt] of Object.entries(countMap(lastLines))) {
+    if (cnt >= threshold) repeatingLast.add(txt);
+  }
+  if (!repeatingFirst.size && !repeatingLast.size) return pages;
+  // 반복 패턴 제거
+  let removed = 0;
+  const cleaned = pages.map(p => {
+    const lines = p.text.split('\n');
+    let newLines = lines;
+    if (repeatingFirst.size) {
+      const first = lines.find(l => l.trim())?.trim();
+      if (first && repeatingFirst.has(first)) {
+        const idx = lines.findIndex(l => l.trim() === first);
+        newLines = [...lines.slice(0, idx), ...lines.slice(idx + 1)];
+        removed++;
+      }
+    }
+    if (repeatingLast.size) {
+      for (let i = newLines.length - 1; i >= 0; i--) {
+        if (newLines[i].trim() && repeatingLast.has(newLines[i].trim())) {
+          newLines = [...newLines.slice(0, i), ...newLines.slice(i + 1)];
+          removed++;
+          break;
+        }
+      }
+    }
+    return { ...p, text: newLines.join('\n').trim() };
+  });
+  if (removed > 0) console.log(`[panel8] 반복 머리글/바닥글 ${removed}건 제거 (토큰 절감)`);
+  return cleaned;
+}
+
+/**
+ * 한국어 텍스트의 대략적 토큰 수 추정
+ * Claude tokenizer 기준: 한글 ~1.5자/토큰, 영어 ~4자/토큰, 혼합 ~2자/토큰
+ */
+function _estimateTokens(text) {
+  if (!text) return 0;
+  const korean = (text.match(/[가-힣]/g) || []).length;
+  const ascii = (text.match(/[a-zA-Z0-9]/g) || []).length;
+  const other = text.length - korean - ascii;
+  return Math.ceil(korean / 1.5 + ascii / 4 + other / 2);
+}
+
 /**
  * 텍스트 블록을 ~1500자 단위 가상 페이지로 분할해 extracted 객체 반환.
  * PDF 이외 형식에서 공통으로 사용.
@@ -450,17 +537,21 @@ function textToExtracted(filename, fullText) {
   return { filename, total_pages: pages.length, toc: [], pages, isPdfFile: false };
 }
 
-/** DOCX → mammoth.js로 텍스트 추출 */
+/** DOCX → mammoth.js로 텍스트 추출
+ *  토큰 절감: 머리글/바닥글 제외 옵션 + 후처리 압축
+ */
 async function extractDOCX(file) {
   if (typeof mammoth === 'undefined') throw new Error('mammoth.js 라이브러리를 로드할 수 없습니다. 인터넷 연결을 확인하세요.');
   const ab = await file.arrayBuffer();
   const result = await mammoth.extractRawText({ arrayBuffer: ab });
   if (!result.value || result.value.trim().length < 10)
     throw new Error('DOCX 파일에서 텍스트를 추출하지 못했습니다. 파일이 손상되지 않았는지 확인하세요.');
-  return textToExtracted(file.name, result.value);
+  return textToExtracted(file.name, _compressForTokens(result.value));
 }
 
-/** HWPX (ZIP+XML) → JSZip으로 압축 풀고 hp:t 요소에서 텍스트 추출 */
+/** HWPX (ZIP+XML) → JSZip으로 압축 풀고 hp:t 요소에서 텍스트 추출
+ *  토큰 절감: 머리글(header)/바닥글(footer)/각주(footnote)/미주(endnote) 영역 제외
+ */
 async function extractHWPX(file) {
   if (typeof JSZip === 'undefined') throw new Error('JSZip 라이브러리를 로드할 수 없습니다. 인터넷 연결을 확인하세요.');
   const ab = await file.arrayBuffer();
@@ -481,13 +572,25 @@ async function extractHWPX(file) {
   let fullText = '';
   for (const fname of sectionFiles) {
     const xml = await zip.files[fname].async('string');
-    // <hp:t> 또는 네임스페이스 없는 <t> 태그에서 텍스트 추출
-    const matches = xml.match(/<(?:hp:)?t(?:\s[^>]*)?>([^<]*)<\/(?:hp:)?t>/g) || [];
-    const pageText = matches.map(m => m.replace(/<[^>]+>/g, '')).join('');
-    if (pageText.trim()) fullText += pageText + '\n\n';
+    // 머리글·바닥글·각주·미주 영역 제거 (토큰 절감)
+    const bodyXml = xml
+      .replace(/<(?:hp:)?header[^>]*>[\s\S]*?<\/(?:hp:)?header>/gi, '')
+      .replace(/<(?:hp:)?footer[^>]*>[\s\S]*?<\/(?:hp:)?footer>/gi, '')
+      .replace(/<(?:hp:)?footnote[^>]*>[\s\S]*?<\/(?:hp:)?footnote>/gi, '')
+      .replace(/<(?:hp:)?endnote[^>]*>[\s\S]*?<\/(?:hp:)?endnote>/gi, '')
+      .replace(/<(?:hp:)?headerFooter[^>]*>[\s\S]*?<\/(?:hp:)?headerFooter>/gi, '');
+    // <hp:p> 단위로 문단 구분하여 텍스트 추출
+    const paragraphs = bodyXml.match(/<(?:hp:)?p(?:\s[^>]*)?>[\s\S]*?<\/(?:hp:)?p>/gi) || [];
+    const lines = [];
+    for (const pTag of paragraphs) {
+      const tMatches = pTag.match(/<(?:hp:)?t(?:\s[^>]*)?>([^<]*)<\/(?:hp:)?t>/g) || [];
+      const lineText = tMatches.map(m => m.replace(/<[^>]+>/g, '')).join('');
+      if (lineText.trim()) lines.push(lineText.trim());
+    }
+    if (lines.length) fullText += lines.join('\n') + '\n\n';
   }
   if (!fullText.trim()) throw new Error('HWPX 파일에서 텍스트를 추출하지 못했습니다.');
-  return textToExtracted(file.name, fullText);
+  return textToExtracted(file.name, _compressForTokens(fullText));
 }
 
 /**
@@ -545,13 +648,18 @@ async function extractPDF(file) {
     const lines = groupTextIntoLines(content.items);
     const text = _joinLinesSmartly(lines, pageH);
 
-    // 본문 페이지 번호: 하단 12% 영역에 단독으로 있는 숫자
+    // 본문 페이지 번호: 하단 12% + 좌측 20%/우측 80% 영역의 단독 숫자
     let bodyPageNum = null;
     const bottomY = pageH * 0.12;
+    const leftX = vp.width * 0.20;
+    const rightX = vp.width * 0.80;
     for (const line of lines) {
       if (line.y <= bottomY && /^\s*\d+\s*$/.test(line.text)) {
-        const n = parseInt(line.text.trim());
-        if (n >= 1 && n <= pdf.numPages * 3) bodyPageNum = n;
+        const x = line.x || (line.items && line.items[0]?.transform?.[4]) || 0;
+        if (x <= leftX || x >= rightX) {
+          const n = parseInt(line.text.trim());
+          if (n >= 1 && n <= 9999) bodyPageNum = n;
+        }
       }
     }
 
@@ -607,7 +715,94 @@ async function extractPDF(file) {
     if (textToc.length > toc.length) toc = textToc;
   }
 
+  // 토큰 절감: PDF 반복 머리글/바닥글 제거 + 텍스트 압축
+  _stripPdfRepeatingRegions(pages);
+  for (const p of pages) { p.text = _compressForTokens(p.text); }
+
   return { filename: file.name, total_pages: pdf.numPages, toc, pages, isPdfFile: true };
+}
+
+/**
+ * PDF 페이지 배열에서 상단/하단 영역의 반복 텍스트를 제거 (토큰 절감)
+ * Y좌표 기반: 상단 12%, 하단 12% 영역의 텍스트가 60% 이상 페이지에서 동일하면 제거
+ * 반복되는 책 제목, 장 이름, 페이지 번호 등을 잡아낸다
+ */
+function _stripPdfRepeatingRegions(pages) {
+  if (pages.length < 4) return; // 4페이지 미만이면 반복 판단 불가
+  const threshold = Math.floor(pages.length * 0.6);
+
+  // 각 페이지에서 상단/하단 영역 텍스트 수집
+  const topTexts = [], bottomTexts = [];
+  for (const p of pages) {
+    if (!p.lines || !p.lines.length) { topTexts.push(''); bottomTexts.push(''); continue; }
+    // lines는 y 내림차순 (위→아래), y값이 큰 것이 상단
+    const maxY = Math.max(...p.lines.map(l => l.y));
+    const minY = Math.min(...p.lines.map(l => l.y));
+    const range = maxY - minY || 1;
+    const topThreshold = maxY - range * 0.12;
+    const bottomThreshold = minY + range * 0.12;
+
+    const topLines = p.lines.filter(l => l.y > topThreshold).map(l => l.text.trim()).filter(Boolean);
+    const bottomLines = p.lines.filter(l => l.y < bottomThreshold).map(l => l.text.trim()).filter(Boolean);
+    topTexts.push(topLines.join('|'));
+    bottomTexts.push(bottomLines.join('|'));
+  }
+
+  // 반복 패턴 감지
+  const countFreq = (arr) => {
+    const m = {};
+    arr.forEach(v => { if (v && v.length >= 2 && v.length <= 120) m[v] = (m[v] || 0) + 1; });
+    return m;
+  };
+  const repeatingTop = new Set();
+  const repeatingBottom = new Set();
+  for (const [txt, cnt] of Object.entries(countFreq(topTexts))) {
+    if (cnt >= threshold) repeatingTop.add(txt);
+  }
+  for (const [txt, cnt] of Object.entries(countFreq(bottomTexts))) {
+    if (cnt >= threshold) repeatingBottom.add(txt);
+  }
+
+  if (!repeatingTop.size && !repeatingBottom.size) return;
+
+  // 반복 텍스트를 페이지 text에서 제거
+  let removed = 0;
+  for (const p of pages) {
+    let text = p.text;
+    const lines = text.split('\n');
+    let newLines = lines;
+
+    // 상단 반복 제거 (첫 2줄 검사)
+    if (repeatingTop.size) {
+      for (const pat of repeatingTop) {
+        const parts = pat.split('|');
+        for (const part of parts) {
+          const idx = newLines.findIndex(l => l.trim() === part);
+          if (idx !== -1 && idx <= 2) {
+            newLines = [...newLines.slice(0, idx), ...newLines.slice(idx + 1)];
+            removed++;
+          }
+        }
+      }
+    }
+    // 하단 반복 제거 (마지막 2줄 검사)
+    if (repeatingBottom.size) {
+      for (const pat of repeatingBottom) {
+        const parts = pat.split('|');
+        for (const part of parts) {
+          for (let i = newLines.length - 1; i >= Math.max(0, newLines.length - 3); i--) {
+            if (newLines[i].trim() === part) {
+              newLines = [...newLines.slice(0, i), ...newLines.slice(i + 1)];
+              removed++;
+              break;
+            }
+          }
+        }
+      }
+    }
+    p.text = newLines.join('\n').trim();
+  }
+  if (removed > 0) console.log(`[panel8] PDF 반복 머리글/바닥글 ${removed}건 제거 (토큰 절감)`);
 }
 
 // ──────────────────────────────────────────────
@@ -1503,22 +1698,31 @@ function _escapeJsonStrings(text) {
 
 async function checkLinguistic(extracted, apiKey, onBatch, onError) {
   const issues = [];
-  // 짧은 페이지도 포함 — 20자 이상이면 검사 (이전 50자 기준으로 단문 문서가 통째로 제외되는 문제 수정)
-  const pages = extracted.pages.filter(p => p.text.trim().length >= 20);
+  // 짧은 페이지도 포함 — 20자 이상이면 검사
+  let pages = extracted.pages.filter(p => p.text.trim().length >= 20);
   if (!pages.length) {
     if (onError) onError('추출된 텍스트가 없거나 너무 짧습니다.');
     return issues;
   }
-  const batchSize = 3;
+  // 반복 머리글/바닥글 제거 (토큰 절감)
+  pages = _removeRepeatingHeaders(pages);
+  // 배치 크기 5 — SYS 프롬프트 반복 횟수 40% 감소 (3→5)
+  const batchSize = 5;
   const total = Math.ceil(pages.length / batchSize);
   let firstError = '';
   let successCount = 0;
+
+  // 토큰 추정 로그
+  const totalChars = pages.reduce((s, p) => s + p.text.length, 0);
+  const estTokens = _estimateTokens(pages.map(p => p.text).join(''));
+  console.log(`[panel8] AI 검사: ${pages.length}페이지, ~${totalChars.toLocaleString()}자, ~${estTokens.toLocaleString()}토큰 (${total}배치)`);
 
   for (let i = 0; i < pages.length; i += batchSize) {
     const batchIdx = Math.floor(i / batchSize) + 1;
     if (onBatch) onBatch(batchIdx, total);
     const batch = pages.slice(i, i + batchSize);
-    const txt = batch.map(p => `\n[p.${p.page}]\n${p.text.slice(0, 2000)}\n`).join('');
+    // 페이지 텍스트는 이미 ~1500자 단위이므로 추가 슬라이스 불필요
+    const txt = batch.map(p => `\n[p.${p.page}]\n${p.text}\n`).join('');
     const relevant = rulesChunks ? findRelevantChunks(rulesChunks, txt) : [];
     const rulesCtx = relevant.length > 0 ? relevant.map(c => c.text).join('\n') : '';
     try {
@@ -1531,7 +1735,6 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
           // 할루시네이션 필터: found가 실제 텍스트에 없으면 제외
           if (!found || !batchText.includes(found)) continue;
           // 동일 내용 필터: suggestion이 found와 실질적으로 같으면 제외
-          // (윤문필요 등에서 AI가 원문을 그대로 돌려주는 경우 방어)
           const sugg = (iss.suggestion || '').trim();
           if (sugg && _isSameSuggestion(found, sugg)) {
             console.info(`[교정] suggestion≈found 제거 (${iss.type}): "${found.slice(0,40)}"`);
@@ -1738,11 +1941,14 @@ async function p8_startProofread() {
     aiUsed = true;
     setBar(93);
   } else if (apiProvided) {
-    stepRun(4, aiOnlyRun ? 'AI 검사 실행 (캐시 미포함 항목)…' : 'Claude API 호출 준비 중…');
+    // 토큰 추정 표시
+    const aiPages = extracted.pages.filter(p => p.text.trim().length >= 20);
+    const estTok = _estimateTokens(aiPages.map(p => p.text).join(''));
+    stepRun(4, aiOnlyRun
+      ? 'AI 검사 실행 (캐시 미포함 항목)…'
+      : `Claude API 호출 준비 중… (~${Math.round(estTok/1000)}K 토큰)`);
     try {
-      const totalBatches = Math.ceil(
-        extracted.pages.filter(p => p.text.trim().length >= 20).length / 3
-      );
+      const totalBatches = Math.ceil(aiPages.length / 5);
       let batchApiError = '';
       linguisticIssues = await checkLinguistic(extracted, apiKey,
         (batchIdx) => {
@@ -2725,6 +2931,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }));
     } catch(e) {}
   }
+
 
   window.p8_handleRulesDrop = p8_handleRulesDrop;
   window.p8_handleRulesFile = p8_handleRulesFile;

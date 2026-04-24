@@ -57,6 +57,10 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 #panel14.active{display:block;overflow-y:auto;}
 #panel15{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;}
 #panel15.active{display:block;overflow-y:auto;}
+#panel16{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;}
+#panel16.active{display:block;overflow-y:auto;}
+#panel17{display:none;position:fixed;top:var(--hdr-h,84px);left:var(--sb-w,210px);right:0;bottom:0;z-index:80;}
+#panel17.active{display:block;overflow-y:auto;}
 
 /* 업로드 */
 .upload-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:1rem;}
@@ -401,6 +405,8 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
 .gcp:hover,.gcp.active{border-color:#222;transform:scale(1.15);}
 .guide-custom-color{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--muted);}
 .guide-custom-color input[type=color]{width:24px;height:24px;border:none;padding:0;background:none;cursor:pointer;border-radius:4px;}
+.guide-color-bar .pcolor-row{margin:0}
+.guide-actions{margin-left:auto}
 
 .guide-page{width:794px;max-width:100%;background:#fff;box-shadow:0 4px 32px rgba(0,0,0,.14);margin:0 auto;font-family:'Pretendard','Noto Sans KR','IBM Plex Sans KR',sans-serif;-webkit-font-smoothing:antialiased;color:#1a1a1a;
   --gp-navy:#1C3557;--gp-blue:#2B5BA8;--gp-blue-lt:#EBF1FA;
@@ -711,6 +717,28 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'S
   box-shadow: var(--accent-shadow-lg);
 }
 .run-btn:active:not(:disabled) { transform: translateY(0); }
+
+/* ── panel0 Google Sheets 입력 ── */
+.gs-input-row{width:100%;margin-top:10px;display:flex;gap:6px;align-items:center}
+.gs-url{flex:1;min-width:0;padding:6px 10px;border:1px solid var(--border);border-radius:6px;
+  font-size:.73rem;font-family:inherit;color:var(--text);background:var(--surface);
+  transition:border-color .15s}
+.gs-url:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,63,140,.1)}
+.gs-load-btn{padding:6px 12px;background:var(--accent);color:#fff;border:none;border-radius:6px;
+  cursor:pointer;font-size:.73rem;font-weight:600;white-space:nowrap;font-family:inherit;
+  transition:background .15s}
+.gs-load-btn:hover{background:var(--accent-hover)}
+.gs-help{font-size:.65rem;color:var(--muted2);margin-top:5px;line-height:1.4;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.gs-sep{color:var(--border2)}
+.gs-file-link{color:var(--accent);cursor:pointer;text-decoration:underline;white-space:nowrap}
+.gs-file-link:hover{color:var(--accent-hover)}
+.hint-warn{color:var(--red);font-weight:600}
+.cfg-card-action{display:flex;align-items:center}
+.cfg-card-action .run-btn{margin:0}
+
+/* ── panel0 너비 제한 ── */
+#panel0{max-width:860px;margin:0 auto}
 
 /* ── 통계 카드 ── */
 .stat {

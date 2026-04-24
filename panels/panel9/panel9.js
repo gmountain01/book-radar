@@ -473,19 +473,22 @@ async function extractBodyPageTexts(pdf, onProgress) {
       const content = await pg.getTextContent({ includeMarkedContent: false });
       const items = content.items.filter(i => i.str && i.str.trim());
 
-      // 하단 15% 또는 상단 15% 영역의 단독 숫자 → 인쇄 페이지 번호
-      // (책에 따라 페이지 번호가 상단에 있는 경우도 있음)
-      const bottomThr = vp.height * 0.15;
-      const topThr    = vp.height * 0.85;
+      // 인쇄 페이지 번호: 하단 12% + 좌측 20%/우측 80% 끝 영역의 단독 숫자
+      // 조판 도서의 페이지 번호는 하단 좌측 끝(짝수) 또는 우측 끝(홀수)에 위치
+      const bottomThr = vp.height * 0.12;
+      const leftThr = vp.width * 0.20;
+      const rightThr = vp.width * 0.80;
       let printedPage = null;
       for (const item of items) {
-        const y = item.transform[5]; // PDF좌표계: 0=하단, 증가=위쪽
-        if (y <= bottomThr || y >= topThr) {
-          const trimmed = item.str.trim();
-          if (/^\d+$/.test(trimmed)) {
-            const n = parseInt(trimmed, 10);
-            if (n >= 1 && n <= total * 3) printedPage = n;
-          }
+        const y = item.transform[5]; // PDF좌표계: 0=하단
+        const x = item.transform[4]; // PDF좌표계: 0=좌측
+        if (y > bottomThr) continue; // 하단 12% 밖이면 스킵
+        const trimmed = item.str.trim();
+        if (!/^\d+$/.test(trimmed)) continue;
+        // X좌표: 좌측 끝 또는 우측 끝에 있어야 페이지 번호
+        if (x <= leftThr || x >= rightThr) {
+          const n = parseInt(trimmed, 10);
+          if (n >= 1 && n <= 9999) printedPage = n;
         }
       }
 

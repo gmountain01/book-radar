@@ -241,6 +241,18 @@ function initPanel11() {
         '</div>' +
         '<div id="p11-yt-status" class="p11-key-status"></div>' +
       '</div>' +
+      '<div class="p11-key-section" style="margin-top:16px;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+          '<div class="p11-key-label" style="margin:0;">OpenAI API (GPT Image)</div>' +
+          '<div id="p11-openai-badge" class="p11-key-badge">미설정</div>' +
+        '</div>' +
+        '<div style="font-size:0.6rem;color:#444c56;margin-bottom:8px;font-family:\'DM Mono\',monospace;">표지 시안 디자인 생성</div>' +
+        '<div style="display:flex;gap:6px;">' +
+          '<input type="text" id="p11-openai-key" class="p11-key-input p11-key-masked" placeholder="sk-...">' +
+          '<button id="p11-openai-save-btn" class="p11-btn p11-btn-save" onclick="p11_saveOpenAiKey()">저장</button>' +
+        '</div>' +
+        '<div id="p11-openai-status" class="p11-key-status"></div>' +
+      '</div>' +
     '</div>';
 
   _renderStats();
@@ -311,6 +323,19 @@ function _renderKeyStatus() {
       }
     });
   }
+  // OpenAI 배지
+  var openaiKey = '';
+  try { openaiKey = localStorage.getItem('p17_openai_key') || localStorage.getItem('p11_openai_key') || ''; } catch(e) {}
+  if (openaiKey && openaiKey.startsWith('sk-')) {
+    _setBadge('p11-openai-badge', 'ok', '연결됨');
+    var oaiStatus = ROOT.querySelector('#p11-openai-status');
+    if (oaiStatus) oaiStatus.innerHTML = '<span style="color:#34d399;">✓ ' + openaiKey.slice(0, 12) + '…</span>';
+    var oaiInput = ROOT.querySelector('#p11-openai-key');
+    if (oaiInput) oaiInput.placeholder = openaiKey.slice(0, 12) + '… (변경하려면 새 키 입력)';
+  } else {
+    _setBadge('p11-openai-badge', 'none', '미설정');
+  }
+
   // YouTube 배지 + 키 목록
   var ytList = ROOT.querySelector('#p11-yt-keys-list');
   if (ytList) {
@@ -441,6 +466,45 @@ window.p11_removeYtKey = function(idx) {
   } catch (e) {}
   _renderKeyStatus();
   _push('info', ['YouTube 추가 키 삭제됨'], 'panel11');
+};
+
+// ─── OpenAI API 키 저장/검증 ─────────────────────────────
+window.p11_saveOpenAiKey = async function() {
+  var input = ROOT.querySelector('#p11-openai-key');
+  var statusEl = ROOT.querySelector('#p11-openai-status');
+  var btn = ROOT.querySelector('#p11-openai-save-btn');
+  if (!input) return;
+  var key = input.value.trim();
+  if (!key || !key.startsWith('sk-')) {
+    _setBadge('p11-openai-badge', 'error', '형식 오류');
+    if (statusEl) statusEl.innerHTML = '<span style="color:#f87171;">키는 sk- 로 시작해야 합니다</span>';
+    return;
+  }
+
+  localStorage.setItem('p17_openai_key', key);
+  localStorage.setItem('p11_openai_key', key);
+  input.value = '';
+
+  _setBadge('p11-openai-badge', 'loading', '검증 중…');
+  if (btn) { btn.disabled = true; btn.textContent = '검증 중…'; }
+  if (statusEl) statusEl.innerHTML = '<span style="color:#a78bfa;">⏳ OpenAI API 확인 중…</span>';
+
+  try {
+    var res = await fetch('https://api.openai.com/v1/models', {
+      headers: { 'Authorization': 'Bearer ' + key }
+    });
+    if (res.ok) {
+      _setBadge('p11-openai-badge', 'ok', '연결됨');
+      if (statusEl) statusEl.innerHTML = '<span style="color:#34d399;">✓ OpenAI 연결 성공 — 표지 시안에서 사용 가능</span>';
+    } else {
+      _setBadge('p11-openai-badge', 'error', '미연결');
+      if (statusEl) statusEl.innerHTML = '<span style="color:#f87171;">✗ 인증 실패 (HTTP ' + res.status + ')</span>';
+    }
+  } catch(e) {
+    _setBadge('p11-openai-badge', 'warn', '저장됨');
+    if (statusEl) statusEl.innerHTML = '<span style="color:#fbbf24;">⚠ 저장됨 — 로컬 환경 사전 검증 불가</span>';
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '저장'; }
 };
 
 // ─── 공개 API (window 노출) ─────────────────────────────

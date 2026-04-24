@@ -303,9 +303,9 @@ code, pre, .badge, .tag,
    ═══════════════════════════════════════════════════════════════════ */
 .guide-page{
   font-family: 'Pretendard','IBM Plex Sans KR',sans-serif !important;
-  --gp-navy: #1A1917 !important;
-  --gp-blue: #4F46B8 !important;
-  --gp-blue-lt: #EEEDFB !important;
+  --gp-navy: #1A1917;
+  --gp-blue: #4F46B8;
+  --gp-blue-lt: #EEEDFB;
 }
 .guide-page .gp-h-title{ font-weight: 600 !important; letter-spacing: -.01em !important; }
 .guide-page .gp-h-label{ font-weight: 500 !important; font-family:'IBM Plex Mono',monospace !important; }
@@ -375,7 +375,7 @@ code, pre, .badge, .tag,
 .prop-doc .pd2-header,
 .meet-doc .md-header,
 .guide-page .gp-header-bar{
-  background: var(--sidebar-dark) !important;
+  background: var(--gp-navy);
   padding: 28px 44px 22px !important;
   display: flex !important;
   justify-content: space-between !important;

@@ -312,13 +312,30 @@ function setGuideColor(navy, blue, blueLt, dotEl){
   if(pick) pick.value = blue;
 }
 function setGuideColorCustom(hex){
-  // 직접 색상 선택: navy는 hex를 어둡게, lt는 밝게
-  const el = document.getElementById('guide-page-root');
+  var el = document.getElementById('guide-page-root');
   if(!el) return;
   el.style.setProperty('--gp-navy', hex);
   el.style.setProperty('--gp-blue', hex);
   el.style.setProperty('--gp-blue-lt', hex+'22');
-  document.querySelectorAll('.gcp').forEach(d=>d.classList.remove('active'));
+}
+
+// 라디오 버튼 방식 (panel4 출판 프로세스)
+var _GP_COLORS = {
+  '#2B5BA8': ['#1C3557','#2B5BA8','#EBF1FA'],
+  '#1a6b3c': ['#145228','#1a6b3c','#e8f5ee'],
+  '#5b2d8e': ['#3d1a63','#5b2d8e','#f0eaf9'],
+  '#c0392b': ['#8B1A10','#c0392b','#fdf0ee'],
+  '#c07a00': ['#7a4d00','#c07a00','#fdf5e0'],
+  '#1a7a5e': ['#0e4d3a','#1a7a5e','#e6f4f0'],
+  '#333333': ['#111111','#333333','#f0efe9']
+};
+function setGuideColorRadio(hex){
+  var el = document.getElementById('guide-page-root');
+  if(!el) return;
+  var c = _GP_COLORS[hex] || [hex, hex, hex+'22'];
+  el.style.setProperty('--gp-navy', c[0]);
+  el.style.setProperty('--gp-blue', c[1]);
+  el.style.setProperty('--gp-blue-lt', c[2]);
 }
 
 // panel3 탭 클릭 시 초기화

@@ -2,11 +2,18 @@
   .panel9-scope *, .panel9-scope *::before, .panel9-scope *::after{ box-sizing: border-box; margin: 0; padding: 0; }
 
   .panel9-scope{
-    font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    font-family: Pretendard, 'Noto Sans KR', 'Segoe UI', sans-serif;
     font-size: 14px;
     line-height: 1.8;
     color: #333;
-    background: #f0f2f5;
+    background: var(--bg, #f7f7f5);
+  }
+
+  /* 중앙 래퍼 — 와이드스크린 대응 */
+  .panel9-scope .p9-inner{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
   }
 
   .panel9-scope .hd{
@@ -15,6 +22,11 @@
     padding: 0 32px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.3);
     position: sticky; top: 0; z-index: 100;
+  }
+  .panel9-scope .hd > *{
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
   }
   .panel9-scope .hd-top{ display: flex; align-items: center; gap: 16px; padding: 14px 0 0; }
   .panel9-scope .hd-icon-badge{

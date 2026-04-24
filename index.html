@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>리리가 도와줌 v1.9.35 업데이트 날짜 2026-04-23</title>
+<title>리리가 도와줌 v2.0.0 업데이트 날짜 2026-04-24</title>
 <script src="libs/xlsx.full.min.js"></script>
 <script src="libs/chart.umd.min.js"></script>
 <script src="libs/d3.v7.min.js"></script>
@@ -21,6 +21,8 @@
 <link rel="stylesheet" href="panels/panel13/panel13.css">
 <link rel="stylesheet" href="panels/panel14/panel14.css">
 <link rel="stylesheet" href="panels/panel15/panel15.css">
+<link rel="stylesheet" href="panels/panel16/panel16.css">
+<link rel="stylesheet" href="panels/panel17/panel17.css">
 <link rel="stylesheet" href="shared/unify.css">
 <!-- panel8/9 external deps (로컬 libs/ — CDN Tracking Prevention 우회) -->
 <script src="libs/pdf.min.js"></script>
@@ -31,7 +33,7 @@
 
 <div class="hdr">
   <div class="hdr-left">
-    <h1><img src="libs/리리_만세.png" alt="리리" style="height:1.6em;vertical-align:middle;margin-right:.3em;border-radius:50%;">리리가 <span>도와줌</span> <span style="font-size:.55em;font-weight:400;color:#a0a0b8;vertical-align:middle;margin-left:.5em;letter-spacing:.3px;">v1.9.35 · 2026-04-23</span></h1>
+    <h1><img src="libs/리리_만세.png" alt="리리" style="height:1.6em;vertical-align:middle;margin-right:.3em;border-radius:50%;">리리가 <span>도와줌</span> <span style="font-size:.55em;font-weight:400;color:#a0a0b8;vertical-align:middle;margin-left:.5em;letter-spacing:.3px;">v2.0.0 · 2026-04-24</span></h1>
   </div>
   <div class="hdr-right" style="display:flex;gap:.5rem;align-items:center;">
     <div id="hdr-btns" style="display:none;"></div>
@@ -65,6 +67,10 @@
   <div class="nav-section">Proofreading</div>
   <button class="nav-item" data-icon="✏️" id="tab8" onclick="switchTab(8,this)"><span class="nav-label">원고 및 조판 교정</span></button>
   <button class="nav-item" data-icon="📋" id="tab9" onclick="switchTab(9,this)"><span class="nav-label">조판 목차 비교</span></button>
+  <button class="nav-item" data-icon="📑" id="tab16" onclick="switchTab(16,this)"><span class="nav-label">찾아보기 생성</span></button>
+
+  <div class="nav-section">Design</div>
+  <button class="nav-item" data-icon="🎨" id="tab17" onclick="switchTab(17,this)"><span class="nav-label">표지 시안</span></button>
   <!-- ── 개발자 콘솔 (Ctrl+Alt+Enter로 활성화) ── -->
   <div class="nav-section nav-section-admin" id="nav-admin-sep" style="display:none;margin-top:12px;">debug</div>
   <button class="nav-item nav-item-admin" data-icon="⚙️" id="tab11" onclick="switchTab(11,this)" style="display:none;">
@@ -73,29 +79,29 @@
 </nav>
 <main class="main-content">
 
-<!-- ===== 탭1: 업로드 ===== -->
 <!-- ===== 탭1: 데이터 업로드 ===== -->
 <div class="panel active" id="panel0">
   <div class="hint">
     베스트셀러·강의 파일은 자동으로 로드됩니다.<br>
-    <b>각 팀 출간관리 파일</b>은 직접 업로드해야 준비 현황이 함께 표시됩니다. <span style="color:var(--red);font-weight:600;">(*외부 노출 방지를 위해 내장하지 않습니다)</span>
+    <b>각 팀 출간관리 파일</b>은 직접 업로드해야 준비 현황이 함께 표시됩니다.
+    <span class="hint-warn">(*외부 노출 방지를 위해 내장하지 않습니다)</span>
   </div>
 
   <div class="upload-row">
-    <!-- 베스트셀러 (Google Sheets 또는 파일 업로드) -->
+    <!-- 베스트셀러 -->
     <div>
-      <div class="upload-label" id="zone1" style="cursor:default;">
+      <div class="upload-label" id="zone1">
         <span class="ico">📊</span>
         <span class="ttl">베스트셀러 데이터</span>
         <span class="sub">예스24 · Google Sheets 또는 파일</span>
-        <div style="width:100%;margin-top:10px;display:flex;gap:6px;align-items:center;">
-          <input type="text" id="gs-url-best" placeholder="웹에 게시 URL 또는 공유 URL 붙여넣기" style="flex:1;min-width:0;padding:5px 8px;border:1px solid #d1d5db;border-radius:5px;font-size:11px;font-family:inherit;color:#222;background:#fff;">
-          <button id="gs-btn-best" onclick="loadGoogleSheet('best')" style="padding:5px 11px;background:#2563eb;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;font-family:inherit;">불러오기</button>
+        <div class="gs-input-row">
+          <input type="text" class="gs-url" id="gs-url-best" placeholder="공유 URL 붙여넣기">
+          <button class="gs-load-btn" id="gs-btn-best" onclick="loadGoogleSheet('best')">불러오기</button>
         </div>
-        <div style="font-size:9.5px;color:#aaa;margin-top:5px;line-height:1.4;display:flex;align-items:center;gap:8px;">
-          <span>파일 → 공유 → 웹에 게시 → CSV → pubhtml URL 복사</span>
-          <span style="color:#ccc;">|</span>
-          <span onclick="document.getElementById('fi1').click()" style="color:#2563eb;cursor:pointer;text-decoration:underline;white-space:nowrap;">파일로 업로드</span>
+        <div class="gs-help">
+          <span>파일 → 공유 → 웹에 게시 → pubhtml URL 복사</span>
+          <span class="gs-sep">|</span>
+          <span class="gs-file-link" onclick="document.getElementById('fi1').click()">파일로 업로드</span>
           <input type="file" id="fi1" accept=".xlsx,.xls" style="display:none" onchange="handleBestFile(this)">
         </div>
       </div>
@@ -116,22 +122,21 @@
         <div class="us-row"><span>✅</span><div class="us-info"><div class="us-name" id="us2n"></div><div class="us-meta" id="us2m"></div></div><span class="us-change" onclick="document.getElementById('fi2').click()">변경</span></div>
         <div class="us-bar"></div>
       </div>
-
     </div>
-    <!-- 패스트캠퍼스 강의 (Google Sheets 또는 파일 업로드) -->
+    <!-- 패스트캠퍼스 강의 -->
     <div>
-      <div class="upload-label" id="zone3" style="cursor:default;">
+      <div class="upload-label" id="zone3">
         <span class="ico">🎓</span>
         <span class="ttl">강의 플랫폼 데이터</span>
         <span class="sub">패스트캠퍼스 · Google Sheets 또는 파일</span>
-        <div style="width:100%;margin-top:10px;display:flex;gap:6px;align-items:center;">
-          <input type="text" id="gs-url-lecture" placeholder="웹에 게시 URL 또는 공유 URL 붙여넣기" style="flex:1;min-width:0;padding:5px 8px;border:1px solid #d1d5db;border-radius:5px;font-size:11px;font-family:inherit;color:#222;background:#fff;">
-          <button id="gs-btn-lecture" onclick="loadGoogleSheet('lecture')" style="padding:5px 11px;background:#2563eb;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;font-family:inherit;">불러오기</button>
+        <div class="gs-input-row">
+          <input type="text" class="gs-url" id="gs-url-lecture" placeholder="공유 URL 붙여넣기">
+          <button class="gs-load-btn" id="gs-btn-lecture" onclick="loadGoogleSheet('lecture')">불러오기</button>
         </div>
-        <div style="font-size:9.5px;color:#aaa;margin-top:5px;line-height:1.4;display:flex;align-items:center;gap:8px;">
-          <span>파일 → 공유 → 웹에 게시 → CSV → pubhtml URL 복사</span>
-          <span style="color:#ccc;">|</span>
-          <span onclick="document.getElementById('fi3').click()" style="color:#2563eb;cursor:pointer;text-decoration:underline;white-space:nowrap;">파일로 업로드</span>
+        <div class="gs-help">
+          <span>파일 → 공유 → 웹에 게시 → pubhtml URL 복사</span>
+          <span class="gs-sep">|</span>
+          <span class="gs-file-link" onclick="document.getElementById('fi3').click()">파일로 업로드</span>
           <input type="file" id="fi3" accept=".xlsx,.xls" style="display:none" onchange="handleLectureFile(this)">
         </div>
       </div>
@@ -157,8 +162,8 @@
       <label>담당팀 필터 (미선택 = 전체)</label>
       <select id="teamSel" multiple size="4"><option value="">— 출간예정 업로드 후 —</option></select>
     </div>
-    <div class="cfg-card" style="display:flex;align-items:center;">
-      <button class="run-btn" id="runBtn" disabled onclick="runWithPW()" style="margin:0;">분석 실행 →</button>
+    <div class="cfg-card cfg-card-action">
+      <button class="run-btn" id="runBtn" disabled onclick="runWithPW()">분석 실행 →</button>
     </div>
   </div>
 </div>
@@ -428,22 +433,20 @@
 <!-- ===== 탭5: 출판 프로세스 ===== -->
 <div class="panel" id="panel4">
   <div class="guide-wrap">
-    <!-- 색상 선택 바 -->
+    <!-- 색상 선택 바 (panel3 라디오 패턴과 동일) -->
     <div class="guide-color-bar">
       <span>포인트 색상</span>
-      <div class="gcp active" style="background:#2B5BA8;" title="블루 (기본)" onclick="setGuideColor('#1C3557','#2B5BA8','#EBF1FA',this)"></div>
-      <div class="gcp" style="background:#1a6b3c;" title="그린" onclick="setGuideColor('#145228','#1a6b3c','#e8f5ee',this)"></div>
-      <div class="gcp" style="background:#5b2d8e;" title="퍼플" onclick="setGuideColor('#3d1a63','#5b2d8e','#f0eaf9',this)"></div>
-      <div class="gcp" style="background:#c0392b;" title="레드" onclick="setGuideColor('#8B1A10','#c0392b','#fdf0ee',this)"></div>
-      <div class="gcp" style="background:#c07a00;" title="앰버" onclick="setGuideColor('#7a4d00','#c07a00','#fdf5e0',this)"></div>
-      <div class="gcp" style="background:#1a7a5e;" title="틸" onclick="setGuideColor('#0e4d3a','#1a7a5e','#e6f4f0',this)"></div>
-      <div class="gcp" style="background:#333333;" title="차콜" onclick="setGuideColor('#111111','#333333','#f0efe9',this)"></div>
-      <div class="guide-custom-color">
-        <span>직접 선택</span>
-        <input type="color" id="guide-color-pick" value="#2B5BA8" oninput="setGuideColorCustom(this.value)">
+      <div class="pcolor-row">
+        <label class="pcolor-opt"><input type="radio" name="gpcolor" value="#2B5BA8" checked onchange="setGuideColorRadio(this.value)" onclick="setGuideColorRadio(this.value)"><div class="pcolor-swatch" style="background:#2B5BA8;"></div><span style="font-size:.62rem;">블 루</span></label>
+        <label class="pcolor-opt"><input type="radio" name="gpcolor" value="#1a6b3c" onchange="setGuideColorRadio(this.value)" onclick="setGuideColorRadio(this.value)"><div class="pcolor-swatch" style="background:#1a6b3c;"></div><span style="font-size:.62rem;">그 린</span></label>
+        <label class="pcolor-opt"><input type="radio" name="gpcolor" value="#5b2d8e" onchange="setGuideColorRadio(this.value)" onclick="setGuideColorRadio(this.value)"><div class="pcolor-swatch" style="background:#5b2d8e;"></div><span style="font-size:.62rem;">퍼 플</span></label>
+        <label class="pcolor-opt"><input type="radio" name="gpcolor" value="#c0392b" onchange="setGuideColorRadio(this.value)" onclick="setGuideColorRadio(this.value)"><div class="pcolor-swatch" style="background:#c0392b;"></div><span style="font-size:.62rem;">레 드</span></label>
+        <label class="pcolor-opt"><input type="radio" name="gpcolor" value="#c07a00" onchange="setGuideColorRadio(this.value)" onclick="setGuideColorRadio(this.value)"><div class="pcolor-swatch" style="background:#c07a00;"></div><span style="font-size:.62rem;">앰 버</span></label>
+        <label class="pcolor-opt"><input type="radio" name="gpcolor" value="#1a7a5e" onchange="setGuideColorRadio(this.value)" onclick="setGuideColorRadio(this.value)"><div class="pcolor-swatch" style="background:#1a7a5e;"></div><span style="font-size:.62rem;">틸</span></label>
+        <label class="pcolor-opt"><input type="radio" name="gpcolor" value="#333333" onchange="setGuideColorRadio(this.value)" onclick="setGuideColorRadio(this.value)"><div class="pcolor-swatch" style="background:#333333;border:1px solid #ccc;"></div><span style="font-size:.62rem;">차 콜</span></label>
       </div>
-      <div style="margin-left:auto;">
-        <button class="dl-btn" onclick="dlGuidePDF()" style="white-space:nowrap;">📄 PDF 저장</button>
+      <div class="guide-actions">
+        <button class="dl-btn" onclick="dlGuidePDF()">📄 PDF 저장</button>
       </div>
     </div>
 
@@ -473,7 +476,7 @@
             <div class="gp-step"><div class="gp-step-no">04</div><div class="gp-step-body"><div class="gp-step-name">계약금 지급</div><div class="gp-step-desc">계약 체결 후 계약금 <b style="color:var(--gp-navy);font-weight:500">100만 원</b> 지급</div></div></div>
             <div class="gp-step"><div class="gp-step-no">05</div><div class="gp-step-body"><div class="gp-step-title-row"><span class="gp-step-name">원고 집필</span><span class="gp-step-badge">저자 + 편집자</span></div><div class="gp-step-desc">1/3 → 2/3 → 3/3 단계적 진행, 지속적인 피드백 및 방향 조율</div></div></div>
             <div class="gp-step"><div class="gp-step-no">06</div><div class="gp-step-body"><div class="gp-step-name">원고 개발 완료</div><div class="gp-step-desc">최종 원고 확정 및 편집 검수 완료</div></div></div>
-            <div class="gp-step"><div class="gp-step-no">07</div><div class="gp-step-body"><div class="gp-step-name">디자인 및 조판</div><div class="gp-step-desc">내지 디자인 작업 및 표지 디자인 동시 진행</div></div></div>
+            <div class="gp-step"><div class="gp-step-no">07</div><div class="gp-step-body"><div class="gp-step-title-row"><span class="gp-step-name">디자인 및 조판</span><span class="gp-step-badge">디자인 팀</span></div><div class="gp-step-desc">내지 디자인 작업 및 표지 디자인 동시 진행</div></div></div>
             <div class="gp-step"><div class="gp-step-no">08</div><div class="gp-step-body"><div class="gp-step-name">출간</div><div class="gp-step-desc">온라인·오프라인 서점 동시 게시 및 배본</div></div></div>
             <div class="gp-step"><div class="gp-step-no">09</div><div class="gp-step-body"><div class="gp-step-title-row"><span class="gp-step-name">출간 마케팅</span><span class="gp-step-badge">마케팅 팀</span></div><div class="gp-step-desc">출간 전후 마케팅 팀과 프로모션 기획 및 진행</div></div></div>
             <div class="gp-step"><div class="gp-step-no">10</div><div class="gp-step-body"><div class="gp-step-name">선인세 지급</div><div class="gp-step-desc">출간 부수에 따라 금액 산정 후 선인세 지급</div></div></div>
@@ -1245,6 +1248,12 @@
 <!-- ═══════ 원고 작성 패널 (panel12) ═══════ -->
 <div class="panel panel12-scope" id="panel12"></div>
 
+<!-- ═══════ 찾아보기 생성 패널 (panel16) ═══════ -->
+<div class="panel panel16-scope" id="panel16"></div>
+
+<!-- ═══════ 표지 시안 패널 (panel17) ═══════ -->
+<div class="panel panel17-scope" id="panel17"></div>
+
 <!-- ═══════ 개발자 콘솔 패널 (panel11 — 숨겨진 관리자 패널) ═══════ -->
 <div class="panel" id="panel11"></div>
 
@@ -1460,6 +1469,9 @@
 <script src="panels/panel13/panel13.js"></script>
 <script src="panels/panel14/panel14.js"></script>
 <script src="panels/panel15/panel15.js"></script>
+<script src="panels/panel16/panel16.js"></script>
+<script src="panels/panel17/panel17.js"></script>
+<script src="panels/panel17/p17-concepts.js"></script>
 <script src="panels/panel12/panel12.js"></script>
 <script src="panels/panel11/panel11.js"></script>
 <script>
