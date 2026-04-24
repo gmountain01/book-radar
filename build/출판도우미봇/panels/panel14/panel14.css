@@ -1,0 +1,80 @@
+/* panel14 — 목차 작성 */
+.panel14-scope {
+  font-family: 'Pretendard', 'IBM Plex Sans KR', sans-serif;
+  background: #fafaf8; padding: 0 !important; overflow-y: auto;
+}
+.panel14-scope .tc-wrap { max-width: 800px; margin: 0 auto; padding: 32px 40px 60px; }
+.panel14-scope .tc-header { margin-bottom: 20px; }
+.panel14-scope .tc-title { font-size: 20px; font-weight: 700; color: #1a1917; }
+.panel14-scope .tc-sub { font-size: 12px; color: #9b9890; margin-top: 4px; }
+.panel14-scope .tc-meta { font-size: 11px; color: #56544e; margin-top: 6px; font-family: 'IBM Plex Mono', monospace; }
+
+.panel14-scope .tc-toolbar { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.panel14-scope .tc-btn {
+  padding: 5px 12px; font-size: 11px; border-radius: 5px;
+  border: 1px solid #e5e3db; background: #fff; color: #56544e;
+  cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.panel14-scope .tc-btn:hover { border-color: #3B3F8C; color: #3B3F8C; }
+.panel14-scope .tc-btn-apply { background: #3B3F8C; color: #fff; border-color: #3B3F8C; }
+.panel14-scope .tc-btn-apply:hover { background: #2d3070; }
+.panel14-scope .tc-btn-upload { background: #f0efe8; border: 1.5px dashed #b0ada5; color: #6B6860; display: inline-flex; align-items: center; gap: 4px; }
+.panel14-scope .tc-btn-upload:hover { border-color: #3B3F8C; color: #3B3F8C; background: #eeedf8; }
+
+/* ── Row ── */
+.panel14-scope .tc-list { display: flex; flex-direction: column; gap: 2px; }
+.panel14-scope .tc-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px 6px calc(10px + var(--indent, 0px));
+  border: 1px solid transparent; border-radius: 6px;
+  cursor: pointer; transition: all 0.1s;
+}
+.panel14-scope .tc-row:hover { background: #f5f4f0; }
+.panel14-scope .tc-row.active { background: #eeedfb; border-color: #c4bef4; }
+
+.panel14-scope .tc-num {
+  font-size: 10px; font-weight: 700; color: #9b9890;
+  min-width: 36px; font-family: 'IBM Plex Mono', monospace;
+}
+.panel14-scope .tc-lv1 .tc-num { color: #3B3F8C; font-size: 11px; }
+
+.panel14-scope .tc-title-input {
+  flex: 1; border: none; outline: none; background: none;
+  font-size: 13px; color: #1a1917; font-family: inherit; padding: 2px 4px;
+}
+.panel14-scope .tc-lv1 .tc-title-input { font-weight: 700; font-size: 14px; }
+.panel14-scope .tc-lv2 .tc-title-input { font-weight: 600; }
+.panel14-scope .tc-title-input:focus { background: #fff; border-radius: 3px; box-shadow: 0 0 0 1px #c4bef4; }
+
+.panel14-scope .tc-pages-input {
+  width: 40px; border: 1px solid #e5e3db; border-radius: 4px;
+  text-align: center; font-size: 11px; padding: 2px;
+  font-family: 'IBM Plex Mono', monospace; color: #56544e; outline: none;
+}
+.panel14-scope .tc-pages-input:focus { border-color: #3B3F8C; }
+.panel14-scope .tc-pages-label { font-size: 9px; color: #9b9890; font-family: 'IBM Plex Mono', monospace; }
+
+.panel14-scope .tc-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
+.panel14-scope .tc-row:hover .tc-actions { opacity: 1; }
+.panel14-scope .tc-act {
+  font-size: 10px; padding: 2px 4px; cursor: pointer; color: #9b9890;
+  border-radius: 3px; transition: all 0.1s;
+}
+.panel14-scope .tc-act:hover { background: #e5e3db; color: #1a1917; }
+.panel14-scope .tc-del:hover { background: #fdf0ee; color: #c0392b; }
+
+/* ── Memo ── */
+.panel14-scope .tc-memo-section {
+  margin-top: 20px; background: #fff; border: 1px solid #e5e3db;
+  border-radius: 8px; padding: 14px;
+}
+.panel14-scope .tc-memo-label {
+  font-size: 10px; font-weight: 600; color: #9b9890; margin-bottom: 6px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.panel14-scope .tc-memo {
+  width: 100%; min-height: 60px; border: none; outline: none;
+  font-size: 13px; color: #1a1917; font-family: inherit;
+  line-height: 1.7; resize: vertical; background: none;
+}
+.panel14-scope .tc-memo::placeholder { color: #c6c4ba; }
