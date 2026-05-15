@@ -1,0 +1,25 @@
+/* panel20 — 카드뉴스 */
+.panel20-scope {
+  padding: 2rem;
+}
+.p20-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.p20-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.p20-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--muted);
+  font-size: 14px;
+  border: 2px dashed var(--border2);
+  border-radius: 12px;
+  margin-top: 1.5rem;
+}
+.p20-empty .ico { font-size: 3rem; display: block; margin-bottom: 1rem; }

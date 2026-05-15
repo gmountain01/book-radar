@@ -15,10 +15,10 @@
 .panel13-scope .cp-label { display: block; font-size: 11px; font-weight: 600; color: #56544e; margin-bottom: 4px; }
 .panel13-scope .cp-input {
   width: 100%; padding: 8px 10px; font-size: 13px;
-  border: 1px solid #e5e3db; border-radius: 6px; background: #fafaf8;
+  border: 1px solid #e5e3db; border-radius: 6px;
   color: #1a1917; font-family: inherit; outline: none; transition: border-color 0.15s;
 }
-.panel13-scope .cp-input:focus { border-color: #3B3F8C; background: #fff; }
+.panel13-scope .cp-input:focus { border-color: #3B3F8C; }
 .panel13-scope .cp-input::placeholder { color: #c6c4ba; }
 .panel13-scope .cp-textarea { resize: vertical; line-height: 1.7; min-height: 40px; }
 .panel13-scope .cp-dl-btn {

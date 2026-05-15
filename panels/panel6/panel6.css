@@ -10,7 +10,7 @@
 .meet-section-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
 .meet-field{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.4rem;}
 .meet-field label{font-size:.68rem;font-weight:600;color:var(--muted);}
-.meet-field input[type=text],.meet-field input[type=date],.meet-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;resize:vertical;transition:border-color .15s,box-shadow .15s;}
+.meet-field input[type=text],.meet-field input[type=date],.meet-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);resize:vertical;transition:border-color .15s,box-shadow .15s;}
 .meet-field input:focus,.meet-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
 .meet-field-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.4rem;}
 /* 미리보기 */
@@ -52,8 +52,8 @@
 .meet-check-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
 .meet-check-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);flex-shrink:0;cursor:pointer;}
 .meet-check-row label{font-size:.76rem;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;}
-.meet-check-row input[type=text]{flex:1;min-width:0;border:1px solid var(--border);border-radius:5px;padding:.25rem .5rem;font-size:.73rem;font-family:inherit;background:var(--surface);color:var(--text);}
-.meet-select{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:#fff;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
+.meet-check-row input[type=text]{flex:1;min-width:0;border:1px solid var(--border);border-radius:5px;padding:.25rem .5rem;font-size:.73rem;font-family:inherit;color:var(--text);}
+.meet-select{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);cursor:pointer;transition:border-color .15s,box-shadow .15s;}
 .md-agenda-item{padding:4px 10px;font-size:11.5px;border-left:3px solid #2563eb;margin-bottom:3px;background:#f0f7ff;}
 .md-check-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11.5px;}
 .md-check-item .check-icon{font-size:13px;flex-shrink:0;}
