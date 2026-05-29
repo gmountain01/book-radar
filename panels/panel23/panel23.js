@@ -116,18 +116,19 @@ window.p23_switchTab = function(tab, btn) {
 var _REMOTE_BASE = 'https://gmountain01.github.io/publishing-helper/data/';
 
 function _applyFeedData() {
-  if (_feedData) {
+  if (_feedData || _archive) {
     renderSources();
     filterAndRender();
-    if (_feedData.fetched_at) {
+    var info = '';
+    if (_feedData && _feedData.fetched_at) {
       var d = new Date(_feedData.fetched_at);
-      $fetchedAt.textContent = '수집: ' + d.toLocaleDateString('ko-KR') + ' ' + d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+      info = '수집: ' + d.toLocaleDateString('ko-KR') + ' ' + d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
     }
-  }
-  if (_archive) {
-    $fetchedAt.textContent = '누적 ' + (_archive.total_articles || 0) + '건 | ' + ($fetchedAt.textContent || '');
-  }
-  if (!_feedData && !_archive) {
+    if (_archive) {
+      info = '누적 ' + (_archive.total_articles || 0) + '건' + (info ? ' | ' + info : '');
+    }
+    $fetchedAt.textContent = info;
+  } else {
     $feedList.innerHTML = '<div class="p23-empty"><div class="p23-empty-icon">📡</div>' +
       '<div class="p23-empty-text">RSS 데이터 없음</div>' +
       '<div class="p23-empty-hint">네트워크 연결을 확인하세요.</div></div>';
@@ -155,14 +156,56 @@ function loadData() {
   ]).then(_applyFeedData);
 }
 
+/* ── 아카이브 기사를 소스별로 병합한 통합 피드 구성 ── */
+var _mergedFeeds = [];  // [{id, name, icon, tags, items:[{title,link,date,summary}]}]
+
+function _buildMergedFeeds() {
+  var feedMap = {};  // id → {id, name, icon, tags, itemMap:{link→item}}
+
+  /* 1) feedData(오늘 스냅샷)로 소스 목록 초기화 */
+  if (_feedData && _feedData.feeds) {
+    _feedData.feeds.forEach(function(f) {
+      feedMap[f.id] = {id:f.id, name:f.name, icon:f.icon, tags:f.tags||[], itemMap:{}};
+      (f.items||[]).forEach(function(it) {
+        if (it.link) feedMap[f.id].itemMap[it.link] = {title:it.title, link:it.link, date:it.date, summary:it.summary};
+      });
+    });
+  }
+
+  /* 2) 아카이브 누적 기사 병합 (URL 중복 제거) */
+  if (_archive && _archive.articles) {
+    _archive.articles.forEach(function(a) {
+      var sid = a.source;
+      if (!feedMap[sid]) {
+        feedMap[sid] = {id:sid, name:a.source_name||sid, icon:a.icon||'📰', tags:a.keywords?a.keywords.slice(0,3):[], itemMap:{}};
+      }
+      if (a.link && !feedMap[sid].itemMap[a.link]) {
+        feedMap[sid].itemMap[a.link] = {title:a.title, link:a.link, date:a.date, summary:a.summary, keywords:a.keywords};
+      }
+    });
+  }
+
+  /* 3) itemMap → items 배열 변환, 날짜순 정렬 */
+  _mergedFeeds = [];
+  Object.keys(feedMap).forEach(function(sid) {
+    var f = feedMap[sid];
+    var items = [];
+    Object.keys(f.itemMap).forEach(function(k) { items.push(f.itemMap[k]); });
+    items.sort(function(a,b) { return (b.date||'').localeCompare(a.date||''); });
+    _mergedFeeds.push({id:f.id, name:f.name, icon:f.icon, tags:f.tags, items:items});
+  });
+  /* 기사 많은 소스 순 */
+  _mergedFeeds.sort(function(a,b) { return b.items.length - a.items.length; });
+}
+
 function renderSources() {
-  if (!_feedData) return;
+  _buildMergedFeeds();
   var total = 0;
-  _feedData.feeds.forEach(function(f) { total += (f.items||[]).length; });
+  _mergedFeeds.forEach(function(f) { total += f.items.length; });
   var h = '<button class="p23-src-btn active" data-src="all" onclick="p23_filterSrc(\'all\',this)">📡 전체 <span class="p23-src-cnt">' + total + '</span></button>';
-  _feedData.feeds.forEach(function(f) {
+  _mergedFeeds.forEach(function(f) {
     h += '<button class="p23-src-btn" data-src="' + f.id + '" onclick="p23_filterSrc(\'' + f.id + '\',this)">' +
-      f.icon + ' ' + f.name + ' <span class="p23-src-cnt">' + (f.items||[]).length + '</span></button>';
+      f.icon + ' ' + esc(f.name) + ' <span class="p23-src-cnt">' + f.items.length + '</span></button>';
   });
   $sources.innerHTML = h;
 }
@@ -177,12 +220,12 @@ window.p23_filterSrc = function(src, btn) {
 $search.addEventListener('input', function() { _searchQuery = this.value.trim().toLowerCase(); filterAndRender(); });
 
 function filterAndRender() {
-  if (!_feedData) return;
+  if (!_mergedFeeds.length) return;
   _filteredItems = [];
-  _feedData.feeds.forEach(function(feed) {
+  _mergedFeeds.forEach(function(feed) {
     if (_activeSource !== 'all' && feed.id !== _activeSource) return;
-    (feed.items||[]).forEach(function(item) {
-      if (_searchQuery && (item.title + ' ' + item.summary).toLowerCase().indexOf(_searchQuery) === -1) return;
+    feed.items.forEach(function(item) {
+      if (_searchQuery && (item.title + ' ' + (item.summary||'')).toLowerCase().indexOf(_searchQuery) === -1) return;
       _filteredItems.push({ source: feed.name, icon: feed.icon, tags: feed.tags, title: item.title, link: item.link, date: item.date, summary: item.summary });
     });
   });
