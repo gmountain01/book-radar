@@ -1,0 +1,119 @@
+/* panel22 — 소스 코드 비교
+   배치(position:fixed)는 shared/styles.css #panel22에서 처리.
+   이 파일은 내부 컴포넌트 스타일만 담당한다. */
+.panel22-scope{
+  padding:0 !important;overflow-y:auto;
+  background:var(--bg,#f7f7f5);
+  font-family:Pretendard,'Noto Sans KR','Segoe UI',sans-serif;
+  color:var(--text,#1c1c1a);font-size:14px;line-height:1.6}
+.panel22-scope *{box-sizing:border-box}
+
+/* 중앙 래퍼 */
+.p22-wrap{max-width:1100px;margin:0 auto;padding:32px 40px 60px}
+
+/* 헤더 */
+.p22-header{margin-bottom:24px}
+.p22-header h2{font-size:20px;font-weight:700;color:var(--text,#1c1c1a);margin:0 0 4px}
+.p22-header p{font-size:12px;color:var(--muted2,#9b9890);margin:0;margin-top:4px}
+
+/* 섹션 카드 */
+.p22-sec{background:var(--surface,#fff);border:1px solid var(--border,#e4e2d8);border-radius:12px;padding:20px;margin-bottom:16px}
+.p22-sec-title{font-size:14px;color:var(--accent,#3b3f8c);font-weight:600;margin-bottom:12px}
+.p22-sec-desc{font-size:12px;color:var(--muted2,#9b9890);margin-bottom:12px}
+
+/* 파일 입력 행 */
+.p22-file-row{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.p22-file-row label{width:80px;flex-shrink:0;font-size:13px;color:var(--muted,#6b6860);text-align:right;font-weight:500}
+.p22-file-btn{position:relative;overflow:hidden;display:inline-block}
+.p22-file-btn input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.p22-file-btn .p22-btn{pointer-events:none}
+.p22-file-info{font-size:12px;color:var(--green,#1a6b3c);font-family:'JetBrains Mono',Consolas,monospace}
+.p22-file-info.empty{color:var(--muted2,#9b9890)}
+
+/* 버튼 */
+.p22-btn{background:var(--border,#e4e2d8);color:var(--text,#1c1c1a);border:none;border-radius:8px;padding:8px 16px;
+  font-size:13px;cursor:pointer;transition:all .15s;font-family:inherit}
+.p22-btn:hover{background:var(--accent,#3b3f8c);color:#fff}
+.p22-btn-primary{background:var(--accent,#3b3f8c);color:#fff;font-weight:600}
+.p22-btn-primary:hover{background:var(--accent-hover,#2e3270)}
+.p22-btn-run{background:var(--green,#1a6b3c);color:#fff;font-weight:700;font-size:15px;padding:12px 36px;
+  border:none;border-radius:10px;cursor:pointer;transition:all .15s}
+.p22-btn-run:hover{background:#22874c}
+.p22-btn-run:disabled{opacity:.4;cursor:not-allowed}
+
+/* 체크박스 */
+.p22-chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted,#6b6860);cursor:pointer}
+.p22-chk input{accent-color:var(--accent,#3b3f8c);width:15px;height:15px}
+
+/* 진행률 */
+.p22-prog{margin-top:16px;display:none}
+.p22-prog.show{display:block}
+.p22-prog-bar-bg{background:var(--border,#e4e2d8);border-radius:6px;height:8px;overflow:hidden;margin-bottom:6px}
+.p22-prog-bar{height:100%;background:var(--accent,#3b3f8c);border-radius:6px;transition:width .3s}
+.p22-prog-bar.done{background:var(--green,#1a6b3c)}
+.p22-prog-bar.err{background:var(--red,#c9372c)}
+.p22-prog-msg{font-size:12px;color:var(--muted2,#9b9890)}
+
+/* 요약 카드 */
+.p22-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0}
+.p22-card{background:var(--surface,#fff);border:1px solid var(--border,#e4e2d8);border-radius:10px;padding:14px;text-align:center}
+.p22-card .n{font-size:1.5em;font-weight:700}.p22-card .l{color:var(--muted2,#9b9890);font-size:11px;margin-top:2px}
+.p22-card.g .n{color:var(--green,#1a6b3c)}.p22-card.r .n{color:var(--red,#c9372c)}
+.p22-card.y .n{color:#d29922}.p22-card.b .n{color:var(--accent,#3b3f8c)}
+
+/* 리포트 진행 바 */
+.p22-rbar{background:var(--surface,#fff);border:1px solid var(--border,#e4e2d8);border-radius:10px;padding:10px 14px;margin-bottom:16px}
+.p22-rbar .bg{background:var(--border,#e4e2d8);border-radius:4px;height:16px;overflow:hidden;display:flex}
+.p22-rbar .fg{height:100%}.p22-fg-g{background:var(--green,#1a6b3c)}.p22-fg-r{background:var(--red,#c9372c)}
+
+/* 필터 바 */
+.p22-fbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.p22-fbar input{background:var(--surface,#fff);border:1px solid var(--border,#e4e2d8);border-radius:8px;padding:8px 12px;
+  color:var(--text,#1c1c1a);font-size:13px;flex:1;min-width:160px;outline:none;font-family:inherit}
+.p22-fbar input:focus{border-color:var(--accent,#3b3f8c);box-shadow:0 0 0 3px var(--accent-shadow,rgba(59,63,140,.12))}
+.p22-fbar .p22-btn.on{background:var(--accent,#3b3f8c);color:#fff}
+
+/* 챕터 */
+.p22-ch{margin-bottom:20px}
+.p22-ch-hdr{background:var(--surface,#fff);border:1px solid var(--border,#e4e2d8);border-radius:10px 10px 0 0;padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background .15s}
+.p22-ch-hdr:hover{background:var(--accent-hover-bg,#ecedf8)}
+.p22-ch-title{font-size:14px;font-weight:600}
+.p22-ch-folder{color:var(--muted2,#9b9890);font-size:12px;font-family:'JetBrains Mono',Consolas,monospace}
+.p22-ch-body{border:1px solid var(--border,#e4e2d8);border-top:0;border-radius:0 0 10px 10px;padding:6px;display:none}
+.p22-ch.open .p22-ch-body{display:block}
+
+/* 파일 블록 */
+.p22-fb{background:var(--bg,#f7f7f5);border:1px solid var(--border,#e4e2d8);border-radius:8px;margin:4px 0;overflow:hidden}
+.p22-fh{padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .15s}
+.p22-fh:hover{background:var(--surface,#fff)}
+.p22-fn{font-weight:600;font-family:'JetBrains Mono',Consolas,monospace;font-size:13px}
+.p22-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.p22-b-c{background:rgba(26,107,60,.1);color:var(--green,#1a6b3c)}
+.p22-b-d{background:rgba(201,55,44,.1);color:var(--red,#c9372c)}
+.p22-b-w{background:rgba(210,153,34,.1);color:#d29922}
+.p22-fbody{display:none}.p22-fb.open .p22-fbody{display:block}
+.p22-ms{display:flex;gap:4px;font-size:12px}.p22-ms .g{color:var(--green,#1a6b3c)}.p22-ms .r{color:var(--red,#c9372c)}
+
+/* 코드 테이블 */
+.p22-ct{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',Consolas,monospace;font-size:11px}
+.p22-ct th{background:var(--surface,#fff);padding:5px 8px;text-align:left;font-weight:600;color:var(--muted2,#9b9890);position:sticky;top:0}
+.p22-ct td{padding:3px 8px;border-top:1px solid var(--border,#e4e2d8);vertical-align:top;white-space:pre-wrap;word-break:break-all}
+.p22-ct .st{width:55px;text-align:center;font-size:10px}
+.p22-r-m{background:var(--bg,#f7f7f5)}
+.p22-r-ce{background:rgba(41,128,185,.07)}
+.p22-r-ce .st{color:#2980b9}
+.p22-r-nm{background:rgba(59,63,140,.04)}
+.p22-r-d{background:rgba(201,55,44,.06)}
+.p22-r-o{background:rgba(210,153,34,.06)}
+
+/* 소스 미포함 details */
+.p22-missing-detail{margin:6px 8px;font-size:12px}
+.p22-missing-detail summary{cursor:pointer;color:#d29922;font-weight:600}
+.p22-missing-code{background:rgba(210,153,34,.08);border-radius:6px;padding:6px 10px;margin-top:4px;
+  font-family:'JetBrains Mono',Consolas,monospace;max-height:200px;overflow-y:auto;white-space:pre-wrap;font-size:11px}
+
+@media(max-width:768px){
+  .p22-cards{grid-template-columns:repeat(auto-fit,minmax(100px,1fr))!important;}
+  .p22-file-row{flex-direction:column;align-items:stretch;}
+}

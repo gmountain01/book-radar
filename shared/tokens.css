@@ -1,0 +1,152 @@
+/* ================================================================
+   리리가 도와줌 — Design Tokens
+   Source: 리리가도와줌/shared/styles.css (v1.9.32, 2026-04-18)
+   Extracted & organized for reuse across new features.
+   ================================================================ */
+
+/* ── Pretendard (brand) ─────────────────────────────────────── */
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url('fonts/PretendardVariable.woff2') format('woff2-variations');
+}
+@font-face { font-family:'Pretendard'; font-weight:100; font-style:normal; font-display:swap;
+  src: url('fonts/Pretendard-Thin.woff') format('woff'); }
+@font-face { font-family:'Pretendard'; font-weight:200; font-style:normal; font-display:swap;
+  src: url('fonts/Pretendard-ExtraLight.woff') format('woff'); }
+@font-face { font-family:'Pretendard'; font-weight:300; font-style:normal; font-display:swap;
+  src: url('fonts/Pretendard-Light.woff') format('woff'); }
+@font-face { font-family:'Pretendard'; font-weight:400; font-style:normal; font-display:swap;
+  src: url('fonts/Pretendard-Regular.woff') format('woff'); }
+@font-face { font-family:'Pretendard'; font-weight:500; font-style:normal; font-display:swap;
+  src: url('fonts/Pretendard-Medium.woff') format('woff'); }
+@font-face { font-family:'Pretendard'; font-weight:600; font-style:normal; font-display:swap;
+  src: url('fonts/Pretendard-SemiBold.woff') format('woff'); }
+@font-face { font-family:'Pretendard'; font-weight:700; font-style:normal; font-display:swap;
+  src: url('fonts/Pretendard-Bold.woff') format('woff'); }
+@font-face { font-family:'Pretendard'; font-weight:800; font-style:normal; font-display:swap;
+  src: url('fonts/Pretendard-ExtraBold.woff') format('woff'); }
+@font-face { font-family:'Pretendard'; font-weight:900; font-style:normal; font-display:swap;
+  src: url('fonts/Pretendard-Black.woff') format('woff'); }
+
+:root {
+  /* ── Neutral / Background ──────────────────────────────────── */
+  --bg:            #F7F7F5;   /* App background (warm off-white) */
+  --surface:       #FFFFFF;   /* Cards, panels */
+  --surface2:      #F0EFE8;   /* Subtle band, group header */
+  --gray-bg:       #F0EFE8;
+
+  /* ── Text ──────────────────────────────────────────────────── */
+  --text:          #1C1C1A;   /* Primary ink */
+  --muted:         #6B6860;   /* Secondary text, labels */
+  --muted2:        #9B9890;   /* Tertiary text, chevrons */
+
+  /* ── Borders ──────────────────────────────────────────────── */
+  --border:        #E4E2D8;   /* Hairline */
+  --border2:       #CCCAB8;   /* Emphasized hairline */
+
+  /* ── 포인트 컬러 (6종 팔레트) ──────────────────────────────
+     레드 / 딥그린 / 네이비 / 퍼플 / 블랙 / 골드
+     기본 포인트 = 레드 (--accent가 --pt-red를 가리킴)
+     ─────────────────────────────────────────────────────────── */
+  --pt-red:    #D13427;   /* 레드   — 기본 포인트 */
+  --pt-green:  #1E6B3C;   /* 딥그린 */
+  --pt-navy:   #1F3A8A;   /* 네이비 */
+  --pt-purple: #6B2FA3;   /* 퍼플   */
+  --pt-black:  #1C1C1A;   /* 블랙   */
+  --pt-gold:   #B8860B;   /* 골드   */
+
+  /* ── Brand accent (→ 기본 레드) ────────────────────────────── */
+  --accent:        var(--pt-red);
+  --accent-hover:  #A82A1E;
+  --accent-light:  #FDECEA;
+  --accent-border: rgba(209,52,39,.15);
+  --accent-hover-bg: rgba(209,52,39,.35);
+  --accent-shadow:    0 2px 8px  rgba(209,52,39,.20);
+  --accent-shadow-lg: 0 4px 14px rgba(209,52,39,.30);
+
+  /* ── Dark chrome (sidebar / doc headers) ───────────────────── */
+  --sidebar-dark:  #1C1C2E;
+
+  /* ── Semantic aliases (포인트 팔레트에 매핑) ─────────────── */
+  /* Green: success, 우위, 확정 */
+  --green:    var(--pt-green);
+  --green-bg: #E8F3EC;
+  --green-bd: #B0D8BE;
+
+  /* Red: danger, 공백, 과부하 (= 포인트 레드) */
+  --red:      var(--pt-red);
+  --red-bg:   #FDECEA;
+  --red-bd:   #F0BFBB;
+
+  /* Yellow/Gold: warning, 열세, 대기 (= 포인트 골드) */
+  --yellow:   var(--pt-gold);
+  --yellow-bg:#FBF2DD;
+  --yellow-bd:#EBD48A;
+
+  /* Blue/Navy: info, 경쟁사, 링크 (= 포인트 네이비) */
+  --blue:     var(--pt-navy);
+  --blue-bg:  #EAEEF9;
+  --blue-bd:  #B0BCE4;
+
+  /* Purple: plan, 기획 중 (= 포인트 퍼플) */
+  --purple:   var(--pt-purple);
+  --purple-bg:#F0E7F7;
+  --purple-bd:#C8A8E0;
+
+  /* Teal: meta, 강의 (보조 — 팔레트 외) */
+  --teal:     #1A7A5E;
+  --teal-bg:  #E6F4F0;
+  --teal-bd:  #9FD3C2;
+
+  /* ── Shadows ──────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 3px  rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.03);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.06);
+
+  /* ── Motion ───────────────────────────────────────────────── */
+  --transition: all .18s cubic-bezier(.4,0,.2,1);
+
+  /* ── Layout chrome ────────────────────────────────────────── */
+  --hdr-h: 84px;
+  --sb-w:  210px;
+
+  /* ── Document-internal palette (A4 proposals, guides) ─────── */
+  --doc-navy:      #1C3557;
+  --doc-blue:      #2B5BA8;
+  --doc-blue-lt:   #EBF1FA;
+}
+
+/* ================================================================
+   Type scale
+   Primary typeface: Pretendard (Korean + Latin)
+   Serif display:    Noto Serif KR (document titles only)
+   Mono:             DM Mono (numbers, tags, code, meta)
+   ================================================================ */
+
+html { font-size: 14px; }
+
+body, .ds-sans {
+  font-family: 'Pretendard',
+               -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.ds-serif { font-family: 'Noto Serif KR', serif; }
+.ds-mono  { font-family: 'DM Mono', ui-monospace, Menlo, Consolas, monospace; }
+
+/* Heading hierarchy used across the app */
+.t-h1 { font-size: 1.4rem;  font-weight: 800; letter-spacing: -.02em; }
+.t-h2 { font-size: 20px;    font-weight: 700; letter-spacing: -.01em; }
+.t-section { font-size: 1rem; font-weight: 800; letter-spacing: -.01em; }
+.t-label { font-size: .68rem; font-weight: 700; color: var(--muted);
+           text-transform: uppercase; letter-spacing: .07em; }
+.t-tag   { font-size: 9px; font-weight: 600; letter-spacing: .12em;
+           text-transform: uppercase; font-family: 'DM Mono', monospace; }
+.t-body  { font-size: .82rem; line-height: 1.6; }
+.t-caption { font-size: .7rem; color: var(--muted); }
+.t-num   { font-family: 'DM Mono', monospace; font-variant-numeric: tabular-nums; }

@@ -1,0 +1,468 @@
+/* ═══════════════════════════════════════════════════════════════════
+   UNIFY PATCH — 전체 패널 색상/스타일 통일
+   적용법: 기존 shared/styles.css, 모든 panel*.css 뒤에 이 파일 하나만 <link>
+   팔레트: Modern SaaS (zinc + indigo + Pretendard)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 폰트 로드 ── */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* ═══════════════════════════════════════════════════════════════════
+   1. 전역 토큰 오버라이드
+   ═══════════════════════════════════════════════════════════════════ */
+:root{
+  /* 배경 — 깨끗한 zinc 계열 */
+  --bg: #FAFAFA !important;
+  --surface: #FFFFFF !important;
+  --surface2: #F4F4F5 !important;
+
+  /* 텍스트 */
+  --text: #18181B !important;
+  --muted: #71717A !important;
+  --muted2: #A1A1AA !important;
+
+  /* 테두리 */
+  --border: #E4E4E7 !important;
+  --border2: #D4D4D8 !important;
+
+  /* 액센트 — 인디고 */
+  --accent: #4F46B8 !important;
+  --accent-light: #e3e5f9 !important;
+  --accent-hover: #3F37A0 !important;
+  --accent-border: rgba(99,102,241,.15) !important;
+  --accent-shadow: 0 1px 3px rgba(99,102,241,.2) !important;
+  --accent-shadow-lg: 0 4px 12px rgba(99,102,241,.25) !important;
+  --accent-hover-bg: rgba(99,102,241,.12) !important;
+
+  /* 시맨틱 — 선명한 Tailwind 톤 */
+  --green: #16A34A !important;
+  --green-bg: #F0FDF4 !important;
+  --green-bd: #BBF7D0 !important;
+  --red: #EF4444 !important;
+  --red-bg: #FEF2F2 !important;
+  --red-bd: #FECACA !important;
+  --yellow: #F59E0B !important;
+  --yellow-bg: #FFFBEB !important;
+  --yellow-bd: #FDE68A !important;
+  --blue: #3B82F6 !important;
+  --blue-bg: #EFF6FF !important;
+  --blue-bd: #BFDBFE !important;
+  --purple: #8B5CF6 !important;
+  --purple-bg: #F5F3FF !important;
+  --purple-bd: #DDD6FE !important;
+  --teal: #14B8A6 !important;
+  --teal-bg: #F0FDFA !important;
+  --teal-bd: #99F6E4 !important;
+  --gray-bg: #F4F4F5 !important;
+
+  /* 사이드바 — 거의 검은 zinc */
+  --sidebar-dark: #18181B !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. 전역 타이포그래피
+   ═══════════════════════════════════════════════════════════════════ */
+body,
+body *{
+  font-family: 'Pretendard', 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+code, pre, .badge, .tag,
+[style*="JetBrains Mono"], [style*="monospace"]{
+  font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. 공통 radius 통일 (10px)
+   ═══════════════════════════════════════════════════════════════════ */
+.panel .cfg-card,
+.panel .stat,
+.panel .cat-block,
+.panel .upload-label,
+.panel .upload-status,
+.panel .chart-section,
+.panel .chart-box,
+.panel .workload-card,
+.panel .ic,
+.hint,
+.form-panel,
+.meet-form-panel,
+.prop-form-panel{
+  border-radius: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. panel5 (기획서 작성) — 인디고 액센트 적용
+   ═══════════════════════════════════════════════════════════════════ */
+.prop-form-header,
+.meet-form-header,
+.form-header{
+  background: var(--sidebar-dark) !important;
+  color: #fff;
+}
+.prop-form-header .prop-form-tag,
+.meet-form-header .meet-form-tag,
+.form-header .ftag{
+  background: var(--accent) !important;
+  color: #fff;
+}
+.prop-doc .pd2-header,
+.meet-doc .md-header{
+  background: var(--sidebar-dark) !important;
+}
+.pd2-block-title,
+.md-block-title{ color: var(--accent) !important; }
+.pd2-concept,
+.md-diff-box{ border-left-color: var(--accent) !important; }
+.pd2-kp-num,
+.pd2-comp-table th{ background: var(--accent) !important; }
+.md-check-item{ color: #18181B !important; }
+.md-check-item .check-icon{ filter: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. panel7 (유튜버 분석) — 자체 토큰 덮어쓰기
+   ═══════════════════════════════════════════════════════════════════ */
+.yt-scope{
+  --sidebar-bg: var(--sidebar-dark) !important;
+  --accent: #4F46B8 !important;
+  --accent-light: #e3e5f9 !important;
+  --bg: #FAFAFA !important;
+  --card-bg: #FFFFFF !important;
+  --text: #18181B !important;
+  --text-muted: #71717A !important;
+  --border: #E4E4E7 !important;
+  --radius: 10px !important;
+  --danger: #EF4444 !important;
+  --success: #16A34A !important;
+  --warning: #F59E0B !important;
+  font-family: 'Pretendard','Inter','Noto Sans KR',sans-serif !important;
+}
+.yt-scope #sidebar{ background: var(--accent) !important; }
+.yt-scope .nav-item.active{ border-left-color: #FFFFFF !important; }
+.yt-scope .kw-chip{
+  background: var(--accent-light) !important;
+  color: var(--accent) !important;
+  border-color: #C7D2FE !important;
+}
+.yt-scope #toast{ background: #18181B !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   6. panel8 (교정 교열) — zinc 다크 헤더
+   ═══════════════════════════════════════════════════════════════════ */
+.panel8-scope{
+  font-family: 'Pretendard','Inter','Noto Sans KR',sans-serif !important;
+  background: #FAFAFA !important;
+  color: #18181B !important;
+}
+.panel8-scope .hd{
+  background: #18181B !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.12) !important;
+}
+.panel8-scope .hd-tab.active{ border-bottom-color: #818CF8 !important; }
+.panel8-scope .drop-zone:hover,
+.panel8-scope .drop-zone.over,
+.panel8-scope .rules-drop:hover,
+.panel8-scope .rules-drop.over{
+  border-color: #4F46B8 !important;
+  background: #dcdfff !important;
+}
+.panel8-scope .btn-start{ background: #4F46B8 !important; }
+.panel8-scope .btn-start:hover{ background: #3F37A0 !important; }
+.panel8-scope .step-icon.running{ border-color: #4F46B8 !important; color: #4F46B8 !important; background: #dcdfff !important; }
+.panel8-scope .step-icon.done{ background: #F0FDF4 !important; color: #16A34A !important; }
+.panel8-scope .step-icon.error{ background: #FEF2F2 !important; color: #EF4444 !important; }
+.panel8-scope .step-detail{ color: #4F46B8 !important; }
+.panel8-scope .loading-bar{ background: linear-gradient(90deg,#4F46B8,#16A34A) !important; }
+.panel8-scope .summary-bar{ background: #18181B !important; }
+.panel8-scope .chip.high{ background: #EF4444 !important; }
+.panel8-scope .chip.med{ background: #F59E0B !important; }
+.panel8-scope .chip.low{ background: #16A34A !important; }
+.panel8-scope .chip.ai{ background: #4F46B8 !important; }
+.panel8-scope .sev-btn.active{ background: #4F46B8 !important; border-color: #4F46B8 !important; }
+.panel8-scope .pv-header{ background: #18181B !important; }
+.panel8-scope .btn-new{ background: #4F46B8 !important; }
+.panel8-scope .btn-new:hover{ background: #3F37A0 !important; }
+.panel8-scope .badge-page{ background: #18181B !important; }
+.panel8-scope .issue-card.sev-high{ border-left-color: #EF4444 !important; }
+.panel8-scope .issue-card.sev-medium{ border-left-color: #F59E0B !important; }
+.panel8-scope .issue-card.sev-low{ border-left-color: #16A34A !important; }
+.panel8-scope .diff-after{ border-left-color: #16A34A !important; background: #F0FDF4 !important; }
+.panel8-scope .diff-before{ border-left-color: #EF4444 !important; background: #FEF2F2 !important; }
+.panel8-scope .btn-copy{ background: #16A34A !important; }
+.panel8-scope .btn-copy:hover{ background: #15803D !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   7. panel9 (TOC 비교) — zinc 다크 헤더
+   ═══════════════════════════════════════════════════════════════════ */
+.panel9-scope{
+  font-family: 'Pretendard','Inter','Noto Sans KR',sans-serif !important;
+  background: #FAFAFA !important;
+  color: #18181B !important;
+}
+.panel9-scope .hd,
+.panel9-scope .result-header{
+  background: #18181B !important;
+}
+.panel9-scope .hd-tab.active{ border-bottom-color: #818CF8 !important; }
+.panel9-scope .flow-chip.toc{ background: #dcdfff !important; color: #4F46B8 !important; }
+.panel9-scope .flow-chip.body{ background: #F5F3FF !important; color: #8B5CF6 !important; }
+.panel9-scope .flow-chip.result{ background: #F0FDF4 !important; color: #16A34A !important; }
+.panel9-scope .upload-zone:hover{ border-color: #4F46B8 !important; background: #dcdfff !important; }
+.panel9-scope .upload-zone.active{ border-color: #4F46B8 !important; background: #dcdfff !important; }
+.panel9-scope .upload-zone.has-file{ border-color: #16A34A !important; background: #F0FDF4 !important; }
+.panel9-scope .upload-tag.toc{ background: #dcdfff !important; color: #4F46B8 !important; }
+.panel9-scope .upload-tag.body{ background: #F5F3FF !important; color: #8B5CF6 !important; }
+.panel9-scope .upload-hint b{ color: #4F46B8 !important; }
+.panel9-scope .upload-filename{ color: #16A34A !important; }
+.panel9-scope .start-btn{
+  background: #4F46B8 !important;
+  box-shadow: 0 4px 15px rgba(99,102,241,0.25) !important;
+}
+.panel9-scope .start-btn:hover:not(:disabled){ box-shadow: 0 6px 20px rgba(99,102,241,0.3) !important; }
+.panel9-scope .loading-spinner{ border-top-color: #4F46B8 !important; }
+.panel9-scope .step-item.running{ background: #dcdfff !important; }
+.panel9-scope .step-icon.running{ background: #4F46B8 !important; }
+.panel9-scope .step-icon.done{ background: #16A34A !important; }
+.panel9-scope .step-icon.error{ background: #EF4444 !important; }
+.panel9-scope .ring-fill{ stroke: #16A34A !important; }
+.panel9-scope .file-tag.toc{ background: rgba(99,102,241,0.2) !important; color: #C7D2FE !important; }
+.panel9-scope .file-tag.body{ background: rgba(139,92,246,0.2) !important; color: #DDD6FE !important; }
+.panel9-scope .stat-card.ok{ border-left-color: #16A34A !important; }
+.panel9-scope .stat-card.ok .stat-num{ color: #16A34A !important; }
+.panel9-scope .stat-card.warn{ border-left-color: #F59E0B !important; }
+.panel9-scope .stat-card.warn .stat-num{ color: #F59E0B !important; }
+.panel9-scope .stat-card.err{ border-left-color: #EF4444 !important; }
+.panel9-scope .stat-card.err .stat-num{ color: #EF4444 !important; }
+.panel9-scope .stat-card.info{ border-left-color: #4F46B8 !important; }
+.panel9-scope .stat-card.info .stat-num{ color: #4F46B8 !important; }
+.panel9-scope .filter-btn.all.active,
+.panel9-scope .filter-btn.all:hover{ background: #18181B !important; border-color: #18181B !important; }
+.panel9-scope .filter-btn.match{ background: #F0FDF4 !important; color: #16A34A !important; border-color: #BBF7D0 !important; }
+.panel9-scope .filter-btn.match.active,
+.panel9-scope .filter-btn.match:hover{ background: #16A34A !important; color: #fff !important; }
+.panel9-scope .filter-btn.page-mismatch{ background: #FFFBEB !important; color: #F59E0B !important; border-color: #FDE68A !important; }
+.panel9-scope .filter-btn.page-mismatch.active,
+.panel9-scope .filter-btn.page-mismatch:hover{ background: #F59E0B !important; color: #fff !important; }
+.panel9-scope .filter-btn.missing-body{ background: #FEF2F2 !important; color: #EF4444 !important; border-color: #FECACA !important; }
+.panel9-scope .filter-btn.missing-body.active,
+.panel9-scope .filter-btn.missing-body:hover{ background: #EF4444 !important; color: #fff !important; }
+.panel9-scope thead th{ background: #18181B !important; }
+.panel9-scope tbody tr.status-match td.td-status{ border-left-color: #16A34A !important; }
+.panel9-scope tbody tr.status-page-mismatch td.td-status{ border-left-color: #F59E0B !important; }
+.panel9-scope tbody tr.status-missing-body td.td-status{ border-left-color: #EF4444 !important; }
+.panel9-scope .level-1{ background: #18181B !important; }
+.panel9-scope .level-2{ background: #4F46B8 !important; }
+.panel9-scope .level-3{ background: #A5B4FC !important; color: #18181B !important; }
+.panel9-scope .level-4{ background: #dcdfff !important; color: #4F46B8 !important; }
+.panel9-scope .level-5{ background: #F5F3FF !important; color: #818CF8 !important; border-color: #C7D2FE !important; }
+.panel9-scope .page-chip.ok,
+.panel9-scope .pill-match{ background: #F0FDF4 !important; color: #16A34A !important; }
+.panel9-scope .page-chip.warn,
+.panel9-scope .pill-page-mismatch{ background: #FFFBEB !important; color: #F59E0B !important; }
+.panel9-scope .page-chip.bad,
+.panel9-scope .pill-missing-body{ background: #FEF2F2 !important; color: #EF4444 !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   8. panel10 (키워드) — Pretendard 보강
+   ═══════════════════════════════════════════════════════════════════ */
+.panel10-scope{
+  font-family: 'Pretendard','Inter','Noto Sans KR',sans-serif !important;
+}
+.panel10-scope .logo-sub,
+.panel10-scope .s-label,
+.panel10-scope .i-label,
+.panel10-scope .main-sub,
+.panel10-scope .file-status,
+.panel10-scope .summary-chip-label,
+.panel10-scope .sort-label,
+.panel10-scope .loading-text,
+.panel10-scope .empty-desc,
+.panel10-scope .card-section-title,
+.panel10-scope .info-label,
+.panel10-scope .yt-bar-label,
+.panel10-scope .yt-bar-val,
+.panel10-scope .comp-pub,
+.panel10-scope .no-comp,
+.panel10-scope .card-vid-views,
+.panel10-scope .yt-total,
+.panel10-scope .cat-pill,
+.panel10-scope .gap-pill,
+.panel10-scope .kw-signal,
+.panel10-scope .src-badge,
+.panel10-scope .insight-box,
+.panel10-scope .card-breadcrumb,
+.panel10-scope .summary-chip-val{
+  font-family: 'JetBrains Mono',monospace !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   10. panel4 (출판 프로세스 가이드) — weight/색상 보정
+   ═══════════════════════════════════════════════════════════════════ */
+.guide-page{
+  font-family: 'Pretendard','Inter','Noto Sans KR',sans-serif !important;
+  --gp-navy: #18181B;
+  --gp-blue: #4F46B8;
+  --gp-blue-lt: #dcdfff;
+}
+.guide-page .gp-h-title{ font-weight: 600 !important; letter-spacing: -.01em !important; }
+.guide-page .gp-h-label{ font-weight: 500 !important; font-family:'JetBrains Mono',monospace !important; }
+.guide-page .gp-h-org,
+.guide-page .gp-h-year{ font-weight: 400 !important; }
+.guide-page .gp-sec-title{ font-weight: 600 !important; font-family:'JetBrains Mono',monospace !important; }
+.guide-page .gp-step-no{ font-weight: 500 !important; font-family:'JetBrains Mono',monospace !important; }
+.guide-page .gp-step-name{ font-weight: 600 !important; }
+.guide-page .gp-step-desc{ font-weight: 400 !important; color: #71717A !important; }
+.guide-page .gp-step-badge{ font-weight: 500 !important; }
+.guide-page .gp-kpi-label{ font-weight: 600 !important; font-family:'JetBrains Mono',monospace !important; }
+.guide-page .gp-kpi-val{ font-weight: 600 !important; }
+.guide-page .gp-kpi-sub{ font-weight: 400 !important; }
+.guide-page .gp-formula-item{ font-weight: 600 !important; }
+.guide-page .gp-formula-op{ font-weight: 400 !important; }
+.guide-page .gp-example-label{ font-weight: 600 !important; font-family:'JetBrains Mono',monospace !important; }
+.guide-page .gp-var-item{ font-weight: 400 !important; }
+.guide-page .gp-example-calc{ font-weight: 400 !important; }
+.guide-page .gp-note-num{ font-weight: 700 !important; font-family:'JetBrains Mono',monospace !important; }
+.guide-page .gp-note-text{ font-weight: 400 !important; }
+.guide-page .gp-footer-note{ font-weight: 400 !important; }
+.guide-page .gp-footer-brand{ font-weight: 500 !important; letter-spacing: .05em !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   11. panel5 (출판 기획서) · panel6 (미팅 자료) — 폰트 통일
+   ═══════════════════════════════════════════════════════════════════ */
+.prop-doc,
+.meet-doc{
+  font-family: 'Pretendard','Inter','Noto Sans KR',sans-serif !important;
+}
+
+/* panel6 블록 제목 색상 통일 — 인라인 style 덮어쓰기 */
+.meet-doc .md-block-title[style*="6b21a8"],
+.meet-doc .md-block-title[style*="2563eb"]{
+  color: #4F46B8 !important;
+}
+.meet-doc .md-block-title[style*="1a6b3c"]{
+  color: #16A34A !important;
+}
+.meet-doc .md-block-title[style*="b45309"]{
+  color: #F59E0B !important;
+}
+.meet-doc .md-block-title[style*="dc2626"]{
+  color: #EF4444 !important;
+}
+.meet-doc .md-agenda-item{
+  border-left-color: #4F46B8 !important;
+  background: #dcdfff !important;
+}
+.meet-doc [style*="background:#f0f7ff"]{
+  background: #dcdfff !important;
+  border-left-color: #4F46B8 !important;
+}
+.meet-doc [style*="background:#2563eb"]{
+  background: #4F46B8 !important;
+}
+.meet-doc [style*="background:#c53030"]{
+  background: #EF4444 !important;
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   12. 문서 헤더 통일
+   ═════════════════════════════════════════════════════════════════ */
+
+/* 공통 헤더 바 */
+.prop-doc .pd2-header,
+.meet-doc .md-header,
+.guide-page .gp-header-bar{
+  background: var(--gp-navy);
+  padding: 28px 44px 22px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+}
+
+/* 상단 서브 라벨 */
+.prop-doc .pd2-header-sub,
+.meet-doc .md-header-left .md-sub,
+.guide-page .gp-h-label{
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: .15em !important;
+  text-transform: uppercase !important;
+  color: rgba(255,255,255,.5) !important;
+  margin-bottom: 6px !important;
+  font-family: 'JetBrains Mono',monospace !important;
+}
+
+/* 메인 타이틀 */
+.prop-doc .pd2-header-title,
+.meet-doc .md-header-left .md-title,
+.guide-page .gp-h-title{
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  letter-spacing: -.01em !important;
+  color: #fff !important;
+  line-height: 1.2 !important;
+  font-family: 'Pretendard','Inter','Noto Sans KR',sans-serif !important;
+}
+
+/* 우측 메타 영역 */
+.prop-doc .pd2-header-right,
+.meet-doc .md-header-right,
+.guide-page .gp-h-right{
+  text-align: right !important;
+}
+
+/* 우측 메타 본문 */
+.prop-doc .pd2-header-dept,
+.meet-doc .md-header-right,
+.guide-page .gp-h-org{
+  font-size: 9.5px !important;
+  font-weight: 400 !important;
+  letter-spacing: .08em !important;
+  color: rgba(255,255,255,.5) !important;
+  line-height: 1.7 !important;
+}
+
+/* guide-page 연도 */
+.guide-page .gp-h-year{
+  font-size: 9.5px !important;
+  font-weight: 400 !important;
+  color: rgba(255,255,255,.3) !important;
+  letter-spacing: .18em !important;
+  margin-top: 2px !important;
+}
+
+/* 본문 영역 공통 패딩 통일 */
+.prop-doc .pd2-body,
+.meet-doc .md-body,
+.guide-page .gp-body{
+  padding: 28px 44px !important;
+}
+
+/* 푸터 공통 */
+.prop-doc .pd2-footer,
+.meet-doc .md-footer,
+.guide-page .gp-footer{
+  padding: 16px 44px !important;
+  font-size: 9.5px !important;
+  color: #A1A1AA !important;
+  border-top: 1px solid #E4E4E7 !important;
+  letter-spacing: .08em !important;
+}
+
+/* 섹션 블록 제목 통일 */
+.prop-doc .pd2-block-title,
+.meet-doc .md-block-title,
+.guide-page .gp-sec-title{
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: .2em !important;
+  text-transform: uppercase !important;
+  color: var(--accent) !important;
+  font-family: 'JetBrains Mono',monospace !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   13. 스크롤바 통일
+   ═══════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar{ width: 6px; height: 6px; }
+::-webkit-scrollbar-track{ background: transparent; }
+::-webkit-scrollbar-thumb{ background: #D4D4D8; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover{ background: #A1A1AA; }

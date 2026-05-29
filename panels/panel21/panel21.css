@@ -1,0 +1,68 @@
+/* panel21 — 내지 시안
+   배치(position:fixed)는 shared/styles.css #panel21에서 처리. */
+.panel21-scope{
+  padding:0 !important;overflow:hidden;
+  background:var(--bg,#f7f7f5);
+  font-family:Pretendard,'Noto Sans KR','Segoe UI',sans-serif;
+  color:var(--text,#1c1c1a);font-size:14px;line-height:1.6;
+  display:flex;flex-direction:column;height:100%}
+.panel21-scope *{box-sizing:border-box}
+
+/* 메인 레이아웃 — 전체 세로 */
+.p21-main{display:flex;flex-direction:column;height:100%;overflow:hidden}
+
+/* ── 상단 바 ── */
+.p21-topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;background:var(--surface,#fff);border-bottom:1px solid var(--border,#e4e2d8);
+  flex-shrink:0;gap:16px;flex-wrap:wrap}
+.p21-topbar-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.p21-topbar-left h2{font-size:17px;font-weight:700;margin:0;white-space:nowrap}
+.p21-upload-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;
+  border:1.5px solid var(--accent,#3b3f8c);border-radius:8px;font-size:12px;font-weight:600;
+  color:var(--accent,#3b3f8c);background:var(--accent-light,#ecedf8);cursor:pointer;
+  transition:all .15s;white-space:nowrap}
+.p21-upload-btn:hover{background:var(--accent,#3b3f8c);color:#fff}
+.p21-fname{font-size:12px;font-weight:500;color:var(--green,#1a6b3c)}
+.p21-topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* 구조 통계 칩 */
+.p21-stats{display:flex;gap:4px;flex-wrap:wrap}
+.p21-stat{font-size:10px;padding:2px 8px;border-radius:10px;
+  background:var(--surface2,#f0efe8);color:var(--muted,#6b6860)}
+.p21-stat b{color:var(--text,#1c1c1a);font-weight:600}
+
+/* 액션 버튼 */
+.p21-action-btn{padding:6px 14px;border:1px solid var(--border2,#cccab8);border-radius:7px;
+  font-size:12px;font-weight:500;background:var(--surface,#fff);color:var(--text,#1c1c1a);
+  cursor:pointer;transition:all .15s;white-space:nowrap;font-family:inherit}
+.p21-action-btn:hover{border-color:var(--accent,#3b3f8c);color:var(--accent,#3b3f8c)}
+.p21-action-btn.primary{background:var(--accent,#3b3f8c);color:#fff;border-color:var(--accent,#3b3f8c)}
+.p21-action-btn.primary:hover{opacity:.9}
+
+/* ── 진행 바 ── */
+.p21-progress{padding:0 24px;flex-shrink:0}
+.p21-progress-bar{height:4px;background:var(--border,#e4e2d8);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.p21-progress-fill{height:100%;background:var(--accent,#3b3f8c);border-radius:2px;transition:width .4s ease;width:0}
+.p21-progress-text{font-size:11px;color:var(--muted,#6b6860);font-weight:500}
+
+/* ── 빈 상태 ── */
+.p21-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;text-align:center;padding:40px}
+.p21-empty-icon{font-size:4rem;opacity:.4}
+.p21-empty-title{font-size:18px;font-weight:700;color:var(--text,#1c1c1a)}
+.p21-empty-desc{font-size:13px;color:var(--muted,#6b6860);line-height:1.7}
+.p21-empty-upload{display:inline-flex;align-items:center;gap:6px;padding:10px 28px;margin-top:8px;
+  border:2px dashed var(--accent,#3b3f8c);border-radius:12px;font-size:14px;font-weight:600;
+  color:var(--accent,#3b3f8c);cursor:pointer;transition:all .2s}
+.p21-empty-upload:hover{background:var(--accent,#3b3f8c);color:#fff;border-style:solid}
+
+/* ── 결과 영역 ── */
+.p21-result{flex:1;display:flex;align-items:center;justify-content:center;padding:40px}
+.p21-result-msg{text-align:center;font-size:14px;color:var(--muted,#6b6860);
+  background:var(--green-bg,#e8f5ee);border:1px solid var(--green-bd,#b0d8be);
+  padding:20px 32px;border-radius:12px;line-height:1.6}
+
+/* ── 스피너 ── */
+.p21-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:p21spin .6s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes p21spin{to{transform:rotate(360deg)}}

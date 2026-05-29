@@ -1,0 +1,34 @@
+name: RSS 피드 수집
+
+on:
+  schedule:
+    # 매일 KST 09:00 (UTC 00:00)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 수동 실행 가능
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: RSS 피드 수집
+        run: python scripts/fetch_rss.py
+
+      - name: 리포트 인덱스 빌드
+        run: python scripts/build_reports.py
+
+      - name: 변경사항 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "📡 데이터 자동 갱신 $(date -u +'%Y-%m-%d')"
+          git push
