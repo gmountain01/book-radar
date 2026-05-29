@@ -356,8 +356,9 @@ def compute_stats(archive: dict) -> str:
         surge_books.sort(key=lambda x: -x[2])
 
     # 장기 스테디셀러 (100일+ 등장)
+    steady_threshold = 100 if num_days >= 100 else max(int(num_days * 0.7), 10)
     steady = [(t, len(title_days[t]), sum(title_ranks[t]) / len(title_ranks[t]) if title_ranks[t] else 0, title_info[t].get("publisher", ""))
-              for t in unique_titles if len(title_days[t]) >= min(100, num_days * 0.6)]
+              for t in unique_titles if len(title_days[t]) >= steady_threshold]
     steady.sort(key=lambda x: -x[1])
 
     # 신규 트렌드 (최근 60일 첫 등장)
@@ -437,7 +438,7 @@ def compute_stats(archive: dict) -> str:
             L.append(f"| {r_avg}위 | {p_avg}위 | +{diff} | {t} | {pub} |")
 
     if steady:
-        L.append(f"\n### 장기 스테디셀러 ({min(100, int(num_days*0.6))}일 이상 등장)\n")
+        L.append(f"\n### 장기 스테디셀러 ({steady_threshold}일 이상 등장)\n")
         L.append(f"| 등장일수 | 평균순위 | 도서명 | 출판사 |")
         L.append(f"|-------:|-------:|--------|--------|")
         for t, nd, avg, pub in steady[:20]:
@@ -480,9 +481,9 @@ def compute_stats(archive: dict) -> str:
             competitors = ", ".join(p for p, _ in topic_pubs.get(topic, [])[:3])
             L.append(f"| {topic} | {total}권 | {hcnt}권 | {competitors} |")
 
-    # ── 5. 주제별 경쟁서 상세 (상위 5개 주제) ──
+    # ── 5. 주제별 경쟁서 상세 (기타 제외, 전체 주제) ──
     L.append(f"\n## 5. 주제별 경쟁서 상세\n")
-    top_topics = sorted(topic_titles.items(), key=lambda x: -len(x[1]))[:8]
+    top_topics = sorted(((t, ts) for t, ts in topic_titles.items() if t != "기타"), key=lambda x: -len(x[1]))
     for topic, titles in top_topics:
         books = []
         for t in titles:
@@ -511,38 +512,49 @@ def call_claude(stats: str, dates: list[str]) -> str:
         return ""
 
     date_range = f"{dates[0]} ~ {dates[-1]}"
-    prompt = f"""아래는 YES24 IT 베스트셀러의 일별 스냅샷 누적 데이터 통계입니다.
+    prompt = f"""아래는 YES24 IT 베스트셀러의 일별 스냅샷 누적 데이터(Python 자동 생성 통계)입니다.
 매일 200위까지의 베스트셀러를 수집하여 {len(dates)}일간 누적한 결과입니다.
 
 {stats}
 
 ---
 
-이 데이터를 기반으로 IT 도서 시장 분석 리포트를 작성하라:
+위 통계 데이터 앞뒤에 붙일 해석 섹션만 작성하라.
+통계 테이블은 이미 완성되어 있으므로 다시 쓰지 마라.
+아래 형식대로만 작성하라:
 
-# YES24 IT 베스트셀러 시장 분석 리포트
+## 핵심 인사이트
 
-> 분석 기간: {date_range} ({len(dates)}일 누적)
-> 생성일: {TODAY}
-> 데이터: YES24 IT/모바일 일별 베스트셀러 200위 (자동 생성)
+1. **[인사이트 제목]** [구체적 수치를 포함한 해석. 출판 기획 관점에서 의미를 설명.]
+2. ...
+3. ...
+4. ...
+5. ...
 
-## 핵심 인사이트 (5개)
-구체적 수치 포함, 출판 기획 관점에서 해석하라.
+## 6. 출판 기획 아이템
 
-## 카테고리별 트렌드
-상승/하락/안정 판별, 주목 도서와 출판사 언급.
+### 기획 1: [제목]
+[왜 기회인지, 어떤 도서를 만들면 좋을지, 타겟 독자, 예상 경쟁 상황. 3~5문장.]
 
-## 출판 기회 (3~5개)
-시장 공백·기회를 구체적으로 제안. 각각: 왜 기회인지, 어떤 도서, 타겟 독자.
+### 기획 2: [제목]
+...
 
-## 경쟁 동향
-주요 출판사별 최근 움직임과 전략.
+(5~8개 기획 아이템)
 
-## 주간 변동 요약
-최근 7일 신규 진입/이탈 중심 시장 변화.
+## 7. 추천 다음 액션
+
+- [한빛미디어 편집자가 당장 해야 할 구체적 행동 1]
+- [구체적 행동 2]
+- ...
+
+(5~7개 액션)
 
 ---
-글쓰기 원칙: AI투 금지, 편집자 브리핑 톤, 수치 자연스럽게 녹이기, 문장 구조 다양화.
+글쓰기 원칙:
+- AI투 문장 금지 (혁신적인, ~할 수 있습니다, 주목할 만합니다 등)
+- 편집자가 동료에게 브리핑하는 톤
+- 구체적 수치를 자연스럽게 녹이기
+- 문장 구조 다양화 (주어-서술어 단조로움 금지)
 """
 
     body = json.dumps({
@@ -622,12 +634,33 @@ def main():
 
     # 4. 통계 + 리포트
     stats = compute_stats(archive)
-    ai_report = call_claude(stats, all_dates)
+    ai_sections = call_claude(stats, all_dates)
 
-    if ai_report:
-        report = ai_report
+    # 리포트 조합: 헤더 + 핵심인사이트(AI) + 통계(Python) + 기획아이템(AI)
+    header = f"# YES24 IT 베스트셀러 {archive['total_days']}일 분석 리포트\n\n"
+    header += f"> 분석 기간: {all_dates[0]} ~ {all_dates[-1]} ({len(all_dates)}일)\n"
+    header += f"> 생성일: {TODAY}\n"
+    header += f"> 데이터: YES24 IT/모바일 일별 베스트셀러\n\n"
+
+    if ai_sections:
+        # AI 결과에서 "핵심 인사이트" 부분과 "6. 출판 기획" 이후 부분을 분리
+        insight_part = ""
+        planning_part = ""
+        lines = ai_sections.split("\n")
+        section = ""
+        for line in lines:
+            if line.startswith("## 핵심 인사이트") or line.startswith("## 핵심"):
+                section = "insight"
+            elif line.startswith("## 6.") or line.startswith("## 7."):
+                section = "planning"
+            if section == "insight":
+                insight_part += line + "\n"
+            elif section == "planning":
+                planning_part += line + "\n"
+
+        report = header + insight_part + "\n" + stats + "\n\n" + planning_part
     else:
-        report = f"# YES24 IT 베스트셀러 시장 분석 리포트\n\n> 분석 기간: {all_dates[0]} ~ {all_dates[-1]} ({len(all_dates)}일)\n> 생성일: {TODAY}\n\n{stats}\n"
+        report = header + stats + "\n"
 
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         f.write(report)
