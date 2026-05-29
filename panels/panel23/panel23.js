@@ -222,13 +222,16 @@ function hasPubSignal(t) {
 // ══════════════════════════════════════════════════════
 // B. 트렌드 (누적 분석 → 출판 기회)
 // ══════════════════════════════════════════════════════
+var _trendChart = null;
+var _trendChartKws = {}; // {kw: boolean} 토글 상태
+
 function renderTrend() {
   if (!_archive) { $trendWrap.innerHTML = '<div class="p23-empty"><div class="p23-empty-text">아카이브 데이터 없음</div></div>'; return; }
 
   var articles = _archive.articles || [];
   var trends = _archive.weekly_trends || [];
 
-  // ── 1. 요약 카드 ──
+  // ── 0. 요약 카드 ──
   var h = '<div class="p23-trend-summary">' +
     '<div class="p23-stat-card"><div class="p23-stat-num">' + articles.length + '</div><div class="p23-stat-label">누적 아티클</div></div>' +
     '<div class="p23-stat-card"><div class="p23-stat-num">' + (trends.length) + '</div><div class="p23-stat-label">수집 주차</div></div>' +
@@ -236,9 +239,24 @@ function renderTrend() {
     '<div class="p23-stat-card"><div class="p23-stat-num">' + countUniqueKw(articles) + '</div><div class="p23-stat-label">추출 키워드</div></div>' +
   '</div>';
 
-  // ── 2. 주간 키워드 트렌드 테이블 ──
+  // ── 1. 급상승 / 하락 키워드 카드 ──
+  h += renderSurgeCards(trends);
+
+  // ── 2. 출판 기회 신호 (알림 카드) ──
+  h += '<h3 class="p23-section-title">📗 출판 기회 신호</h3>';
+  h += renderSignals(articles, trends);
+
+  // ── 3. 키워드 트렌드 차트 (Chart.js) ──
+  h += '<h3 class="p23-section-title">📈 키워드 트렌드 차트</h3>';
+  h += '<div class="p23-chart-wrap"><canvas id="p23_trendChart" height="280"></canvas></div>';
+
+  // ── 4. 키워드 칩 (클릭→기사 모아보기) ──
+  h += '<div class="p23-kw-chips" id="p23_kwChips"></div>';
+  h += '<div class="p23-kw-articles" id="p23_kwArticles" style="display:none"></div>';
+
+  // ── 5. 주간 키워드 트렌드 테이블 ──
   var allKw = getAllKeywords(trends);
-  h += '<h3 class="p23-section-title">주간 키워드 트렌드</h3>';
+  h += '<h3 class="p23-section-title">주간 키워드 빈도 테이블</h3>';
   h += '<div class="p23-trend-table-wrap"><table class="p23-trend-table"><thead><tr><th>키워드</th>';
   trends.forEach(function(w) { h += '<th>' + w.week.replace('2026-','') + '</th>'; });
   h += '<th>추세</th></tr></thead><tbody>';
@@ -254,15 +272,303 @@ function renderTrend() {
   });
   h += '</tbody></table></div>';
 
-  // ── 3. 출판 기회 도출 ──
-  h += '<h3 class="p23-section-title">📚 출판 기회 신호</h3>';
-  h += renderOpportunities(articles, trends);
-
-  // ── 4. 소스별 최근 활동 ──
-  h += '<h3 class="p23-section-title">소스별 활동</h3>';
-  h += renderSourceActivity(articles);
+  // ── 6. 소스 활동 히트맵 ──
+  h += '<h3 class="p23-section-title">🗓️ 소스 활동 히트맵</h3>';
+  h += renderSourceHeatmap(articles, trends);
 
   $trendWrap.innerHTML = h;
+
+  // 차트 & 칩 렌더 (DOM 삽입 후)
+  _renderTrendChart(trends, allKw);
+  _renderKwChips(articles, allKw);
+}
+
+// ── 1. 급상승 / 하락 카드 ──
+function renderSurgeCards(trends) {
+  if (trends.length < 2) return '';
+  var curr = trends[trends.length - 1].keywords;
+  var prev = trends.length >= 2 ? trends[trends.length - 2].keywords : {};
+  var surging = [], falling = [];
+
+  // 현재 주 키워드
+  for (var kw in curr) {
+    var c = curr[kw] || 0, p = prev[kw] || 0;
+    if (p === 0 && c >= 2) surging.push({ kw: kw, c: c, p: p, tag: '신규' });
+    else if (p > 0 && c >= p * 2) surging.push({ kw: kw, c: c, p: p, tag: '+' + Math.round((c/p-1)*100) + '%' });
+  }
+  // 이전 주에 있었으나 50% 이상 감소
+  for (var kw2 in prev) {
+    var c2 = curr[kw2] || 0, p2 = prev[kw2] || 0;
+    if (p2 >= 2 && c2 < p2 * 0.5) falling.push({ kw: kw2, c: c2, p: p2, tag: Math.round((c2/p2-1)*100) + '%' });
+  }
+  surging.sort(function(a,b){ return b.c - a.c; });
+  falling.sort(function(a,b){ return a.c/a.p - b.c/b.p; });
+
+  var h = '<div class="p23-surge-row">';
+  // 급상승
+  h += '<div class="p23-surge-card p23-surge-up">';
+  h += '<div class="p23-surge-title">🔥 급상승 키워드</div>';
+  if (!surging.length) { h += '<div class="p23-surge-empty">이번 주 급상승 키워드 없음</div>'; }
+  else { surging.slice(0,6).forEach(function(s) {
+    h += '<div class="p23-surge-item"><span class="p23-surge-kw">' + esc(s.kw) + '</span><span class="p23-surge-badge p23-badge-up">' + s.tag + '</span><span class="p23-surge-cnt">' + s.c + '건</span></div>';
+  }); }
+  h += '</div>';
+  // 하락
+  h += '<div class="p23-surge-card p23-surge-down">';
+  h += '<div class="p23-surge-title">📉 하락 키워드</div>';
+  if (!falling.length) { h += '<div class="p23-surge-empty">이번 주 급하락 키워드 없음</div>'; }
+  else { falling.slice(0,6).forEach(function(s) {
+    h += '<div class="p23-surge-item"><span class="p23-surge-kw">' + esc(s.kw) + '</span><span class="p23-surge-badge p23-badge-down">' + s.tag + '</span><span class="p23-surge-cnt">' + s.c + '건</span></div>';
+  }); }
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+// ── 2. 출판 기회 신호 (3가지 패턴 감지) ──
+function renderSignals(articles, trends) {
+  var signals = [];
+
+  // 패턴 A: 3주 연속 증가
+  if (trends.length >= 3) {
+    var allKw = {};
+    trends.forEach(function(w) { for (var k in w.keywords) allKw[k] = true; });
+    for (var kw in allKw) {
+      var last3 = trends.slice(-3).map(function(w){ return w.keywords[kw] || 0; });
+      if (last3[0] > 0 && last3[1] > last3[0] && last3[2] > last3[1]) {
+        var relA = articles.filter(function(a){ return (a.keywords||[]).indexOf(kw) !== -1; }).slice(0,3);
+        signals.push({ type: 'growth', icon: '📗', kw: kw, desc: '3주 연속 증가 — 도서 수요 상승 신호', vals: last3, articles: relA });
+      }
+    }
+  }
+
+  // 패턴 B: 신규 등장 + 높은 빈도 (최근 2주 내 첫 등장, 빈도 3 이상)
+  if (trends.length >= 2) {
+    var recent = trends[trends.length - 1].keywords;
+    var older = {};
+    trends.slice(0, -2).forEach(function(w) { for (var k in w.keywords) older[k] = true; });
+    for (var kw2 in recent) {
+      if (!older[kw2] && recent[kw2] >= 3) {
+        var relB = articles.filter(function(a){ return (a.keywords||[]).indexOf(kw2) !== -1; }).slice(0,3);
+        signals.push({ type: 'new', icon: '🆕', kw: kw2, desc: '신규 트렌드 감지 — 선점 기회', vals: [recent[kw2]], articles: relB });
+      }
+    }
+  }
+
+  // 패턴 C: 여러 소스에서 동시 언급 (최근 1주, 3개 이상 소스)
+  var lastWeek = trends.length ? trends[trends.length - 1] : null;
+  if (lastWeek) {
+    var kwSources = {};
+    articles.forEach(function(a) {
+      if (!a.date) return;
+      // 최근 1주 기사만
+      var d = new Date(a.date), now = new Date(_archive.last_updated || Date.now());
+      if ((now - d) > 8 * 86400000) return;
+      (a.keywords || []).forEach(function(k) {
+        if (!kwSources[k]) kwSources[k] = new Set();
+        kwSources[k].add(a.source);
+      });
+    });
+    for (var kw3 in kwSources) {
+      if (kwSources[kw3].size >= 3) {
+        var relC = articles.filter(function(a){ return (a.keywords||[]).indexOf(kw3) !== -1; }).slice(0,3);
+        // 이미 다른 패턴으로 잡힌 키워드는 건너뛰기
+        var dup = signals.some(function(s){ return s.kw === kw3; });
+        if (!dup) signals.push({ type: 'cross', icon: '🌐', kw: kw3, desc: kwSources[kw3].size + '개 소스에서 동시 언급 — 크로스소스 관심 집중', articles: relC });
+      }
+    }
+  }
+
+  if (!signals.length) return '<p class="p23-muted">아직 충분한 데이터가 쌓이지 않았습니다. 매일 수집하면 트렌드가 보입니다.</p>';
+
+  var h = '<div class="p23-signal-list">';
+  signals.forEach(function(sig) {
+    var cls = sig.type === 'growth' ? 'p23-sig-growth' : sig.type === 'new' ? 'p23-sig-new' : 'p23-sig-cross';
+    h += '<div class="p23-signal-card ' + cls + '">';
+    h += '<div class="p23-signal-head"><span class="p23-signal-icon">' + sig.icon + '</span><span class="p23-signal-kw">' + esc(sig.kw) + '</span></div>';
+    h += '<div class="p23-signal-desc">' + esc(sig.desc) + '</div>';
+    if (sig.articles.length) {
+      h += '<div class="p23-signal-refs">';
+      sig.articles.forEach(function(a) {
+        h += '<div class="p23-signal-ref">' + a.icon + ' <a href="' + esc(a.link) + '" target="_blank">' + esc(a.title) + '</a></div>';
+      });
+      h += '</div>';
+    }
+    var hint = getPubHint(sig.kw);
+    h += '<div class="p23-signal-hint">→ ' + esc(hint) + '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+// ── 3. 키워드 트렌드 Chart.js 라인 차트 ──
+var CHART_COLORS = ['#4F46B8','#c23d2f','#b85a00','#1e4a8a','#0f766e','#7c3aed','#db2777','#059669'];
+
+function _renderTrendChart(trends, allKw) {
+  var canvas = document.getElementById('p23_trendChart');
+  if (!canvas || !window.Chart) return;
+  if (_trendChart) { _trendChart.destroy(); _trendChart = null; }
+
+  var labels = trends.map(function(w){ return w.week.replace('2026-',''); });
+  var top8 = allKw.slice(0, 8);
+
+  // 초기 토글 상태
+  if (!Object.keys(_trendChartKws).length) {
+    top8.forEach(function(kw){ _trendChartKws[kw] = true; });
+  }
+
+  var datasets = top8.map(function(kw, i) {
+    var color = CHART_COLORS[i % CHART_COLORS.length];
+    return {
+      label: kw,
+      data: trends.map(function(w){ return w.keywords[kw] || 0; }),
+      borderColor: color,
+      backgroundColor: color + '18',
+      borderWidth: 2,
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      tension: 0.3,
+      fill: false,
+      hidden: !_trendChartKws[kw]
+    };
+  });
+
+  _trendChart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: { labels: labels, datasets: datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { boxWidth: 12, padding: 14, font: { size: 11, family: 'Pretendard' } },
+          onClick: function(e, item, legend) {
+            var ci = legend.chart;
+            var idx = item.datasetIndex;
+            var meta = ci.getDatasetMeta(idx);
+            meta.hidden = meta.hidden === null ? !ci.data.datasets[idx].hidden : null;
+            _trendChartKws[ci.data.datasets[idx].label] = !meta.hidden;
+            ci.update();
+          }
+        },
+        tooltip: { titleFont: { family: 'Pretendard' }, bodyFont: { family: 'Pretendard', size: 12 } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10, family: 'JetBrains Mono' } } },
+        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { stepSize: 2, font: { size: 10, family: 'JetBrains Mono' } } }
+      }
+    }
+  });
+}
+
+// ── 4. 키워드 칩 + 기사 모아보기 ──
+function _renderKwChips(articles, allKw) {
+  var $chips = document.getElementById('p23_kwChips');
+  if (!$chips) return;
+  // 키워드별 기사 수
+  var kwCnt = {};
+  articles.forEach(function(a) { (a.keywords||[]).forEach(function(k){ kwCnt[k]=(kwCnt[k]||0)+1; }); });
+  var h = '';
+  allKw.forEach(function(kw) {
+    h += '<button class="p23-kw-chip" data-kw="' + esc(kw) + '" onclick="p23_showKwArticles(\'' + esc(kw).replace(/'/g,"\\'") + '\')">' + esc(kw) + ' <span class="p23-chip-cnt">' + (kwCnt[kw]||0) + '</span></button>';
+  });
+  $chips.innerHTML = h;
+}
+
+window.p23_showKwArticles = function(kw) {
+  var $el = document.getElementById('p23_kwArticles');
+  if (!$el || !_archive) return;
+
+  // 토글: 같은 키워드 다시 클릭하면 닫기
+  if ($el.style.display !== 'none' && $el.getAttribute('data-kw') === kw) {
+    $el.style.display = 'none';
+    _clearChipActive();
+    return;
+  }
+
+  // 칩 활성화 표시
+  _clearChipActive();
+  var chips = document.getElementById('p23_kwChips');
+  if (chips) chips.querySelectorAll('.p23-kw-chip').forEach(function(b){ if(b.getAttribute('data-kw')===kw) b.classList.add('active'); });
+
+  var matched = (_archive.articles||[]).filter(function(a){ return (a.keywords||[]).indexOf(kw) !== -1; });
+  matched.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+
+  var h = '<div class="p23-kwa-head"><span class="p23-kwa-title">🔎 "' + esc(kw) + '" 관련 기사 (' + matched.length + '건)</span>' +
+    '<button class="p23-kwa-close" onclick="p23_closeKwArticles()">✕</button></div>';
+  h += '<div class="p23-kwa-list">';
+  matched.slice(0,20).forEach(function(a) {
+    h += '<div class="p23-feed-card"><div class="p23-card-head"><span class="p23-card-src">' + a.icon + ' ' + esc(a.source_name) + '</span>' +
+      '<span class="p23-opp-date">' + esc(a.date||'') + '</span></div>' +
+      '<a class="p23-card-title" href="' + esc(a.link) + '" target="_blank">' + esc(a.title) + '</a>' +
+      '<p class="p23-card-summary">' + esc(a.summary) + '</p></div>';
+  });
+  if (matched.length > 20) h += '<div class="p23-kwa-more">외 ' + (matched.length-20) + '건</div>';
+  h += '</div>';
+  $el.setAttribute('data-kw', kw);
+  $el.innerHTML = h;
+  $el.style.display = '';
+  $el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
+
+window.p23_closeKwArticles = function() {
+  var $el = document.getElementById('p23_kwArticles');
+  if ($el) $el.style.display = 'none';
+  _clearChipActive();
+};
+
+function _clearChipActive() {
+  var chips = document.getElementById('p23_kwChips');
+  if (chips) chips.querySelectorAll('.p23-kw-chip').forEach(function(b){ b.classList.remove('active'); });
+}
+
+// ── 6. 소스 활동 히트맵 ──
+function renderSourceHeatmap(articles, trends) {
+  // 최근 4주 × 소스 그리드
+  var last4 = trends.slice(-4);
+  if (!last4.length) return '<p class="p23-muted">히트맵을 생성하려면 최소 1주 데이터가 필요합니다.</p>';
+
+  // 소스별 주간 기사 수 계산 (articles에서 직접)
+  var sourceNames = {};
+  var sourceWeekly = {}; // source -> {week: count}
+  articles.forEach(function(a) {
+    if (!a.date || !a.source) return;
+    sourceNames[a.source] = { name: a.source_name, icon: a.icon };
+    var d = new Date(a.date);
+    // ISO week 계산
+    var jan1 = new Date(d.getFullYear(), 0, 1);
+    var days = Math.floor((d - jan1) / 86400000);
+    var wn = Math.ceil((days + jan1.getDay() + 1) / 7);
+    var wk = d.getFullYear() + '-W' + (wn < 10 ? '0' + wn : wn);
+    if (!sourceWeekly[a.source]) sourceWeekly[a.source] = {};
+    sourceWeekly[a.source][wk] = (sourceWeekly[a.source][wk] || 0) + 1;
+  });
+
+  var weeks = last4.map(function(w){ return w.week; });
+  var sources = Object.keys(sourceNames).sort(function(a,b){
+    var ta=0, tb=0;
+    weeks.forEach(function(w){ ta += (sourceWeekly[a]||{})[w]||0; tb += (sourceWeekly[b]||{})[w]||0; });
+    return tb - ta;
+  });
+
+  var h = '<div class="p23-heatmap-wrap"><table class="p23-heatmap"><thead><tr><th>소스</th>';
+  weeks.forEach(function(w){ h += '<th>' + w.replace('2026-','') + '</th>'; });
+  h += '</tr></thead><tbody>';
+  sources.forEach(function(src) {
+    var info = sourceNames[src];
+    h += '<tr><td class="p23-hm-src">' + info.icon + ' ' + esc(info.name) + '</td>';
+    weeks.forEach(function(w) {
+      var cnt = (sourceWeekly[src]||{})[w] || 0;
+      var lvl = cnt === 0 ? 0 : cnt <= 2 ? 1 : cnt <= 5 ? 2 : cnt <= 10 ? 3 : 4;
+      h += '<td class="p23-hm-cell p23-hm-lv' + lvl + '">' + (cnt || '') + '</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+  return h;
 }
 
 function countSources(arr) { var s = new Set(); arr.forEach(function(a){s.add(a.source);}); return s.size; }
@@ -290,50 +596,7 @@ function calcTrend(vals) {
   return '<span class="p23-flat">→ 유지</span>';
 }
 
-function renderOpportunities(articles, trends) {
-  // 최근 2주 급증 키워드 + 기존 IT 도서 시장 공백 매칭
-  var recent2 = trends.slice(-2);
-  var prev2 = trends.slice(-4, -2);
-  var recentCnt = {}, prevCnt = {};
-  recent2.forEach(function(w) { for(var k in w.keywords) recentCnt[k] = (recentCnt[k]||0) + w.keywords[k]; });
-  prev2.forEach(function(w) { for(var k in w.keywords) prevCnt[k] = (prevCnt[k]||0) + w.keywords[k]; });
-
-  var opps = [];
-  for (var kw in recentCnt) {
-    var r = recentCnt[kw], p = prevCnt[kw] || 0;
-    var growth = p > 0 ? ((r - p) / p * 100) : (r > 2 ? 999 : 0);
-    if (r >= 3 || growth > 50) {
-      // 관련 아티클 수집
-      var relArticles = articles.filter(function(a) { return (a.keywords||[]).indexOf(kw) !== -1; }).slice(0, 3);
-      opps.push({ keyword: kw, recent: r, prev: p, growth: growth, articles: relArticles });
-    }
-  }
-  opps.sort(function(a,b) { return b.growth - a.growth || b.recent - a.recent; });
-
-  if (!opps.length) return '<p class="p23-muted">아직 충분한 데이터가 쌓이지 않았습니다. 매일 수집하면 트렌드가 보입니다.</p>';
-
-  var h = '<div class="p23-opp-list">';
-  opps.slice(0, 8).forEach(function(op) {
-    var cls = op.growth > 100 ? 'p23-opp-hot' : op.growth > 50 ? 'p23-opp-warm' : 'p23-opp-normal';
-    h += '<div class="p23-opp-card ' + cls + '">' +
-      '<div class="p23-opp-bar"></div>' +
-      '<div class="p23-opp-body">' +
-      '<div class="p23-opp-head">' +
-        '<span class="p23-opp-kw">' + esc(op.keyword) + '</span>' +
-        '<span class="p23-opp-growth">' + (op.growth >= 999 ? '🆕 신규' : (op.growth > 0 ? '+' + Math.round(op.growth) + '%' : Math.round(op.growth) + '%')) + '</span>' +
-        '<span class="p23-opp-cnt">최근 ' + op.recent + '건</span>' +
-      '</div>' +
-      '<div class="p23-opp-articles">';
-    op.articles.forEach(function(a) {
-      h += '<div class="p23-opp-article">' + a.icon + ' <a href="' + esc(a.link) + '" target="_blank">' + esc(a.title) + '</a> <span class="p23-opp-date">' + (a.date||'') + '</span></div>';
-    });
-    h += '</div>';
-    h += '<div class="p23-opp-hint">→ ' + getPubHint(op.keyword) + '</div>';
-    h += '</div></div>';
-  });
-  h += '</div>';
-  return h;
-}
+/* renderOpportunities — replaced by renderSignals */
 
 function getPubHint(kw) {
   var hints = {
@@ -366,28 +629,7 @@ function getPubHint(kw) {
   return hints[kw] || '이 주제의 한국어 도서 공급 현황 확인 필요';
 }
 
-function renderSourceActivity(articles) {
-  var bySource = {};
-  articles.forEach(function(a) {
-    if (!bySource[a.source]) bySource[a.source] = { name: a.source_name, icon: a.icon, total: 0, recent7: 0, kws: {} };
-    bySource[a.source].total++;
-    if (a.first_seen >= _archive.last_updated) bySource[a.source].recent7++;
-    (a.keywords||[]).forEach(function(k) { bySource[a.source].kws[k] = (bySource[a.source].kws[k]||0) + 1; });
-  });
-
-  var h = '<div class="p23-source-grid">';
-  Object.values(bySource).sort(function(a,b){return b.total-a.total;}).forEach(function(s) {
-    var topKw = Object.entries(s.kws).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(e){return e[0];});
-    h += '<div class="p23-source-card">' +
-      '<div class="p23-source-icon">' + s.icon + '</div>' +
-      '<div class="p23-source-head">' + esc(s.name) + '</div>' +
-      '<div class="p23-source-stat">' + s.total + '건</div>' +
-      '<div class="p23-source-kws">' + topKw.map(function(k){return '<span class="p23-tag">'+esc(k)+'</span>';}).join('') + '</div>' +
-    '</div>';
-  });
-  h += '</div>';
-  return h;
-}
+/* renderSourceActivity — replaced by renderSourceHeatmap */
 
 // ══════════════════════════════════════════════════════
 // C. 리포트 뷰어
@@ -508,6 +750,9 @@ function esc(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 loadData();
 
 if (typeof PanelRegistry !== 'undefined') {
-  PanelRegistry.register(23, { onActivate: function() { if (!_feedData && !_archive) loadData(); } });
+  PanelRegistry.register(23, {
+    onActivate: function() { if (!_feedData && !_archive) loadData(); },
+    onDeactivate: function() { if (_trendChart) { _trendChart.destroy(); _trendChart = null; } }
+  });
 }
 })();

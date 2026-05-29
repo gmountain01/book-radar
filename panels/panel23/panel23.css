@@ -210,12 +210,90 @@
 .p23-plan-card.p23-mid{border-left-color:var(--blue,#1e4a8a);}
 .p23-plan-card.p23-mid .p23-urgency{background:var(--blue-bg,#e6eef9);color:var(--blue,#1e4a8a);}
 
-/* ── 인쇄 ── */
+/* ══════════════════════════════════════════════════════
+   B-1. 급상승/하락 카드
+   ══════════════════════════════════════════════════════ */
+.p23-surge-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.p23-surge-card{border:1px solid var(--border,#dddbd2);border-radius:12px;padding:16px;background:var(--surface,#fff);}
+.p23-surge-up{border-top:3px solid var(--red,#c23d2f);}
+.p23-surge-down{border-top:3px solid var(--muted,#56544e);}
+.p23-surge-title{font-size:13px;font-weight:700;color:var(--text,#1a1917);margin-bottom:10px;}
+.p23-surge-empty{font-size:12px;color:var(--muted2,#9b9890);padding:8px 0;}
+.p23-surge-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border,#dddbd2);}
+.p23-surge-item:last-child{border-bottom:none;}
+.p23-surge-kw{font-size:13px;font-weight:600;color:var(--text,#1a1917);flex:1;}
+.p23-surge-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;font-family:'JetBrains Mono',monospace;}
+.p23-badge-up{background:var(--red-bg,#fdecea);color:var(--red,#c23d2f);}
+.p23-badge-down{background:var(--surface2,#edece7);color:var(--muted,#56544e);}
+.p23-surge-cnt{font-size:10px;color:var(--muted,#56544e);font-family:'JetBrains Mono',monospace;}
+
+/* ══════════════════════════════════════════════════════
+   B-2. 출판 기회 신호 카드
+   ══════════════════════════════════════════════════════ */
+.p23-signal-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:24px;}
+.p23-signal-card{border:1px solid var(--border,#dddbd2);border-radius:12px;padding:14px 16px;background:var(--surface,#fff);transition:box-shadow .15s;}
+.p23-signal-card:hover{box-shadow:var(--shadow-sm,0 1px 3px rgba(0,0,0,.05));}
+.p23-sig-growth{border-left:4px solid var(--green,#0f766e);}
+.p23-sig-new{border-left:4px solid var(--red,#c23d2f);}
+.p23-sig-cross{border-left:4px solid var(--blue,#1e4a8a);}
+.p23-signal-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.p23-signal-icon{font-size:16px;}
+.p23-signal-kw{font-size:14px;font-weight:700;color:var(--text,#1a1917);}
+.p23-signal-desc{font-size:11px;color:var(--muted,#56544e);margin-bottom:8px;line-height:1.5;}
+.p23-signal-refs{margin-bottom:8px;}
+.p23-signal-ref{font-size:11px;line-height:1.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.p23-signal-ref a{color:var(--accent,#4F46B8);text-decoration:none;}
+.p23-signal-ref a:hover{text-decoration:underline;}
+.p23-signal-hint{font-size:11px;color:var(--accent,#4F46B8);font-weight:500;padding-top:8px;border-top:1px dashed var(--border,#dddbd2);line-height:1.5;}
+
+/* ══════════════════════════════════════════════════════
+   B-3. 키워드 트렌드 차트
+   ══════════════════════════════════════════════════════ */
+.p23-chart-wrap{position:relative;height:280px;margin-bottom:16px;background:var(--surface,#fff);border:1px solid var(--border,#dddbd2);border-radius:12px;padding:16px;}
+
+/* ══════════════════════════════════════════════════════
+   B-4. 키워드 칩 + 기사 모아보기
+   ══════════════════════════════════════════════════════ */
+.p23-kw-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.p23-kw-chip{padding:5px 12px;font-size:12px;font-weight:500;border:1px solid var(--border,#dddbd2);border-radius:20px;background:var(--surface,#fff);cursor:pointer;color:var(--text,#1a1917);transition:all .15s;}
+.p23-kw-chip:hover{border-color:var(--accent,#4F46B8);background:var(--accent-light,#eeedfb);color:var(--accent,#4F46B8);}
+.p23-kw-chip.active{border-color:var(--accent,#4F46B8);background:var(--accent,#4F46B8);color:#fff;}
+.p23-kw-chip.active .p23-chip-cnt{background:rgba(255,255,255,.2);color:#fff;}
+.p23-chip-cnt{font-size:10px;font-family:'JetBrains Mono',monospace;background:var(--surface2,#edece7);padding:1px 6px;border-radius:12px;margin-left:4px;color:var(--muted,#56544e);}
+
+/* 기사 모아보기 */
+.p23-kw-articles{background:var(--surface,#fff);border:1px solid var(--accent,#4F46B8);border-radius:12px;padding:16px;margin-bottom:20px;}
+.p23-kwa-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.p23-kwa-title{font-size:14px;font-weight:700;color:var(--text,#1a1917);}
+.p23-kwa-close{border:none;background:none;font-size:16px;cursor:pointer;color:var(--muted,#56544e);padding:4px 8px;border-radius:8px;transition:background .12s;}
+.p23-kwa-close:hover{background:var(--surface2,#edece7);}
+.p23-kwa-list{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;}
+.p23-kwa-list .p23-feed-card{margin-bottom:0;}
+.p23-kwa-more{font-size:11px;color:var(--muted,#56544e);text-align:center;padding:8px 0;}
+
+/* ══════════════════════════════════════════════════════
+   B-6. 소스 활동 히트맵
+   ══════════════════════════════════════════════════════ */
+.p23-heatmap-wrap{overflow:hidden;border:1px solid var(--border,#dddbd2);border-radius:12px;background:var(--surface,#fff);margin-bottom:24px;}
+.p23-heatmap{width:100%;border-collapse:collapse;font-size:11px;}
+.p23-heatmap th{background:var(--surface2,#edece7);padding:8px 10px;text-align:center;font-weight:600;border-bottom:2px solid var(--border,#dddbd2);font-size:10px;color:var(--muted,#56544e);}
+.p23-heatmap th:first-child{text-align:left;padding-left:14px;width:160px;color:var(--text,#1a1917);}
+.p23-hm-src{font-weight:600;color:var(--text,#1a1917);padding:7px 14px!important;white-space:nowrap;font-family:'Pretendard',sans-serif;}
+.p23-heatmap td{padding:7px 10px;text-align:center;font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--border,#dddbd2);transition:background .1s;}
+.p23-heatmap tbody tr:last-child td{border-bottom:none;}
+.p23-heatmap tbody tr:hover{background:rgba(79,70,184,.03);}
+.p23-hm-lv0{color:var(--muted2,#9b9890);}
+.p23-hm-lv1{background:rgba(79,70,184,.06);color:var(--muted,#56544e);}
+.p23-hm-lv2{background:rgba(79,70,184,.14);color:var(--text,#1a1917);font-weight:500;}
+.p23-hm-lv3{background:rgba(79,70,184,.24);color:var(--accent,#4F46B8);font-weight:700;}
+.p23-hm-lv4{background:rgba(79,70,184,.36);color:var(--accent,#4F46B8);font-weight:800;}
+
+/* ── 반응형 ── */
 @media(max-width:768px){
   .p23-trend-layout{grid-template-columns:1fr!important;}
   .p23-trend-summary{grid-template-columns:repeat(2,1fr)!important;}
-  .p23-opp-list{grid-template-columns:1fr!important;}
-  .p23-source-grid{grid-template-columns:repeat(2,1fr)!important;}
+  .p23-surge-row{grid-template-columns:1fr!important;}
+  .p23-signal-list{grid-template-columns:1fr!important;}
   .p23-rpt-layout{grid-template-columns:1fr!important;}
   .p23-toc{max-height:30vh;border-right:none;border-bottom:1px solid var(--border,#dddbd2);}
 }
