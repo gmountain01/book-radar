@@ -1,32 +1,32 @@
 #!/usr/bin/env python3
 """
 YES24 베스트셀러 자동 분석 리포트 생성기
-- Google Sheets에서 YES24 데이터 fetch
-- 마지막 리포트 이후 새 데이터가 있으면 분석 실행
-- Claude API로 시장 분석 리포트 생성
-- data/reports/yes24_weekly.md 덮어쓰기
+- 매일 Google Sheets에서 오늘의 베스트셀러 스냅샷 fetch
+- data/yes24/archive.json에 날짜 태깅하여 누적 저장
+- 새 데이터가 있으면 Claude API로 시장 분석 리포트 생성
+- data/reports/yes24_weekly.md 덮어쓰기 (항상 최신 1개)
 """
-import csv
-import io
 import json
 import os
 import re
 import sys
 import urllib.request
 from collections import Counter, defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 
 # ── 설정 ──
 SHEET_URL = "https://script.google.com/macros/s/AKfycbx0PRidfgLM41CLKyM6zmaNkf9_r-a3EZGxU9qicd-a_-i8K0xGGV2XH64geJwQ6k7d/exec"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+YES24_DIR = os.path.join(SCRIPT_DIR, "..", "data", "yes24")
+ARCHIVE_PATH = os.path.join(YES24_DIR, "archive.json")
 REPORTS_DIR = os.path.join(SCRIPT_DIR, "..", "data", "reports")
 REPORT_PATH = os.path.join(REPORTS_DIR, "yes24_weekly.md")
-STATE_PATH = os.path.join(REPORTS_DIR, ".report_state.json")
+TODAY = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
-def fetch_sheet_data() -> list[list[str]]:
-    """Google Sheets Apps Script에서 데이터를 가져온다."""
-    print("📊 Google Sheets 데이터 fetch...")
+def fetch_today() -> list[dict]:
+    """Google Sheets에서 오늘 베스트셀러 스냅샷을 가져온다."""
+    print("📊 Google Sheets fetch...")
     req = urllib.request.Request(SHEET_URL, headers={"User-Agent": "ReportBot/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
@@ -35,185 +35,186 @@ def fetch_sheet_data() -> list[list[str]]:
         print(f"  ⚠ fetch 실패: {e}", file=sys.stderr)
         return []
 
-    # Apps Script JSON 응답 파싱
     try:
         data = json.loads(text)
-        if isinstance(data, dict) and "rows" in data:
-            return data["rows"]
-        if isinstance(data, list):
-            return data
     except json.JSONDecodeError:
-        pass
-
-    # CSV 폴백
-    try:
-        reader = csv.reader(io.StringIO(text))
-        return [row for row in reader]
-    except Exception:
-        pass
-
-    print("  ⚠ 데이터 파싱 실패", file=sys.stderr)
-    return []
-
-
-def parse_rows(rows: list[list[str]]) -> list[dict]:
-    """행 데이터를 파싱하여 구조화된 레코드 목록 반환."""
-    if not rows:
+        print("  ⚠ JSON 파싱 실패", file=sys.stderr)
         return []
 
-    # 헤더 감지
-    KNOWN_PUBS = {"한빛미디어", "길벗", "제이펍", "위키북스", "에이콘출판사", "골든래빗",
-                  "이지스퍼블리싱", "영진닷컴", "한빛아카데미", "생능출판사", "인사이트",
-                  "커뮤니케이션북스", "앤써북", "성안당", "생능북스", "책만", "비제이퍼블릭"}
+    if isinstance(data, dict) and "rows" in data:
+        data = data["rows"]
+    if not isinstance(data, list):
+        return []
 
-    header = rows[0] if rows[0] and any(
-        h in str(rows[0]).lower() for h in ["순위", "제목", "상품명", "출판사", "rank"]
-    ) else None
-
-    col_map = {}
-    if header:
-        for i, h in enumerate(header):
-            hl = str(h).strip().lower()
-            if hl in ("순위", "rank"):
-                col_map["rank"] = i
-            elif hl in ("상품명", "제목", "도서명", "도서 제목", "책제목"):
-                col_map["title"] = i
-            elif hl in ("저자", "작가"):
-                col_map["author"] = i
-            elif hl in ("출판사",):
-                col_map["publisher"] = i
-            elif "가격" in hl or "정가" in hl:
-                col_map["price"] = i
-            elif "날짜" in hl or "일자" in hl or "date" in hl:
-                col_map["date"] = i
-        start = 1
-    else:
-        # 헤더 없음 → 자동 감지
-        start = 0
-
-    records = []
-    for row in rows[start:]:
-        if not row or len(row) < 3:
-            continue
-        if header and col_map:
-            rec = {
-                "rank": str(row[col_map["rank"]]).strip() if "rank" in col_map and col_map["rank"] < len(row) else "",
-                "title": str(row[col_map["title"]]).strip() if "title" in col_map and col_map["title"] < len(row) else "",
-                "author": str(row[col_map.get("author", -1)]).strip() if "author" in col_map and col_map["author"] < len(row) else "",
-                "publisher": str(row[col_map.get("publisher", -1)]).strip() if "publisher" in col_map and col_map["publisher"] < len(row) else "",
-                "price": str(row[col_map.get("price", -1)]).strip() if "price" in col_map and col_map["price"] < len(row) else "",
-                "date": str(row[col_map.get("date", -1)]).strip() if "date" in col_map and col_map["date"] < len(row) else "",
-            }
-        else:
-            # 위치 기반 추정
-            rec = {"rank": str(row[0]).strip(), "title": "", "author": "", "publisher": "", "price": "", "date": ""}
-            for i, cell in enumerate(row):
-                s = str(cell).strip()
-                if not rec["title"] and len(s) > 5 and len(s) < 200:
-                    rec["title"] = s
-                elif not rec["publisher"] and s in KNOWN_PUBS:
-                    rec["publisher"] = s
-                elif not rec["price"] and re.match(r"[\d,]+원?$", s):
-                    rec["price"] = s
-        if rec["title"]:
-            records.append(rec)
-
-    return records
+    # dict 리스트 → 정규화
+    items = []
+    for row in data:
+        if isinstance(row, dict):
+            title = str(row.get("상품명", row.get("제목", ""))).strip()
+            if not title:
+                continue
+            items.append({
+                "rank": int(row.get("순위", 0)) if str(row.get("순위", "")).isdigit() else 0,
+                "title": title,
+                "author": str(row.get("저자", "")).strip(),
+                "publisher": str(row.get("출판사", "")).strip(),
+                "price": str(row.get("판매가", "")).strip(),
+                "isbn": str(row.get("ISBN", "")).strip(),
+                "category": str(row.get("관리분류", "")).strip(),
+            })
+    return items
 
 
-def extract_dates(records: list[dict]) -> list[str]:
-    """레코드에서 고유 날짜 목록 추출."""
-    dates = set()
-    for r in records:
-        d = r.get("date", "").strip()
-        if re.match(r"\d{4}[-/]\d{2}[-/]\d{2}", d):
-            dates.add(d[:10].replace("/", "-"))
-    return sorted(dates)
-
-
-def load_state() -> dict:
-    """마지막 리포트 상태 로드."""
-    if os.path.exists(STATE_PATH):
-        with open(STATE_PATH, "r", encoding="utf-8") as f:
+def load_archive() -> dict:
+    """누적 아카이브 로드."""
+    if os.path.exists(ARCHIVE_PATH):
+        with open(ARCHIVE_PATH, "r", encoding="utf-8") as f:
             return json.load(f)
-    return {"last_date": "", "last_run": ""}
+    return {"snapshots": {}, "first_date": "", "last_date": "", "total_days": 0}
 
 
-def save_state(last_date: str):
-    """리포트 상태 저장."""
-    with open(STATE_PATH, "w", encoding="utf-8") as f:
-        json.dump({"last_date": last_date, "last_run": datetime.now().strftime("%Y-%m-%d %H:%M")}, f)
+def save_archive(archive: dict):
+    """아카이브 저장."""
+    os.makedirs(YES24_DIR, exist_ok=True)
+    with open(ARCHIVE_PATH, "w", encoding="utf-8") as f:
+        json.dump(archive, f, ensure_ascii=False, indent=2)
+
+    # 브라우저용 .js도 생성
+    js_path = os.path.join(YES24_DIR, "archive.js")
+    with open(js_path, "w", encoding="utf-8") as f:
+        f.write("window._YES24_ARCHIVE = ")
+        json.dump(archive, f, ensure_ascii=False)
+        f.write(";")
 
 
-def compute_stats(records: list[dict], dates: list[str]) -> str:
-    """기초 통계를 문자열로 생성 (Claude 프롬프트에 전달)."""
-    total = len(records)
-    unique_titles = len(set(r["title"] for r in records))
-    date_range = f"{dates[0]} ~ {dates[-1]}" if dates else "불명"
+def merge_snapshot(archive: dict, items: list[dict]) -> bool:
+    """오늘 스냅샷을 아카이브에 추가. 새 데이터면 True 반환."""
+    if TODAY in archive["snapshots"]:
+        print(f"⏭ 오늘({TODAY}) 데이터 이미 존재 — 스킵")
+        return False
 
-    # 출판사 분포
-    pub_cnt = Counter(r["publisher"] for r in records if r["publisher"])
-    pub_top = pub_cnt.most_common(15)
+    archive["snapshots"][TODAY] = items
+    if not archive["first_date"] or TODAY < archive["first_date"]:
+        archive["first_date"] = TODAY
+    archive["last_date"] = TODAY
+    archive["total_days"] = len(archive["snapshots"])
 
-    # 제목 빈도 (등장일수 = 인기 지표)
-    title_cnt = Counter(r["title"] for r in records if r["title"])
-    title_top = title_cnt.most_common(30)
+    print(f"🆕 {TODAY}: {len(items)}건 추가 (누적 {archive['total_days']}일)")
+    return True
 
-    # 카테고리 키워드 감지
-    categories = defaultdict(list)
+
+def compute_stats(archive: dict) -> str:
+    """누적 데이터로 통계 생성."""
+    dates = sorted(archive["snapshots"].keys())
+    all_records = []
+    for d in dates:
+        for item in archive["snapshots"][d]:
+            item_with_date = {**item, "date": d}
+            all_records.append(item_with_date)
+
+    total = len(all_records)
+    unique_titles = set(r["title"] for r in all_records)
+    date_range = f"{dates[0]} ~ {dates[-1]}"
+
+    # 도서별 등장일수 + 평균 순위
+    title_days = defaultdict(list)  # title → [dates]
+    title_ranks = defaultdict(list)  # title → [ranks]
+    title_info = {}  # title → {author, publisher, ...}
+    for r in all_records:
+        t = r["title"]
+        title_days[t].append(r["date"])
+        if r["rank"]:
+            title_ranks[t].append(r["rank"])
+        if t not in title_info:
+            title_info[t] = {k: r[k] for k in ("author", "publisher", "price", "category")}
+
+    # TOP 30 (등장일수)
+    top30 = sorted(title_days.items(), key=lambda x: -len(set(x[1])))[:30]
+
+    # 출판사 점유율 (등장일수 기준)
+    pub_days = defaultdict(int)
+    for t, days in title_days.items():
+        pub = title_info[t]["publisher"]
+        if pub:
+            pub_days[pub] += len(set(days))
+    total_days_all = sum(pub_days.values())
+    pub_top = sorted(pub_days.items(), key=lambda x: -x[1])[:15]
+
+    # 카테고리 키워드 분류
     KW = {
-        "AI/LLM": ["ai", "인공지능", "llm", "gpt", "클로드", "제미나이", "생성형", "딥러닝", "머신러닝", "트랜스포머"],
+        "AI/LLM": ["ai", "인공지능", "llm", "gpt", "클로드", "제미나이", "생성형", "딥러닝", "머신러닝"],
         "바이브코딩": ["바이브 코딩", "바이브코딩", "vibe coding"],
-        "에이전트": ["에이전트", "agent", "rag", "랭체인", "langchain"],
-        "프롬프트/활용": ["프롬프트", "prompt", "챗gpt 활용", "ai 활용", "업무 자동화"],
-        "데이터분석": ["데이터 분석", "데이터분석", "파이썬 데이터", "판다스", "pandas", "엑셀"],
-        "프로그래밍": ["파이썬", "python", "자바", "java", "코딩", "알고리즘", "자료구조"],
-        "웹/앱": ["웹", "리액트", "react", "flutter", "앱", "next.js", "스프링"],
-        "클라우드/인프라": ["클라우드", "aws", "도커", "쿠버네티스", "kubernetes", "devops"],
-        "보안": ["보안", "해킹", "정보보안", "security"],
-        "이미지/영상AI": ["이미지 생성", "stable diffusion", "미드저니", "영상 ai", "sora", "comfyui"],
+        "에이전트/RAG": ["에이전트", "agent", "rag", "랭체인", "langchain", "mcp"],
+        "프롬프트/활용": ["프롬프트", "prompt", "챗gpt", "ai 활용", "업무 자동화", "활용법"],
+        "데이터분석": ["데이터 분석", "데이터분석", "판다스", "pandas", "엑셀", "통계"],
+        "프로그래밍": ["파이썬", "python", "자바", "java", "코딩", "알고리즘", "자료구조", "c언어", "c++"],
+        "웹/앱개발": ["웹", "리액트", "react", "flutter", "next.js", "스프링", "spring"],
+        "클라우드/인프라": ["클라우드", "aws", "도커", "쿠버네티스", "devops", "azure"],
+        "보안": ["보안", "해킹", "정보보안"],
+        "이미지/영상AI": ["이미지 생성", "stable diffusion", "미드저니", "comfyui", "영상"],
     }
-    for r in records:
-        t = r["title"].lower()
+    cat_titles = defaultdict(set)
+    for t in unique_titles:
+        tl = t.lower()
         for cat, kws in KW.items():
-            if any(k in t for k in kws):
-                categories[cat].append(r["title"])
+            if any(k in tl for k in kws):
+                cat_titles[cat].add(t)
                 break
 
-    # 최근 7일 vs 이전 비교
-    recent = ""
-    if len(dates) >= 14:
-        last7 = set(dates[-7:])
-        prev7 = set(dates[-14:-7])
-        r7_titles = set(r["title"] for r in records if r.get("date", "")[:10] in last7)
-        p7_titles = set(r["title"] for r in records if r.get("date", "")[:10] in prev7)
-        new_entries = r7_titles - p7_titles
-        dropped = p7_titles - r7_titles
-        recent = f"\n### 최근 7일 변동\n- 신규 진입: {len(new_entries)}권\n- 이탈: {len(dropped)}권\n"
-        if new_entries:
-            recent += "- 신규 주요: " + ", ".join(list(new_entries)[:10]) + "\n"
+    # 최근 7일 vs 이전 7일
+    recent_change = ""
+    if len(dates) >= 7:
+        last7 = dates[-7:]
+        r7_titles = set()
+        for d in last7:
+            for item in archive["snapshots"][d]:
+                r7_titles.add(item["title"])
 
+        if len(dates) >= 14:
+            prev7 = dates[-14:-7]
+            p7_titles = set()
+            for d in prev7:
+                for item in archive["snapshots"][d]:
+                    p7_titles.add(item["title"])
+            new_in = r7_titles - p7_titles
+            dropped = p7_titles - r7_titles
+            recent_change = f"\n### 최근 7일 변동\n- 신규 진입: {len(new_in)}권\n- 이탈: {len(dropped)}권\n"
+            if new_in:
+                recent_change += "- 신규 주요:\n"
+                for t in list(new_in)[:10]:
+                    info = title_info.get(t, {})
+                    recent_change += f"  - {t} ({info.get('publisher', '?')})\n"
+
+    # 통계 문자열 조합
     lines = [
         f"## 기초 통계",
         f"- 분석 기간: {date_range} ({len(dates)}일)",
-        f"- 총 레코드: {total:,}건",
-        f"- 고유 도서: {unique_titles:,}권",
+        f"- 총 스냅샷 레코드: {total:,}건",
+        f"- 고유 도서: {len(unique_titles):,}권",
         f"",
-        f"### 출판사 상위 15",
+        f"### 출판사 점유율 (등장일수 기준, 상위 15)",
+        f"| 순위 | 출판사 | 등장일수 | 점유율 |",
+        f"|---:|--------|-------:|------:|",
     ]
-    for i, (pub, cnt) in enumerate(pub_top, 1):
-        lines.append(f"| {i} | {pub} | {cnt}건 |")
+    for i, (pub, days) in enumerate(pub_top, 1):
+        share = days / total_days_all * 100 if total_days_all else 0
+        lines.append(f"| {i} | {pub} | {days}일 | {share:.1f}% |")
 
-    lines.append(f"\n### 베스트셀러 TOP 30 (등장일수)")
-    for i, (title, cnt) in enumerate(title_top, 1):
-        lines.append(f"| {i} | {title} | {cnt}일 |")
+    lines.append(f"\n### 베스트셀러 TOP 30 (등장일수·평균순위)")
+    lines.append(f"| 순위 | 도서명 | 출판사 | 등장일수 | 평균순위 |")
+    lines.append(f"|---:|--------|--------|-------:|-------:|")
+    for i, (title, days) in enumerate(top30, 1):
+        ud = len(set(days))
+        avg_rank = sum(title_ranks[title]) / len(title_ranks[title]) if title_ranks[title] else 0
+        pub = title_info[title]["publisher"]
+        lines.append(f"| {i} | {title} | {pub} | {ud}일 | {avg_rank:.1f} |")
 
     lines.append(f"\n### 카테고리 분포")
-    for cat, titles in sorted(categories.items(), key=lambda x: -len(x[1])):
-        lines.append(f"- {cat}: {len(set(titles))}권")
+    for cat, titles in sorted(cat_titles.items(), key=lambda x: -len(x[1])):
+        lines.append(f"- **{cat}**: {len(titles)}권")
 
-    if recent:
-        lines.append(recent)
+    if recent_change:
+        lines.append(recent_change)
 
     return "\n".join(lines)
 
@@ -226,45 +227,44 @@ def call_claude(stats: str, dates: list[str]) -> str:
         return ""
 
     date_range = f"{dates[0]} ~ {dates[-1]}" if dates else "불명"
-    today = datetime.now().strftime("%Y-%m-%d")
 
-    prompt = f"""아래는 YES24 IT 베스트셀러 데이터의 기초 통계입니다.
-이 데이터를 기반으로 IT 도서 시장 분석 리포트를 작성해주세요.
+    prompt = f"""아래는 YES24 IT 베스트셀러의 일별 스냅샷 누적 데이터 통계입니다.
+매일 200위까지의 베스트셀러를 수집하여 {len(dates)}일간 누적한 결과입니다.
 
 {stats}
 
 ---
 
-다음 형식으로 작성하세요:
+이 데이터를 기반으로 IT 도서 시장 분석 리포트를 작성해주세요:
 
 # YES24 IT 베스트셀러 시장 분석 리포트
 
-> 분석 기간: {date_range}
-> 생성일: {today}
-> 데이터: YES24 IT/모바일 일별 베스트셀러 (자동 생성)
+> 분석 기간: {date_range} ({len(dates)}일 누적)
+> 생성일: {TODAY}
+> 데이터: YES24 IT/모바일 일별 베스트셀러 200위 (자동 생성)
 
 ## 핵심 인사이트 (5개)
-각 인사이트는 구체적 수치를 포함하고, 출판 기획 관점에서 의미를 해석하세요.
+구체적 수치를 포함하고, 출판 기획 관점에서 의미를 해석하라.
 
 ## 카테고리별 트렌드
-상승/하락/안정 트렌드를 판별하고, 각 카테고리에서 주목할 도서와 출판사를 언급하세요.
+상승/하락/안정 트렌드를 판별하고, 각 카테고리 주목 도서와 출판사를 언급하라.
 
 ## 출판 기회 (3~5개)
-데이터에서 발견한 시장 공백이나 기회를 구체적으로 제안하세요.
-각 기회에 대해: 왜 기회인지, 어떤 도서를 만들면 좋을지, 타겟 독자는 누구인지.
+시장 공백이나 기회를 구체적으로 제안하라.
+각 기회: 왜 기회인지, 어떤 도서를 만들면 좋을지, 타겟 독자.
 
 ## 경쟁 동향
-주요 출판사별 최근 움직임과 전략을 분석하세요.
+주요 출판사별 최근 움직임과 전략을 분석하라.
 
 ## 주간 변동 요약
-최근 7일 신규 진입/이탈 도서를 중심으로 시장 변화를 설명하세요.
+최근 7일 신규 진입/이탈 도서 중심으로 시장 변화를 설명하라.
 
 ---
 글쓰기 원칙:
 - AI투 문장 금지 (혁신적인, ~할 수 있습니다, 주목할 만합니다 등)
 - 편집자가 동료에게 브리핑하는 톤
-- 구체적 수치를 자연스럽게 녹이기
-- 문장 구조 다양화 (주어-서술어 단조로움 금지)
+- 구체적 수치를 자연스럽게 녹여라
+- 문장 구조 다양화
 """
 
     body = json.dumps({
@@ -296,64 +296,40 @@ def call_claude(stats: str, dates: list[str]) -> str:
 def main():
     os.makedirs(REPORTS_DIR, exist_ok=True)
 
-    # 1. 데이터 fetch
-    rows = fetch_sheet_data()
-    if not rows:
+    # 1. 오늘 스냅샷 fetch
+    items = fetch_today()
+    if not items:
         print("❌ 데이터 없음 — 종료")
         return
+    print(f"   {len(items)}건 수집")
 
-    records = parse_rows(rows)
-    if not records:
-        print("❌ 파싱된 레코드 없음 — 종료")
+    # 2. 아카이브에 병합
+    archive = load_archive()
+    is_new = merge_snapshot(archive, items)
+    save_archive(archive)
+
+    if not is_new:
         return
-
-    dates = extract_dates(records)
-    print(f"📅 데이터 날짜: {len(dates)}일 ({dates[0] if dates else '?'} ~ {dates[-1] if dates else '?'})")
-
-    # 2. 새 데이터 확인
-    state = load_state()
-    latest_date = dates[-1] if dates else ""
-
-    if state["last_date"] and latest_date <= state["last_date"]:
-        print(f"⏭ 새 데이터 없음 (마지막: {state['last_date']}) — 스킵")
-        return
-
-    print(f"🆕 새 데이터 감지! {state['last_date'] or '(첫 실행)'} → {latest_date}")
 
     # 3. 통계 계산
-    stats = compute_stats(records, dates)
+    dates = sorted(archive["snapshots"].keys())
+    stats = compute_stats(archive)
 
-    # 4. Claude 분석 (API 키 있으면)
+    # 4. Claude 분석
     ai_report = call_claude(stats, dates)
 
-    # 5. 리포트 생성
+    # 5. 리포트 저장
     if ai_report:
         report = ai_report
     else:
-        # Claude 없이 통계만
-        date_range = f"{dates[0]} ~ {dates[-1]}" if dates else "불명"
-        today = datetime.now().strftime("%Y-%m-%d")
-        report = f"""# YES24 IT 베스트셀러 시장 분석 리포트
+        date_range = f"{dates[0]} ~ {dates[-1]}"
+        report = f"# YES24 IT 베스트셀러 시장 분석 리포트\n\n> 분석 기간: {date_range} ({len(dates)}일)\n> 생성일: {TODAY}\n\n{stats}\n"
 
-> 분석 기간: {date_range}
-> 생성일: {today}
-> 데이터: YES24 IT/모바일 일별 베스트셀러 (자동 생성)
-
-{stats}
-"""
-
-    # 6. 리포트 메타데이터 (build_reports.py용)
-    meta_header = ""
-    if not ai_report:
-        meta_header = ""  # Claude 리포트에는 이미 헤더 포함
-
-    # 7. 저장
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         f.write(report)
 
-    save_state(latest_date)
-    print(f"✅ 리포트 생성 완료: {REPORT_PATH}")
-    print(f"   최신 데이터 날짜: {latest_date}")
+    print(f"✅ 리포트 생성: {REPORT_PATH}")
+    print(f"   누적 {archive['total_days']}일, {sum(len(v) for v in archive['snapshots'].values())}건")
 
 
 if __name__ == "__main__":
