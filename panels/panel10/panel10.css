@@ -639,8 +639,9 @@
 
 @media(max-width:768px){
   .panel10-scope .kw-layout{grid-template-columns:1fr!important;}
-  .panel10-scope .kw-sidebar{max-height:40vh;overflow-y:auto;border-right:none;border-bottom:1px solid var(--border);}
-  .panel10-scope #kwGraph{height:300px!important;}
+  .panel10-scope .kw-sidebar{display:none!important;}
+  .panel10-scope #kwGraph{height:250px!important;}
+  .panel10-scope .kw-card-grid{grid-template-columns:1fr!important;}
 }
 
 /* Panel10 positioning은 index.html 인라인 <style>에서 정의 (panel7과 동일 패턴) */

@@ -114,8 +114,8 @@
 .pd2-footer-r{font-size:10px;font-weight:700;color:#1a1a18;letter-spacing:.06em;}
 
 @media(max-width:768px){
-  .prop-wrap{grid-template-columns:1fr!important;grid-template-rows:auto auto;}
-  .prop-preview{max-height:50vh;overflow-y:auto;}
+  .prop-wrap{grid-template-columns:1fr!important;grid-template-rows:auto;}
+  .prop-preview{display:none!important;}
   .prop-field-row{grid-template-columns:1fr!important;}
   .pd2-reader-grid{grid-template-columns:1fr!important;}
 }

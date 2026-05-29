@@ -183,5 +183,5 @@
 
 @media(max-width:768px){
   .panel12-scope .ms-layout{grid-template-columns:1fr!important;}
-  .panel12-scope .ms-sidebar{max-height:30vh;overflow-y:auto;border-right:none;border-bottom:1px solid var(--ms-border);}
+  .panel12-scope .ms-sidebar{display:none!important;}
 }

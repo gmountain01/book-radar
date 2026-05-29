@@ -65,7 +65,7 @@
 
 @media(max-width:768px){
   .meet-wrap{grid-template-columns:1fr!important;}
-  .meet-doc-view{max-height:60vh;overflow-y:auto;}
+  .meet-doc-view{display:none!important;}
   .meet-field-row{grid-template-columns:1fr!important;}
   .md-info-grid{grid-template-columns:1fr!important;}
   .md-terms-grid{grid-template-columns:1fr!important;}

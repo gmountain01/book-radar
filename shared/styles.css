@@ -795,18 +795,22 @@ button { font-family: inherit; }
 
 /* ── 모바일 (<=768px) ── */
 @media (max-width: 768px) {
-  :root { --sb-w: 0px; --hdr-h: 52px; }
+  :root { --sb-w: 0px; --hdr-h: 40px; }
 
   /* 햄버거 표시 */
   .mobile-menu-btn { display: flex; }
 
-  /* 헤더 컴팩트 */
+  /* 헤더 컴팩트 — 1줄로 압축 + 스크롤 시 숨김 */
   .hdr {
-    padding: .5rem .75rem; gap: .5rem;
+    padding: .35rem .75rem; gap: .35rem;
     padding-left: max(.75rem, env(safe-area-inset-left));
+    flex-wrap: nowrap;
+    transition: transform .25s ease;
   }
-  .hdr-left h1 { font-size: 1rem; }
-  .hdr-left .tag { font-size: 9px; padding: 1px 6px; }
+  .hdr.hdr-hidden { transform: translateY(-100%); }
+  .hdr-left h1 { font-size: .9rem; white-space: nowrap; }
+  .hdr-left .tag { display: none; }
+  .hdr-right { display: none; }
 
   /* 사이드바 오프캔버스 */
   .sidebar {

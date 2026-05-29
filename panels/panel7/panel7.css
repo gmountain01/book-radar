@@ -712,10 +712,30 @@
     .yt-scope .publish-tier-2 { background: #DBEAFE; color: #1E40AF; border: 1px solid #BFDBFE; }
     .yt-scope .publish-tier-3 { background: #F3F4F6; color: #6B7280; border: 1px solid #E5E7EB; }
 
+/* 모바일 탭바 (데스크톱 숨김) */
+.yt-mobile-tabs{display:none;}
+
 @media(max-width:768px){
+  .yt-scope #sidebar{display:none!important;}
+  .yt-scope #yt-app{flex-direction:column;}
+  .yt-mobile-tabs{
+    display:flex!important;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    border-bottom:1px solid var(--border,#E4E4E7);background:var(--card-bg,#fff);
+    flex-shrink:0;gap:0;
+  }
+  .yt-mob-tab{
+    flex-shrink:0;padding:8px 12px;font-size:11px;font-weight:600;
+    border:none;background:none;cursor:pointer;color:var(--text-muted,#71717A);
+    border-bottom:2px solid transparent;white-space:nowrap;
+    font-family:inherit;transition:all .12s;
+  }
+  .yt-mob-tab.active{color:var(--accent,#4F46B8);border-bottom-color:var(--accent,#4F46B8);}
   .yt-scope .yt-card-grid{grid-template-columns:1fr!important;}
   .yt-scope .yt-modal-content{width:95vw!important;max-width:none!important;margin:1rem;}
   .yt-scope .yt-rookie-grid{grid-template-columns:1fr!important;}
+  .yt-scope .yt-search-bar{flex-wrap:wrap;}
+  .yt-scope .yt-search-bar input{min-width:0;flex:1;}
+  .yt-scope #yt-main{padding:12px!important;}
 }
 
 /* ═══════ 유튜버 분석 끝 ═══════ */

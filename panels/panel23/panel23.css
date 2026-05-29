@@ -145,10 +145,17 @@
 .p23-drop-overlay.visible{display:flex;}
 
 /* TOC 사이드바 */
-.p23-toc{background:var(--surface,#fff);border-right:1px solid var(--border,#dddbd2);overflow-y:auto;padding:0;display:flex;flex-direction:column;}
+.p23-toc{background:var(--surface,#fff);border-right:1px solid var(--border,#dddbd2);overflow:hidden;padding:0;display:flex;flex-direction:column;}
 
-/* 리포트 목록 섹션 */
-.p23-rpt-section{border-bottom:1px solid var(--border,#dddbd2);}
+/* 사이드바 탭 (리포트/목차 전환) */
+.p23-toc-tabs{display:flex;border-bottom:1px solid var(--border,#dddbd2);flex-shrink:0;}
+.p23-toc-tab{flex:1;padding:8px 0;font-size:11px;font-weight:600;color:var(--muted,#56544e);background:var(--surface2,#f4f4f5);border:none;cursor:pointer;transition:all .12s;border-bottom:2px solid transparent;}
+.p23-toc-tab:hover{color:var(--text,#1a1917);background:var(--surface,#fff);}
+.p23-toc-tab.active{color:var(--accent,#4F46B8);background:var(--surface,#fff);border-bottom-color:var(--accent,#4F46B8);}
+.p23-toc-pane{display:none;overflow-y:auto;flex:1;}
+.p23-toc-pane.active{display:block;}
+
+/* 리포트 목록 */
 .p23-toc-title{font-size:10px;font-weight:700;color:var(--muted,#56544e);text-transform:uppercase;letter-spacing:.08em;padding:12px 16px 8px;margin:0;}
 .p23-rpt-item{display:block;width:100%;text-align:left;padding:10px 16px;border:none;background:none;cursor:pointer;border-left:3px solid transparent;transition:all .12s;}
 .p23-rpt-item:hover{background:var(--accent-light,#eeedfb);}
@@ -158,14 +165,20 @@
 .p23-rpt-item.active .p23-rpt-item-title{color:var(--accent,#4F46B8);}
 .p23-rpt-item-summary{font-size:10px;color:var(--muted,#56544e);margin-top:3px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 
-/* 문서 목차 섹션 */
-.p23-toc-nav-section{flex:1;overflow-y:auto;background:var(--surface2,#edece7);padding:0 0 12px;}
-.p23-toc-nav-section .p23-toc-title{background:var(--surface2,#edece7);}
+/* 문서 목차 */
 .p23-toc-item{display:block;width:100%;text-align:left;padding:6px 16px;font-size:12px;color:var(--text,#1a1917);border:none;background:none;cursor:pointer;line-height:1.5;border-left:3px solid transparent;transition:background .12s,border-color .12s;}
 .p23-toc-item:hover{background:rgba(79,70,184,.06);}
 .p23-toc-item.active{border-left-color:var(--accent,#4F46B8);background:rgba(79,70,184,.06);font-weight:600;color:var(--accent,#4F46B8);}
 .p23-toc-item.p23-toc-h3{padding-left:28px;font-size:11px;color:var(--muted,#56544e);}
 .p23-toc-item.p23-toc-h3.active{color:var(--accent,#4F46B8);}
+
+/* 모바일 리포트 드롭다운 (데스크톱 숨김) */
+.p23-mobile-rpt-select{
+  display:none;width:100%;padding:8px 12px;font-size:13px;font-weight:500;
+  border:1px solid var(--border,#dddbd2);border-radius:8px;
+  background:var(--surface,#fff);color:var(--text,#1a1917);
+  font-family:inherit;margin:0;flex-shrink:0;
+}
 
 /* 메인 콘텐츠 영역 — 전체 폭 활용 */
 .p23-main{overflow-y:auto;padding:0;background:var(--bg,#f4f3ef);}
@@ -290,12 +303,21 @@
 
 /* ── 반응형 ── */
 @media(max-width:768px){
+  /* 피드: 소스 필터 사이드바 숨김 — 모바일에서 전체 피드만 표시 */
   .p23-trend-layout{grid-template-columns:1fr!important;}
+  .p23-sources{display:none!important;}
+
+  /* 트렌드 */
   .p23-trend-summary{grid-template-columns:repeat(2,1fr)!important;}
   .p23-surge-row{grid-template-columns:1fr!important;}
   .p23-signal-list{grid-template-columns:1fr!important;}
+
+  /* 리포트: 사이드바(목록+목차) 숨김 — 드롭다운으로 대체 */
   .p23-rpt-layout{grid-template-columns:1fr!important;}
-  .p23-toc{max-height:30vh;border-right:none;border-bottom:1px solid var(--border,#dddbd2);}
+  .p23-toc{display:none!important;}
+  .p23-mobile-rpt-select{display:block!important;}
+  .p23-content{padding:16px!important;}
+  .p23-upload-bar{flex-wrap:wrap;gap:6px;}
 }
 
 @media print{

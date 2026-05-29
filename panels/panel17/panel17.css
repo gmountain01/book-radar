@@ -266,7 +266,7 @@
 .p17c-ref-val{font-size:9px;color:var(--text,#1c1c1a)}
 
 @media(max-width:768px){
-  .p17-spread{grid-template-columns:1fr!important;gap:.5rem;}
+  .p17-spread{display:none!important;}
   .p17-edit{flex-direction:column!important;}
   .p17-sidebar{width:100%!important;}
   .p17-ai-section{grid-template-columns:1fr!important;}

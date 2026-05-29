@@ -445,6 +445,23 @@ function toggleMobileSidebar(){
 }
 window.toggleMobileSidebar = toggleMobileSidebar;
 
+/* ── 모바일: 스크롤 시 헤더 자동 숨김 ── */
+(function(){
+  var hdr = document.querySelector('.hdr');
+  if(!hdr) return;
+  var lastMap = new WeakMap();
+  document.addEventListener('scroll', function(e){
+    if(window.innerWidth > 768){ hdr.classList.remove('hdr-hidden'); return; }
+    var t = e.target;
+    if(!t || t === document || !t.scrollTop && t.scrollTop !== 0) return;
+    var y = t.scrollTop;
+    var prev = lastMap.get(t) || 0;
+    if(y > 50 && y > prev){ hdr.classList.add('hdr-hidden'); }
+    else{ hdr.classList.remove('hdr-hidden'); }
+    lastMap.set(t, y);
+  }, true);
+})();
+
 // 사이드바 기본 collapsed + 호버 확장
 document.addEventListener('DOMContentLoaded', function() {
   var sb = document.getElementById('mainSidebar');

@@ -1340,6 +1340,13 @@
         </button>
       </div>
     </nav>
+    <div class="yt-mobile-tabs" id="ytMobileTabs">
+      <button class="yt-mob-tab active" onclick="ytSwitchPanel(0);this.parentNode.querySelectorAll('.yt-mob-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active')">🔍 검색</button>
+      <button class="yt-mob-tab" onclick="ytSwitchPanel(1);this.parentNode.querySelectorAll('.yt-mob-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active')">📊 분석</button>
+      <button class="yt-mob-tab" onclick="ytSwitchPanel(5);this.parentNode.querySelectorAll('.yt-mob-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active')">🚀 루키</button>
+      <button class="yt-mob-tab" onclick="ytSwitchPanel(3);this.parentNode.querySelectorAll('.yt-mob-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active')">⚖️ 비교</button>
+      <button class="yt-mob-tab" onclick="ytSwitchPanel(4);this.parentNode.querySelectorAll('.yt-mob-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active')">⭐ 저장</button>
+    </div>
     <main id="yt-main" style="flex:1;height:100%;overflow-y:auto;padding:24px 24px 48px;box-sizing:border-box;">
 
 

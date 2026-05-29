@@ -57,19 +57,22 @@ ROOT.innerHTML =
     '</div>' +
     '<div class="p23-rpt-layout" id="p23_rptLayout">' +
       '<div class="p23-toc" id="p23_toc">' +
-        '<div class="p23-rpt-section">' +
-          '<div class="p23-toc-title">리포트 목록</div>' +
+        '<div class="p23-toc-tabs">' +
+          '<button class="p23-toc-tab active" data-pane="list" onclick="p23_switchTocTab(\'list\',this)">📋 리포트</button>' +
+          '<button class="p23-toc-tab" data-pane="nav" onclick="p23_switchTocTab(\'nav\',this)">📑 목차</button>' +
+        '</div>' +
+        '<div class="p23-toc-pane active" id="p23_tocPaneList">' +
           '<div id="p23_rptList"></div>' +
         '</div>' +
-        '<div class="p23-toc-nav-section">' +
-          '<div class="p23-toc-title">문서 목차</div>' +
+        '<div class="p23-toc-pane" id="p23_tocPaneNav">' +
           '<div id="p23_tocNav"></div>' +
         '</div>' +
       '</div>' +
       '<div class="p23-main" id="p23_main">' +
+        '<select class="p23-mobile-rpt-select" id="p23_mobileRptSelect" onchange="p23_mobileSelectReport(this)"><option value="">리포트 선택...</option></select>' +
         '<div class="p23-empty" id="p23_empty"><div class="p23-empty-icon">📊</div>' +
           '<div class="p23-empty-text">시장 분석 리포트</div>' +
-          '<div class="p23-empty-hint">왼쪽 목록에서 리포트를 선택하거나<br>"직접 업로드"로 .md 파일을 열 수 있습니다</div></div>' +
+          '<div class="p23-empty-hint">리포트를 선택하거나 "직접 업로드"로 .md 파일을 열 수 있습니다</div></div>' +
         '<div class="p23-content" id="p23_content" style="display:none"></div>' +
       '</div>' +
       '<div class="p23-drop-overlay" id="p23_dropOverlay">📂 여기에 .md 파일을 놓으세요</div>' +
@@ -705,19 +708,47 @@ function _renderReportListInner() {
     '</button>';
   });
   $rptList.innerHTML = h;
+  // 모바일 드롭다운도 업데이트
+  var sel = document.getElementById('p23_mobileRptSelect');
+  if (sel) {
+    var opts = '<option value="">리포트 선택...</option>';
+    _reportsList.forEach(function(r, idx) {
+      opts += '<option value="' + idx + '">[' + esc(r.date||'') + '] ' + esc(r.title) + '</option>';
+    });
+    sel.innerHTML = opts;
+  }
 }
+
+window.p23_mobileSelectReport = function(sel) {
+  var idx = parseInt(sel.value);
+  if (isNaN(idx)) return;
+  p23_openReport(idx, null);
+};
+
+/* ── 사이드바 탭 전환 (리포트 목록 / 문서 목차) ── */
+var $tocPaneList = document.getElementById('p23_tocPaneList');
+var $tocPaneNav = document.getElementById('p23_tocPaneNav');
+
+window.p23_switchTocTab = function(pane, btn) {
+  var toc = document.getElementById('p23_toc');
+  toc.querySelectorAll('.p23-toc-tab').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  $tocPaneList.classList.toggle('active', pane === 'list');
+  $tocPaneNav.classList.toggle('active', pane === 'nav');
+};
 
 window.p23_openReport = function(idx, btn) {
   var r = _reportsList[idx];
   if (!r) return;
-  // 활성 표시
   $rptList.querySelectorAll('.p23-rpt-item').forEach(function(b) { b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  // 렌더링
   $rptTitle.textContent = r.title;
   $pdfBtn.disabled = false;
   currentMd = r.content;
   renderMd(currentMd);
+  // 리포트 선택 후 목차 탭으로 자동 전환
+  var navBtn = document.querySelector('.p23-toc-tab[data-pane="nav"]');
+  if (navBtn) p23_switchTocTab('nav', navBtn);
 };
 
 $fileInput.addEventListener('change', function(e) { if (e.target.files[0]) loadFile(e.target.files[0]); });
