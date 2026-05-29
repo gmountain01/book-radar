@@ -99,7 +99,11 @@ def build_reports_js():
         json.dump(out, f, ensure_ascii=False)
         f.write(";")
 
-    print(f"✅ reports.js 빌드 완료: {len(reports)}개 리포트")
+    json_path = os.path.join(REPORTS_DIR, "reports.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False)
+
+    print(f"✅ reports.js/json 빌드 완료: {len(reports)}개 리포트")
     for r in reports:
         print(f"   [{r['date']}] {r['title']}")
 

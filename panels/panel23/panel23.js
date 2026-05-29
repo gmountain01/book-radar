@@ -113,9 +113,10 @@ window.p23_switchTab = function(tab, btn) {
 // ══════════════════════════════════════════════════════
 // A. 피드 (최신 RSS)
 // ══════════════════════════════════════════════════════
-function loadData() {
-  if (window._RSS_FEEDS) {
-    _feedData = window._RSS_FEEDS;
+var _REMOTE_BASE = 'https://gmountain01.github.io/publishing-helper/data/';
+
+function _applyFeedData() {
+  if (_feedData) {
     renderSources();
     filterAndRender();
     if (_feedData.fetched_at) {
@@ -123,15 +124,35 @@ function loadData() {
       $fetchedAt.textContent = '수집: ' + d.toLocaleDateString('ko-KR') + ' ' + d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
     }
   }
-  if (window._RSS_ARCHIVE) {
-    _archive = window._RSS_ARCHIVE;
+  if (_archive) {
     $fetchedAt.textContent = '누적 ' + (_archive.total_articles || 0) + '건 | ' + ($fetchedAt.textContent || '');
   }
   if (!_feedData && !_archive) {
     $feedList.innerHTML = '<div class="p23-empty"><div class="p23-empty-icon">📡</div>' +
       '<div class="p23-empty-text">RSS 데이터 없음</div>' +
-      '<div class="p23-empty-hint">scripts/fetch_rss.py를 실행하세요.</div></div>';
+      '<div class="p23-empty-hint">네트워크 연결을 확인하세요.</div></div>';
   }
+}
+
+function _fetchRemoteJson(url) {
+  return fetch(url + '?t=' + Date.now()).then(function(r) {
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  });
+}
+
+function loadData() {
+  /* 1) 로컬 <script> 로드 데이터가 있으면 바로 사용 */
+  if (window._RSS_FEEDS) _feedData = window._RSS_FEEDS;
+  if (window._RSS_ARCHIVE) _archive = window._RSS_ARCHIVE;
+
+  if (_feedData || _archive) { _applyFeedData(); return; }
+
+  /* 2) 로컬 데이터 없으면 GitHub Pages에서 fetch */
+  Promise.all([
+    _fetchRemoteJson(_REMOTE_BASE + 'rss/feeds.json').then(function(d) { _feedData = d; }).catch(function(){}),
+    _fetchRemoteJson(_REMOTE_BASE + 'rss/archive.json').then(function(d) { _archive = d; }).catch(function(){})
+  ]).then(_applyFeedData);
 }
 
 function renderSources() {
@@ -376,6 +397,16 @@ function renderSourceActivity(articles) {
 var _reportsList = [];
 function renderReportList() {
   _reportsList = (window._REPORTS && window._REPORTS.reports) || [];
+  if (!_reportsList.length) {
+    /* 리모트 폴백 */
+    _fetchRemoteJson(_REMOTE_BASE + 'reports/reports.json')
+      .then(function(d) { _reportsList = (d && d.reports) || []; _renderReportListInner(); })
+      .catch(function() { _renderReportListInner(); });
+    return;
+  }
+  _renderReportListInner();
+}
+function _renderReportListInner() {
   if (!_reportsList.length) {
     $rptList.innerHTML = '<div style="padding:8px 16px;font-size:11px;color:var(--muted,#8b8880);">리포트 없음</div>';
     return;
