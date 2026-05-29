@@ -116,7 +116,7 @@ window.p23_switchTab = function(tab, btn) {
 // ══════════════════════════════════════════════════════
 // A. 피드 (최신 RSS)
 // ══════════════════════════════════════════════════════
-var _REMOTE_BASE = 'https://gmountain01.github.io/publishing-helper/data/';
+var _REMOTE_BASE = 'https://gmountain01.github.io/book-radar/data/';
 
 function _applyFeedData() {
   if (_feedData || _archive) {
