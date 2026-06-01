@@ -250,6 +250,10 @@ select{background:var(--surface);}
 #panel22.active{display:block;overflow-y:auto;}
 #panel23{display:none;position:fixed;top:var(--hdr-h,60px);left:var(--sb-w,220px);right:0;bottom:0;z-index:80;background:var(--bg);}
 #panel23.active{display:flex;flex-direction:column;overflow:hidden;}
+#panel24{display:none;position:fixed;top:var(--hdr-h,60px);left:var(--sb-w,220px);right:0;bottom:0;z-index:80;background:var(--bg);overflow-y:auto;padding:2rem;}
+#panel24.active{display:block;}
+#panel25{display:none;position:fixed;top:var(--hdr-h,60px);left:var(--sb-w,220px);right:0;bottom:0;z-index:80;background:var(--bg);overflow-y:auto;padding:1.5rem;}
+#panel25.active{display:block;}
 
 /* ══════════════════════════════════════════════════════════════════
    업로드
@@ -846,7 +850,7 @@ button { font-family: inherit; }
 
   /* position:fixed 패널 전폭 */
   #panel7, #panel10, #panel12, #panel13, #panel14, #panel15,
-  #panel16, #panel17, #panel18, #panel21, #panel22, #panel23 {
+  #panel16, #panel17, #panel18, #panel21, #panel22, #panel23, #panel24, #panel25 {
     left: 0 !important;
   }
 

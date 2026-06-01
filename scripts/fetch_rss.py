@@ -18,6 +18,7 @@ from email.utils import parsedate_to_datetime
 
 FEEDS = [
     # ── 글로벌 빅테크 ──
+    {"id": "anthropic",  "name": "Anthropic",          "url": "https://www.anthropic.com/news",                       "icon": "🟤", "tags": ["AI", "LLM", "Claude"], "type": "scrape"},
     {"id": "openai",     "name": "OpenAI",            "url": "https://openai.com/blog/rss.xml",                      "icon": "🟢", "tags": ["AI", "LLM", "GPT"]},
     {"id": "google_ai",  "name": "Google AI",          "url": "https://blog.google/technology/ai/rss/",              "icon": "🔵", "tags": ["AI", "Gemini", "Search"]},
     {"id": "deepmind",   "name": "DeepMind",           "url": "https://deepmind.google/blog/rss.xml",               "icon": "🧠", "tags": ["AI", "Research", "Science"]},
@@ -119,6 +120,62 @@ def extract_keywords(title: str, summary: str) -> list[str]:
         if pat in text:
             found.add(kw)
     return sorted(found)
+
+
+def scrape_anthropic_news(html: str) -> list[dict]:
+    """Anthropic /news 페이지를 HTML 파싱하여 기사 목록을 반환한다."""
+    items = []
+    MONTH_MAP = {
+        "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04",
+        "May": "05", "Jun": "06", "Jul": "07", "Aug": "08",
+        "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12",
+    }
+    DATE_RE = re.compile(
+        r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2}),?\s+(\d{4})"
+    )
+    # 카테고리 라벨 (제목에서 제거용)
+    CATEGORIES = {"Product", "Announcements", "Research", "Company", "Policy",
+                  "Safety", "Alignment", "Engineering", "Interpretability"}
+    LINK_RE = re.compile(
+        r'<a[^>]+href="(/(?:news|research|blog)/[^"]+)"[^>]*>(.*?)</a>',
+        re.DOTALL,
+    )
+    seen_links = set()
+    for m in LINK_RE.finditer(html):
+        path, inner = m.group(1), m.group(2)
+        # 태그 제거 후 텍스트 토큰 추출
+        raw = re.sub(r"<[^>]+>", "\n", inner)
+        lines = [ln.strip() for ln in raw.splitlines() if ln.strip()]
+        # 날짜·카테고리를 분리하고 나머지를 제목으로
+        date = ""
+        title_parts = []
+        for ln in lines:
+            dm = DATE_RE.fullmatch(ln)
+            if dm:
+                date = f"{dm.group(3)}-{MONTH_MAP[dm.group(1)]}-{int(dm.group(2)):02d}"
+                continue
+            if ln in CATEGORIES:
+                continue
+            title_parts.append(ln)
+        # 첫 줄 = 제목, 나머지 = 설명 (Anthropic은 제목과 설명이 별도 div)
+        title = title_parts[0] if title_parts else ""
+        summary = " ".join(title_parts[1:]).strip()[:300] if len(title_parts) > 1 else ""
+        # HTML 엔티티 정리
+        for ent, ch in [("&#x27;", "'"), ("&quot;", '"'), ("&amp;", "&")]:
+            title = title.replace(ent, ch)
+            summary = summary.replace(ent, ch)
+        if not title or len(title) < 5 or path in seen_links:
+            continue
+        seen_links.add(path)
+        link = "https://www.anthropic.com" + path
+        # fullmatch 실패 시 주변 컨텍스트에서 날짜 탐색
+        if not date:
+            ctx = html[max(0, m.start() - 300): m.start()]
+            dm2 = DATE_RE.search(ctx)
+            if dm2:
+                date = f"{dm2.group(3)}-{MONTH_MAP[dm2.group(1)]}-{int(dm2.group(2)):02d}"
+        items.append({"title": title, "link": link, "date": date, "summary": summary})
+    return items[:MAX_ITEMS_PER_FEED]
 
 
 def parse_feed(xml_text: str) -> list[dict]:
@@ -258,13 +315,16 @@ def main():
 
     for feed_conf in FEEDS:
         print(f"📡 {feed_conf['name']}...", end=" ")
-        xml_text = fetch_xml(feed_conf["url"])
-        if not xml_text:
+        raw = fetch_xml(feed_conf["url"])
+        if not raw:
             print("SKIP")
             latest_feeds.append({**feed_conf, "items": []})
             continue
 
-        items = parse_feed(xml_text)
+        if feed_conf.get("type") == "scrape":
+            items = scrape_anthropic_news(raw)
+        else:
+            items = parse_feed(raw)
         added = merge_into_archive(archive, feed_conf, items)
         total_added += added
         print(f"{len(items)}건 (신규 {added}건)")

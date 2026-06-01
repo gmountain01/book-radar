@@ -1,6 +1,119 @@
 {
   "articles": [
     {
+      "id": "5357bbf04766",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "오픈 모델, 폐쇄형에 4개월 뒤져…에포크 \"격차 다시 확대\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211153",
+      "date": "2026-05-31",
+      "summary": "개방형 AI 모델과 폐쇄형 모델 간 성능 격차가 올해 들어 다시 소폭 벌어진 것으로 나타났다. 다만 격차는 여전히 수개월 수준에 그쳤다.비영리 연구 기관인 에포크 AI(Epoch AI)는 29일(현지시간) 보고서를 통해 최고 수준의 오픈웨이트 모델이 최고 수준의 폐쇄형 모델보다 평균 4개월 정도 뒤처져 있다고 밝혔다.이번 분석은 자체 개발한 '에포크 역량 지수(ECI)'를 기반으로 이뤄졌다. ECI는 다양한 AI 평가 결과를 종합해 모델의 전반적인 성능 수준을 측정하는 지표다.ECI 기준 최고 점수를 기록한 모델은 지난 4월 공개된",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "333b5e4d0b72",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "가우디오랩, 'AI 오디오'로 모빌리티 시장 조준...\"차량용 인포테인먼트 사운드 고도화\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211149",
+      "date": "2026-05-31",
+      "summary": "가우디오랩(대표 오현오)은 최근 자동차 전장 전문 모트렉스와 AI 오디오 기술 탑재 ‘차량용 인포테인먼트 사운드 솔루션 고도화’ MOU를 체결, 모빌리티 산업 진출을 확장한다고 31일 밝혔다.모트렉스는 가우디오랩의 AI 오디오 원천기술을 차량용 IVI(In-Vehicle Infortainment) 양산 제품에 적용하기 위한 기술 협력을 추진한다. 완성차 고객사의 차세대 SDV(Software Defined Vehicle) 요구에 대응하고, AI 사운드 사용자경험(UX)을 강화한다는 전략이다.가우디오랩 관계자는 “최근 자동차 업계에서",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "d1289452bf14",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "소프트뱅크, 프랑스에 최대 131조 투자…유럽 최대 AI 인프라 구축",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211144",
+      "date": "2026-05-31",
+      "summary": "일본 소프트뱅크가 프랑스에 최대 750억유로(약 131조원)의 AI 데이터센터 인프라를 구축하는 초대형 투자 계획을 발표했다. 계획이 현실화하면 유럽 최대 규모의 AI 데이터센터 프로젝트가 탄생하게 된다.30일(현지시간) 라트리뷴 에 따르면, 소프트뱅크는 프랑스 북부 오드프랑스 지역을 중심으로 2031년까지 450억유로(약 79조원)를 우선 투자해 총 3.1기가와트(GW) 규모의 AI 데이터센터 컴퓨팅 용량을 구축할 계획이라고 밝혔다.대상 지역은 됭케르크, 보스켈, 부샹 등이며, 이후 추가 개발을 통해 총투자 규모를 750억유로,",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "69ba2225e959",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[기고] 한국딥러닝 “제조 AI 보안의 핵심: 원문은 이해하되, 활용은 통제하라”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211148",
+      "date": "2026-05-31",
+      "summary": "■ 제조 문서를 AI가 읽는 순간, 보안은 생산 경쟁력의 문제가 된다기업 AI 도입 논의에서 가장 먼저 등장하는 질문은 대부분 ‘성능’입니다. 문서를 얼마나 정확하게 읽는가, 업무를 얼마나 빠르게 처리하는가, 사람이 검토하던 과정을 얼마나 줄일 수 있는가가 주요 평가 기준이 됩니다. 그러나, 실제 제조 현장에 들어가면 질문은 곧 달라집니다. 이 문서를 AI가 읽어도 되는가. AI가 읽은 결과는 어디에 저장되는가. 누가 그 결과를 볼 수 있는가. 협력사나 외부 시스템과 공유할 수 없는 문서는 무엇인가. 특히, 제조업에서는 이 질문이",
+      "keywords": [
+        "ML/DL",
+        "Security"
+      ],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "126bcdb39b53",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "엔비디아, PC CPU 시장 본격 진출…MS와 첫 ‘윈도우 AI PC’ 선보인다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211142",
+      "date": "2026-05-31",
+      "summary": "AI 칩 시장을 주도하고 있는 엔비디아가 본격적으로 PC 프로세서 시장에 진출한다. 마이크로소프트(MS)와 손잡고 자사 칩을 메인 프로세서로 탑재한 첫 윈도우 PC를 공개할 예정이다.30일(현지시간) 악시오스에 따르면, 엔비디아와 MS는 다음 주 대만에서 열리는 '컴퓨텍스 2026'과 미국 샌프란시스코에서 개최되는 'MS 빌드 2026'에서 공동 개발한 차세대 AI PC를 발표할 예정이다.새 제품은 엔비디아의 프로세서를 주 CPU로 사용하는 최초의 윈도우 PC로 알려졌다. 또 MS의 '서피스(Surface)' 브랜드뿐 아니라 델 등",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "3c8135aac01f",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "메타·구글 등, 미국 교육구에 400억 지급 합의…‘SNS 유해성 줄소송’ 첫 선례",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211143",
+      "date": "2026-05-31",
+      "summary": "메타와 틱톡, 구글 등 세계 최대 소셜미디어 기업들이 청소년 정신건강 악화와 학교 자원 낭비를 초래했다는 소송을 제기한 미국의 한 교육구와 약 2700만달러(약 400억원) 규모의 합의에 도달한 것으로 알려졌다.29일(현지시간) 블룸버그에 따르면, 메타는 미국 켄터키주의 브레시트 카운티 교육구에 900만달러(약 130억원)를 지급하기로 했다.또 스냅과 틱톡은 각각 800만달러(약 120억원)씩 부담한다. 유튜브는 200만달러(약 30억원)가 넘는 금액을 지급하는 동시에 교사들의 수업 활용을 지원하는 교육 프로그램도 제공하기로 했다.",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "33878cb0d951",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "아마존, 베드록 플랫폼에 ‘그록’ 추가 협상 중...\"주요 모델 다 모은다\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211146",
+      "date": "2026-05-31",
+      "summary": "아마존웹서비스(AWS)가 AI 모델 ‘그록(Grok)’을 자체 생성 AI 플랫폼에 추가하는 방안을 추진하는 것으로 알려졌다. AWS는 AI 모델 선택지를 더 확대하게 되고, 머스크의 AI 사업은 수백만명의 기업 고객에게 접근할 수 있는 새로운 유통망을 확보하게 될 기회다.29일(현지시간) 비즈니스 인사이더에 따르면, AWS는 스페이스X의 그록을 자체 AI 플랫폼인 베드록(Bedrock)에 탑재하기 위한 협상을 진행 중이다. 스페이스X가 모델을 이미 AWS에 전달한 것으로 전해지면서, 실제 서비스 출시가 임박했다는 관측이 나오고 있다",
+      "keywords": [
+        "Generative AI"
+      ],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "e4c60bf85d27",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "CNN, 퍼플렉시티에 저작권 소송…“수천 건 콘텐츠 무단 복제”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211147",
+      "date": "2026-05-31",
+      "summary": "미국의 뉴스 채널 CNN이 퍼플렉시티를 상대로 저작권 침해 소송을 제기했다. 로이터에 따르면, CNN은 28일(현지시간) 뉴욕 연방지방법원에 제출한 소장에서 퍼플렉시티가 자사의 기사, 영상, 이미지 등 수천 건의 콘텐츠를 무단으로 복제해 AI 서비스 운영에 활용하고 있다고 주장했다.또 퍼플렉시티가 CNN의 보도 내용을 기반으로 원본과 동일하거나 실질적으로 유사한 경쟁 콘텐츠를 생성·배포함으로써 저작권을 침해하고 있다고 밝혔다.CNN은 소송을 통해 손해배상과 함께 퍼플렉시티가 자사의 지식재산권을 침해하는 행위를 중단하도록 하는 법원",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "40078cc93130",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "순천, 2027년 누리호 탑재 ‘순천 SAT’ 개발 본격화…학생·기업 참여 연계",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211108",
+      "date": "2026-05-31",
+      "summary": "순천시가 2027년 누리호 6호기에 탑재될 첫 인공위성 ‘순천 SAT’ 개발을 본격화하며 지역 학생과 기업이 참여하는 연계사업을 추진한다.순천은 지난 4월 체결한 ‘순천 SAT 개발 및 실증 업무협약’을 바탕으로 국립순천대, 조선대, 전남테크노파크와 컨소시엄을 구성하고 위성 개발과 지역 연계 프로그램을 함께 진행한다고 밝혔다.이번 사업은 미래 우주 인재 양성과 지역기업 기술 역량 강화를 동시에 겨냥한다. 주요 사업은 학생참여형 ‘순천 SAT 관측 아이디어 공모전’과 기업연계형 ‘순천 SAT 개발 협력기업 발굴사업’이다.‘순천 SAT",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
       "id": "52da38a94b75",
       "source": "aitimes",
       "source_name": "AI타임스",
@@ -73,66 +186,18 @@
       "first_seen": "2026-05-31"
     },
     {
-      "id": "5be6cff8b2ce",
-      "source": "techcrunch",
-      "source_name": "TechCrunch",
-      "icon": "🟩",
-      "title": "Founders seize on Indian court ruling to revive criticism of Google’s ad business",
-      "link": "https://techcrunch.com/2026/05/29/founders-seize-on-indian-court-ruling-to-revive-criticism-of-googles-ad-business/",
-      "date": "2026-05-30",
-      "summary": "The ruling drew support from founders, while lawyers said it could force platforms to revisit how they handle trademarked keywords.",
-      "keywords": [],
-      "first_seen": "2026-05-30"
-    },
-    {
-      "id": "51cbc0bbd75c",
-      "source": "techcrunch",
-      "source_name": "TechCrunch",
-      "icon": "🟩",
-      "title": "I went to the so-called ‘steroid Olympics,’ to understand why Silicon Valley is obsessed with peptides",
-      "link": "https://techcrunch.com/2026/05/29/i-went-to-the-so-called-steroid-olympics-to-understand-why-silicon-valley-is-obsessed-with-peptides/",
-      "date": "2026-05-30",
-      "summary": "The Enhanced Games — a singular sporting competition where a majority of the athletes were on performance enhancing drugs — may herald a new business model that the tech industry is ready to embrace.",
-      "keywords": [],
-      "first_seen": "2026-05-30"
-    },
-    {
-      "id": "ed29a849a6df",
+      "id": "1541e89838de",
       "source": "aitimes",
       "source_name": "AI타임스",
       "icon": "🇰🇷",
-      "title": "[5월29일] 요미우리 감독 사건은 왜 ‘챗GPT의 비극’이 됐나",
-      "link": "https://www.aitimes.com/news/articleView.html?idxno=211089",
-      "date": "2026-05-30",
-      "summary": "일본 인기 프로야구팀 요미우리 자이언츠의 아베 신노스케 감독이 딸을 폭행한 혐의로 체포된 뒤 사임한 소식은 큰 화제가 됐습니다.일본 경찰청은 그가 도쿄 시부야구에 있는 자택에서 18세 딸을 붙잡아 바닥에 눕힌 혐의로 체포됐다고 밝혔으며, 아베 감독은 26일 석방된 뒤 기자회견을 열고 눈물을 흘리며 사임을 발표했습니다.그라운드에서도 엄격한 것으로 유명한 아베 감독은 조사관들에게 딸들의 다툼을 말리려다 화를 참지 못했다고 진술했습니다. 그는 현역 시절 이승엽의 팀 동료로, 국내 팬들에도 잘 알려진 인물입니다.그런데 일본에서는 이 사건을",
+      "title": "“단순 감지 넘어 맥락까지 본다”…그렙, AI 시험감독 기술에 ‘에이전트’ 도입",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211152",
+      "date": "2026-05-31",
+      "summary": "AI 테스팅 전문 그렙(대표 임성수)은 온라인 시험 감독 솔루션 '모니토'에 에이전트 시스템을 도입, 정확도를 향상했다고 31일 밝혔다.AI 시험감독 모니토는 ▲시선 추적 ▲얼굴 인증 ▲화면 복제 및 듀얼 모니터 사용 방지 등 AI 기반 부정행위 방지 기술과 ▲웹캠과 모바일, 화면 공유를 통한 3채널 실시간 모니터링 기능을 갖춘 온라인 시험 감독 솔루션이다. 오프라인 대비 최대 40% 수준의 운영 비용 절감 효과를 입증한 바 있다.하지만, 기존에는 ‘손이 화면 밖으로 나갔다’와 같은 단순한 동작 감지에 의존해야 했기 때문에, 부정행",
       "keywords": [
-        "GPT"
+        "AI Agent"
       ],
-      "first_seen": "2026-05-30"
-    },
-    {
-      "id": "da488f98f467",
-      "source": "aitimes",
-      "source_name": "AI타임스",
-      "icon": "🇰🇷",
-      "title": "광양, 소규모 사업장 ‘대기배출 IoT 측정기기’ 설치비 지원",
-      "link": "https://www.aitimes.com/news/articleView.html?idxno=211118",
-      "date": "2026-05-30",
-      "summary": "광양시가 소규모 대기배출사업장의 사물인터넷 측정기기 설치 부담을 줄이기 위해 2차 지원사업을 시행한다.광양은 2026년도 소규모 사업장 대상 ‘사물인터넷 측정기기 설치 지원사업’ 2차 신청을 받는다고 29일 밝혔다.사물인터넷 측정기기는 대기배출시설과 방지시설의 전류, 압력, 수소이온농도, 온도 등 운영 정보를 실시간으로 수집·전송하는 장치다. 2022년 5월 개정된 대기환경보전법에 따라 4·5종 대기배출시설 운영 사업장은 올해 12월 말까지 해당 측정기기를 설치해야 한다.광양은 의무 설치 대상인 소규모 사업장의 경제적 부담을 줄이기",
-      "keywords": [],
-      "first_seen": "2026-05-30"
-    },
-    {
-      "id": "79973a0467ad",
-      "source": "aitimes",
-      "source_name": "AI타임스",
-      "icon": "🇰🇷",
-      "title": "광양, 러시아 리얼리즘 작가 12인 기획전 ‘눈의 나라 러시아’ 개최",
-      "link": "https://www.aitimes.com/news/articleView.html?idxno=211114",
-      "date": "2026-05-30",
-      "summary": "광양시 인서리공원 반창고갤러리에서 러시아 겨울 풍경을 담은 특별기획전이 열린다.광양은 러시아 리얼리즘 작가 12인의 설경 작품 50여 점을 선보이는 ‘눈의 나라 러시아’를 오는 6월23일까지 개최한다고 밝혔다.이번 전시는 설원과 눈 덮인 자작나무 숲, 강변과 겨울 들녘 등 러시아의 겨울 풍경을 담은 작품으로 구성됐다. 관람객은 러시아 리얼리즘 미술 특유의 색채와 표현 기법을 통해 이국적인 설경을 감상할 수 있다. 초여름에 한겨울 풍경을 만나는 이색적인 ‘문화 피서’ 경험을 제공한다는 점도 특징이다.전시 이해도를 높이기 위한 도슨트",
-      "keywords": [],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "4f54dd187fdc",
@@ -256,6 +321,18 @@
       "link": "https://techcrunch.com/2026/05/30/tiktoks-road-to-becoming-a-super-app/",
       "date": "2026-05-30",
       "summary": "TikTok may be working to become the app that people use for most of their digital activities.",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "5be6cff8b2ce",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Founders seize on Indian court ruling to revive criticism of Google’s ad business",
+      "link": "https://techcrunch.com/2026/05/29/founders-seize-on-indian-court-ruling-to-revive-criticism-of-googles-ad-business/",
+      "date": "2026-05-30",
+      "summary": "The ruling drew support from founders, while lawyers said it could force platforms to revisit how they handle trademarked keywords.",
       "keywords": [],
       "first_seen": "2026-05-31"
     },
@@ -458,66 +535,6 @@
       "link": "https://www.aitimes.com/news/articleView.html?idxno=211126",
       "date": "2026-05-30",
       "summary": "글·그림 Dr. Alf",
-      "keywords": [],
-      "first_seen": "2026-05-31"
-    },
-    {
-      "id": "fae085b21ae0",
-      "source": "aitimes",
-      "source_name": "AI타임스",
-      "icon": "🇰🇷",
-      "title": "화석연료서 재생에너지로…필리핀 디젤발전소의 '태양광 변신'",
-      "link": "https://www.aitimes.com/news/articleView.html?idxno=211104",
-      "date": "2026-05-30",
-      "summary": "알손스파워는 최근 필리핀 민다나오 사란가니주 알라벨에 있는 55MW 규모 남부필리핀전력공사(SPPC) 디젤발전소를 98.7MWac 태양광 발전소로 전환한다고 밝혔다.기존 디젤 발전 자산을 재생에너지 설비로 바꾸는 사업으로, 신규 부지를 개발하는 방식보다 부지와 송전 인프라를 활용할 수 있다는 점이 특징이다.이번 사업은 알손스파워가 화석연료 발전 포트폴리오를 재생에너지 중심으로 재편하는 첫 전환 사례다. 디젤발전소는 섬 지역과 전력망이 취약한 지역에서 안정적 전원으로 쓰여왔지만, 연료비 부담과 배출 문제가 크다는 분석이다. 알손스파워",
-      "keywords": [],
-      "first_seen": "2026-05-31"
-    },
-    {
-      "id": "9df245df08a2",
-      "source": "aitimes",
-      "source_name": "AI타임스",
-      "icon": "🇰🇷",
-      "title": "아프리카 전력 투자, 석탄·대형 수력서 태양광·BESS로 이동",
-      "link": "https://www.aitimes.com/news/articleView.html?idxno=211066",
-      "date": "2026-05-30",
-      "summary": "아프리카 신규 전력 프로젝트의 무게중심이 석탄화력과 대형 수력발전에서 태양광·풍력·배터리에너지 저장장치(BESS)로 이동하고 있다. 전력 수요는 빠르게 늘고 있지만 대형 발전소는 개발 기간과 금융비용 부담이 커, 각국 정부와 투자자가 짧은 기간에 단계적으로 구축할 수 있는 재생에너지 설비를 우선 검토하는 흐름이다.AP는 28일(현지시간) 아프리카 전력 개발 시장에서 태양광과 풍력, BESS가 차세대 전원 포트폴리오의 중심으로 떠오르고 있다고 보도했다.이달 초 중국과 잠비아가 발표한 15억달러(약 2조1750억원) 규모 에너지 협정에",
-      "keywords": [],
-      "first_seen": "2026-05-31"
-    },
-    {
-      "id": "9dff2abf0739",
-      "source": "aitimes",
-      "source_name": "AI타임스",
-      "icon": "🇰🇷",
-      "title": "전남동물위생시험소, ASF 재유입 차단 위한 정밀검사·예찰 강화",
-      "link": "https://www.aitimes.com/news/articleView.html?idxno=211067",
-      "date": "2026-05-30",
-      "summary": "전라남도동물위생시험소가 아프리카돼지열병, ASF 재유입 차단을 위해 정밀검사와 예찰을 강화하고 있다고 밝혔다.전남동물위생시험소는 올해 초 지역 양돈농장에서 잇따라 발생한 ASF의 조기 발견과 재확산 방지를 위해 방역지역 이동제한 해제 이후에도 감시체계를 유지하고 있다.전남에서는 지난 1월26일 영광군을 시작으로 2월9일 나주시, 2월20일 무안군, 3월16일 함평군 등 4개 시군 양돈농장에서 ASF가 발생했다.발생농장 관련 방역지역, 역학농장, 도축장, 역학차량 등을 대상으로 임상예찰과 정밀검사를 실시했다. 발생 시군 방역지역은 지",
-      "keywords": [],
-      "first_seen": "2026-05-31"
-    },
-    {
-      "id": "aa03e6cbfa0c",
-      "source": "aitimes",
-      "source_name": "AI타임스",
-      "icon": "🇰🇷",
-      "title": "스위스 정부, 태양광 잉여전력 보상 체계 변경 추진",
-      "link": "https://www.aitimes.com/news/articleView.html?idxno=211119",
-      "date": "2026-05-30",
-      "summary": "스위스가 태양광 잉여전력 보상 체계를 시장가격 중심으로 바꾸는 방안을 추진하고 있다.배전망 사업자가 태양광 전력이 계통에 주입되는 시점의 전력시장 가격을 기준으로 보상액을 산정할 수 있도록 하는 제도 개편이다. 2027년 1월1일부터 시행될 예정이다.제도 개편의 목적은 전력이 실제로 필요한 시간에 계통으로 공급되도록 유도하는 데 있다. 태양광 발전이 많은 낮 시간대처럼 전력가격이 낮은 시간에는 전기를 바로 판매하기보다 저장하거나 현장에서 소비하도록 만드는 구조다. 태양광 보급 확대 이후 전력시장 가격 신호를 보상제도에 반영하려는 조",
-      "keywords": [],
-      "first_seen": "2026-05-31"
-    },
-    {
-      "id": "3a53c4b64df4",
-      "source": "aitimes",
-      "source_name": "AI타임스",
-      "icon": "🇰🇷",
-      "title": "여수, ‘청년 맞춤형 인턴’ 111명 선발",
-      "link": "https://www.aitimes.com/news/articleView.html?idxno=211085",
-      "date": "2026-05-30",
-      "summary": "여수시가 미취업 청년의 실무 경험과 취업 역량 강화를 위해 하반기 여수형 청년 맞춤형 인턴사업 참여자 111명을 모집한다.여수는 청년들이 시청과 유관기관에서 1개월 동안 행정업무 보조 등 다양한 실무를 경험하도록 지원한다.이번 사업은 청년이 취업 전 현장 업무를 직접 접하고, 진로 탐색과 직무 이해를 넓힐 수 있도록 마련됐다. 공공기관 업무 경험을 통해 지역 청년의 취업 준비 과정을 돕는 일경험 지원 정책이다.신청 자격은 공고일 기준 여수에 거주 중이거나 부모가 5년 이상 여수에 거주 중인 만18세부터 45세 미취업 청년이다. 출생",
       "keywords": [],
       "first_seen": "2026-05-31"
     },
@@ -1072,45 +1089,6 @@
       "first_seen": "2026-05-29"
     },
     {
-      "id": "be876b176720",
-      "source": "openai",
-      "source_name": "OpenAI",
-      "icon": "🟢",
-      "title": "Boston Children’s uses AI to unlock new diagnoses",
-      "link": "https://openai.com/index/boston-childrens-hospital",
-      "date": "2026-05-29",
-      "summary": "Boston Children’s Hospital uses OpenAI technology to improve patient care, reduce operational burden, and help diagnose more than 40 rare disease cases.",
-      "keywords": [],
-      "first_seen": "2026-05-30"
-    },
-    {
-      "id": "ce0322c55738",
-      "source": "openai",
-      "source_name": "OpenAI",
-      "icon": "🟢",
-      "title": "How Braintrust turns customer requests into code with Codex",
-      "link": "https://openai.com/index/braintrust",
-      "date": "2026-05-29",
-      "summary": "How Braintrust engineers use Codex with GPT-5.5 to run experiments and code faster.",
-      "keywords": [
-        "Coding",
-        "GPT"
-      ],
-      "first_seen": "2026-05-30"
-    },
-    {
-      "id": "fdf6c4e98bb2",
-      "source": "openai",
-      "source_name": "OpenAI",
-      "icon": "🟢",
-      "title": "A shared playbook for trustworthy third party evaluations",
-      "link": "https://openai.com/index/trustworthy-third-party-evaluations-foundations",
-      "date": "2026-05-29",
-      "summary": "OpenAI shares guidance on third-party AI evaluations, covering how to assess model capabilities, safeguards, and validity for frontier systems.",
-      "keywords": [],
-      "first_seen": "2026-05-30"
-    },
-    {
       "id": "bb0319888f69",
       "source": "google_ai",
       "source_name": "Google AI",
@@ -1123,7 +1101,7 @@
         "Coding",
         "Vibe Coding"
       ],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "6aee6b02d3b5",
@@ -1138,7 +1116,7 @@
         "Gemini",
         "Video AI"
       ],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "5b6cca50542b",
@@ -1154,7 +1132,7 @@
         "LLM",
         "Optimization"
       ],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "4f181a54ae99",
@@ -1166,7 +1144,7 @@
       "date": "2026-05-29",
       "summary": "SpaceX already generated one-fifth of its 2025 revenue from government contracts, the company revealed in its IPO filing.",
       "keywords": [],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "62b1c2746533",
@@ -1180,7 +1158,7 @@
       "keywords": [
         "Coding"
       ],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "75f84cfeffeb",
@@ -1192,7 +1170,7 @@
       "date": "2026-05-29",
       "summary": "The rise of AI has brought an avalanche of new terms and slang. Here is a glossary with definitions of some of the most important words and phrases you might encounter.",
       "keywords": [],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "4fd5861e26d9",
@@ -1206,7 +1184,7 @@
       "keywords": [
         "AI Agent"
       ],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "fe0f51562a56",
@@ -1221,7 +1199,7 @@
         "Automation",
         "Optimization"
       ],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "fe212dea92c8",
@@ -1235,7 +1213,7 @@
       "keywords": [
         "Security"
       ],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "4b1d7fc08047",
@@ -1251,7 +1229,7 @@
         "Automation",
         "Coding"
       ],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "1b3d96b11fca",
@@ -1263,7 +1241,7 @@
       "date": "2026-05-29",
       "summary": "Submit your session topic before today ends for a chance to speak at TechCrunch Disrupt 2026. Apply now to share your insight and help shape the conversations defining the tech industry.",
       "keywords": [],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "23be547c0da8",
@@ -1275,31 +1253,7 @@
       "date": "2026-05-29",
       "summary": "You now have until tonight at 11:59 p.m. PT to lock in Early Bird savings of up to $410 for TechCrunch Disrupt 2026 before prices increase. Join 10,000+ tech leaders in October for one of the most anticipated tech events of the year. Register now.",
       "keywords": [],
-      "first_seen": "2026-05-30"
-    },
-    {
-      "id": "a205088c9383",
-      "source": "techcrunch",
-      "source_name": "TechCrunch",
-      "icon": "🟩",
-      "title": "Kiwibit’s AI-powered bird feeder is my new backyard buddy",
-      "link": "https://techcrunch.com/2026/05/29/kiwibits-ai-powered-bird-feeder-is-my-new-backyard-buddy/",
-      "date": "2026-05-29",
-      "summary": "If you're looking for a fun way to connect with nature while collecting bird species on an app like Pokémon, give this smart feeder a try.",
-      "keywords": [],
-      "first_seen": "2026-05-30"
-    },
-    {
-      "id": "535c7791a60e",
-      "source": "aitimes",
-      "source_name": "AI타임스",
-      "icon": "🇰🇷",
-      "title": "광양경자청, 방산 전문 위드피에스와 투자협약 체결",
-      "link": "https://www.aitimes.com/news/articleView.html?idxno=211128",
-      "date": "2026-05-29",
-      "summary": "광양만권경제자유구역청(청장 구충곤)은 29일, 전남 순천시 소재 방산 전문 위드피에스(대표 이선휴)와 해룡일반산업단지 입주를 위한 투자협약을 체결했다고 밝혔다.이번 투자협약을 통해 위드피에스는 해룡일반산업단지 내 신규 부지를확보하여 약 300억원을 투입, 방산용 영구자석 발전기 및 전원공급체계 전문 생산공장을 증설할 계획이다. 특히 한화시스템이 수요처인 L-SAM 다기능 레이더용 주전원공급 유닛 양산 사업 계약을 이미 확보한 만큼 안정적인 사업 기반 위에서 생산시설을 구축할 수 있을 것으로 기대되며, 공장 가동 이후 단계적인 고용",
-      "keywords": [],
-      "first_seen": "2026-05-30"
+      "first_seen": "2026-05-31"
     },
     {
       "id": "6b1fa8ae684f",
@@ -1814,6 +1768,34 @@
       "summary": "프롤로그: 왜 시스템 전환을 선택했는가안녕하세요. ABC Platform 팀에서 플랫폼 기획자로 일하고 있는 김세리입니다. 저는 일본의 음식 배달 서비스인 데마에칸(Demaecan...",
       "keywords": [],
       "first_seen": "2026-05-29"
+    },
+    {
+      "id": "5f3a9a519302",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Introducing Claude Opus 4.8",
+      "link": "https://www.anthropic.com/news/claude-opus-4-8",
+      "date": "2026-05-28",
+      "summary": "An upgrade to our Opus class of models, with stronger performance across coding, agentic tasks, and professional work, and the consistency to handle long-running work.",
+      "keywords": [
+        "AI Agent",
+        "Claude",
+        "Coding"
+      ],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "6f8ddfea6a2b",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Anthropic raises $65B in Series H funding at $965B post-money valuation",
+      "link": "https://www.anthropic.com/news/series-h",
+      "date": "2026-05-28",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-05-31"
     },
     {
       "id": "5899b169bc6e",
@@ -2508,6 +2490,21 @@
       "first_seen": "2026-05-29"
     },
     {
+      "id": "60f808b7f1d6",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Anthropic opens Milan office to support Italian enterprise, research, and developers",
+      "link": "https://www.anthropic.com/news/milan-office-opening",
+      "date": "2026-05-27",
+      "summary": "",
+      "keywords": [
+        "Developer Tools",
+        "Enterprise AI"
+      ],
+      "first_seen": "2026-05-31"
+    },
+    {
       "id": "bf3dca7da482",
       "source": "aws_ml",
       "source_name": "AWS ML",
@@ -2779,6 +2776,18 @@
       "first_seen": "2026-05-29"
     },
     {
+      "id": "de7e3e42c7b1",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Anthropic appoints KiYoung Choi as Representative Director of Korea ahead of Seoul office opening",
+      "link": "https://www.anthropic.com/news/kiyoung-choi-representative-director-anthropic-korea",
+      "date": "2026-05-26",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
       "id": "86df175a446d",
       "source": "openai",
       "source_name": "OpenAI",
@@ -2803,6 +2812,18 @@
         "AI Agent"
       ],
       "first_seen": "2026-05-27"
+    },
+    {
+      "id": "fc9cb68dde80",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Anthropic co-founder Chris Olah's remarks on Pope Leo XIV's encyclical \"Magnifica humanitas\"",
+      "link": "https://www.anthropic.com/news/chris-olah-pope-leo-encyclical",
+      "date": "2026-05-25",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-05-31"
     },
     {
       "id": "503a5ba4d23d",
@@ -2917,6 +2938,18 @@
         "Cloud/DevOps"
       ],
       "first_seen": "2026-05-27"
+    },
+    {
+      "id": "a6001065a401",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Project Glasswing: An initial update",
+      "link": "https://www.anthropic.com/research/glasswing-initial-update",
+      "date": "2026-05-22",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-05-31"
     },
     {
       "id": "973c5765af89",
@@ -3405,6 +3438,32 @@
       "first_seen": "2026-05-27"
     },
     {
+      "id": "7a167ba3bd58",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Widening the conversation on frontier AI",
+      "link": "https://www.anthropic.com/news/widening-conversation-ai",
+      "date": "2026-05-19",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-05-31"
+    },
+    {
+      "id": "926fcbe162e4",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "KPMG integrates Claude across its core business and workforce of more than 276,000 in strategic alliance",
+      "link": "https://www.anthropic.com/news/anthropic-kpmg",
+      "date": "2026-05-19",
+      "summary": "",
+      "keywords": [
+        "Claude"
+      ],
+      "first_seen": "2026-05-31"
+    },
+    {
       "id": "1af67e245b3a",
       "source": "openai",
       "source_name": "OpenAI",
@@ -3490,6 +3549,18 @@
         "Cloud/DevOps"
       ],
       "first_seen": "2026-05-27"
+    },
+    {
+      "id": "81beda6aea68",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Anthropic acquires Stainless",
+      "link": "https://www.anthropic.com/news/anthropic-acquires-stainless",
+      "date": "2026-05-18",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-05-31"
     },
     {
       "id": "50e6453b15f5",
@@ -3861,6 +3932,22 @@
         "Generative AI"
       ],
       "first_seen": "2026-05-27"
+    },
+    {
+      "id": "75f20d5788df",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "PwC is deploying Claude to build technology, execute deals, and reinvent enterprise functions for clients",
+      "link": "https://www.anthropic.com/news/pwc-expanded-partnership",
+      "date": "2026-05-14",
+      "summary": "",
+      "keywords": [
+        "Claude",
+        "Deployment",
+        "Enterprise AI"
+      ],
+      "first_seen": "2026-05-31"
     },
     {
       "id": "49a108cb408a",
@@ -4724,6 +4811,20 @@
       "first_seen": "2026-05-27"
     },
     {
+      "id": "0573c40907ec",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Introducing Claude Design by Anthropic Labs",
+      "link": "https://www.anthropic.com/news/claude-design-anthropic-labs",
+      "date": "2026-04-17",
+      "summary": "Today, we’re launching Claude Design, a new Anthropic Labs product that lets you collaborate with Claude to create polished visual work like designs, prototypes, slides, one-pagers, and more.",
+      "keywords": [
+        "Claude"
+      ],
+      "first_seen": "2026-05-31"
+    },
+    {
       "id": "44b3259ff1d6",
       "source": "meta_eng",
       "source_name": "Meta Engineering",
@@ -5582,6 +5683,20 @@
       "first_seen": "2026-05-27"
     },
     {
+      "id": "0073cb028a74",
+      "source": "anthropic",
+      "source_name": "Anthropic",
+      "icon": "🟤",
+      "title": "Claude is a space to think",
+      "link": "https://www.anthropic.com/news/claude-is-a-space-to-think",
+      "date": "2026-02-04",
+      "summary": "We’ve made a choice: Claude will remain ad-free. We explain why advertising incentives are incompatible with a genuinely helpful AI assistant, and how we plan to expand access without compromising user trust.",
+      "keywords": [
+        "Claude"
+      ],
+      "first_seen": "2026-05-31"
+    },
+    {
       "id": "8c22e9f6eb07",
       "source": "woowahan",
       "source_name": "우아한형제들",
@@ -6277,14 +6392,24 @@
       "total": 399
     },
     {
-      "date": "2026-05-30",
-      "added": 22,
-      "total": 421
+      "date": "2026-05-31",
+      "added": 58,
+      "total": 457
     },
     {
       "date": "2026-05-31",
-      "added": 41,
-      "total": 462
+      "added": 12,
+      "total": 469
+    },
+    {
+      "date": "2026-05-31",
+      "added": 12,
+      "total": 469
+    },
+    {
+      "date": "2026-05-31",
+      "added": 13,
+      "total": 470
     }
   ],
   "sources": {},
@@ -6315,7 +6440,8 @@
         "Multimodal": 1,
         "Speech/Audio": 1,
         "Cloud/DevOps": 1,
-        "Robotics": 1
+        "Robotics": 1,
+        "Claude": 1
       }
     },
     {
@@ -6367,8 +6493,8 @@
         "Coding": 10,
         "AI Agent": 9,
         "Automation": 6,
-        "Enterprise AI": 4,
-        "Deployment": 2,
+        "Enterprise AI": 5,
+        "Deployment": 3,
         "Optimization": 2,
         "RAG": 2,
         "AI Education": 1,
@@ -6404,34 +6530,34 @@
     {
       "week": "2026-W22",
       "keywords": {
-        "AI Agent": 42,
+        "AI Agent": 44,
         "Automation": 22,
-        "GPT": 12,
+        "Security": 10,
         "Coding": 10,
-        "Security": 9,
-        "Claude": 8,
-        "Enterprise AI": 7,
+        "GPT": 10,
+        "Claude": 9,
+        "Enterprise AI": 8,
         "LLM": 7,
-        "SDK/API": 6,
         "Gemini": 6,
+        "SDK/API": 6,
         "Cloud/DevOps": 6,
         "Optimization": 5,
-        "Robotics": 4,
+        "Generative AI": 4,
         "Open Source": 4,
-        "Reasoning": 3
+        "Robotics": 4
       }
     }
   ],
   "source_stats": {
-    "techcrunch": {
-      "total": 63,
-      "recent_7d": 63,
-      "recent_30d": 63
-    },
     "aitimes": {
-      "total": 99,
-      "recent_7d": 99,
-      "recent_30d": 99
+      "total": 100,
+      "recent_7d": 100,
+      "recent_30d": 100
+    },
+    "techcrunch": {
+      "total": 61,
+      "recent_7d": 61,
+      "recent_30d": 61
     },
     "lycorp": {
       "total": 32,
@@ -6439,9 +6565,9 @@
       "recent_30d": 32
     },
     "openai": {
-      "total": 41,
-      "recent_7d": 41,
-      "recent_30d": 41
+      "total": 38,
+      "recent_7d": 38,
+      "recent_30d": 38
     },
     "huggingface": {
       "total": 34,
@@ -6492,8 +6618,13 @@
       "total": 35,
       "recent_7d": 35,
       "recent_30d": 35
+    },
+    "anthropic": {
+      "total": 12,
+      "recent_7d": 12,
+      "recent_30d": 12
     }
   },
   "last_updated": "2026-05-31",
-  "total_articles": 462
+  "total_articles": 470
 }

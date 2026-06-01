@@ -27,6 +27,8 @@
 <link rel="stylesheet" href="panels/panel18/panel18.css?v=230">
 <link rel="stylesheet" href="panels/panel22/panel22.css?v=230">
 <link rel="stylesheet" href="panels/panel23/panel23.css?v=230">
+<link rel="stylesheet" href="panels/panel24/panel24.css?v=230">
+<link rel="stylesheet" href="panels/panel25/panel25.css?v=13">
 <link rel="stylesheet" href="shared/unify.css?v=230">
 <!-- panel8/9 external deps (로컬 libs/ — CDN Tracking Prevention 우회) -->
 <script src="libs/pdf.min.js"></script>
@@ -57,6 +59,8 @@
   <button class="nav-item" data-icon="🔑" id="tab10" onclick="switchTab(10,this)"><span class="nav-label">키워드 분석</span></button>
   <button class="nav-item locked" data-icon="📺" id="tab7" onclick="switchTab(7,this)"><span class="nav-label">유튜버 분석 🔒</span></button>
   <button class="nav-item" data-icon="📊" id="tab23" onclick="switchTab(23,this)"><span class="nav-label">시장 분석</span></button>
+  <button class="nav-item" data-icon="📚" id="tab24" onclick="switchTab(24,this)"><span class="nav-label">저자 목록</span></button>
+  <button class="nav-item" data-icon="📋" id="tab25" onclick="switchTab(25,this)"><span class="nav-label">기획 보드</span><span id="p25Badge" style="display:none;background:var(--accent);color:#fff;border-radius:10px;padding:0 6px;font-size:.65rem;font-weight:700;margin-left:4px;">0</span></button>
 
   <div class="nav-section">outputs</div>
   <button class="nav-item locked" data-icon="📝" id="tab3" onclick="switchTab(3,this)"><span class="nav-label">저자 제안서 🔒</span></button>
@@ -1302,6 +1306,12 @@
 
 
 
+<!-- ═══════ 저자 목록 (panel24) ═══════ -->
+<div class="panel panel24-scope" id="panel24"><div id="p24Content"></div></div>
+
+<!-- ═══════ 기획 보드 (panel25) ═══════ -->
+<div class="panel panel25-scope" id="panel25"><div id="p25Content"></div></div>
+
 <!-- ═══════ 유튜버 분석 패널 (panel7) ═══════ -->
 <div class="panel yt-scope" id="panel7" style="padding:0;">
   <div id="yt-app" style="display:flex;width:100%;height:100%;overflow:hidden;">
@@ -1510,6 +1520,9 @@
 <script src="data/rss/feeds.js"></script>
 <script src="data/reports/reports.js"></script>
 <script defer src="panels/panel23/panel23.js?v=230"></script>
+<script defer src="panels/panel24/authors-data.js?v=1"></script>
+<script defer src="panels/panel24/panel24.js?v=232"></script>
+<script defer src="panels/panel25/panel25.js?v=17"></script>
 <script defer src="panels/panel12/panel12.js"></script>
 <script defer src="panels/panel11/panel11.js"></script>
 <script>

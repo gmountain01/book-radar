@@ -683,6 +683,7 @@ function getPubHint(kw) {
 
 // ── 리포트 목록 (window._REPORTS에서 로드) ──
 var _reportsList = [];
+var _currentReportIdx = -1;
 function renderReportList() {
   _reportsList = (window._REPORTS && window._REPORTS.reports) || [];
   if (!_reportsList.length) {
@@ -737,15 +738,40 @@ window.p23_switchTocTab = function(pane, btn) {
   $tocPaneNav.classList.toggle('active', pane === 'nav');
 };
 
+window.p23_addReportToBoard = function(idx) {
+  var r = _reportsList[idx];
+  if (!r) return;
+  addToPlanningBoard({
+    type: 'report',
+    source: 'panel23',
+    title: r.title,
+    data: { date: r.date, summary: r.summary || '', content: (r.content || '').substring(0, 500) }
+  });
+};
+
 window.p23_openReport = function(idx, btn) {
   var r = _reportsList[idx];
   if (!r) return;
+  _currentReportIdx = idx;
   $rptList.querySelectorAll('.p23-rpt-item').forEach(function(b) { b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
   $rptTitle.textContent = r.title;
   $pdfBtn.disabled = false;
   currentMd = r.content;
   renderMd(currentMd);
+  // 📌 버튼 삽입
+  var titleBar = $rptTitle.parentElement;
+  if (titleBar && !titleBar.querySelector('.p23-board-btn')) {
+    var pbBtn = document.createElement('button');
+    pbBtn.className = 'p23-board-btn';
+    pbBtn.style.cssText = 'margin-left:8px;background:var(--accent-light,#e3e5f9);color:var(--accent,#4F46B8);border:none;border-radius:6px;padding:3px 10px;font-size:.75rem;cursor:pointer;';
+    pbBtn.textContent = '📌 기획 보드';
+    pbBtn.onclick = function() { p23_addReportToBoard(idx); };
+    titleBar.appendChild(pbBtn);
+  } else if (titleBar) {
+    var existingBtn = titleBar.querySelector('.p23-board-btn');
+    if (existingBtn) existingBtn.onclick = function() { p23_addReportToBoard(idx); };
+  }
   // 리포트 선택 후 목차 탭으로 자동 전환
   var navBtn = document.querySelector('.p23-toc-tab[data-pane="nav"]');
   if (navBtn) p23_switchTocTab('nav', navBtn);

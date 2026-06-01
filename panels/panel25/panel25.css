@@ -1,0 +1,95 @@
+/* ── panel25: 기획 보드 ── */
+.p25-wrap{max-width:900px;margin:0 auto;}
+
+/* 헤더 */
+.p25-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;}
+.p25-header-left h2{font-size:1.3rem;font-weight:700;margin:0;}
+.p25-subtitle{font-size:.82rem;color:var(--muted,#888);margin:.2rem 0 0;}
+.p25-header-right{display:flex;gap:.5rem;align-items:center;}
+.p25-run-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.6rem;border:none;border-radius:10px;background:var(--accent,#4F46B8);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(79,70,184,.25);}
+.p25-run-btn:hover{opacity:.9;box-shadow:0 4px 16px rgba(79,70,184,.3);}
+.p25-run-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+.p25-run-icon{font-size:1.1rem;}
+.p25-spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:p25spin .6s linear infinite;}
+@keyframes p25spin{to{transform:rotate(360deg)}}
+.p25-clear-result-btn{font-size:.75rem;color:var(--muted,#999);background:none;border:1px solid var(--border,#ddd);border-radius:6px;padding:4px 10px;cursor:pointer;}
+.p25-clear-result-btn:hover{border-color:#e53e3e;color:#e53e3e;}
+
+/* 데이터 현황 */
+.p25-status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.5rem;margin-bottom:1.5rem;}
+.p25-status-card{display:flex;align-items:center;gap:.4rem;padding:.5rem .6rem;border:1px solid var(--border,#ddd);border-radius:8px;background:#fff;}
+.p25-status-card.empty{opacity:.4;}
+.p25-status-icon{font-size:1.1rem;}
+.p25-status-label{font-size:.7rem;color:var(--muted,#888);}
+.p25-status-count{font-size:.82rem;font-weight:700;color:var(--fg,#222);}
+
+/* 진행 바 */
+.p25-progress{margin-bottom:1.2rem;padding:.8rem 1rem;border:1px solid var(--accent-light,#e3e5f9);border-radius:8px;background:rgba(79,70,184,.04);}
+.p25-progress-bar{height:6px;background:var(--border,#ddd);border-radius:3px;overflow:hidden;margin-bottom:.4rem;}
+.p25-progress-fill{height:100%;background:var(--accent,#4F46B8);border-radius:3px;transition:width .3s ease;}
+.p25-progress-text{font-size:.78rem;color:var(--accent,#4F46B8);font-weight:500;}
+
+/* 데이터 없음 */
+.p25-no-data{text-align:center;padding:3rem 1rem;color:var(--muted,#888);}
+.p25-no-data .icon{font-size:2.5rem;margin-bottom:.8rem;}
+.p25-no-data .hint{font-size:.8rem;margin-top:.5rem;}
+
+/* ── 결과 렌더링 ── */
+
+/* 결과 메타 (생성일+캐시) */
+.p25-result-meta{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;font-size:.78rem;color:var(--muted,#888);}
+.p25-cache-badge{background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;}
+.p25-fresh-badge{background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;}
+
+/* 종합 의견 박스 */
+.p25-summary-box{background:linear-gradient(135deg,rgba(79,70,184,.08),rgba(79,70,184,.02));border:1px solid var(--accent-light,#e3e5f9);border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:1.5rem;}
+.p25-summary-title{font-size:.8rem;font-weight:700;color:var(--accent,#4F46B8);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px;}
+.p25-summary-box p{font-size:.9rem;line-height:1.7;margin:0;color:var(--fg,#222);}
+
+/* 섹션 타이틀 */
+.p25-section-title{font-size:.85rem;font-weight:700;color:var(--fg,#222);margin:1.2rem 0 .6rem;padding-bottom:.3rem;border-bottom:2px solid var(--accent,#4F46B8);}
+
+/* 추천 아이템 그리드 */
+.p25-items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem;margin-bottom:1.5rem;}
+.p25-item-card{border-radius:10px;padding:1rem 1.1rem;border-left:4px solid;}
+.p25-item-card.fit-safe{background:#f0fdf4;border-color:#22c55e;}
+.p25-item-card.fit-data{background:#eff6ff;border-color:#3b82f6;}
+.p25-item-card.fit-risk{background:#fff7ed;border-color:#f97316;}
+.p25-item-fit{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;}
+.fit-safe .p25-item-fit{color:#16a34a;}
+.fit-data .p25-item-fit{color:#2563eb;}
+.fit-risk .p25-item-fit{color:#ea580c;}
+.p25-item-concept{font-size:.9rem;font-weight:600;color:var(--fg,#222);margin-bottom:.3rem;}
+.p25-item-target{font-size:.75rem;color:var(--accent,#4F46B8);font-weight:500;margin-bottom:.3rem;}
+.p25-item-rationale{font-size:.78rem;color:var(--muted,#666);line-height:1.5;}
+
+/* 저자 매칭 테이블 */
+.p25-author-table{overflow-x:auto;border-radius:10px;border:1px solid var(--border,#ddd);background:#fff;margin-bottom:1.5rem;}
+.p25-author-table table{width:100%;border-collapse:collapse;font-size:.82rem;}
+.p25-author-table th{background:var(--surface,#f5f5f5);padding:.55rem .7rem;text-align:left;font-weight:600;font-size:.75rem;color:var(--muted,#666);border-bottom:1px solid var(--border,#ddd);}
+.p25-author-table td{padding:.55rem .7rem;border-bottom:1px solid var(--border-light,#eee);vertical-align:top;}
+.p25-author-table tr:last-child td{border-bottom:none;}
+.p25-am-author{font-weight:600;color:var(--fg,#222);}
+.p25-verdict{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:600;}
+.verdict-safe{background:#dcfce7;color:#16a34a;}
+.verdict-bet{background:#fed7aa;color:#ea580c;}
+.verdict-hold{background:#f3f4f6;color:#6b7280;}
+
+/* 주의사항 */
+.p25-cautions{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:.8rem 1rem;margin-bottom:1.5rem;}
+.p25-cautions-title{font-size:.78rem;font-weight:700;color:#dc2626;margin-bottom:.4rem;}
+.p25-cautions ul{margin:.2rem 0;padding-left:1.2rem;}
+.p25-cautions li{font-size:.82rem;color:#991b1b;line-height:1.6;}
+
+/* 액션 버튼 */
+.p25-result-actions{display:flex;gap:.5rem;margin-top:.5rem;padding-top:1rem;border-top:1px solid var(--border-light,#eee);}
+.p25-card-btn{padding:.45rem 1rem;border:1px solid var(--border,#ddd);border-radius:8px;font-size:.82rem;font-weight:500;cursor:pointer;background:#fff;transition:all .15s;}
+.p25-card-btn:hover{border-color:var(--accent,#4F46B8);color:var(--accent,#4F46B8);}
+.p25-card-btn.primary{background:var(--accent,#4F46B8);color:#fff;border-color:var(--accent,#4F46B8);}
+.p25-card-btn.primary:hover{opacity:.88;}
+
+@media(max-width:768px){
+  .p25-header{flex-direction:column;align-items:flex-start;}
+  .p25-status-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr));}
+  .p25-items-grid{grid-template-columns:1fr;}
+}

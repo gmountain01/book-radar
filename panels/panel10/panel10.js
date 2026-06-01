@@ -846,6 +846,7 @@ function pickTypePill(type) {
 
 function renderCards(cards, catData) {
   _displayedCards = cards;
+  window._kwDisplayedCards = cards; // panel25(기획 보드)에서 접근
   _proposalCache = {};  // 정렬 변경 시 캐시 초기화 (인덱스 변경)
   $('kwLoadingState').style.display = 'none';
   $('kwEmptyState').style.display = 'none';
@@ -965,6 +966,7 @@ function renderCards(cards, catData) {
       '</div>' +
       '<div class="card-actions">' +
         '<button class="kw-proposal-btn" onclick="kwGenerateProposal(' + idx + ', this)" title="이 키워드로 출판 기획 초안을 생성합니다">📋 기획 초안 생성</button>' +
+        '<button class="kw-proposal-btn" style="background:var(--accent-light);color:var(--accent);" onclick="p25_addKeyword(' + idx + ')" title="기획 보드에 추가">📌 기획 보드</button>' +
       '</div>' +
       '<div class="card-proposal" id="kwProposal-' + idx + '"></div>' +
       '<div class="card-foot">' +
@@ -1223,6 +1225,18 @@ window.kwSortCards = function(mode, btn) {
     sorted.sort(function(a, b) { return (pickOrder[a.pick_type] || 9) - (pickOrder[b.pick_type] || 9); });
   }
   renderCards(sorted, lastCatData);
+};
+
+/* ── 📌 기획 보드 추가 ── */
+window.p25_addKeyword = function(idx) {
+  var card = _displayedCards[idx];
+  if (!card) return;
+  addToPlanningBoard({
+    type: 'keyword',
+    source: 'panel10',
+    title: card.keyword,
+    data: { pick_type: card.pick_type, reason: card.reason, views: card.views, category: card.category }
+  });
 };
 
 /* ═══════════════════════════════════════════

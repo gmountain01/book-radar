@@ -1,0 +1,46 @@
+/* ── panel24: 저자 목록 ── */
+/* position/display는 shared/styles.css의 #panel24에서 관리 */
+
+.p24-wrap { max-width:1000px; margin:0 auto; }
+
+.p24-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.2rem; flex-wrap:wrap; }
+.p24-header h2 { font-size:1.3rem; font-weight:700; margin:0; }
+.p24-stats { font-size:.82rem; color:var(--muted,#888); }
+
+.p24-toolbar { display:flex; gap:.6rem; margin-bottom:1rem; flex-wrap:wrap; align-items:center; }
+.p24-search { flex:1; min-width:200px; padding:.5rem .8rem; border:1px solid var(--border,#ddd); border-radius:8px; font-size:.85rem; }
+.p24-search:focus { outline:none; border-color:var(--accent,#4F46B8); box-shadow:0 0 0 3px var(--accent-shadow,rgba(79,70,184,.15)); }
+.p24-select { padding:.45rem .7rem; border:1px solid var(--border,#ddd); border-radius:8px; font-size:.82rem; background:#fff; }
+.p24-sort-btn { padding:.4rem .7rem; border:1px solid var(--border,#ddd); border-radius:8px; font-size:.8rem; background:#fff; cursor:pointer; transition:all .15s; }
+.p24-sort-btn:hover { border-color:var(--accent,#4F46B8); }
+.p24-sort-btn.active { background:var(--accent,#4F46B8); color:#fff; border-color:var(--accent,#4F46B8); }
+
+.p24-table-wrap { overflow-x:auto; border-radius:10px; border:1px solid var(--border,#ddd); background:#fff; }
+.p24-table { width:100%; border-collapse:collapse; font-size:.83rem; }
+.p24-table th { background:var(--surface,#f5f5f5); padding:.6rem .8rem; text-align:left; font-weight:600; font-size:.78rem; color:var(--muted,#666); border-bottom:1px solid var(--border,#ddd); white-space:nowrap; cursor:pointer; user-select:none; }
+.p24-table th:hover { color:var(--accent,#4F46B8); }
+.p24-table td { padding:.55rem .8rem; border-bottom:1px solid var(--border-light,#eee); vertical-align:top; }
+.p24-table tr:last-child td { border-bottom:none; }
+.p24-table tr:hover { background:var(--accent-hover-bg,rgba(79,70,184,.04)); }
+
+.p24-author-name { font-weight:600; color:var(--fg,#222); }
+.p24-book-count { display:inline-flex; align-items:center; justify-content:center; min-width:28px; padding:2px 8px; border-radius:12px; background:var(--accent,#4F46B8); color:#fff; font-weight:700; font-size:.78rem; }
+.p24-pub-badge { display:inline-block; padding:1px 7px; border-radius:6px; font-size:.72rem; background:var(--accent-light,#e3e5f9); color:var(--accent,#4F46B8); margin:1px 3px 1px 0; white-space:nowrap; }
+.p24-book-list { font-size:.78rem; color:var(--muted,#666); line-height:1.5; }
+.p24-book-item { margin-bottom:2px; }
+.p24-book-item .p24-rank { color:var(--accent,#4F46B8); font-weight:600; margin-right:4px; }
+.p24-expand-btn { background:none; border:none; color:var(--accent,#4F46B8); cursor:pointer; font-size:.75rem; padding:2px 0; }
+.p24-expand-btn:hover { text-decoration:underline; }
+
+.p24-empty { text-align:center; padding:3rem 1rem; color:var(--muted,#888); }
+.p24-empty .icon { font-size:2.5rem; margin-bottom:.8rem; }
+
+.p24-pagination { display:flex; justify-content:center; gap:.4rem; margin-top:1rem; }
+.p24-page-btn { padding:.35rem .65rem; border:1px solid var(--border,#ddd); border-radius:6px; background:#fff; cursor:pointer; font-size:.8rem; }
+.p24-page-btn.active { background:var(--accent,#4F46B8); color:#fff; border-color:var(--accent,#4F46B8); }
+
+@media(max-width:768px){
+  .panel24-scope { left:0; padding:1rem; }
+  .p24-toolbar { flex-direction:column; }
+  .p24-search { min-width:100%; }
+}

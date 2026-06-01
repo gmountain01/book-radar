@@ -30,6 +30,28 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
+// ━━━ 기획 보드 공통 ━━━
+function addToPlanningBoard(item) {
+  var board = JSON.parse(localStorage.getItem('p25_board') || '{"items":[],"drafts":[]}');
+  item.id = 'pb_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+  item.addedAt = new Date().toISOString();
+  if (!item.memo) item.memo = '';
+  board.items.push(item);
+  localStorage.setItem('p25_board', JSON.stringify(board));
+  showToast('📌 기획 보드에 추가됨', 'green');
+  var badge = document.getElementById('p25Badge');
+  if (badge) {
+    badge.textContent = board.items.length;
+    badge.style.display = board.items.length > 0 ? 'inline-flex' : 'none';
+  }
+}
+function getPlanningBoard() {
+  return JSON.parse(localStorage.getItem('p25_board') || '{"items":[],"drafts":[]}');
+}
+function savePlanningBoard(board) {
+  localStorage.setItem('p25_board', JSON.stringify(board));
+}
+
 // ━━━ 공통 인쇄 유틸 ━━━
 // panel3·panel6 등에서 PDF 인쇄 시 공유
 function getBaseUrl() {
@@ -404,6 +426,8 @@ let analysisData=[];
 // panel10(키워드 분석)에서 접근하는 게터 — let 변수는 window에 자동 노출 안 됨
 window.getKwBestRows = function() { return bestRows; };
 window.getKwLectureRows = function() { return lectureRows; };
+window.getAnalysisData = function() { return analysisData; };
+window.getMyPub = function() { return myPub; };
 
 // ── 탭 전환 ──
 var _activePanel = 0;
@@ -499,13 +523,14 @@ async function handleBestFile(input){
 
 async function handleBestData(data, fname){
   const hdr=data[0]||[];
-  let rc=-1,tc=-1,pc=-1,sc=-1,yc=-1;
+  let rc=-1,tc=-1,pc=-1,sc=-1,yc=-1,ac=-1;
   hdr.forEach((h,i)=>{const s=String(h||'').toLowerCase();
     if(s.includes('순번')||s.includes('순위'))rc=i;
     if(s.includes('상품명')||s.includes('제목')||s.includes('도서'))tc=i;
     if(s.includes('출판사'))pc=i;
     if(s.includes('세일즈')||s.includes('sp')||s.includes('포인트'))sc=i;
     if(s.includes('출판일')||s.includes('발행일')||s.includes('출간일')||s.includes('연도')||s.includes('출간연도')||s.includes('출판연도'))yc=i;
+    if(s.includes('저자')||s.includes('작가')||s.includes('지은이')||s.includes('글쓴이'))ac=i;
   });
 
   // 헤더 매칭 실패 시 → 데이터 내용 기반 자동 컬럼 감지
@@ -552,9 +577,18 @@ async function handleBestData(data, fname){
         if(avgLen>maxLen){maxLen=avgLen;tc=col;}
       }
     }
+    // 저자: 출판사/순위/가격/제목이 아닌 컬럼 중 평균 길이 2~30자 (사람 이름)
+    if(ac<0){
+      for(let col=0;col<numCols;col++){
+        if(col===rc||col===pc||col===sc||col===tc||col===yc) continue;
+        const vals=sampleRows.map(r=>String(r[col]||''));
+        const avgLen=vals.reduce((s,v)=>s+v.length,0)/vals.length;
+        if(avgLen>=2 && avgLen<=30) { ac=col; break; }
+      }
+    }
     // 헤더가 없는 시트 → 첫 행도 데이터
     startRow = 0;
-    console.log('[handleBestData] 자동 감지 결과: 순위='+rc+', 제목='+tc+', 출판사='+pc+', SP='+sc);
+    console.log('[handleBestData] 자동 감지 결과: 순위='+rc+', 제목='+tc+', 출판사='+pc+', SP='+sc+', 저자='+ac);
   }
   if(tc<0||pc<0){alert('컬럼 인식 실패: 상품명·출판사 컬럼이 필요합니다.');return;}
   bestRows=[];
@@ -565,7 +599,7 @@ async function handleBestData(data, fname){
     let year=0;
     if(yc>=0){const m=String(r[yc]||'').match(/20\d{2}/);if(m)year=parseInt(m[0]);}
     if(!year){const m=String(r[tc]||'').match(/\(?(20\d{2})\)?/);if(m)year=parseInt(m[1]);}
-    bestRows.push({rank:rc>=0?(parseInt(r[rc])||i):i,title:String(r[tc]||'').trim(),pub:String(r[pc]||'').trim(),sp:sc>=0?(parseInt(String(r[sc]||'').replace(/[^0-9]/g,''))||0):0,year});
+    bestRows.push({rank:rc>=0?(parseInt(r[rc])||i):i,title:String(r[tc]||'').trim(),pub:String(r[pc]||'').trim(),author:ac>=0?String(r[ac]||'').trim():'',sp:sc>=0?(parseInt(String(r[sc]||'').replace(/[^0-9]/g,''))||0):0,year});
   }
   const pubs=[...new Set(bestRows.map(r=>r.pub))].sort();
   document.getElementById('myPub').innerHTML=pubs.map(p=>`<option value="${p}">${p} (${bestRows.filter(r=>r.pub===p).length}권)</option>`).join('');
