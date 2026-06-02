@@ -22,6 +22,7 @@
 .p25-status-icon{font-size:1.1rem;}
 .p25-status-label{font-size:.7rem;color:var(--muted,#888);}
 .p25-status-count{font-size:.82rem;font-weight:700;color:var(--fg,#222);}
+.p25-status-session{font-size:.68rem;font-weight:400;color:var(--muted,#999);}
 
 /* 진행 바 */
 .p25-progress{margin-bottom:1.2rem;padding:.8rem 1rem;border:1px solid var(--accent-light,#e3e5f9);border-radius:8px;background:rgba(79,70,184,.04);}
@@ -87,6 +88,29 @@
 .p25-card-btn:hover{border-color:var(--accent,#4F46B8);color:var(--accent,#4F46B8);}
 .p25-card-btn.primary{background:var(--accent,#4F46B8);color:#fff;border-color:var(--accent,#4F46B8);}
 .p25-card-btn.primary:hover{opacity:.88;}
+
+/* 사내 진행작 */
+.p25-inprogress{margin-bottom:1rem;border:1px solid var(--border,#ddd);border-radius:8px;background:#fff;overflow:hidden;}
+.p25-inp-header{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;cursor:pointer;user-select:none;}
+.p25-inp-header:hover{background:var(--surface,#f5f5f5);}
+.p25-inp-title{font-size:.78rem;font-weight:600;color:var(--fg,#222);}
+.p25-inp-count{font-size:.68rem;color:var(--muted,#888);background:var(--surface,#f5f5f5);padding:1px 6px;border-radius:8px;}
+.p25-inp-toggle{font-size:.6rem;color:var(--muted,#aaa);margin-left:auto;}
+.p25-inp-body{padding:.6rem .8rem;border-top:1px solid var(--border-light,#eee);}
+.p25-inp-hint{font-size:.72rem;color:var(--muted,#999);margin:0 0 .5rem;}
+.p25-inp-list{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.5rem;}
+.p25-inp-item{display:inline-flex;align-items:center;gap:.3rem;padding:3px 8px;background:var(--accent-light,#e3e5f9);border-radius:6px;font-size:.75rem;color:var(--accent,#4F46B8);}
+.p25-inp-del{background:none;border:none;color:var(--muted,#888);cursor:pointer;font-size:.8rem;padding:0 2px;line-height:1;}
+.p25-inp-del:hover{color:#e53e3e;}
+.p25-inp-add{display:flex;gap:.3rem;}
+.p25-inp-add input{flex:1;padding:.35rem .6rem;border:1px solid var(--border,#ddd);border-radius:6px;font-size:.78rem;}
+.p25-inp-add input:focus{outline:none;border-color:var(--accent,#4F46B8);}
+.p25-inp-add button{padding:.35rem .7rem;border:1px solid var(--accent,#4F46B8);border-radius:6px;background:var(--accent,#4F46B8);color:#fff;font-size:.75rem;cursor:pointer;}
+
+/* 아이템 카드 헤더 (fitType + 전환 추적) */
+.p25-item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;}
+.p25-track-select{padding:2px 6px;border:1px solid var(--border,#ddd);border-radius:6px;font-size:.68rem;background:#fff;color:var(--fg,#222);cursor:pointer;}
+.p25-track-select:focus{outline:none;border-color:var(--accent,#4F46B8);}
 
 @media(max-width:768px){
   .p25-header{flex-direction:column;align-items:flex-start;}

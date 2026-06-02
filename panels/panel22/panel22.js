@@ -805,9 +805,14 @@ function bestByContent(block, candidates){
     }
     if (score > bestScore){ bestScore = score; best = cand; }
   }
-  // 최소 임계값: 코드줄의 20% 이상 매칭되어야 유효 (import 1줄 공유로 잘못 매칭 방지)
+  // 최소 임계값: 짧은 블록 오매칭 방지
   var codeCount = block.code_lines.filter(function(c){return c!==null;}).length;
-  if (codeCount > 3 && bestScore / codeCount < 0.2) return null;
+  // 2줄 이하 블록: 100% 매칭 필요 (import 1줄 공유로 잘못 매칭 방지)
+  if (codeCount <= 2 && bestScore < codeCount) return null;
+  // 3~5줄 블록: 50% 이상 매칭 필요
+  if (codeCount <= 5 && bestScore / codeCount < 0.5) return null;
+  // 6줄 이상: 20% 이상 매칭 필요
+  if (codeCount > 5 && bestScore / codeCount < 0.2) return null;
   return best;
 }
 
@@ -1049,23 +1054,33 @@ function similarity(a, b){
   if (a === b) return 1;
   var len = a.length + b.length;
   if (!len) return 1;
-  var d = editDistance(a, b);
-  return 1 - d / Math.max(a.length, b.length);
+  var maxLen = Math.max(a.length, b.length);
+  // 50% 미만 유사도는 무의미 — 조기 종료 임계값으로 전달
+  var maxDist = Math.floor(maxLen * 0.5);
+  var d = editDistance(a, b, maxDist);
+  return 1 - d / maxLen;
 }
 
-function editDistance(a, b){
+function editDistance(a, b, maxDist){
   var m = a.length, n = b.length;
   if (m === 0) return n; if (n === 0) return m;
-  var dp = [];
-  for (var i = 0; i <= m; i++){ dp[i] = []; for (var j = 0; j <= n; j++) dp[i][j] = 0; }
-  for (var i2 = 0; i2 <= m; i2++) dp[i2][0] = i2;
-  for (var j2 = 0; j2 <= n; j2++) dp[0][j2] = j2;
-  for (var i3 = 1; i3 <= m; i3++){
-    for (var j3 = 1; j3 <= n; j3++){
-      dp[i3][j3] = a[i3-1] === b[j3-1] ? dp[i3-1][j3-1] : 1 + Math.min(dp[i3-1][j3], dp[i3][j3-1], dp[i3-1][j3-1]);
+  // 길이 차이만으로 임계값 초과 시 조기 반환
+  if (maxDist !== undefined && Math.abs(m - n) > maxDist) return maxDist + 1;
+  // 1행만 사용하는 최적화 (O(n) 메모리)
+  var prev = [];
+  for (var j0 = 0; j0 <= n; j0++) prev[j0] = j0;
+  for (var i = 1; i <= m; i++){
+    var curr = [i];
+    var rowMin = i; // 이 행의 최솟값 추적 (조기 종료용)
+    for (var j = 1; j <= n; j++){
+      curr[j] = a[i-1] === b[j-1] ? prev[j-1] : 1 + Math.min(prev[j], curr[j-1], prev[j-1]);
+      if (curr[j] < rowMin) rowMin = curr[j];
     }
+    // 이 행 전체가 임계값 초과 시 더 이상 개선 불가 — 조기 종료
+    if (maxDist !== undefined && rowMin > maxDist) return maxDist + 1;
+    prev = curr;
   }
-  return dp[m][n];
+  return prev[n];
 }
 
 /* ── Progress ── */

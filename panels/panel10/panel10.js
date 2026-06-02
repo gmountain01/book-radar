@@ -26,7 +26,7 @@ var lastCatData = {};
 var _displayedCards = [];  // renderCards에 전달된 순서 (정렬 반영)
 
 var CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
-var TAXONOMY_VERSION = 'v5';
+var TAXONOMY_VERSION = 'v6';
 var TAXONOMY_CACHE_KEY = 'kw_taxonomy_v6';  // 동적 생성 캐시 (7일 TTL)
 var TAXONOMY_CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
 
@@ -439,7 +439,7 @@ async function refreshTaxonomy(forceRefresh) {
   var treeEl = $('kwTaxTree');
   var btnEl = $('kwRefreshBtn');
 
-  // 캐시 확인 — 캐시가 있으면 항상 사용 (TTL 무관, 수동 갱신만 API 호출)
+  // 캐시 확인 — TTL(7일) 이내면 캐시 사용, 만료 시 백그라운드 갱신
   if (!forceRefresh) {
     try {
       var cached = JSON.parse(localStorage.getItem(TAXONOMY_CACHE_KEY) || 'null');
@@ -448,6 +448,12 @@ async function refreshTaxonomy(forceRefresh) {
         mergeCustomTax();
         _autoSelectFirst();
         buildTaxTree();
+        // TTL 만료 시 백그라운드 자동 갱신 (UI 블로킹 없음)
+        var age = Date.now() - (cached.ts || 0);
+        if (age > TAXONOMY_CACHE_TTL) {
+          console.info('[panel10] 카테고리 캐시 만료 (' + Math.round(age / 86400000) + '일) — 백그라운드 갱신');
+          refreshTaxonomy(true);
+        }
         return;
       }
     } catch (e) { /* 캐시 오류 → 하드코딩 기본값 사용 */ }
@@ -702,27 +708,23 @@ async function runAnalysis() {
 
     // 각 L3 카테고리를 병렬 태스크로 변환
     var catTasks = activeLeaves.map(function(pathKey) {
-      return function() {
-        if (ytApiState.isAllExhausted()) return Promise.resolve({ pathKey: pathKey, videos: [] });
+      return async function() {
+        if (ytApiState.isAllExhausted()) return { pathKey: pathKey, videos: [] };
         var parts = pathKey.split('|');
         var taxL1 = KEYWORD_TAXONOMY[parts[0]] || {};
         var taxL2 = (taxL1.l2 || {})[parts[1]] || {};
         var taxL3 = (taxL2.l3 || {})[parts[2]] || {};
         var queries = taxL3.q || [];
-        // 각 L3 내부 쿼리도 병렬 실행
-        var qTasks = queries.map(function(q) {
-          return function() {
-            if (ytApiState.isAllExhausted()) return Promise.resolve([]);
-            return fetchYT(q).catch(function() { return []; });
-          };
-        });
-        return _parallelLimit(qTasks, YT_PARALLEL).then(function(qResults) {
-          var allVideos = [];
-          qResults.forEach(function(vids) { if (vids) allVideos.push.apply(allVideos, vids); });
-          doneCount++;
-          $('kwLoadingText').textContent = 'YouTube 수집 중… (' + doneCount + '/' + activeLeaves.length + ')';
-          return { pathKey: pathKey, videos: allVideos };
-        });
+        // 내부 쿼리는 순차 실행 (외부 catTasks 병렬과 합쳐 동시 요청 최대 4개 유지)
+        var allVideos = [];
+        for (var qi = 0; qi < queries.length; qi++) {
+          if (ytApiState.isAllExhausted()) break;
+          try { var vids = await fetchYT(queries[qi]); if (vids) allVideos.push.apply(allVideos, vids); }
+          catch(e) { /* skip */ }
+        }
+        doneCount++;
+        $('kwLoadingText').textContent = 'YouTube 수집 중… (' + doneCount + '/' + activeLeaves.length + ')';
+        return { pathKey: pathKey, videos: allVideos };
       };
     });
 
@@ -782,7 +784,7 @@ async function runAnalysis() {
       '   - YouTube 관련 영상의 일평균 조회수 합이 높다 (최소 500회/일 이상)\n' +
       '   - 위 예스24 목록에서 직접적으로 겹치는 도서가 0~1권\n' +
       '   - "이 주제로 지금 책을 내면 시장을 선점할 수 있다"고 확신할 수 있는 근거 필수\n' +
-      '   - 전체 키워드 중 최소 30%는 preempt로 분류하라. 선점 기회를 적극 발굴할 것.\n' +
+      '   - 데이터 근거가 충분할 때만 preempt로 분류하라. 근거 없이 억지로 preempt를 늘리지 말 것.\n' +
       '4. hook_idea는 이 책이 왜 지금 나와야 하는지, 서점에서 뭐가 다른지를 편집자에게 설득하는 한 마디.\n\n' +
       '[글쓰기 원칙] AI 투 문장 금지(~할 수 있습니다/혁신적인/필수적인). 편집자가 기획회의에서 실제로 쓰는 말투로. 구어체 OK.\n\n' +
       '[YouTube 트렌드 - 최근 12개월, 성장속도순]\n' + ytSummary + '\n\n' +
@@ -797,7 +799,7 @@ async function runAnalysis() {
       '- aladin_gap: 유사 도서 많으면 "낮음", 1~2권 "보통", 없으면 "높음"\n' +
       '- **target_reader**: "3년차 백엔드 개발자인데 AI로 생산성 올리고 싶은 사람"처럼 직급/경력/상황/욕구를 구체적으로. "개발자" "학생" 같은 한 단어 금지.\n' +
       '- **hook_idea**: 편집장을 설득하는 한 마디. "유튜브에서 월 50만뷰인데 한국어 책이 0권" / "기존 책들은 전부 이론인데 이건 실전 프로젝트 3개로 끝냄" 같은 구체적 근거.\n' +
-      '- **pick_type**: "preempt" 또는 "hook" 또는 "safe". preempt=책이 없는데 YouTube 수요 폭발(선점 기회), hook=새 관점+시장 공백, safe=검증된 수요+개선 가능. 최소 30%는 preempt.\n\n' +
+      '- **pick_type**: "preempt" 또는 "hook" 또는 "safe". preempt=책이 없는데 YouTube 수요 폭발(선점 기회), hook=새 관점+시장 공백, safe=검증된 수요+개선 가능. 데이터 근거에 따라 자연스럽게 분류.\n\n' +
       '[\n  {\n    "keyword": "구체적 롱테일 키워드",\n    "path": ["L1", "L2", "L3"],\n    "category": "L3 소분류명",\n    "subtitle_suggestion": "서점 띠지에 들어갈 부제 한 문장",\n    "pick_type": "preempt 또는 hook 또는 safe",\n    "hook_idea": "편집장 설득 한 마디 — 왜 지금, 왜 우리가",\n    "target_reader": "이 책을 살 사람의 직급+경력+상황+욕구",\n    "trend_vs_supply": "수요 대비 공급 불균형 한 줄",\n    "yt_keyword_signal": "YouTube 트렌드 근거 한 줄",\n    "readers": ["구체적 독자층1", "구체적 독자층2"],\n    "aladin_gap": "높음 또는 보통 또는 낮음",\n    "competitor_books": [{"title": "도서명", "publisher": "출판사"}],\n    "top_videos": [{"title": "영상 제목", "views": 1234567}],\n    "urgency": "지금 또는 3개월 내 또는 6개월 내",\n    "author_type": "현업 개발자 / IT 유튜버 / 연구자 / 컨설턴트"\n  }\n]\n\n' +
       '[JSON 형식 규칙]\n1. 문자열 값 한 줄. 줄바꿈 금지.\n2. 큰따옴표(") 사용 금지.\n3. views는 정수만.\n4. path는 3개 요소 배열.';
 
@@ -806,6 +808,19 @@ async function runAnalysis() {
     setStep(steps, 3);
     $('kwLoadingText').textContent = '카드 생성 중...';
     var cards = safeParseCards(raw);
+    // preempt 코드 검증: AI 분류를 실제 데이터로 확인
+    cards.forEach(function(c) {
+      if (c.pick_type !== 'preempt') return;
+      var pk = (c.path || []).join('|');
+      var vids = catData[pk] || [];
+      var sumVpd = vids.reduce(function(s, v) { return s + (v.viewsPerDay || 0); }, 0);
+      var hasBooks = (c.competitor_books && c.competitor_books.length > 1);
+      // 일평균 조회수 합 500 미만이거나 경쟁 도서 2권 이상이면 hook으로 다운그레이드
+      if (sumVpd < 500 || hasBooks) {
+        c.pick_type = 'hook';
+        c._downgraded = true;
+      }
+    });
     lastCards = cards;
     lastCatData = catData;
     saveCache(cards, catData);

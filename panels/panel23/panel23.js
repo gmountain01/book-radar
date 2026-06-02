@@ -260,8 +260,16 @@ function renderFeedList() {
 
 function hasPubSignal(t) {
   t = t.toLowerCase();
-  var s = ['launch','release','announce','introduce','new model','open source','framework','sdk','agent','coding','developer','benchmark','llm','fine-tun','rag','mcp'];
-  for (var i=0;i<s.length;i++) if (t.indexOf(s[i])!==-1) return true;
+  // 강한 신호: 단독으로 출판 기회를 시사하는 키워드
+  var strong = ['new model','open source','framework','sdk','llm','fine-tun','rag','mcp','출시','오픈소스','프레임워크'];
+  for (var i=0;i<strong.length;i++) if (t.indexOf(strong[i])!==-1) return true;
+  // 약한 신호: IT 맥락 키워드와 함께 있어야 출판 기회로 판정
+  var weak = ['launch','release','announce','introduce','agent','coding','benchmark'];
+  var context = ['ai','ml','dev','cloud','data','python','javascript','rust','kubernetes','docker','api'];
+  for (var w=0;w<weak.length;w++) {
+    if (t.indexOf(weak[w])===-1) continue;
+    for (var c=0;c<context.length;c++) if (t.indexOf(context[c])!==-1) return true;
+  }
   return false;
 }
 

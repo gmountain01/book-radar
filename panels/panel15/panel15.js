@@ -83,6 +83,7 @@ function render() {
         '<div class="fm-wordcount">' + wc.toLocaleString() + ' 자</div>' +
       '</div>' +
       '<div class="fm-actions">' +
+        '<button class="fm-btn" onclick="fmAiDraft()" style="background:var(--accent,#4F46B8);color:#fff;border-color:var(--accent);">✨ AI 초안</button>' +
         '<button class="fm-btn fm-btn-primary" onclick="fmDownloadDocx()">📥 .docx 다운로드</button>' +
         '<button class="fm-btn" onclick="fmCopyAll()">📋 전체 복사</button>' +
         '<span style="flex:1;"></span>' +
@@ -114,6 +115,54 @@ window.fmUpdate = function(value) {
   var wc = value.replace(/\s/g, '').length;
   var wcEl = ROOT.querySelector('.fm-wordcount');
   if (wcEl) wcEl.textContent = wc.toLocaleString() + ' 자';
+};
+
+window.fmAiDraft = async function() {
+  var apiKey = typeof loadApiKey === 'function' ? await loadApiKey() : '';
+  if (!apiKey) { alert('통합현황 또는 개발자 콘솔에서 Claude API 키를 설정해주세요.'); return; }
+  var tab = TABS.find(function(t) { return t.key === activeTab; });
+  if (!tab) return;
+  if (data[activeTab] && data[activeTab].trim().length > 20) {
+    if (!confirm('현재 "' + tab.title + '" 탭에 이미 내용이 있습니다.\nAI 초안으로 덮어쓰시겠습니까?')) return;
+  }
+
+  // 도서 정보 수집 (panel13 컨셉 데이터)
+  var bookInfo = '';
+  try {
+    var cp = JSON.parse(localStorage.getItem('ms_concept_v2') || '{}');
+    if (cp.title) bookInfo += '도서 제목: ' + cp.title + '\n';
+    if (cp.subtitle) bookInfo += '부제: ' + cp.subtitle + '\n';
+    if (cp.reader) bookInfo += '대상 독자: ' + cp.reader + '\n';
+    if (cp.oneLiner) bookInfo += '한 줄 콘셉트: ' + cp.oneLiner + '\n';
+  } catch(e) {}
+
+  var tabPrompts = {
+    author: '저자의 말(머리말)을 작성하라. 이 책을 왜 쓰게 되었는지, 독자에게 어떤 도움이 되길 바라는지, 집필 과정의 에피소드를 자연스럽게 풀어내라. 600~800자.',
+    recommend: '이 도서에 대한 추천사 2개를 작성하라. 추천인(가상)의 이름/직함을 포함하고, 각 추천사는 3~4문장으로. 도서의 가치를 구체적으로 언급.',
+    howto: '"이 책의 구성" 섹션을 작성하라. 장(chapter)별 학습 흐름과 각 장에서 배울 핵심 내용을 독자에게 안내하는 형태로. 500~700자.',
+    reader: '"대상 독자" 섹션을 작성하라. 이 책이 적합한 독자와 부적합한 독자를 구분하고, 사전 지식 요구 수준을 명시. 300~500자.',
+    env: '"학습 환경" 섹션을 작성하라. 필요한 소프트웨어, OS, 하드웨어 사양, 예제 코드 다운로드 방법 등을 안내. 300~400자.',
+    ack: '"감사의 글"을 작성하라. 편집자, 리뷰어, 가족 등에게 감사를 표현. 자연스럽고 진심 어린 톤. 300~400자.',
+    memo: '이 도서의 기타 참고사항을 정리하라. 예제 코드 저장소, 오탈자 제보 방법, 독자 커뮤니티 안내 등. 200~300자.'
+  };
+
+  var prompt = bookInfo ? '[도서 정보]\n' + bookInfo + '\n' : '';
+  prompt += tabPrompts[activeTab] || '이 섹션의 초안을 작성하라.';
+  prompt += '\n\n[글쓰기 원칙] 존댓말. AI투 문장 금지(~할 수 있습니다, 혁신적인 등). 저자가 직접 쓴 것 같은 자연스러운 톤.';
+  prompt += '\n순수 텍스트만 출력하라. JSON이나 마크다운 금지.';
+
+  try {
+    showToast('"' + tab.title + '" AI 초안 생성 중…', 'blue');
+    var raw = await callClaudeApi({ apiKey: apiKey, model: 'claude-haiku-4-5-20251001', prompt: prompt, system: 'IT 도서 저자. 한국어. 자연스러운 문체.', maxTokens: 2000, noPersona: true });
+    if (raw && raw.trim()) {
+      data[activeTab] = raw.trim();
+      save(); render();
+      showToast('"' + tab.title + '" AI 초안 완성', 'green');
+    }
+  } catch (e) {
+    console.error('[panel15] AI 초안 실패:', e);
+    showToast('AI 초안 생성 실패: ' + e.message, 'red');
+  }
 };
 
 window.fmCopyAll = function() {

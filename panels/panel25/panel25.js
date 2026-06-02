@@ -49,6 +49,86 @@ function writingComment(descScore) {
   return '장문 집필 습관 약함 — 공저/구성 보강 검토';
 }
 
+// ── [개선1] 사내 진행작 목록 (중복 회피) ──
+var INPROGRESS_KEY = 'p25_inprogress';
+function getInProgress() {
+  try { return JSON.parse(localStorage.getItem(INPROGRESS_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveInProgress(list) { localStorage.setItem(INPROGRESS_KEY, JSON.stringify(list)); }
+
+// ── [개선2] 집필 능력 시그널 추출 ──
+var WRITING_URL_RE = /(?:github\.com|velog\.io|tistory\.com|brunch\.co\.kr|medium\.com|notion\.so|blog\.naver\.com|substack\.com)[\/\w\-.]*/gi;
+function extractWritingSignals(desc) {
+  if (!desc) return { urls: [], descLen: 0, score: 0 };
+  var urls = (desc.match(WRITING_URL_RE) || []).map(function(u) { return u.replace(/\/+$/, ''); });
+  var descLen = desc.length;
+  // 점수: 설명 길이 + URL 보너스
+  var score = Math.min(descLen / 50, 10) + urls.length * 3;
+  return { urls: urls, descLen: descLen, score: Math.round(score) };
+}
+
+// ── [개선3] 시차 예측 — YES24 아카이브 트렌드 래그 분석 ──
+function computeTrendLag() {
+  // YES24 아카이브에서 최근 등장 도서 vs 3~6개월 전 RSS 키워드 매핑
+  var result = { newTitles: [], lagPatterns: [] };
+  if (!window._YES24_ARCHIVE || !window._YES24_ARCHIVE.snapshots) return result;
+  var snapshots = window._YES24_ARCHIVE.snapshots;
+  var dates = Object.keys(snapshots).sort();
+  if (dates.length < 60) return result;
+
+  // 최근 30일 신규 진입 도서 (이전에 없던 것)
+  var allPrev = new Set();
+  var cutoff = dates[dates.length - 30] || dates[0];
+  dates.forEach(function(d) {
+    if (d < cutoff) snapshots[d].forEach(function(it) { allPrev.add(it.title); });
+  });
+  var recentNew = [];
+  dates.slice(-30).forEach(function(d) {
+    snapshots[d].forEach(function(it) {
+      if (!allPrev.has(it.title) && !recentNew.some(function(r){ return r.title === it.title; })) {
+        recentNew.push({ title: it.title, rank: it.rank, date: d, publisher: it.publisher || '' });
+      }
+    });
+  });
+  recentNew.sort(function(a, b) { return a.rank - b.rank; });
+  result.newTitles = recentNew.slice(0, 10);
+
+  // RSS 아카이브에서 3~6개월 전 키워드 추출 → 현재 베스트셀러 제목과 매칭
+  if (window._RSS_ARCHIVE && window._RSS_ARCHIVE.articles) {
+    var now = Date.now();
+    var m3 = now - 90 * 86400000, m6 = now - 180 * 86400000;
+    var oldKeywords = {};
+    window._RSS_ARCHIVE.articles.forEach(function(a) {
+      var t = new Date(a.date).getTime();
+      if (t >= m6 && t <= m3 && a.keywords) {
+        a.keywords.forEach(function(k) { oldKeywords[k.toLowerCase()] = (oldKeywords[k.toLowerCase()] || 0) + 1; });
+      }
+    });
+    // 빈도 2회 이상 키워드만
+    var topOldKw = Object.keys(oldKeywords).filter(function(k) { return oldKeywords[k] >= 2; })
+      .sort(function(a, b) { return oldKeywords[b] - oldKeywords[a]; }).slice(0, 20);
+
+    // 현재 신규 베스트셀러 제목과 매칭
+    recentNew.forEach(function(book) {
+      var tl = book.title.toLowerCase();
+      topOldKw.forEach(function(kw) {
+        if (tl.indexOf(kw) >= 0) {
+          result.lagPatterns.push({ keyword: kw, rssCount: oldKeywords[kw], book: book.title, rank: book.rank });
+        }
+      });
+    });
+  }
+  return result;
+}
+
+// ── [개선4] 아이템 전환 추적 ──
+var TRACKING_KEY = 'p25_item_tracking';
+var TRACK_STAGES = ['검토','섭외중','계약','집필중','출간','보류'];
+function getTracking() {
+  try { return JSON.parse(localStorage.getItem(TRACKING_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveTracking(t) { localStorage.setItem(TRACKING_KEY, JSON.stringify(t)); }
+
 // ── 데이터 자동 수집 ──
 function collectAllData() {
   var data = {};
@@ -92,11 +172,13 @@ function collectAllData() {
       var sn = ch.snippet || {};
       var desc = sn.description || '';
       var flags = detectRiskFlags(desc);
+      var writing = extractWritingSignals(desc);
       return {
         name: sn.title || '', subs: ch._subs || 0,
         videoCount: ch._videoCount || 0, titleMatch: ch._titleMatch || 0,
         description: desc.substring(0, 300),
-        riskFlags: flags
+        riskFlags: flags,
+        writingSignals: writing
       };
     });
   }
@@ -164,23 +246,57 @@ function render() {
   html += '</div></div>';
 
   // 데이터 현황
+  var pinKw = boardCounts.keyword || 0;
+  var pinYt = boardCounts.youtuber || 0;
+  var pinAuthor = boardCounts.author || 0;
+  var sessionKw = data.keywords.length;
+  var sessionYt = data.youtubers.length;
+  var dashCats = data.dashboard.gaps.length + data.dashboard.behind.length + data.dashboard.leading.length;
+
   html += '<div class="p25-status-grid">';
   [
     { icon:'📊', label:'리포트', count:data.reports.length },
     { icon:'📡', label:'RSS', count:data.feedTotal || data.feed.length },
     { icon:'📈', label:'트렌드', count:data.trends.length, unit:'주' },
-    { icon:'🔑', label:'키워드', count:Math.max(data.keywords.length, boardCounts.keyword||0) },
-    { icon:'📺', label:'유튜버', count:Math.max(data.youtubers.length, boardCounts.youtuber||0), unit:'명' },
-    { icon:'📉', label:'대시보드', count: (data.dashboard.gaps.length + data.dashboard.behind.length + data.dashboard.leading.length) || (data.dashboard.total ? 1 : 0), unit: (data.dashboard.gaps.length + data.dashboard.behind.length + data.dashboard.leading.length) ? '개 카테고리' : (data.dashboard.total ? ' (미분석)' : '') },
-    { icon:'📚', label:'저자', count:data.authorsTotal || data.authors.length, unit:'명' }
+    { icon:'🔑', label:'키워드', pin:pinKw, session:sessionKw },
+    { icon:'📺', label:'유튜버', pin:pinYt, session:sessionYt, unit:'명' },
+    { icon:'📉', label:'대시보드', count: dashCats || (data.dashboard.total ? 1 : 0), unit: dashCats ? '개 카테고리' : (data.dashboard.total ? ' (미분석)' : '') },
+    { icon:'📚', label:'저자', pin:pinAuthor, count:data.authorsTotal || data.authors.length, unit:'명' }
   ].forEach(function(s) {
-    var ok = s.count > 0;
+    var hasPin = typeof s.pin === 'number';
+    var ok = hasPin ? (s.pin > 0 || s.session > 0) : s.count > 0;
     html += '<div class="p25-status-card' + (ok ? '' : ' empty') + '">';
     html += '<span class="p25-status-icon">' + s.icon + '</span>';
     html += '<div class="p25-status-info"><div class="p25-status-label">' + s.label + '</div>';
-    html += '<div class="p25-status-count">' + (ok ? s.count + (s.unit || '개') : '없음') + '</div></div></div>';
+    if (hasPin) {
+      html += '<div class="p25-status-count">📌 ' + s.pin + (s.unit || '개');
+      if (s.session) html += ' <span class="p25-status-session">+ 세션 ' + s.session + '</span>';
+      html += '</div>';
+    } else {
+      html += '<div class="p25-status-count">' + (ok ? (s.count || 0) + (s.unit || '개') : '없음') + '</div>';
+    }
+    html += '</div></div>';
   });
   html += '</div>';
+
+  // 사내 진행작 입력 (중복 회피)
+  var inProgress = getInProgress();
+  html += '<div class="p25-inprogress">';
+  html += '<div class="p25-inp-header" onclick="p25_toggleInProgress()">';
+  html += '<span class="p25-inp-title">🏗️ 사내 진행작</span>';
+  html += '<span class="p25-inp-count">' + inProgress.length + '건</span>';
+  html += '<span class="p25-inp-toggle">▾</span></div>';
+  html += '<div class="p25-inp-body" id="p25InpBody" style="display:none;">';
+  html += '<p class="p25-inp-hint">현재 기획 중인 도서를 입력하면 AI가 중복을 회피합니다.</p>';
+  html += '<div class="p25-inp-list">';
+  inProgress.forEach(function(item, i) {
+    html += '<div class="p25-inp-item"><span>' + escHtml(item) + '</span>';
+    html += '<button class="p25-inp-del" onclick="p25_delInProgress(' + i + ')">×</button></div>';
+  });
+  html += '</div>';
+  html += '<div class="p25-inp-add"><input type="text" id="p25InpInput" placeholder="예: AI 에이전트 입문서 (가제)" onkeydown="if(event.key===\'Enter\')p25_addInProgress()">';
+  html += '<button onclick="p25_addInProgress()">추가</button></div>';
+  html += '</div></div>';
 
   // 진행 상태
   html += '<div class="p25-progress" id="p25Progress" style="display:none;"></div>';
@@ -223,12 +339,20 @@ function _renderResult(r) {
 
   // recommendedItems — 아이템 카드 (fitType별 색상)
   if (r.recommendedItems && r.recommendedItems.length) {
+    var tracking = getTracking();
     h += '<div class="p25-section-title">추천 기획 아이템</div>';
     h += '<div class="p25-items-grid">';
     r.recommendedItems.forEach(function(item, i) {
       var fitClass = item.fitType === '안전' ? 'fit-safe' : item.fitType === '데이터' ? 'fit-data' : 'fit-risk';
+      var trackKey = (item.concept || '').substring(0, 50);
+      var curStage = tracking[trackKey] || '';
       h += '<div class="p25-item-card ' + fitClass + '">';
-      h += '<div class="p25-item-fit">' + escHtml(item.fitType || '') + '</div>';
+      h += '<div class="p25-item-head"><div class="p25-item-fit">' + escHtml(item.fitType || '') + '</div>';
+      // 전환 추적 드롭다운
+      h += '<select class="p25-track-select" data-key="' + escHtml(trackKey) + '" onchange="p25_setStage(this)">';
+      h += '<option value="">상태 선택</option>';
+      TRACK_STAGES.forEach(function(s) { h += '<option value="' + s + '"' + (curStage === s ? ' selected' : '') + '>' + s + '</option>'; });
+      h += '</select></div>';
       h += '<div class="p25-item-concept">' + escHtml(item.concept) + '</div>';
       if (item.targetLevel) h += '<div class="p25-item-target">🎯 ' + escHtml(item.targetLevel) + '</div>';
       h += '<div class="p25-item-rationale">' + escHtml(item.rationale || '') + '</div>';
@@ -318,6 +442,9 @@ window.p25_run = async function() {
     sysPrompt += '- 출판 적합도 점수만 높다고 추천하지 마라. "이 아이템에 이 채널이 맞는가"(주제 정합성)를 먼저 본다.\n';
     sysPrompt += '- 리스크 플래그(저서 보유/캐시카우/집필 고사)를 반드시 반영.\n';
     sysPrompt += '- 단정 짓지 말고, 안전 카드와 모험 카드를 구분해 제시.\n';
+    sysPrompt += '- [사내 진행작]이 있으면 해당 주제와 겹치는 아이템은 절대 추천하지 마라.\n';
+    sysPrompt += '- [시차 예측] 데이터가 있으면 "3~6개월 전 뉴스 키워드 → 현재 베스트셀러" 패턴을 참고해 6개월 후 유망 주제를 예측하라.\n';
+    sysPrompt += '- [집필 능력] 블로그/GitHub/기술문서 URL이 있는 저자는 집필력 검증 가능성이 높다. writingScore가 15 이상이면 긍정 평가.\n';
     sysPrompt += '- JSON만 출력. 마크다운 코드블록 금지.';
 
     // 유저 메시지 구성 (명세 4-3)
@@ -363,7 +490,7 @@ window.p25_run = async function() {
       }
     });
     if (ytList.length) {
-      userMsg += '[유튜버/저자 후보 — 리스크 플래그 포함]\n';
+      userMsg += '[유튜버/저자 후보 — 리스크 플래그 + 집필 능력 포함]\n';
       ytList.forEach(function(y) {
         var line = y.name + ' (구독 ' + y.subs;
         if (y.videoCount) line += ', 관련영상 ' + y.videoCount + '개';
@@ -371,7 +498,40 @@ window.p25_run = async function() {
         if (y.riskFlags && y.riskFlags.length) {
           line += ' ' + y.riskFlags.map(function(f){ return f.flag; }).join(' ');
         }
+        // 집필 능력 시그널
+        var ws = y.writingSignals;
+        if (ws) {
+          line += ' [집필력 ' + ws.score + '점';
+          if (ws.urls && ws.urls.length) line += ', 링크: ' + ws.urls.slice(0, 2).join(' ');
+          line += ']';
+        }
         userMsg += line + '\n';
+      });
+      userMsg += '\n';
+    }
+
+    // [개선1] 사내 진행작 — AI에 중복 회피 지시
+    var inProgress = getInProgress();
+    if (inProgress.length) {
+      userMsg += '[사내 진행작 — 이 주제와 겹치는 아이템 추천 금지]\n';
+      inProgress.forEach(function(item) { userMsg += '- ' + item + '\n'; });
+      userMsg += '\n';
+    }
+
+    // [개선3] 시차 예측 — 트렌드 래그 패턴
+    var trendLag = computeTrendLag();
+    if (trendLag.lagPatterns.length) {
+      userMsg += '[시차 예측 — 3~6개월 전 뉴스 키워드 → 현재 베스트셀러 매핑]\n';
+      userMsg += '이 패턴을 참고해 "6개월 후 베스트셀러가 될 주제"를 예측하라.\n';
+      trendLag.lagPatterns.slice(0, 10).forEach(function(p) {
+        userMsg += '- 키워드 "' + p.keyword + '" (뉴스 ' + p.rssCount + '회) → "' + p.book + '" (' + p.rank + '위)\n';
+      });
+      userMsg += '\n';
+    }
+    if (trendLag.newTitles.length) {
+      userMsg += '[최근 30일 신규 베스트셀러]\n';
+      trendLag.newTitles.forEach(function(b) {
+        userMsg += '- ' + b.title + ' (' + b.rank + '위, ' + b.publisher + ', ' + b.date + ')\n';
       });
       userMsg += '\n';
     }
@@ -417,24 +577,39 @@ window.p25_run = async function() {
 
     _setProgress(progress, 3, 3, '결과 정리 중…');
 
+    // 빈 응답 검증
+    if (!text || !text.trim()) {
+      throw new Error('AI로부터 빈 응답을 받았습니다. API 키와 네트워크 상태를 확인해주세요.');
+    }
+
     // JSON 파싱
-    var jsonStr = (text || '').replace(/```json?\s*/g,'').replace(/```/g,'').trim();
+    var jsonStr = text.replace(/```json?\s*/g,'').replace(/```/g,'').trim();
     var m = jsonStr.match(/\{[\s\S]*\}/);
     if (m) jsonStr = m[0];
     jsonStr = jsonStr.replace(/,\s*([}\]])/g, '$1');
-    // 잘린 JSON 복구
-    var opens = (jsonStr.match(/[\[{]/g) || []).length;
-    var closes = (jsonStr.match(/[\]}]/g) || []).length;
-    for (var ci = 0; ci < opens - closes; ci++) {
-      var lastOpen = Math.max(jsonStr.lastIndexOf('['), jsonStr.lastIndexOf('{'));
-      jsonStr += jsonStr[lastOpen] === '[' ? ']' : '}';
+    // 잘린 JSON 복구 — 스택 기반으로 올바른 순서 보장
+    var bracketStack = [];
+    for (var bi = 0; bi < jsonStr.length; bi++) {
+      var bc = jsonStr[bi];
+      if (bc === '{' || bc === '[') bracketStack.push(bc);
+      else if (bc === '}' || bc === ']') bracketStack.pop();
+    }
+    // 스택에 남은 열린 괄호를 역순으로 닫기
+    while (bracketStack.length > 0) {
+      var open = bracketStack.pop();
+      jsonStr += open === '[' ? ']' : '}';
     }
 
     try {
       _result = JSON.parse(jsonStr);
     } catch(e2) {
-      console.warn('[panel25] JSON 파싱 실패, 재시도:', jsonStr.substring(0, 200));
+      console.warn('[panel25] JSON 파싱 실패:', jsonStr.substring(0, 300));
       throw new Error('AI 응답을 파싱할 수 없습니다. 다시 시도해주세요.');
+    }
+
+    // 결과 유효성 검증
+    if (!_result.summary && !_result.recommendedItems) {
+      throw new Error('AI 응답 형식이 올바르지 않습니다. 다시 시도해주세요.');
     }
 
     // localStorage 저장
@@ -470,6 +645,36 @@ window.p25_clearResult = function() {
   delete board.result;
   savePlanningBoard(board);
   render();
+};
+
+// ── 사내 진행작 이벤트 ──
+window.p25_toggleInProgress = function() {
+  var body = document.getElementById('p25InpBody');
+  if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+};
+window.p25_addInProgress = function() {
+  var input = document.getElementById('p25InpInput');
+  if (!input || !input.value.trim()) return;
+  var list = getInProgress();
+  list.push(input.value.trim());
+  saveInProgress(list);
+  render();
+};
+window.p25_delInProgress = function(i) {
+  var list = getInProgress();
+  list.splice(i, 1);
+  saveInProgress(list);
+  render();
+};
+
+// ── 전환 추적 이벤트 ──
+window.p25_setStage = function(sel) {
+  var key = sel.getAttribute('data-key');
+  var val = sel.value;
+  var t = getTracking();
+  if (val) t[key] = val;
+  else delete t[key];
+  saveTracking(t);
 };
 
 window.p25_toProposal = function() {

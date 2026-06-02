@@ -43,8 +43,30 @@ let pdfDoc = null;       // PDF.js document (페이지 뷰어용)
 let pvCurrentPage = 1;  // 현재 뷰어 페이지
 let pvRendering = false; // 렌더링 중 플래그
 let rulesChunks = null;  // 교정 규칙 청크 (RAG)
+let _userRulesPriority = true; // 사용자 업로드 규칙 우선 (기본: 우선 적용)
+let _hasUserRules = false;
 // 해결됨 상태 — allIssues 인덱스 기준, 필터 변경 후에도 유지
 const resolvedIndices = new Set();
+
+// 국립국어원 외래어 표기법 용례 — 오표기→올바른 표기 역색인
+// loanword-data.js가 window._LOANWORD_RULES를 설정하면 자동 구축
+let _loanwordIndex = null; // [[오표기, {c,o,w}], ...]
+(function _buildLoanwordIndex() {
+  if (!window._LOANWORD_RULES) return;
+  var rules = window._LOANWORD_RULES;
+  var map = new Map();
+  for (var i = 0; i < rules.length; i++) {
+    var r = rules[i];
+    for (var j = 0; j < r.w.length; j++) {
+      var wrong = r.w[j];
+      if (wrong.length >= 2 && !map.has(wrong)) {
+        map.set(wrong, r);
+      }
+    }
+  }
+  _loanwordIndex = Array.from(map.entries());
+  console.log('[panel8] 외래어 표기법 용례 로드:', _loanwordIndex.length + '건 오표기 색인');
+})();
 
 // ──────────────────────────────────────────────
 // 캐시 시스템 (localStorage)
@@ -78,11 +100,15 @@ function setCache(key, data) {
     localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(data));
   } catch(e) {
     console.warn('캐시 저장 실패 (용량 초과 등):', e.message);
-    // 저장 실패 시 오래된 캐시 모두 삭제 후 재시도
+    // 저장 실패 시 오래된 캐시부터 하나씩 삭제 후 재시도 (최대 3회)
     try {
-      Object.keys(localStorage).filter(k => k.startsWith(CACHE_PREFIX))
-        .forEach(k => localStorage.removeItem(k));
-      localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(data));
+      var oldKeys = Object.keys(localStorage).filter(k => k.startsWith(CACHE_PREFIX))
+        .map(k => ({ k, ts: (() => { try { return JSON.parse(localStorage.getItem(k))?.cachedAt || 0; } catch(e) { return 0; } })() }))
+        .sort((a, b) => a.ts - b.ts);
+      for (var ri = 0; ri < Math.min(3, oldKeys.length); ri++) {
+        localStorage.removeItem(oldKeys[ri].k);
+        try { localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(data)); break; } catch(e3) { /* 다음 시도 */ }
+      }
     } catch(e2) { /* 무시 */ }
   }
 }
@@ -183,13 +209,17 @@ async function p8_handleRulesFile(file) {
   if (!file) return;
   try {
     const count = await loadRulesFile(file);
-    document.getElementById('p8_rulesLabel').textContent = `✓ ${file.name} (${count}개 섹션 로드됨)`;
+    _hasUserRules = true;
+    var label = document.getElementById('p8_rulesLabel');
+    if (label) label.innerHTML = `✓ ${file.name} (${count}개 섹션)` +
+      ` <label style="font-size:.75rem;margin-left:8px;cursor:pointer;"><input type="checkbox" ${_userRulesPriority ? 'checked' : ''} onchange="p8_toggleRulesPriority(this.checked)"> 우선 적용</label>`;
     var badge = document.querySelector('.rules-badge-default');
     if (badge) { badge.className = 'rules-badge-loaded'; badge.textContent = '사용자 규칙 적용 중'; }
   } catch(e) {
     alert('규칙 파일 읽기 실패: ' + e.message);
   }
 }
+function p8_toggleRulesPriority(checked) { _userRulesPriority = checked; }
 function p8_handleRulesDrop(file) { if (file) p8_handleRulesFile(file); }
 
 // ──────────────────────────────────────────────
@@ -602,24 +632,65 @@ async function extractHWPX(file) {
 async function extractHWP(file) {
   throw new Error(
     'HWP 바이너리 파일은 브라우저에서 텍스트를 정확히 추출할 수 없습니다.\n\n' +
-    '아래 방법 중 하나로 변환 후 재업로드해 주세요:\n' +
-    '① 한컴오피스에서 "다른 이름으로 저장 → HWPX(.hwpx)"\n' +
-    '② 한컴오피스에서 "내보내기 → PDF"\n' +
-    '③ 한컴오피스에서 "다른 이름으로 저장 → DOCX(.docx)"'
+    '■ 변환 방법 (택 1):\n' +
+    '① [권장] 한컴오피스 → 파일 → 다른 이름으로 저장 → "HWPX(.hwpx)" 선택\n' +
+    '   (교정 품질 가장 높음 — 서식·표·각주 모두 보존)\n' +
+    '② 한컴오피스 → 파일 → 내보내기 → PDF\n' +
+    '   (서식 보존되나 텍스트 추출 품질 PDF 의존)\n' +
+    '③ 한컴오피스 → 파일 → 다른 이름으로 저장 → "DOCX(.docx)"\n\n' +
+    '■ 한컴오피스가 없는 경우:\n' +
+    '④ 한컴오피스 뷰어(무료)에서 열기 → "다른 이름으로 저장 → HWPX"\n' +
+    '   https://www.hancom.com/viewer\n' +
+    '⑤ 한컴 스페이스(웹) → 업로드 → HWPX로 다운로드\n' +
+    '   https://space.hancom.com'
   );
 }
 
-/** DOC (구형 바이너리 Word) — mammoth.js 시도 후 실패 시 안내 */
+/** DOC (구형 바이너리 Word) — mammoth.js 시도 → 바이너리 텍스트 추출 폴백 → 안내 */
 async function extractDOC(file) {
+  // 1차: mammoth.js
   if (typeof mammoth !== 'undefined') {
     try {
       const ab = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer: ab });
       if (result.value && result.value.trim().length >= 50)
         return textToExtracted(file.name, result.value);
-    } catch(e) { /* 무시하고 안내 메시지 출력 */ }
+    } catch(e) { console.warn('[panel8] DOC mammoth 파싱 실패:', e.message); }
   }
-  throw new Error('.doc 파일은 지원이 제한됩니다.\nMicrosoft Word에서 "다른 이름으로 저장 → .docx"로 변환 후 업로드해 주세요.');
+  // 2차: 바이너리에서 유니코드 텍스트 추출 시도 (한글 포함 문서)
+  try {
+    const ab = await file.arrayBuffer();
+    const bytes = new Uint8Array(ab);
+    // UTF-16LE 문자열 추출 (DOC 내부 포맷)
+    var texts = [];
+    for (var i = 0; i < bytes.length - 1; ) {
+      var code = bytes[i] | (bytes[i + 1] << 8);
+      if (code >= 0xAC00 && code <= 0xD7A3) { // 한글 음절 범위 진입
+        var chunk = '';
+        while (i < bytes.length - 1) {
+          code = bytes[i] | (bytes[i + 1] << 8);
+          if ((code >= 0x20 && code <= 0x7E) || (code >= 0xAC00 && code <= 0xD7A3) || code === 0x0A || code === 0x0D) {
+            chunk += String.fromCharCode(code);
+            i += 2;
+          } else break;
+        }
+        if (chunk.trim().length >= 10) texts.push(chunk.trim());
+      } else {
+        i += 2; // 비대상 코드 건너뜀
+      }
+    }
+    var extracted = texts.join('\n');
+    if (extracted.length >= 100) {
+      console.info('[panel8] DOC 바이너리 텍스트 추출:', extracted.length + '자');
+      showToast('DOC 바이너리 추출 — 서식 손실 가능', 'orange');
+      return textToExtracted(file.name, extracted);
+    }
+  } catch(e) { console.warn('[panel8] DOC 바이너리 추출 실패:', e.message); }
+  throw new Error(
+    '.doc 파일에서 텍스트를 추출할 수 없습니다.\n\n' +
+    'Microsoft Word에서 "다른 이름으로 저장 → .docx"로 변환 후 업로드해 주세요.\n' +
+    '또는 "파일 → 내보내기 → PDF"로 변환하셔도 됩니다.'
+  );
 }
 
 async function extractPDF(file) {
@@ -704,10 +775,10 @@ async function extractPDF(file) {
               e.pdfPage = pdfPage;
             }
           }
-        } catch(_) {}
+        } catch(_) { console.warn('[panel8] PDF outline dest 변환 실패:', _); }
       }
     }
-  } catch(e) {}
+  } catch(e) { console.warn('[panel8] PDF outline 파싱 실패:', e.message); }
 
   // outline 항목이 3개 미만이면 텍스트 파싱으로 보완
   if (toc.filter(e => e.page).length < 3) {
@@ -991,8 +1062,8 @@ const AI_CLICHE_PATS = [
   [/[가-힣]+을\s*살펴보도록\s*하겠습니다/g,  'AI투', 'high',   'AI 상투 — "~을 보겠습니다" 또는 삭제'],
   [/매우\s*중요한\s*주제입니다/g,            'AI투', 'medium', 'AI 상투 — 왜 중요한지 구체적으로 쓰세요'],
   // 연결·강조 상투어
-  [/뿐만\s*아니라/g,                         'AI투', 'medium', 'AI 빈출 연결어 — "게다가", "더구나", "~도" 등으로 교체'],
-  [/더욱이\b/g,                              'AI투', 'medium', 'AI 빈출 연결어 — "게다가", "한술 더 떠서" 등으로 교체'],
+  [/뿐만\s*아니라/g,                         'AI투', 'low',    '빈출 연결어 — 반복 시 "게다가", "더구나", "~도" 등으로 교체'],
+  [/더욱이\b/g,                              'AI투', 'low',    '빈출 연결어 — 반복 시 "게다가", "한술 더 떠서" 등으로 교체'],
   [/나아가\b/g,                              'AI투', 'low',    'AI 빈출 — 문맥에 맞는 자연스러운 연결어로 교체'],
   [/이는\s*[가-힣]+을\s*의미합니다/g,        'AI투', 'high',   'AI 상투 — 풀어서 직접 설명하세요'],
   [/주목할\s*만한\s*점은/g,                  'AI투', 'medium', 'AI 상투 — "눈여겨볼 건", "재밌는 건" 등으로 교체'],
@@ -1137,8 +1208,21 @@ function checkSurface(extracted) {
     addAll(HANJA_PATS, text, page);
     // 문장부호
     addAll(PUNCT_PATS, text, page);
-    // 외래어 오표기
+    // 외래어 오표기 (정규식 패턴)
     addAll(LOANWORD_PATS, text, page);
+    // 외래어 오표기 (국립국어원 용례 19,558건)
+    if (_loanwordIndex) {
+      for (const [wrong, rule] of _loanwordIndex) {
+        if (text.indexOf(wrong) >= 0) {
+          issues.push({
+            type: '외래어표기오류', severity: 'medium', page,
+            found: wrong,
+            suggestion: '→ ' + rule.c + ' (' + rule.o + ') — 국립국어원 외래어 표기법',
+            description: '외래어표기오류: \'' + wrong + '\' → \'' + rule.c + '\''
+          });
+        }
+      }
+    }
     // 번역체·일본식 표현 (표면)
     addAll(JSTYLE_PATS, text, page);
     // AI투 상투어·번역투·수식과잉
@@ -1152,7 +1236,8 @@ function checkSurface(extracted) {
 
     // 다중조사 중첩 (문장 단위 검사)
     // 한 문장에 '-의' 계열 조사구가 2회 이상 → 조사중복
-    const sentences = text.split(/(?<=[.다요죠])\s+/);
+    // 한국어 종결어미 확장: 서술(다/요/죠/함/됨/음/임), 의문(까/나/지), 청유(자/세요), 감탄(네/군/걸) + 마침표
+    const sentences = text.split(/(?<=[.!?다요죠함됨음임까나지세네군걸])\s+/);
     for (const sent of sentences) {
       if (sent.length < 10) continue;
       MULTI_PARTICLE_RE.lastIndex = 0;
@@ -1171,6 +1256,176 @@ function checkSurface(extracted) {
       }
     }
   }
+
+  // ── 종결어미·인칭·시제 일관성 검사 (문서 전체 단위) ──
+  _checkStyleConsistency(extracted, issues);
+
+  return issues;
+}
+
+/**
+ * 문체 일관성 검사: 종결어미(합니다/한다/해요), 인칭(필자/저자 vs 여러분/독자), 시제(과거/현재)
+ * 페이지 단위로 문체를 집계하고, 주 문체에서 벗어난 페이지에 이슈를 보고한다.
+ */
+function _checkStyleConsistency(extracted, issues) {
+  if (extracted.pages.length < 3) return; // 3페이지 미만은 의미 없음
+
+  // 1. 종결어미 체계 감지
+  var styleCount = { formal: 0, plain: 0, polite: 0 }; // 합니다체, 한다체, 해요체
+  var personCount = { first: 0, second: 0 }; // 1인칭(필자/저/나), 2인칭(여러분/독자)
+  var tenseCount = { past: 0, present: 0 }; // 과거(했다/였다), 현재(한다/이다)
+  var pageStyles = []; // 페이지별 주 문체
+
+  for (var pi = 0; pi < extracted.pages.length; pi++) {
+    var p = extracted.pages[pi];
+    var t = p.text;
+    if (t.length < 50) { pageStyles.push(null); continue; }
+
+    // 종결어미 카운트
+    var formal = (t.match(/(?:합니다|됩니다|습니다|겠습니다|있습니다|됩니까|습니까)[.?!\s]/g) || []).length;
+    var plain = (t.match(/(?:한다|된다|있다|없다|이다|였다|했다|겠다|아니다)[.?!\s]/g) || []).length;
+    var polite = (t.match(/(?:해요|돼요|있어요|없어요|인가요|할까요|하세요|되세요)[.?!\s]/g) || []).length;
+    styleCount.formal += formal;
+    styleCount.plain += plain;
+    styleCount.polite += polite;
+
+    var dominant = formal >= plain && formal >= polite ? 'formal' : plain >= polite ? 'plain' : 'polite';
+    pageStyles.push({ formal: formal, plain: plain, polite: polite, dominant: dominant, page: p.page });
+
+    // 인칭 카운트
+    personCount.first += (t.match(/(?:필자|저자는|내가|나는|저는|우리는|필자가)/g) || []).length;
+    personCount.second += (t.match(/(?:여러분|독자|당신|그대|읽는 분)/g) || []).length;
+
+    // 시제 카운트 (서술 종결 기준)
+    tenseCount.past += (t.match(/(?:했다|였다|었다|됐다|봤다|갔다|왔다|나왔다)[.!\s]/g) || []).length;
+    tenseCount.present += (t.match(/(?:한다|된다|있다|이다|간다|온다|나온다|보인다)[.!\s]/g) || []).length;
+  }
+
+  // 주 문체 판별 (전체 문서 기준, 최소 10회 이상)
+  var totalEndings = styleCount.formal + styleCount.plain + styleCount.polite;
+  if (totalEndings < 10) return; // 종결어미가 너무 적으면 검사 불가
+
+  var mainStyle = styleCount.formal >= styleCount.plain && styleCount.formal >= styleCount.polite ? 'formal'
+                : styleCount.plain >= styleCount.polite ? 'plain' : 'polite';
+  var styleLabels = { formal: '합니다체', plain: '한다체', polite: '해요체' };
+  var mainPct = Math.round((styleCount[mainStyle] / totalEndings) * 100);
+
+  // 혼용 비율이 20% 이상이면 이슈 보고
+  if (mainPct < 80) {
+    var minor = Object.keys(styleCount).filter(function(k) { return k !== mainStyle && styleCount[k] > 0; })
+      .map(function(k) { return styleLabels[k] + ' ' + styleCount[k] + '회'; }).join(', ');
+    issues.push({
+      type: '문체불일치', severity: 'medium', page: 1,
+      found: '주 문체: ' + styleLabels[mainStyle] + ' (' + mainPct + '%), 혼용: ' + minor,
+      suggestion: '한 권의 책에서 종결어미를 통일하세요. 주 문체(' + styleLabels[mainStyle] + ')로 맞추는 것을 권장합니다.',
+      description: '종결어미 혼용: ' + styleLabels[mainStyle] + ' ' + mainPct + '%'
+    });
+
+    // 혼용이 심한 개별 페이지 지적 (주 문체 비율 < 40%)
+    for (var si = 0; si < pageStyles.length; si++) {
+      var ps = pageStyles[si];
+      if (!ps) continue;
+      var pageTotal = ps.formal + ps.plain + ps.polite;
+      if (pageTotal < 3) continue;
+      if (ps.dominant !== mainStyle && ps[mainStyle] / pageTotal < 0.4) {
+        issues.push({
+          type: '문체불일치', severity: 'low', page: ps.page,
+          found: 'p.' + ps.page + ': ' + styleLabels[ps.dominant] + ' ' + ps[ps.dominant] + '회 (주 문체 ' + styleLabels[mainStyle] + ' ' + ps[mainStyle] + '회)',
+          suggestion: '이 페이지의 종결어미를 주 문체(' + styleLabels[mainStyle] + ')로 통일하세요.',
+          description: '종결어미 혼용 페이지'
+        });
+      }
+    }
+  }
+
+  // 인칭 혼용 감지 (양쪽 모두 5회 이상이면 의도적 혼용 가능성 있으나 경고)
+  if (personCount.first >= 5 && personCount.second >= 5) {
+    issues.push({
+      type: '문체불일치', severity: 'low', page: 1,
+      found: '1인칭(필자/저/나) ' + personCount.first + '회, 2인칭(여러분/독자) ' + personCount.second + '회',
+      suggestion: '인칭을 통일하세요. IT 도서에서는 보통 "필자"(1인칭)와 "독자 여러분"(호칭)을 구분하여 사용합니다. 같은 문맥에서 "나"와 "여러분"을 번갈아 쓰면 혼란스럽습니다.',
+      description: '인칭 혼용: 1인칭+2인칭 병용'
+    });
+  }
+
+  // 시제 혼용 감지 (서술문에서 과거/현재 혼용)
+  var totalTense = tenseCount.past + tenseCount.present;
+  if (totalTense >= 10) {
+    var mainTense = tenseCount.present >= tenseCount.past ? 'present' : 'past';
+    var tenseLabels = { past: '과거형(-했다)', present: '현재형(-한다)' };
+    var minorTense = mainTense === 'present' ? 'past' : 'present';
+    var tPct = Math.round((tenseCount[mainTense] / totalTense) * 100);
+    if (tPct < 75) {
+      issues.push({
+        type: '문체불일치', severity: 'medium', page: 1,
+        found: tenseLabels[mainTense] + ' ' + tenseCount[mainTense] + '회(' + tPct + '%), ' + tenseLabels[minorTense] + ' ' + tenseCount[minorTense] + '회',
+        suggestion: '서술 시제를 통일하세요. IT 도서에서는 현재형(-한다, -이다)이 표준입니다. 과거 사례를 언급할 때만 과거형을 사용하세요.',
+        description: '시제 혼용: ' + tenseLabels[mainTense] + ' ' + tPct + '%'
+      });
+    }
+  }
+}
+
+// ──────────────────────────────────────────────
+// 나라 맞춤법 검사기 API (speller.town — 부산대/나라인포테크)
+// CORS 허용, rate limit 1분 10회, 한 번에 500자 제한
+// ──────────────────────────────────────────────
+const SPELLER_URL = 'https://speller.town';
+const SPELLER_MAX_LEN = 500;
+const SPELLER_DELAY = 300; // ms between requests (rate limit 보호)
+
+async function _checkSpellerApi(extracted) {
+  const issues = [];
+  // 네트워크 연결 확인 (file:// 환경에서는 스킵)
+  if (location.protocol === 'file:') return issues;
+
+  // 페이지 텍스트를 500자 청크로 분할, 최대 10청크 (rate limit)
+  const chunks = [];
+  for (const p of extracted.pages) {
+    const text = p.text.trim();
+    if (text.length < 10) continue;
+    for (let i = 0; i < text.length && chunks.length < 10; i += SPELLER_MAX_LEN) {
+      chunks.push({ page: p.page, text: text.slice(i, i + SPELLER_MAX_LEN), offset: i });
+    }
+    if (chunks.length >= 10) break;
+  }
+  if (!chunks.length) return issues;
+
+  console.log(`[panel8] 맞춤법 API: ${chunks.length}청크 검사`);
+
+  for (const chunk of chunks) {
+    try {
+      const res = await fetch(SPELLER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: chunk.text })
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.suggestions && data.suggestions.length) {
+        for (const s of data.suggestions) {
+          // 이미 표면 검사에서 잡은 것과 중복 방지
+          const found = s.text || '';
+          if (!found) continue;
+          issues.push({
+            type: '맞춤법', severity: 'medium', page: chunk.page,
+            found: found,
+            suggestion: '→ ' + (s.candidates || []).join(' / ') + ' — 나라 맞춤법 검사기',
+            description: s.description || ('맞춤법: \'' + found + '\'')
+          });
+        }
+      }
+      // rate limit 보호
+      if (chunks.indexOf(chunk) < chunks.length - 1) {
+        await new Promise(r => setTimeout(r, SPELLER_DELAY));
+      }
+    } catch(e) {
+      // 네트워크 오류 시 조용히 중단
+      console.warn('[panel8] 맞춤법 API 오류:', e.message);
+      break;
+    }
+  }
+  console.log(`[panel8] 맞춤법 API 결과: ${issues.length}건`);
   return issues;
 }
 
@@ -1433,6 +1688,7 @@ const CHUNK_KEYWORDS = {
   '번역체': ['번역체', '이중피동', '피동', '쓰여지다', '보여지다', '되어지다', '잊혀지다', '에 의해', '가지고 있다', '에 대하여', '에 있어서', '인 것이다', '보다 한', '필요로 한다'],
   '중복 군더더기': ['중복', '군더더기', '의미 중복', '역전 앞', '미리 예약', '접속사 중복', '단어 반복', '라고 하는 것이다', '인 것 같다고', '이러한', '그러한'],
   '윤문 대상': ['윤문', '중의적', '주술 호응', '길이 과잉', '80자', '반복 구조', '어순', '문체', '인용문'],
+  '시제 인칭 종결어미': ['시제', '인칭', '종결어미', '합니다', '한다', '해요', '필자', '독자', '여러분', '과거형', '현재형', '문체불일치', '체계'],
 };
 
 function findRelevantChunks(chunks, batchText) {
@@ -1472,14 +1728,32 @@ function findRelevantChunks(chunks, batchText) {
         if (matched) break;
       }
     }
-    if (matched) result.push(chunk);
+    if (matched) {
+      // 관련성 점수 계산: 키워드 매칭 수 + 표 셀 매칭 수
+      var score = 0;
+      for (const [section, kws] of Object.entries(CHUNK_KEYWORDS)) {
+        if (!chunk.heading.includes(section)) continue;
+        kws.forEach(kw => { if (textLower.includes(kw.toLowerCase())) score++; });
+      }
+      if (chunk.text) {
+        chunk.text.split('\n').forEach(line => {
+          if (!line.includes('|')) return;
+          line.split('|').map(c => c.trim()).filter(Boolean).forEach(cell => {
+            if (cell.length >= 2 && cell.length <= 20 && cell !== '---' && !cell.startsWith('#') && textLower.includes(cell.toLowerCase())) score++;
+          });
+        });
+      }
+      chunk._relevanceScore = score;
+      result.push(chunk);
+    }
   }
-  // 토큰 제한: 너무 많은 청크가 매칭되면 상위 8개로 제한 (항상 포함 제외)
+  // 관련성 점수 기반 정렬 후 상위 8개 (항상 포함 제외)
   const isAlways = c => c.heading.includes('교정 작업 원칙') || c.heading.includes('충돌') || c.heading.includes('부록');
   const always = result.filter(isAlways);
   const others = result.filter(c => !isAlways(c));
+  others.sort((a, b) => (b._relevanceScore || 0) - (a._relevanceScore || 0));
   if (others.length > 8) return always.concat(others.slice(0, 8));
-  return result;
+  return always.concat(others);
 }
 
 // 규칙 파일 로드 (업로드 or 기본값)
@@ -1572,7 +1846,10 @@ MEDIUM severity (개선 필요):
 - 수동태과용: Excessive passive — -어지다/-되어지다(high), ~에 의해 ~되다, ~받다 남용
 - 외래어표기오류: WRONG loanword spelling per Korean standard orthography rules. IMPORTANT: Using a loanword itself is NOT an error. Only flag when the SPELLING is wrong. 컨텐츠→콘텐츠, 메세지→메시지, 리더쉽→리더십, 악세서리→액세서리, 카페인→카페인(OK), 인터페이스(OK — do NOT flag correct loanwords). Common errors: 데스크탑→데스크톱, 프리젠테이션→프레젠테이션, 컴퓨팅(OK), 소프트웨어(OK), 어플→앱/애플리케이션, 시뮬레이션(OK), 커뮤니케이션(OK), 콘텐트→콘텐츠, 다이나믹→다이내믹, 로보트→로봇, 싸이트→사이트, 웹사이트(OK), 매니저→매니저(OK), 네비게이션→내비게이션, 가이드라인(OK)
 - 용어불일치: Inconsistent term notation — same concept written differently in the SAME batch
-- 문체불일치: Inconsistent register — mixing formal and informal within same section
+- 문체불일치: Inconsistent register. Check these THREE aspects:
+  (1) 종결어미 혼용: 합니다체(-습니다/-ㅂ니다)와 한다체(-다/-이다)가 같은 섹션에 섞임. 코드 설명·예제 주석은 한다체 허용.
+  (2) 인칭 혼용: "필자/저/나"(1인칭)와 "여러분/독자"(2인칭)가 같은 문맥에서 번갈아 등장. 호칭으로서의 "독자 여러분"은 1인칭 서술과 병용 가능.
+  (3) 시제 혼용: 과거형(-했다/-였다)과 현재형(-한다/-이다)이 같은 단락에서 무분별하게 섞임. 과거 사례 인용은 예외.
 
 MEDIUM severity (표기·부호 오류 — 가장 정밀하게 검사할 것):
 
@@ -1734,14 +2011,26 @@ HALLUCINATION PREVENTION (CRITICAL):
 
 // callClaude — callClaudeApi(shared/app.js) 래핑
 async function callClaude(apiKey, text, rulesContext = '') {
-  const systemPrompt = rulesContext
-    ? SYS + '\n\n---\n## 📋 1팀 교정 규칙 (아래 규칙을 우선 적용할 것)\n' + rulesContext
-    : SYS;
+  var systemPrompt;
+  if (rulesContext && _hasUserRules && _userRulesPriority) {
+    // 사용자 규칙 우선: 규칙을 SYS 앞에 배치하여 AI가 먼저 참조
+    systemPrompt = '## 📋 사용자 교정 규칙 (최우선 적용)\n' + rulesContext + '\n\n---\n' + SYS;
+  } else if (rulesContext) {
+    systemPrompt = SYS + '\n\n---\n## 📋 교정 규칙 참고\n' + rulesContext;
+  } else {
+    systemPrompt = SYS;
+  }
+  // 모델 자동 선택: 텍스트 길이 기반
+  // 3000자 초과 또는 코드 블록 포함 시 Sonnet (정교한 분석)
+  var textLen = text.length;
+  var hasCode = /```|def |class |function |import |from /.test(text);
+  var model = (textLen > 3000 || hasCode) ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001';
+
   return callClaudeApi({
     apiKey: apiKey,
     prompt: text,
     system: systemPrompt,
-    model: 'claude-haiku-4-5-20251001',
+    model: model,
     maxTokens: 8192,
     temperature: 0,
     noPersona: true
@@ -1756,22 +2045,36 @@ async function callClaude(apiKey, text, rulesContext = '') {
  * 공백·구두점 제거 후 비교 — AI가 원문을 그대로 반환하는 경우를 걸러낸다.
  */
 function _isSameSuggestion(found, suggestion) {
-  const norm = s => s.replace(/[\s\u00A0.,!?·…。、]/g, '').toLowerCase();
+  const norm = s => s.replace(/[\s\u00A0.,!?·…。、()\[\]「」『』""'']/g, '').toLowerCase();
   const f = norm(found);
   const s = norm(suggestion);
   if (!f || !s) return false;
   if (f === s) return true;
-  // suggestion이 found를 완전히 포함하고 10% 이내로만 길면 실질 동일 취급
-  // (예: "원문입니다." → "원문입니다. (수정 없음)" 같은 패턴)
-  if (s.includes(f) && s.length <= f.length * 1.10) return true;
-  // 편집 거리 기반: 두 문자열이 95% 이상 유사하면 동일 취급
+  // 한쪽이 다른쪽을 포함하고 15% 이내로만 길면 실질 동일 취급
+  if (s.includes(f) && s.length <= f.length * 1.15) return true;
+  if (f.includes(s) && f.length <= s.length * 1.15) return true;
+  // Levenshtein 편집 거리 (짧은 문자열에서만 — 성능 제한)
   const longer = f.length >= s.length ? f : s;
   const shorter = f.length < s.length ? f : s;
   if (longer.length === 0) return true;
-  // 간단한 공통 접두 비율 체크 (완전한 Levenshtein 대신 빠른 근사)
-  let same = 0;
-  for (let i = 0; i < shorter.length; i++) { if (shorter[i] === longer[i]) same++; }
-  return (same / longer.length) >= 0.95;
+  if (longer.length > 200) {
+    // 긴 텍스트는 n-gram 유사도로 근사
+    const ngram = (t, n) => { const s = new Set(); for (let i = 0; i <= t.length - n; i++) s.add(t.slice(i, i + n)); return s; };
+    const a = ngram(f, 3), b = ngram(s, 3);
+    let common = 0; a.forEach(g => { if (b.has(g)) common++; });
+    return (common / Math.max(a.size, b.size)) >= 0.9;
+  }
+  // 편집 거리 (O(n*m), 200자 이내만)
+  const prev = Array.from({ length: shorter.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= longer.length; i++) {
+    const curr = [i];
+    for (let j = 1; j <= shorter.length; j++) {
+      curr[j] = longer[i - 1] === shorter[j - 1] ? prev[j - 1] : 1 + Math.min(prev[j - 1], prev[j], curr[j - 1]);
+    }
+    prev.splice(0, prev.length, ...curr);
+  }
+  const dist = prev[shorter.length];
+  return (1 - dist / longer.length) >= 0.9;
 }
 
 function _parseClaudeJson(raw) {
@@ -1880,8 +2183,8 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
     const batchIdx = Math.floor(i / batchSize) + 1;
     if (onBatch) onBatch(batchIdx, total);
     const batch = pages.slice(i, i + batchSize);
-    // 페이지 텍스트는 이미 ~1500자 단위이므로 추가 슬라이스 불필요
-    const txt = batch.map(p => `\n[p.${p.page}]\n${p.text}\n`).join('');
+    // 페이지 텍스트를 압축하여 토큰 절감
+    const txt = batch.map(p => `\n[p.${p.page}]\n${_compressForTokens(p.text)}\n`).join('');
     const relevant = rulesChunks ? findRelevantChunks(rulesChunks, txt) : [];
     const rulesCtx = relevant.length > 0 ? relevant.map(c => c.text).join('\n') : '';
     try {
@@ -2081,6 +2384,17 @@ async function p8_startProofread() {
     document.getElementById('p8_step2-detail').textContent =
       surfaceIssues.length ? `${surfaceIssues.length}건 발견` : '이슈 없음';
     setBar(45);
+
+    // ── Step 2.5: 나라 맞춤법 검사기 API (선택적) ──
+    try {
+      var spellerIssues = await _checkSpellerApi(extracted);
+      if (spellerIssues.length) {
+        surfaceIssues = surfaceIssues.concat(spellerIssues);
+        document.getElementById('p8_step2-detail').textContent =
+          `${surfaceIssues.length}건 발견 (맞춤법 API ${spellerIssues.length}건 포함)`;
+      }
+    } catch(e) { console.warn('[panel8] 맞춤법 API 스킵:', e.message); }
+    setBar(50);
 
     // ── Step 3: 구조 검사 ──
     stepRun(3, '목차·헤딩 비교 중…');
@@ -2357,9 +2671,9 @@ function p8_pvGoTo(n) {
 // 표면검사(정규식)에서만 생성되는 type
 const SURFACE_ONLY    = ['단어반복','이중수동','중복군더더기','접속사중복','한자남용','불필요한공백','AI투','오탈자'];
 // AI검사에서만 생성되는 type
-const AI_ONLY         = ['비문','주술호응오류','잘못된표현','수동태과용','윤문필요','중의적표현','문체불일치','사실오류','할루시네이션','저자확인필요'];
+const AI_ONLY         = ['비문','주술호응오류','잘못된표현','수동태과용','윤문필요','중의적표현','사실오류','할루시네이션','저자확인필요'];
 // 표면(인접오타)+AI(문맥반복) 양쪽에서 생성 가능 (크로스 중복 제거: AI 우선)
-const CROSS_TYPES     = ['조사중복','번역체','일본식표현','외래어표기오류','용어불일치','내용보완필요','문단연결불량','문장부호오류','띄어쓰기','맞춤법'];
+const CROSS_TYPES     = ['조사중복','번역체','일본식표현','외래어표기오류','용어불일치','내용보완필요','문단연결불량','문장부호오류','띄어쓰기','맞춤법','문체불일치'];
 // 구조검사에서 생성
 const STRUCT_TYPES    = ['목차불일치'];
 // 호환용 집합 (기존 렌더링 코드와 호환)
@@ -2393,8 +2707,11 @@ const EDIT_CATEGORIES = [
   { key:'AI투',        label:'AI투 의심',       sub:'AI 상투어·수식 과잉·단정 회피',
     types:['AI투'] },
   // ── 7. 표기 일관성 ──
-  { key:'표기불일치',  label:'표기 불일치',     sub:'용어·문체 혼재',
-    types:['용어불일치','문체불일치'] },
+  { key:'표기불일치',  label:'표기 불일치',     sub:'용어 표기 혼재',
+    types:['용어불일치'] },
+  // ── 7. 시제·인칭·문체 ──
+  { key:'문체불일치',  label:'시제·인칭·문체', sub:'종결어미·인칭·시제 혼용',
+    types:['문체불일치'] },
   // ── 8. 내용·구성 (의미 수준 문제) ──
   { key:'내용구성',    label:'내용·구성',       sub:'설명 부족·출처 누락·문단 전환',
     types:['내용보완필요','문단연결불량'] },
@@ -2438,6 +2755,7 @@ function renderResults(extracted, aiUsed, aiSkipped) {
       <span class="chip" style="background:#b45309" title="미해결 필터" onclick="p8_filterResolved('unresolved',this)">미해결 ${total - resolvedIndices.size}</span>
       ${aiUsed ? '<span class="chip" style="background:#2980b9">AI 검사 완료</span>' : '<span class="chip" style="background:#c0392b" title="비문·사실오류·주술호응 등 의미 오류는 API 키 입력 후 재검사하세요">⚠️ AI 미실행</span>'}
       ${getCache(currentFileKey || '') ? '<span class="chip" style="background:#27ae60" title="캐시 재사용">⚡ 캐시</span>' : ''}
+      <button class="chip" style="background:var(--accent,#4F46B8);cursor:pointer;border:none;color:#fff;" onclick="p8_exportDocx()" title="교정 보고서 DOCX 다운로드">📥 DOCX</button>
     </div>`;
 
   // AI 미실행 배너 — API 키 입력 + 재검사 버튼 포함
@@ -2967,6 +3285,53 @@ function show(id) {
   });
 }
 
+function p8_exportDocx() {
+  if (typeof JSZip === 'undefined') { alert('JSZip 라이브러리가 필요합니다.'); return; }
+  if (!allIssues.length) { alert('내보낼 이슈가 없습니다.'); return; }
+  var x = function(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+  var zip = new JSZip();
+  zip.file('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+  zip.file('_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+  zip.file('word/_rels/document.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>');
+
+  var wp = function(style, text) {
+    return '<w:p><w:pPr><w:pStyle w:val="' + style + '"/></w:pPr><w:r><w:t xml:space="preserve">' + x(text) + '</w:t></w:r></w:p>';
+  };
+  var fname = selectedFile ? selectedFile.name : '교정';
+  var body = '';
+  body += '<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="36"/></w:rPr><w:t>교정 보고서</w:t></w:r></w:p>';
+  body += wp('Normal', '파일: ' + fname + ' | 총 ' + allIssues.length + '건 | ' + new Date().toLocaleDateString('ko-KR'));
+  body += '<w:p/>';
+
+  // severity별 그룹
+  var groups = { high: [], medium: [], low: [] };
+  allIssues.forEach(function(iss) { (groups[iss.severity] || groups.medium).push(iss); });
+  var labels = { high: '높음', medium: '중간', low: '낮음' };
+
+  ['high','medium','low'].forEach(function(sev) {
+    var list = groups[sev];
+    if (!list.length) return;
+    body += '<w:p><w:r><w:rPr><w:b/><w:sz w:val="28"/></w:rPr><w:t xml:space="preserve">[' + labels[sev] + '] ' + list.length + '건</w:t></w:r></w:p>';
+    list.forEach(function(iss, i) {
+      var resolved = resolvedIndices.has(allIssues.indexOf(iss)) ? ' [해결됨]' : '';
+      body += wp('Normal', (i+1) + '. [p.' + (iss.page||'?') + '] ' + (iss.type||'') + resolved);
+      body += wp('Normal', '   발견: ' + (iss.found||''));
+      if (iss.suggestion) body += wp('Normal', '   수정안: ' + iss.suggestion);
+      body += '<w:p/>';
+    });
+  });
+
+  zip.file('word/document.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + body + '</w:body></w:document>');
+  zip.generateAsync({ type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }).then(function(blob) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fname.replace(/\.[^.]+$/, '') + '_교정보고서.docx';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    showToast('교정 보고서 DOCX 다운로드 완료', 'green');
+  });
+}
+
 function p8_reset() {
   selectedFile = null;
   allIssues = [];
@@ -3118,10 +3483,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const p8inp = document.getElementById('p8_apiKey');
     if (p8inp && !p8inp.value) p8inp.value = apiKey;
 
-    // 6. 기존 표면·구조 이슈 유지 + AI 결과 병합
+    // 6. 기존 표면·구조 이슈 유지 + AI 결과 병합 (크로스 중복 제거 적용)
     const surface   = (cached?.surfaceIssues    || []);
     const structural = (cached?.structuralIssues || []);
-    allIssues = [...surface, ...structural, ...linguisticIssues];
+    // 크로스 중복 제거: AI가 같은 found를 잡았으면 표면 결과 제거
+    const _ct = new Set(CROSS_TYPES);
+    const _aiFs = new Set();
+    for (const iss of linguisticIssues) {
+      if (iss.found && _ct.has(iss.type)) _aiFs.add(iss.page + '|' + iss.found.trim());
+    }
+    const dedupSurface = surface.filter(function(iss) {
+      if (!iss.found || !_ct.has(iss.type)) return true;
+      return !_aiFs.has(iss.page + '|' + iss.found.trim());
+    });
+    allIssues = [...dedupSurface, ...structural, ...linguisticIssues];
 
     // 7. 캐시 갱신
     if (cacheKey) {
@@ -3147,12 +3522,14 @@ document.addEventListener('DOMContentLoaded', () => {
         resolvedIndices: [...resolvedIndices],
         extracted: { filename: extracted.filename, total_pages: extracted.total_pages },
       }));
-    } catch(e) {}
+    } catch(e) { console.warn('[panel8] 세션 저장 실패:', e.message); }
   }
 
 
   window.p8_handleRulesDrop = p8_handleRulesDrop;
   window.p8_handleRulesFile = p8_handleRulesFile;
+  window.p8_toggleRulesPriority = p8_toggleRulesPriority;
+  window.p8_exportDocx = p8_exportDocx;
   window.p8_startProofread = p8_startProofread;
   window.p8_pvGo = p8_pvGo;
   window.p8_pvGoTo = p8_pvGoTo;

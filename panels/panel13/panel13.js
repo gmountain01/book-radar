@@ -72,6 +72,7 @@ function render() {
         '</div>' +
       '</div>' +
       '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">' +
+        '<button class="cp-dl-btn" onclick="cpAiDraft()" style="background:var(--accent,#4F46B8);color:#fff;">✨ AI 초안</button>' +
         '<button class="cp-dl-btn" onclick="cpDownloadDocx()">📥 .docx 다운로드</button>' +
         '<button class="cp-reset-btn" onclick="cpReset()">초기화</button>' +
       '</div>' +
@@ -137,6 +138,56 @@ window.cpDownloadDocx = function() {
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
     });
+};
+
+window.cpAiDraft = async function() {
+  var apiKey = typeof loadApiKey === 'function' ? await loadApiKey() : '';
+  if (!apiKey) { alert('통합현황 또는 개발자 콘솔에서 Claude API 키를 설정해주세요.'); return; }
+  var title = data.title || '';
+  if (!title) { alert('도서 제목(가제)을 먼저 입력해주세요.'); return; }
+
+  // 기획 보드/키워드 데이터 수집
+  var context = '';
+  if (window._kwDisplayedCards && window._kwDisplayedCards.length) {
+    context += '[키워드 분석 데이터]\n';
+    window._kwDisplayedCards.slice(0, 5).forEach(function(c) {
+      context += '- ' + c.keyword + ' (' + (c.pick_type || '') + '): ' + (c.reason || '').substring(0, 80) + '\n';
+    });
+    context += '\n';
+  }
+  if (window._p25_exportData && window._p25_exportData.summary) {
+    context += '[기획 보드 종합 의견]\n' + window._p25_exportData.summary + '\n\n';
+  }
+
+  var prompt = '아래 도서 제목으로 컨셉 기획서 초안을 작성하라.\n\n';
+  prompt += '도서 제목(가제): ' + title + '\n';
+  if (data.subtitle) prompt += '부제: ' + data.subtitle + '\n';
+  if (context) prompt += '\n' + context;
+  prompt += '\n아래 JSON 형식으로만 답하라. 다른 말 없이 JSON만.\n';
+  prompt += '{"oneLiner":"한줄 콘셉트","reader":"대상 독자 (직급/경력/상황 구체적)","problem":"독자가 겪는 문제 3가지 (줄바꿈으로 구분)","solution":"이 책의 해결책 3가지","diff":"기존 도서와의 차별점","scope":"다루는 범위","notScope":"다루지 않는 범위","tone":"문체/톤 제안","keywords":"핵심 키워드 5개 (쉼표 구분)"}\n';
+  prompt += '\n[글쓰기 원칙] AI투 문장 금지. 편집자가 기획회의에서 쓰는 말투로. 구체적 수치와 사례 포함.';
+
+  if (!confirm('AI가 빈 필드를 자동으로 채웁니다.\n이미 작성한 필드는 유지됩니다.\n\n진행하시겠습니까?')) return;
+
+  try {
+    showToast('AI 초안 생성 중…', 'blue');
+    var raw = await callClaudeApi({ apiKey: apiKey, model: 'claude-haiku-4-5-20251001', prompt: prompt, system: 'IT 출판 기획 편집자. 한국어.', maxTokens: 2000, noPersona: true });
+    var jsonStr = (raw || '').replace(/```json?\s*/g, '').replace(/```/g, '').trim();
+    var m = jsonStr.match(/\{[\s\S]*\}/);
+    if (m) jsonStr = m[0];
+    var result = JSON.parse(jsonStr);
+    // 빈 필드만 채우기
+    var filled = 0;
+    Object.keys(result).forEach(function(k) {
+      if (result[k] && !data[k]) { data[k] = result[k]; filled++; }
+    });
+    save();
+    render();
+    showToast('AI 초안 ' + filled + '개 필드 완성', 'green');
+  } catch (e) {
+    console.error('[panel13] AI 초안 실패:', e);
+    showToast('AI 초안 생성 실패: ' + e.message, 'red');
+  }
 };
 
 window.cpReset = function() {

@@ -193,6 +193,7 @@ function renderEditor() {
         '<button class="ms-btn" onclick="msMoveSection(1)" title="아래로 이동">↓</button>' +
         '<button class="ms-btn" onclick="msLevelUp()">◀ 승격</button>' +
         '<button class="ms-btn" onclick="msLevelDown()">▶ 강등</button>' +
+        '<button class="ms-btn" onclick="msAiDraft()" style="background:var(--accent,#4F46B8);color:#fff;">✨ AI 초안</button>' +
         '<button class="ms-btn ms-btn-primary" onclick="msDownloadDocx()">📥 .docx</button>' +
       '</div>' +
     '</div>' +
@@ -301,6 +302,46 @@ window.msUpdate = function(field, value) {
     sections[activeIdx][field] = value;
     save();
     if (field === 'title') renderTree();
+  }
+};
+
+window.msAiDraft = async function() {
+  var s = sections[activeIdx];
+  if (!s) return;
+  var apiKey = typeof loadApiKey === 'function' ? await loadApiKey() : '';
+  if (!apiKey) { alert('통합현황 또는 개발자 콘솔에서 Claude API 키를 설정해주세요.'); return; }
+  if (!s.title) { alert('제목을 먼저 입력해주세요.'); return; }
+
+  // 전체 목차 맥락 수집
+  var tocContext = sections.map(function(sec, i) {
+    return '  '.repeat(sec.level) + (i === activeIdx ? '▶ ' : '  ') + sec.title;
+  }).join('\n');
+
+  var prompt = '아래 IT 도서의 한 섹션에 대해 도입부와 본문 초안을 작성하라.\n\n';
+  prompt += '[전체 목차]\n' + tocContext + '\n\n';
+  prompt += '[현재 섹션] ' + s.title + '\n';
+  if (s.summary) prompt += '[내용 요약] ' + s.summary + '\n';
+  prompt += '\n아래 JSON 형식으로만 답하라.\n';
+  prompt += '{"intro":"독자의 관심을 끄는 도입부 2~3문장","body":"본문 내용 (마크다운 아닌 평문, 500~800자)"}\n';
+  prompt += '\n[글쓰기 원칙] 존댓말. AI투 문장 금지. 구체적 사례와 코드 예시 포함. 독자에게 말 걸듯 자연스럽게.';
+
+  if (!confirm('AI가 "' + s.title + '"의 도입부와 본문 초안을 생성합니다.\n이미 작성한 내용은 유지됩니다.\n\n진행하시겠습니까?')) return;
+
+  try {
+    showToast('AI 초안 생성 중…', 'blue');
+    var raw = await callClaudeApi({ apiKey: apiKey, model: 'claude-haiku-4-5-20251001', prompt: prompt, system: 'IT 도서 저자. 한국어. 실무적.', maxTokens: 2000, noPersona: true });
+    var jsonStr = (raw || '').replace(/```json?\s*/g, '').replace(/```/g, '').trim();
+    var m = jsonStr.match(/\{[\s\S]*\}/);
+    if (m) jsonStr = m[0];
+    var result = JSON.parse(jsonStr);
+    var filled = 0;
+    if (result.intro && !s.intro) { s.intro = result.intro; filled++; }
+    if (result.body && !s.body) { s.body = result.body; filled++; }
+    save(); renderEditor();
+    showToast('AI 초안 ' + filled + '개 필드 완성', 'green');
+  } catch (e) {
+    console.error('[panel12] AI 초안 실패:', e);
+    showToast('AI 초안 생성 실패: ' + e.message, 'red');
   }
 };
 

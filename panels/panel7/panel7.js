@@ -523,59 +523,65 @@ async function doSearch() {
         krRegionCids.add(cid);
     }
 
-    // ── (1) 영상 검색 (최대 4페이지) ───────────────────────────────
-    let pageToken = null;
-    for (let p = 0; p < 4; p++) {
-      const params = { part: 'snippet', type: 'video', q, maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko' };
-      if (pageToken) params.pageToken = pageToken;
-      const data = await ytFetch('/search', params);
-      if (!data.items?.length) break;
-      data.items.forEach(_processVideoItem);
-      if (!data.nextPageToken) break;
-      pageToken = data.nextPageToken;
-    }
-
-    // ── (1-b) 최신 영상 검색 (order:date, 최근 3개월) — 신생 채널 발굴 ──
-    try {
-      let datePageToken = null;
-      for (let dp = 0; dp < 2; dp++) {
-        const dateParams = {
-          part: 'snippet', type: 'video', q, maxResults: 50,
-          regionCode: 'KR', relevanceLanguage: 'ko',
-          order: 'date', publishedAfter: threeMonthsAgo.toISOString()
-        };
-        if (datePageToken) dateParams.pageToken = datePageToken;
-        const dateData = await ytFetch('/search', dateParams);
-        if (!dateData.items?.length) break;
-        dateData.items.forEach(_processVideoItem);
-        if (!dateData.nextPageToken) break;
-        datePageToken = dateData.nextPageToken;
-      }
-    } catch (_) { /* date 검색 실패해도 진행 */ }
-
-    // ── (2) 채널 직접 검색 (type:channel, 최대 3페이지) ──
-    // 채널명·설명에 키워드가 명확히 있는 채널 발굴 → 정확도 보너스 부여
-    try {
-      let chPageToken = null;
-      for (let cp = 0; cp < 3; cp++) {
-        const chParams = {
-          part: 'snippet', type: 'channel', q,
-          maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko'
-        };
-        if (chPageToken) chParams.pageToken = chPageToken;
-        const chDirect = await ytFetch('/search', chParams);
-        (chDirect.items || []).forEach(item => {
-          const cid = item.id?.channelId || item.snippet?.channelId;
-          if (!cid) return;
-          directMatchIds.add(cid);
-          if (!(cid in videoCountMap)) videoCountMap[cid] = 0;
-          if (HANGUL.test(item.snippet?.title || '') || HANGUL.test(item.snippet?.description || ''))
-            krRegionCids.add(cid);
-        });
-        if (!chDirect.nextPageToken) break;
-        chPageToken = chDirect.nextPageToken;
-      }
-    } catch (_) { /* 직접 검색 실패해도 영상 검색 결과로 진행 */ }
+    // ── (1)(1-b)(2) 영상·최신·채널 검색을 병렬 실행 ──
+    await Promise.all([
+      // (1) 영상 검색 (relevance, 최대 4페이지)
+      (async () => {
+        let pageToken = null;
+        for (let p = 0; p < 4; p++) {
+          const params = { part: 'snippet', type: 'video', q, maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko' };
+          if (pageToken) params.pageToken = pageToken;
+          const data = await ytFetch('/search', params);
+          if (!data.items?.length) break;
+          data.items.forEach(_processVideoItem);
+          if (!data.nextPageToken) break;
+          pageToken = data.nextPageToken;
+        }
+      })(),
+      // (1-b) 최신 영상 검색 (order:date, 최근 3개월)
+      (async () => {
+        try {
+          let datePageToken = null;
+          for (let dp = 0; dp < 2; dp++) {
+            const dateParams = {
+              part: 'snippet', type: 'video', q, maxResults: 50,
+              regionCode: 'KR', relevanceLanguage: 'ko',
+              order: 'date', publishedAfter: threeMonthsAgo.toISOString()
+            };
+            if (datePageToken) dateParams.pageToken = datePageToken;
+            const dateData = await ytFetch('/search', dateParams);
+            if (!dateData.items?.length) break;
+            dateData.items.forEach(_processVideoItem);
+            if (!dateData.nextPageToken) break;
+            datePageToken = dateData.nextPageToken;
+          }
+        } catch (_) { /* date 검색 실패해도 진행 */ }
+      })(),
+      // (2) 채널 직접 검색 (type:channel, 최대 3페이지)
+      (async () => {
+        try {
+          let chPageToken = null;
+          for (let cp = 0; cp < 3; cp++) {
+            const chParams = {
+              part: 'snippet', type: 'channel', q,
+              maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko'
+            };
+            if (chPageToken) chParams.pageToken = chPageToken;
+            const chDirect = await ytFetch('/search', chParams);
+            (chDirect.items || []).forEach(item => {
+              const cid = item.id?.channelId || item.snippet?.channelId;
+              if (!cid) return;
+              directMatchIds.add(cid);
+              if (!(cid in videoCountMap)) videoCountMap[cid] = 0;
+              if (HANGUL.test(item.snippet?.title || '') || HANGUL.test(item.snippet?.description || ''))
+                krRegionCids.add(cid);
+            });
+            if (!chDirect.nextPageToken) break;
+            chPageToken = chDirect.nextPageToken;
+          }
+        } catch (_) { /* 직접 검색 실패해도 영상 검색 결과로 진행 */ }
+      })()
+    ]);
 
     const cids = Object.keys(videoCountMap);
     if (!cids.length) {
@@ -646,10 +652,10 @@ async function doSearch() {
 // tier 1=출판 적합, 2=가능성 있음, 3=추가 검토 필요
 function calcPublishTier(isKorean, subs, avgV, vidCount, contentMatch) {
   const hasAudience = subs >= 50000 || avgV >= 100000;
-  const hasContent  = contentMatch || vidCount >= 3;
+  const hasContent  = contentMatch && vidCount >= 5;
   if (hasAudience && hasContent) return 1;
   const minAudience = subs >= 10000 || avgV >= 20000;
-  const minContent  = contentMatch || vidCount >= 1;
+  const minContent  = contentMatch || vidCount >= 3;
   if (minAudience && minContent) return 2;
   return 3;
 }
@@ -674,10 +680,11 @@ function relevanceScore(item) {
   const rm = item._recentMatch || 0;
   const recentBonus = rm >= 3 ? 200 : rm >= 2 ? 140 : rm >= 1 ? 80 : 0;
 
-  // ④ 채널명 키워드 매칭 — 채널 정체성이 검색어와 일치
+  // ④ 채널명 키워드 매칭 — 채널 정체성이 검색어와 일치 (상한 150)
   let nameScore = 0;
   keywords.forEach(kw => { if (title.includes(kw)) nameScore += 100; });
   if (title.includes(q)) nameScore += 80;
+  nameScore = Math.min(nameScore, 150);
 
   // ⑤ 채널 설명 깊이 분석 — 키워드 밀도 (단순 포함이 아닌 반복 등장)
   let descScore = 0;
@@ -904,10 +911,13 @@ async function searchRookie() {
                      : channelAgeYears < 3   ? 1.5
                      : 1.0;
 
+      // 최소 영상 수 조건: 5개 미만이면 ageBonus 절반 (1회성 바이럴 방지)
+      const effectiveAgeBonus = vidCount >= 5 ? ageBonus : ageBonus * 0.5;
+
       const avgV = vCount > 0 ? Math.round(tViews / vCount) : 0;
       // 총조회수/구독자 = 구독자 1명당 누적 조회수 (높을수록 바이럴형)
       const viewsPerSub = subs > 0 ? tViews / subs : 0;
-      const rookieScore = Math.round(viewsPerSub * ageBonus * Math.log2(vidCount + 2) * 10);
+      const rookieScore = Math.round(viewsPerSub * effectiveAgeBonus * Math.log2(vidCount + 2) * 10);
 
       const country  = sn.country || '';
       const isKorean = HANGUL_RK.test(sn.title || '')

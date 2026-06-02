@@ -103,10 +103,12 @@ function render() {
   html += '<select class="p24-select" onchange="p24_onPubFilter(this.value)"><option value="">전체 출판사</option>';
   allPubs.forEach(function(p) { html += '<option value="' + escHtml(p) + '"' + (p === pubFilter ? ' selected' : '') + '>' + escHtml(p) + '</option>'; });
   html += '</select>';
+  html += '<div class="p24-sort-wrap">';
   sortBtns.forEach(function(b) {
     var active = sortKey === b.key;
     html += '<button class="p24-sort-btn' + (active ? ' active' : '') + '" onclick="p24_setSort(\'' + b.key + '\')">' + b.label + (active ? (sortAsc ? ' ↑' : ' ↓') : '') + '</button>';
   });
+  html += '</div>';
   html += '</div>';
 
   html += '<div class="p24-table-wrap"><table class="p24-table"><thead><tr>';

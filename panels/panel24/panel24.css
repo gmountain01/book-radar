@@ -40,7 +40,30 @@
 .p24-page-btn.active { background:var(--accent,#4F46B8); color:#fff; border-color:var(--accent,#4F46B8); }
 
 @media(max-width:768px){
-  .panel24-scope { left:0; padding:1rem; }
-  .p24-toolbar { flex-direction:column; }
+  .panel24-scope { left:0; padding:.8rem .6rem; }
+  .p24-wrap { max-width:100%; }
+  .p24-header { margin-bottom:.8rem; }
+  .p24-header h2 { font-size:1.1rem; }
+  .p24-toolbar { flex-direction:column; gap:.4rem; }
   .p24-search { min-width:100%; }
+  .p24-sort-wrap { display:flex; gap:.3rem; flex-wrap:wrap; }
+  .p24-sort-btn { font-size:.72rem; padding:.3rem .5rem; }
+
+  /* 테이블: 출판사·최고순위·등장일수·📌 열 숨김 */
+  .p24-table th:nth-child(4),
+  .p24-table td:nth-child(4),
+  .p24-table th:nth-child(5),
+  .p24-table td:nth-child(5),
+  .p24-table th:nth-child(6),
+  .p24-table td:nth-child(6),
+  .p24-table th:nth-child(8),
+  .p24-table td:nth-child(8) { display:none; }
+
+  .p24-table { font-size:.78rem; }
+  .p24-table th { padding:.45rem .5rem; font-size:.72rem; }
+  .p24-table td { padding:.4rem .5rem; }
+  .p24-book-list { font-size:.72rem; }
+  .p24-book-count { font-size:.72rem; min-width:22px; padding:1px 6px; }
+  .p24-pagination { gap:.25rem; }
+  .p24-page-btn { padding:.3rem .5rem; font-size:.75rem; }
 }

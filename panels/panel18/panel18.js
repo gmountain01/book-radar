@@ -20,7 +20,8 @@ var SECTIONS = [
   { key: 'review',   title: '4. 출판사 리뷰',  icon: '💬' },
   { key: 'toc',      title: '5. 목차',         icon: '📑' },
   { key: 'related',  title: '6. 관련 서적',    icon: '📚' },
-  { key: 'recs',     title: '7. 추천사',       icon: '⭐' }
+  { key: 'recs',     title: '7. 추천사',       icon: '⭐' },
+  { key: 'promo',    title: '8. 홍보 카피',    icon: '📣' }
 ];
 
 // ── 필수 필드 정의 (추천사 제외) ──
@@ -268,6 +269,7 @@ function _renderSection(sec) {
     case 'toc': h += _renderToc(); break;
     case 'related': h += _renderRelated(); break;
     case 'recs': h += _renderRecs(); break;
+    case 'promo': h += _renderPromo(); break;
   }
 
   h += '</div></div>';
@@ -354,6 +356,89 @@ function _renderRecs() {
   h += '<button class="p18-rec-add" onclick="p18_addRec()">+ 추천사 추가</button>';
   return h;
 }
+
+function _renderPromo() {
+  var h = '<div class="p18-field-hint">신간 안내 데이터를 기반으로 홍보 카피를 AI가 자동 생성합니다.</div>';
+  // 생성 버튼
+  h += '<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">';
+  h += '<button class="p18-btn p18-btn-primary" onclick="p18_genPromo(\'sns\')">📱 SNS 홍보문구</button>';
+  h += '<button class="p18-btn p18-btn-primary" onclick="p18_genPromo(\'oneliner\')">💬 서점 한줄평</button>';
+  h += '<button class="p18-btn p18-btn-primary" onclick="p18_genPromo(\'press\')">📰 보도자료 초안</button>';
+  h += '<button class="p18-btn p18-btn-primary" onclick="p18_genPromo(\'email\')">✉️ 뉴스레터 문구</button>';
+  h += '</div>';
+  // 결과 영역
+  h += '<div id="p18-promo-result">';
+  if (data._promoResult) {
+    h += '<div class="p18-promo-output"><pre style="white-space:pre-wrap;font-size:.82rem;line-height:1.6;margin:0;">' + _x(data._promoResult) + '</pre>';
+    h += '<div style="display:flex;gap:6px;margin-top:8px;">';
+    h += '<button class="p18-btn" onclick="p18_copyPromo()">📋 복사</button>';
+    h += '<button class="p18-btn" onclick="p18_clearPromo()">지우기</button>';
+    h += '</div></div>';
+  } else {
+    h += '<div style="text-align:center;padding:2rem;color:var(--muted,#888);font-size:.82rem;">위 버튼을 눌러 홍보 카피를 생성하세요.</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+window.p18_genPromo = async function(type) {
+  _collectFields();
+  var title = data.title || '';
+  if (!title) { alert('1. 도서 정보에서 도서명을 먼저 입력해주세요.'); return; }
+  var apiKey = typeof loadApiKey === 'function' ? await loadApiKey() : '';
+  if (!apiKey) { alert('통합현황 또는 개발자 콘솔에서 Claude API 키를 설정해주세요.'); return; }
+
+  var bookContext = '[도서 정보]\n';
+  bookContext += '제목: ' + title + '\n';
+  if (data.subtitle) bookContext += '부제: ' + data.subtitle + '\n';
+  if (data.authors) bookContext += '저자: ' + data.authors + '\n';
+  if (data.contact) bookContext += '발신: ' + data.contact + '\n';
+  if (data.description) bookContext += '책 소개: ' + data.description.substring(0, 300) + '\n';
+  if (data.reviewIntro) bookContext += '출판사 리뷰: ' + data.reviewIntro.substring(0, 300) + '\n';
+  if (data.reviewTarget) bookContext += '대상 독자: ' + data.reviewTarget + '\n';
+  if (data.price) bookContext += '정가: ' + data.price + '\n';
+
+  var prompts = {
+    sns: '아래 도서에 대한 SNS 홍보 문구를 4종 생성하라.\n1. 트위터/X용 (140자 이내, 해시태그 3개)\n2. 인스타그램용 (3~4줄 + 해시태그 5개)\n3. 링크드인용 (전문가 톤, 5~6줄)\n4. 유튜브 커뮤니티용 (3~4줄, 친근한 톤)\n\n각 플랫폼별로 명확히 구분하여 작성.',
+    oneliner: '아래 도서에 대한 서점 한줄평을 10개 생성하라.\n각 한줄평은 30~50자. 다양한 관점(실용성/재미/깊이/독자반응/전문성 등)에서 작성.\n번호를 붙여 출력.',
+    press: '아래 도서에 대한 보도자료 초안을 작성하라.\n구성: 제목 / 부제 / 리드문(요약 3줄) / 본문(출간 배경, 주요 내용, 저자 소개, 도서 정보) / 미디어 문의처.\n전체 A4 1장 분량(800~1000자).',
+    email: '아래 도서를 알리는 뉴스레터/이메일 문구를 작성하라.\n구성: 제목줄 / 인사말 / 도서 소개(3~4문장) / 이런 분에게 추천(3가지) / CTA(구매 링크 안내) / 마무리.\n전체 500~600자.'
+  };
+
+  var prompt = bookContext + '\n' + prompts[type] + '\n\n[글쓰기 원칙] AI투 문장 금지. 출판사 마케터가 실제로 쓰는 톤. 구체적이고 흥미로운 표현. 순수 텍스트만 출력.';
+
+  var resultEl = ROOT.querySelector('#p18-promo-result');
+  if (resultEl) resultEl.innerHTML = '<div style="text-align:center;padding:2rem;"><div class="p18-spinner"></div><div style="margin-top:8px;font-size:.78rem;color:var(--accent);">홍보 카피 생성 중…</div></div>';
+
+  try {
+    var raw = await callClaudeApi({ apiKey: apiKey, model: 'claude-haiku-4-5-20251001', prompt: prompt, system: '출판사 마케팅 담당자. 한국어.', maxTokens: 2000, noPersona: true });
+    if (raw && raw.trim()) {
+      data._promoResult = raw.trim();
+      data._promoType = type;
+      save();
+      var labels = { sns: 'SNS 홍보문구', oneliner: '서점 한줄평', press: '보도자료', email: '뉴스레터' };
+      if (resultEl) {
+        resultEl.innerHTML = '<div class="p18-promo-output"><div style="font-size:.72rem;color:var(--accent);font-weight:600;margin-bottom:6px;">' + (labels[type] || '') + '</div><pre style="white-space:pre-wrap;font-size:.82rem;line-height:1.6;margin:0;">' + _x(raw.trim()) + '</pre>' +
+          '<div style="display:flex;gap:6px;margin-top:8px;"><button class="p18-btn" onclick="p18_copyPromo()">📋 복사</button><button class="p18-btn" onclick="p18_clearPromo()">지우기</button></div></div>';
+      }
+      showToast(labels[type] + ' 생성 완료', 'green');
+    }
+  } catch (e) {
+    console.error('[panel18] 홍보 카피 생성 실패:', e);
+    if (resultEl) resultEl.innerHTML = '<div style="text-align:center;padding:2rem;color:#e53e3e;font-size:.82rem;">생성 실패: ' + _x(e.message) + '</div>';
+  }
+};
+
+window.p18_copyPromo = function() {
+  var el = ROOT.querySelector('#p18-promo-result pre');
+  if (el) { navigator.clipboard.writeText(el.textContent).then(function() { showToast('클립보드에 복사됨', 'green'); }); }
+};
+
+window.p18_clearPromo = function() {
+  delete data._promoResult;
+  delete data._promoType;
+  save(); render();
+};
 
 function _fillFields() {
   var fields = ROOT.querySelectorAll('[data-field]');
@@ -1239,7 +1324,11 @@ window.p18_preview = function() {
     });
   }
 
-  h += '<h3>8. 상세 이미지 (별첨)</h3>';
+  if (data._promoResult) {
+    h += '<h3>8. 홍보 카피</h3>';
+    h += '<pre style="white-space:pre-wrap;font-size:.85rem;line-height:1.6;">' + _x(data._promoResult) + '</pre>';
+  }
+  h += '<h3>9. 상세 이미지 (별첨)</h3>';
   h += '</div>';
 
   area.innerHTML = h;
@@ -1345,7 +1434,11 @@ window.p18_downloadDocx = function() {
     body += _wp('Normal', '');
   });
 
-  body += _wp('Heading1', '8. 상세 이미지 (별첨)');
+  if (data._promoResult) {
+    body += _wp('Heading1', '8. 홍보 카피');
+    data._promoResult.split('\n').forEach(function(line) { body += _wp('Normal', line); });
+  }
+  body += _wp('Heading1', '9. 상세 이미지 (별첨)');
 
   zip.file('word/document.xml',
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
