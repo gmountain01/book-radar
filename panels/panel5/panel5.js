@@ -36,6 +36,57 @@ function initPropTab() {
   const dateEl = document.getElementById('pf-date');
   if (dateEl && !dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
 
+  // 기본값 채우기
+  const _p5Def = {
+    // 기본 정보
+    'pf-title': '5분이면 끝나는 AI 에이전트 (가제)',
+    'pf-field': 'AI 활용/자동화',
+    'pf-author': '권바이브',
+    'pf-writer': '조아리',
+    // 콘셉트
+    'pf-concept': '비개발자도 5분 만에 AI 에이전트를 만들어 업무를 자동화할 수 있는 실습서.\n클로드 코드, n8n, MCP를 조합해 실무에서 바로 쓸 수 있는 자동화 워크플로우 20가지를 다룬다.',
+    // 독자층
+    'pf-reader-core': 'AI 입문 직장인 (사무직, 마케터, 기획자, PM)',
+    'pf-reader-ext': 'AI 경험 보유 직장인, 1인 사업자, 프리랜서',
+    'pf-reader-budget': '중상 (2~4만원대 IT 도서 구매 경험 있음)',
+    'pf-reader-needs': '반복 업무 자동화, 보고서·메일·데이터 처리 시간 절약',
+    // 차별화
+    'pf-diff': '기존 AI 도서가 "프롬프트 작성법"에 머무는 반면, 이 책은 실제 워크플로우를 처음부터 끝까지 구축한다.\nn8n(노코드 자동화) + Claude Code(AI 코딩) + MCP(데이터 연결)를 한 권에서 다루는 국내 첫 도서.\n매 챕터 끝에 "5분 완성 프로젝트"로 즉시 결과물을 얻을 수 있어 학습 이탈률을 최소화한다.',
+    // 계약 정보
+    'pf-price': '28,000원',
+    'pf-pages': '360p',
+    'pf-advance': '4,000,000',
+    'pf-royalty': '10%',
+    // 수익성 분석
+    'pf-copies': '3000',
+    'pf-price2': '28000',
+  };
+  for (const [id, v] of Object.entries(_p5Def)) {
+    const el = document.getElementById(id);
+    if (el && !el.value) el.value = v;
+  }
+
+  // 기획 목표 기본 체크 (New 트렌드 대응, 시장 개척)
+  [5, 3].forEach(i => {
+    const cb = document.getElementById(`pg-${i}`);
+    if (cb && !cb.checked) cb.checked = true;
+  });
+
+  // 출판 일정 기본값
+  const _schDef = {
+    'pf-sch-start': '2026-07',
+    'pf-sch-submit': '2026-12',
+    'pf-sch-edit': '2027-02',
+    'pf-sch-pub': '2027-04',
+  };
+  for (const [id, v] of Object.entries(_schDef)) {
+    const el = document.getElementById(id);
+    if (el && !el.value) el.value = v;
+  }
+
+  // 수익성 자동 계산
+  calcPropProfit();
+
   // 약점 카테고리 + 드롭다운 렌더
   renderPropCats();
   renderPropQuickDropdown();
