@@ -2,8 +2,8 @@ name: Fetch RSS & Generate Report
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *'   # 매일 UTC 00:00 (KST 09:00)
+  workflow_dispatch:        # 수동 실행 가능
 
 permissions:
   contents: write
@@ -21,18 +21,21 @@ jobs:
       - name: Fetch RSS feeds
         run: python scripts/fetch_rss.py
 
-      - name: Generate YES24 report
+      - name: Generate YES24 report (새 파일만 수집)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python scripts/generate_report.py
 
+      - name: Build author list (archive.json 기반)
+        run: python scripts/build_authors.py
+
       - name: Build report index
         run: python scripts/build_reports.py
 
-      - name: Commit changes
+      - name: Commit & push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/
+          git add data/ panels/panel24/authors-data.js
           git diff --staged --quiet || git commit -m "auto-update data $(date -u +'%Y-%m-%d')"
           git push
