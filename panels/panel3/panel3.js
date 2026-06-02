@@ -239,9 +239,20 @@ function pPrintPDF() {
 body { height: auto !important; overflow: visible !important; display: block !important;
   background: #fff !important; margin: 0 !important; }
 * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-@page { size: A4; margin: 0; }
+@page { size: A4; margin: 14mm 0; }
+@page:first { margin-top: 0; }
 @media print {
   .proposal-doc { box-shadow: none !important; margin: 0 !important; width: 100% !important; }
+  /* 개별 카드/항목 잘림 방지 */
+  .pd-why-card { break-inside: avoid; }
+  .pd-toc-item { break-inside: avoid; }
+  .pd-discuss-item { break-inside: avoid; }
+  .pd-cta { break-inside: avoid; }
+  .pd-footer { break-inside: avoid; }
+  /* 섹션 라벨이 단독으로 페이지 하단에 남지 않도록 */
+  .pd-section-label { break-after: avoid; }
+  /* 섹션 사이에서 자연스럽게 끊기 */
+  .pd-section { break-before: auto; break-after: auto; }
 }
 </style>
 </head>
@@ -356,12 +367,12 @@ function setGuideColorRadio(hex){
   el.style.setProperty('--gp-blue-lt', c[2]);
 }
 
-// panel3 탭 클릭 시 초기화
-document.querySelectorAll('.nav-item').forEach((btn, i) => {
-  btn.addEventListener('click', () => {
-    if(i === 3 && !window._pInitDone){
+// panel3 활성화 시 초기화
+PanelRegistry.register(3, {
+  onActivate() {
+    if(!window._pInitDone){
       window._pInitDone = true;
       pInitFields();
     }
-  });
+  }
 });
