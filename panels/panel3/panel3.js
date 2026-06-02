@@ -31,6 +31,28 @@ function pInitFields(){
     if(keyEl&&savedKey)keyEl.value=savedKey;
   }).catch(function(){});
 
+  // 기본 정보
+  const _pDef={
+    'pf-author':'권바이브',
+    'pf-editor':'조아리',
+    'pf-email':'aricho@hanbit.co.kr',
+    'pf-team':'콘텐츠 1팀',
+    'pf-year':'2026',
+    // 헤더 타이틀
+    'pf-title1':'저자님의 자동화 노하우,',
+    'pf-title2':'책으로 더 많은 분들께 닿을 수 있습니다.',
+    // Why This Book?
+    'pf-hero-head':'n8n × Claude Code 강의에서 한 발 더 나아가\n책으로만 담을 수 있는 깊이를 만들고 싶습니다',
+    'pf-hero-desc':'강의는 따라 만드는 경험을 줍니다. 책은 그 경험을 반복해서 꺼내볼 수 있는 레퍼런스가 됩니다.\n저자님이 강의에서 보여주신 n8n과 Claude Code의 조합은 지금 가장 실용적인 AI 자동화 스택입니다.\n이걸 책으로 정리하면, 강의를 듣지 않은 독자까지 만날 수 있습니다.',
+    // 미팅 제안
+    'pf-cta-head':'부담 없이 한 번 뵙고 싶습니다.',
+    'pf-cta-desc':'온라인·오프라인 모두 좋습니다.\n저자님이 생각하시는 방향을 먼저 듣고,\n한빛미디어가 함께할 수 있는 부분을 말씀드리겠습니다.'
+  };
+  for(const[id,v]of Object.entries(_pDef)){
+    const el=document.getElementById(id);
+    if(el&&!el.value)el.value=v;
+  }
+
   const wf=document.getElementById('pwhy-fields');
   wf.innerHTML=P_WHY_DEF.map((d,i)=>`<div style="border:1px solid var(--border);border-radius:6px;padding:.65rem;margin-bottom:.4rem;">
       <div style="display:flex;gap:.35rem;margin-bottom:.35rem;">
