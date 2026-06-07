@@ -109,6 +109,253 @@
       "first_seen": "2026-06-06"
     },
     {
+      "id": "ec2b897e7367",
+      "source": "huggingface",
+      "source_name": "Hugging Face",
+      "icon": "🤗",
+      "title": "Five labs, five minds: building a multi-model finance drama on small models",
+      "link": "https://huggingface.co/blog/build-small-hackathon/thousand-token-wood-sim-v2",
+      "date": "2026-06-06",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "c3048522c6f1",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "OpenAI unveils Lockdown Mode to protect sensitive data from prompt injection attacks",
+      "link": "https://techcrunch.com/2026/06/06/openai-unveils-lockdown-mode-to-protect-sensitive-data-from-prompt-injection-attacks/",
+      "date": "2026-06-06",
+      "summary": "Even with Lockdown Mode, ChatGPT could be still vulnerable to prompt injections, but the goal is to reduce the likelihood that sensitive data gets shared in the process.",
+      "keywords": [
+        "GPT"
+      ],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "fa9b3f426447",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "What to expect from WWDC 2026: Siri’s highly anticipated revamp and Apple Intelligence updates",
+      "link": "https://techcrunch.com/2026/06/06/what-to-expect-from-wwdc-2026-siris-highly-anticipated-revamp-and-apple-intelligence-updates/",
+      "date": "2026-06-06",
+      "summary": "Apple's WWDC nears: Here's what you can look forward to.",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "fc0aef7cf74a",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Sriram Krishnan is leaving his role as White House AI advisor",
+      "link": "https://techcrunch.com/2026/06/06/sriram-krishnan-is-leaving-his-role-as-white-house-ai-advisor/",
+      "date": "2026-06-06",
+      "summary": "Krishnan is reportedly starting a new institution to continue shaping Trump's AI policy.",
+      "keywords": [
+        "SDK/API"
+      ],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "ccfe51be44a8",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "The Trump administration might take an equity stake in OpenAI",
+      "link": "https://techcrunch.com/2026/06/06/the-trump-administration-might-take-an-equity-stake-in-openai/",
+      "date": "2026-06-06",
+      "summary": "President Donald Trump said he's discussing deals \"where the American people can benefit from the success of AI.\"",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "5a875338103b",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Beyond Instagram: Introducing the next generation of social apps",
+      "link": "https://techcrunch.com/2026/06/06/beyond-instagram-introducing-the-next-generation-of-social-apps/",
+      "date": "2026-06-06",
+      "summary": "These newer social apps offer alternatives to Big Tech’s feeds, focusing on interests, creativity, and community.",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "0e97a5adaa9d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "\"한국, AI 비싸게 쓴다\"…한국어 토큰 소모, 영어 최대 2.59배 높아",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211350",
+      "date": "2026-06-06",
+      "summary": "최근 글로벌 AI 기업이 사용량(토큰)만큼 비용을 청구하는 종량제 요금제를 확대하면서 이용자의 비용 부담이 커지고 있다.여기에 동일한 AI 모델이라도 한국어가 영어보다 토큰을 최대 3.5배 더 소모한다는 연구 결과가 나오면서 비영어권 이용자가 사실상 더 많은 비용을 치르는 '비영어권 언어세(Non-English Tax)' 문제가 실제로 확인됐다.■ 한국어 영어 대비 최대 3.5배 토큰 소모...\"앤트로픽 모델이 가장 비싸\"AI 연구원 아란 코마츠자키는 SNS를 통해 유명 AI 에세이 원문을 각국 언어로 번역한 뒤 각각의 토크나이저",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "6ce926533a76",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "월마트가 직접 만든 AI 코딩 에이전트 인기...\"빅테크 종속 깬다\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211414",
+      "date": "2026-06-06",
+      "summary": "월마트의 자체 개발 AI 코딩 에이전트가 사내에서 폭발적인 인기를 끌고 있다. 특정 AI 모델에 의존하지 않고 다양한 대형언어모델(LLM)을 자유롭게 활용할 수 있도록 설계된 점이 강점으로 꼽히며, AI 시대 최대 위험 요소 중 하나로 지목되는 '벤더 종속(Vendor Lock-in)' 문제를 해결하려는 시도로 주목받고 있다. 4일(현지시간) 비즈니스 인사이더에 따르면, 월마트 글로벌 테크 조직의 수석 엔지니어인 마이크 파펜버거가 AI 코딩 에이전트 '코드 퍼피(Code Puppy)'를 개발했다.자연어 명령을 통해 코드 작성, 수정",
+      "keywords": [
+        "AI Agent",
+        "Coding",
+        "LLM"
+      ],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "b951f48aacce",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "구글, 연주자 입력에 실시간 반응하는 AI 악기 ‘마젠타 리얼타임 2’ 공개",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211417",
+      "date": "2026-06-06",
+      "summary": "구글이 텍스트로 음악을 만드는 수준을 넘어, 연주자의 입력에 실시간으로 반응하며 악기처럼 사용할 수 있는 AI 음악 모델을 공개했다. 구글은 4일(현지시간) 음악가들이 실제 악기처럼 연주할 수 있는 차세대 실시간 AI 음악 생성 모델 ‘마젠타 리얼타임 2(MRT2·Magenta RealTime 2)’를 공개했다.기존 생성 음악 모델이 텍스트 프롬프트를 입력받아 완성된 곡을 만드는 데 초점을 맞췄다면, MRT2는 MIDI와 오디오, 텍스트 입력에 실시간으로 반응하며 연주 가능한 AI 악기를 구현하는 데 초점을 맞춘 것이 특징이다.구글",
+      "keywords": [
+        "AI Agent",
+        "Prompt"
+      ],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "039417836979",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "구글, ‘젬마 4' 온디바이스 버전 QAT 공개…“메모리 1GB로 압축”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211418",
+      "date": "2026-06-06",
+      "summary": "구글이 오픈소스 AI 모델 '젬마 4(Gemma 4)'를 스마트폰과 엣지 기기에서도 원활하게 구동할 수 있도록 최적화한 새로운 양자화 인식 학습(QAT·Quantization-Aware Training ) 버전을 공개했다. 모바일 전용 양자화 기술을 통해 모델 크기를 1기가바이트(GB) 수준까지 줄이면서도 성능 저하를 최소화해, 고성능 생성 AI의 온디바이스 실행 시대를 앞당길 수 있을 것으로 기대된다.구글은 5일(현지시간) '젬마 4' 제품군을 위한 QAT 체크포인트를 공개했다. 이를 통해 고성능 AI 모델을 스마트폰과 엣지 디바",
+      "keywords": [
+        "Generative AI",
+        "Open Source",
+        "Optimization"
+      ],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "96a466f3beea",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "나델라 \"신규 에이전트 목표는 사용자 중독\" 내부 문건에 격노",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211416",
+      "date": "2026-06-06",
+      "summary": "사티아 나델라 마이크로소프트(MS) CEO가 최근 공개된 사내 문건을 통해 신규 AI 에이전트 ‘스카우트(Scout)’의 초기 목표로 “사용자를 중독시키는 것”이라는 표현이 사용된 데 대해 공개적으로 반박하고 나섰다. 그는 이를 “터무니없는 내용”이라고 비판하며, AI의 목적은 사용자 의존성을 높이는 것이 아니라 생산성과 경제적 가치를 창출하는 데 있다고 강조했다.4일(현지시간) 디 인포메이션에 따르면, 이번 논란은 MS가 연례 개발자 행사인 '빌드' 컨퍼런스에서 공개한 개인용 AI 에이전트 스카우트와 관련된 내부 전략 문건이 외부",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "ad754ae0f9c6",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "메타, 구글 따라 '대규모 주식 발행' 검토 중…AI 자금 조달 총력전",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211412",
+      "date": "2026-06-06",
+      "summary": "메타가 AI 인프라 구축을 위한 막대한 자금 수요를 충당하기 위해 수십억달러 규모의 신규 주식 발행을 검토하고 있는 것으로 알려졌다. 최근 구글이 기록적인 규모의 자금 조달에 성공한 이후 메타 내부 논의가 더 활발해진 것으로 전해졌다.5일(현지시간) 파이낸셜타임스 등에 따르면, 메타 경영진은 AI 사업 확대에 필요한 자금을 마련하기 위해 다양한 자금 조달 방안을 검토하고 있다.메타는 올해 AI 관련 자본 지출(CAPEX)을 최대 1450억달러(약 226조원)까지 확대할 계획이며, 2027년에는 이보다 더 많은 투자가 이뤄질 가능성이",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "238bfbd729bd",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "미 하원, 초당적 AI 법안 초안 공개…'주정부 규제 무력화' 논란",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211419",
+      "date": "2026-06-06",
+      "summary": "미국 의회가 AI 개발 기업에 대한 연방 차원의 안전 규제를 도입하는 대신, 각 주의 AI 개발 규제를 제한하는 내용을 담은 초당적 법안을 공개했다. 첨단 AI 모델의 위험성 평가와 보안 계획 수립을 의무화하는 내용이 포함됐지만, 주정부의 규제 권한을 대폭 축소하는 조항을 둘러싸고 찬반 논란이 거세지고 있다.폴리티코에 따르면, 미국 하원의 공화당 소속 제이 오버놀트 의원과 민주당 소속 로리 트레이핸 의원은 4일(현지시간) 269페이지 분량의 AI 입법 초안을 발표했다. 이는 오는 8월 의회 휴회 전 AI 관련 연방 입법을 추진하기",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "e0c67e920d8f",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "모건스탠리, 스페이스X 2040년 매출 5300조 전망...\"초대형 성장 핵심은 AI 사업\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211413",
+      "date": "2026-06-06",
+      "summary": "스페이스X가 다음주 기업공개(IPO)를 통해 1조7700억달러(약 2760조원)의 기업 가치를 목표로 하는 가운데, 주관사인 모건스탠리가 2040년 연 매출이 3조4000억달러(약 5302조원)에 달할 수 있다는 초대형 성장 전망을 내놓았다.월스트리트저널(WSJ)에 따르면, 모건스탠리는 4일(현지시간) 주요 기관투자자들에게 제공한 분석 자료에서 스페이스X의 2040년 매출이 3조4000억달러에 이르고 조정 EBITDA(상각 전 영업이익)는 2조7000억달러(약 4210조원)를 넘어설 것으로 전망했다.이는 현재 세계 최대 기업들의 매",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "2cb5815a9356",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "스페이스X, 앤트로픽 이어 구글과도 컴퓨팅 임대 계약...\"3년간 47조\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211421",
+      "date": "2026-06-06",
+      "summary": "구글이 스페이스X로부터 데이터센터 용량을 임대하기로 합의했다. 다음 주 상장을 앞둔 스페이스X는 앤트로픽에 이어 본격적인 클라우드 사업 확장에 나서게 됐다.스페이스X가 5일(현지시간) 미 증권거래위원회(SEC)에 제출한 증권신고서(S-1) 수정본에 따르면, 구글은 2026년 10월부터 2029년 6월까지 매달 9억2000만달러(약 1조4350억원)를 스페이스X에 지불하는 컴퓨팅 용량 계약을 맺었다. 이 계약에는 최소 11만개의 엔비디아 칩에 해당하는 컴퓨팅 성능이 포함돼 있다. 총계약 규모는 303억6000만달러(약 47조 3500",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "02c862b055df",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[AI 이슈트렌드] 한화에어로 폭발부터 6·3 지선 논란, 흔들리는 반도체주까지",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211407",
+      "date": "2026-06-06",
+      "summary": "AI타임스와 이스트에이드의 6월 첫째 주(5월29일~6월4일) 이슈 분석 결과, 대형 인명 사고와 6·3 지방선거, 국제 증시 변동 등이 상위권을 차지했다.이번 주 검색량 1위 키워드는 ‘한화에어로스페이스 폭발 사고(7.57%)’다.지난 1일 대전사업장 세척공실에서 발생한 폭발 사고로 근로자 5명이 숨졌다. 사고 이후 전국 9개 사업장이 이틀간 가동을 전면 중단하고 특별 안전점검에 들어갔다.해당 공장은 최근 2년 연속 화재안전 조사에서 '불량' 판정을 받은 데다, 세척공실은 제조시설이 아니라는 이유로 방위사업청 등의 조사 대상에서",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "322c752d205a",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "김영훈 노동장관 \"대기업 AI 초과이익 공유해야...명백한 재투자\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211411",
+      "date": "2026-06-06",
+      "summary": "김영훈 고용노동부 장관이 외신 인터뷰에서 AI 붐으로 막대한 수익을 올린 대기업들을 향해 '초과이익 공유제'를 제안했다.김 장관은 5일 공개된 로이터와의 단독 인터뷰를 통해 \"삼성전자와 같이 수익 목표를 초과 달성한 IT 및 반도체 기업들은 공급업체, 하청업체, 그리고 그들의 근로자들과 세후 초과 이익을 공유하는 방안을 고려해야 한다\"라고 밝혔다.이어 \"정부와 기업, 노조, 공급업체들이 이러한 초과 이익을 어떻게 분배하고 대기업과 소규모 공급업체 간의 격차를 줄일지에 대해 공개적인 대화를 해야 한다\"라고 덧붙였다.노동 운동가 출신인",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "ce98b39eea87",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[내면 지도 그리기] 19 Inner Mapping: 나를 찾는 지도",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211410",
+      "date": "2026-06-06",
+      "summary": "내면 지도 그리기_검색되지 않는 것들의 역사데이터를 찾지 말고, 데이터를 남겨야 하는 이유나의 첫 단골집은 유명한 맛집이 아니었다.하나는 마트 한쪽에 있던 떡볶이였고, 다른 하나는 고등학교 때 자주 가던 피자집이었다. 누군가에게는 그저 마트 분식 코너와 동네 피자집이었겠지만, 나에게는 처음으로 ‘단골’이 되는 법을 배운 장소였다. 나는 그곳에서 쌀떡이 더 좋다는 것, 파마산 치즈가루는 피자가 아직 뜨거울 때 뿌려야 한다는 것, 사람이 많은 시간에는 오래 앉아 있지 않고 빨리 먹고 일어나는 것이 작은 예의라는 것, 그리고 주인 내외와",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
+      "id": "e04f371b3a81",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[AI카툰] Bob, Senior IT guy - 밥, 오늘도 Accept All",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211409",
+      "date": "2026-06-06",
+      "summary": "글·그림 Dr. Alf",
+      "keywords": [],
+      "first_seen": "2026-06-07"
+    },
+    {
       "id": "6db06110db22",
       "source": "techcrunch",
       "source_name": "TechCrunch",
@@ -9854,6 +10101,11 @@
       "date": "2026-06-06",
       "added": 60,
       "total": 725
+    },
+    {
+      "date": "2026-06-07",
+      "added": 19,
+      "total": 744
     }
   ],
   "sources": {},
@@ -9881,10 +10133,10 @@
         "AI Agent": 2,
         "Automation": 2,
         "Security": 2,
+        "Claude": 1,
         "LLM": 1,
         "Developer Tools": 1,
-        "MCP": 1,
-        "Claude": 1
+        "MCP": 1
       }
     },
     {
@@ -9982,39 +10234,54 @@
     {
       "week": "2026-W23",
       "keywords": {
-        "AI Agent": 46,
+        "AI Agent": 49,
         "Automation": 23,
-        "Security": 16,
-        "Coding": 11,
+        "Security": 17,
+        "Coding": 12,
         "Deployment": 9,
         "Claude": 8,
-        "Enterprise AI": 7,
-        "GPT": 7,
-        "LLM": 7,
+        "Open Source": 8,
+        "LLM": 8,
+        "GPT": 8,
         "Robotics": 7,
-        "Open Source": 7,
-        "SDK/API": 6,
+        "SDK/API": 7,
+        "Enterprise AI": 7,
         "Chatbot": 5,
-        "MCP": 5,
-        "AI Safety": 5
+        "Optimization": 5,
+        "MCP": 5
       }
     }
   ],
   "source_stats": {
-    "techcrunch": {
-      "total": 136,
-      "recent_7d": 75,
-      "recent_30d": 75
-    },
     "aitimes": {
-      "total": 204,
-      "recent_7d": 104,
-      "recent_30d": 104
+      "total": 217,
+      "recent_7d": 117,
+      "recent_30d": 117
+    },
+    "techcrunch": {
+      "total": 141,
+      "recent_7d": 80,
+      "recent_30d": 80
     },
     "toss": {
       "total": 21,
       "recent_7d": 1,
       "recent_30d": 1
+    },
+    "google_ai": {
+      "total": 27,
+      "recent_7d": 3,
+      "recent_30d": 3
+    },
+    "huggingface": {
+      "total": 45,
+      "recent_7d": 11,
+      "recent_30d": 11
+    },
+    "nvidia_ai": {
+      "total": 34,
+      "recent_7d": 13,
+      "recent_30d": 13
     },
     "openai": {
       "total": 55,
@@ -10026,25 +10293,10 @@
       "recent_7d": 18,
       "recent_30d": 18
     },
-    "nvidia_ai": {
-      "total": 34,
-      "recent_7d": 13,
-      "recent_30d": 13
-    },
     "anthropic": {
       "total": 17,
       "recent_7d": 5,
       "recent_30d": 5
-    },
-    "google_ai": {
-      "total": 27,
-      "recent_7d": 3,
-      "recent_30d": 3
-    },
-    "huggingface": {
-      "total": 44,
-      "recent_7d": 10,
-      "recent_30d": 10
     },
     "meta_eng": {
       "total": 11,
@@ -10077,6 +10329,6 @@
       "recent_30d": 8
     }
   },
-  "last_updated": "2026-06-06",
-  "total_articles": 725
+  "last_updated": "2026-06-07",
+  "total_articles": 744
 }
