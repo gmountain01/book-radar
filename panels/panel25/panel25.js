@@ -270,8 +270,9 @@ function render() {
     html += '<span class="p25-status-icon">' + s.icon + '</span>';
     html += '<div class="p25-status-info"><div class="p25-status-label">' + s.label + '</div>';
     if (hasPin) {
-      html += '<div class="p25-status-count">📌 ' + s.pin + (s.unit || '개');
-      if (s.session) html += ' <span class="p25-status-session">+ 세션 ' + s.session + '</span>';
+      var total = s.pin + (s.session || 0);
+      html += '<div class="p25-status-count">' + total + (s.unit || '개');
+      if (s.pin > 0) html += ' <span class="p25-status-session">(📌 ' + s.pin + ')</span>';
       html += '</div>';
     } else {
       html += '<div class="p25-status-count">' + (ok ? (s.count || 0) + (s.unit || '개') : '없음') + '</div>';
