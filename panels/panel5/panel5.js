@@ -643,6 +643,8 @@ ${ctx}
 }
 
 /* ── switchTab 후크: panel5 초기화 ── */
+if (!window._switchTab5Hooked) {
+window._switchTab5Hooked = true;
 const _origSwitchTab5 = window.switchTab;
 window.switchTab = function(i, btn) {
   if (typeof _origSwitchTab5 === 'function') _origSwitchTab5(i, btn);
@@ -650,8 +652,49 @@ window.switchTab = function(i, btn) {
     initPropTab();
     renderPropCats();
     renderPropQuickDropdown();
+    // 기획 보드(panel25)에서 전달된 데이터 자동 채우기
+    if(window._p25_exportData){
+      const _r = window._p25_exportData;
+      const sv = (id, v) => { const el = document.getElementById(id); if(el && v) el.value = v; };
+      const d = _r.refined || {};
+
+      if(d.title || d.concept){
+        // AI 정제 데이터 사용
+        sv('pf-title', d.title);
+        sv('pf-field', d.field);
+        sv('pf-concept', d.concept);
+        sv('pf-reader-core', d.readerCore);
+        sv('pf-reader-ext', d.readerExt);
+        sv('pf-reader-budget', d.readerBudget);
+        sv('pf-reader-needs', d.readerNeeds);
+        sv('pf-diff', d.diff);
+        // 핵심 포인트 3개
+        if(d.keypoints && d.keypoints.length){
+          d.keypoints.forEach((kp, i) => {
+            sv('pkp-t-'+i, kp.title);
+            sv('pkp-d-'+i, kp.desc);
+          });
+        }
+        // 저자명 (매칭된 저자가 있으면)
+        const am = (_r.authorMatching || [])[0];
+        if(am && am.author) sv('pf-author', am.author);
+      } else {
+        // 정제 실패 시 원본 사용
+        const items = _r.recommendedItems || [];
+        if(items[0]){
+          sv('pf-title', items[0].concept);
+          sv('pf-reader-core', items[0].targetLevel);
+          sv('pf-diff', items[0].rationale);
+        }
+        if(_r.summary) sv('pf-concept', _r.summary);
+      }
+      window._p25_exportData = null;
+      propRender();
+      showToast('기획 보드 → 출판 기획서 반영 완료', 'green');
+    }
   }
 };
+} // end _switchTab5Hooked guard
 
 /* =========================================================
    .docx 다운로드 (순수 JavaScript, 외부 라이브러리 없음)

@@ -14,6 +14,7 @@ var _archive = null;    // window._RSS_ARCHIVE
 var _filteredItems = [];
 var _activeSource = 'all';
 var _searchQuery = '';
+var _dateRange = 'all';
 var currentMd = '', tocItems = [];
 
 // ══════════════════════════════════════════════════════
@@ -35,6 +36,12 @@ ROOT.innerHTML =
       '<div class="p23-feed-area">' +
         '<div class="p23-search-bar">' +
           '<input type="text" class="p23-search" id="p23_search" placeholder="키워드 검색 (예: agent, LLM, Claude)">' +
+          '<div class="p23-date-filter">' +
+            '<button class="p23-date-btn active" onclick="p23_setDateRange(\'all\',this)">전체</button>' +
+            '<button class="p23-date-btn" onclick="p23_setDateRange(\'1w\',this)">1주</button>' +
+            '<button class="p23-date-btn" onclick="p23_setDateRange(\'1m\',this)">1개월</button>' +
+            '<button class="p23-date-btn" onclick="p23_setDateRange(\'3m\',this)">3개월</button>' +
+          '</div>' +
           '<span class="p23-result-count" id="p23_resultCount"></span>' +
         '</div>' +
         '<div class="p23-feed-list" id="p23_feedList"></div>' +
@@ -222,12 +229,30 @@ window.p23_filterSrc = function(src, btn) {
 
 $search.addEventListener('input', function() { _searchQuery = this.value.trim().toLowerCase(); filterAndRender(); });
 
+window.p23_setDateRange = function(range, btn) {
+  _dateRange = range;
+  ROOT.querySelectorAll('.p23-date-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  filterAndRender();
+};
+
+function _getDateCutoff() {
+  if (_dateRange === 'all') return null;
+  var now = new Date();
+  if (_dateRange === '1w') now.setDate(now.getDate() - 7);
+  else if (_dateRange === '1m') now.setMonth(now.getMonth() - 1);
+  else if (_dateRange === '3m') now.setMonth(now.getMonth() - 3);
+  return now.toISOString().substring(0, 10);
+}
+
 function filterAndRender() {
   if (!_mergedFeeds.length) return;
+  var cutoff = _getDateCutoff();
   _filteredItems = [];
   _mergedFeeds.forEach(function(feed) {
     if (_activeSource !== 'all' && feed.id !== _activeSource) return;
     feed.items.forEach(function(item) {
+      if (cutoff && (!item.date || item.date.substring(0, 10) < cutoff)) return;
       if (_searchQuery && (item.title + ' ' + (item.summary||'')).toLowerCase().indexOf(_searchQuery) === -1) return;
       _filteredItems.push({ source: feed.name, icon: feed.icon, tags: feed.tags, title: item.title, link: item.link, date: item.date, summary: item.summary });
     });

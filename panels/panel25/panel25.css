@@ -63,6 +63,9 @@
 .p25-item-concept{font-size:.9rem;font-weight:600;color:var(--fg,#222);margin-bottom:.3rem;}
 .p25-item-target{font-size:.75rem;color:var(--accent,#4F46B8);font-weight:500;margin-bottom:.3rem;}
 .p25-item-rationale{font-size:.78rem;color:var(--muted,#666);line-height:1.5;}
+.p25-item-actions{display:flex;gap:.4rem;margin-top:.6rem;padding-top:.5rem;border-top:1px solid rgba(0,0,0,.06);}
+.p25-item-send{flex:1;padding:.35rem .5rem;border:1px solid var(--border,#ddd);border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;background:#fff;color:var(--fg,#333);transition:all .15s;}
+.p25-item-send:hover{border-color:var(--accent,#4F46B8);color:var(--accent,#4F46B8);background:var(--accent-light,#e3e5f9);}
 
 /* 저자 매칭 테이블 */
 .p25-author-table{overflow-x:auto;border-radius:10px;border:1px solid var(--border,#ddd);background:#fff;margin-bottom:1.5rem;}

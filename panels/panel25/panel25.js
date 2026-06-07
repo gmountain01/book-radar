@@ -240,6 +240,7 @@ function render() {
   html += '<div class="p25-header-left"><h2>기획 보드</h2>';
   html += '<p class="p25-subtitle">흩어진 분석 결과를 모아 종합 판단을 내립니다.</p></div>';
   html += '<div class="p25-header-right">';
+  if (board.items.length) html += '<button class="p25-clear-result-btn" onclick="if(clearBoard())p25_clearResult();">📌 전체 해제 (' + board.items.length + ')</button>';
   if (_result) html += '<button class="p25-clear-result-btn" onclick="p25_clearResult()">결과 초기화</button>';
   html += '<button class="p25-run-btn" id="p25RunBtn" onclick="p25_run()"' + (hasData ? '' : ' disabled') + '>';
   html += '<span class="p25-run-icon">▶</span> 종합 의견 생성</button>';
@@ -356,6 +357,10 @@ function _renderResult(r) {
       h += '<div class="p25-item-concept">' + escHtml(item.concept) + '</div>';
       if (item.targetLevel) h += '<div class="p25-item-target">🎯 ' + escHtml(item.targetLevel) + '</div>';
       h += '<div class="p25-item-rationale">' + escHtml(item.rationale || '') + '</div>';
+      h += '<div class="p25-item-actions">';
+      h += '<button class="p25-item-send" onclick="p25_toProposal(' + i + ')">→ 저자 제안서</button>';
+      h += '<button class="p25-item-send" onclick="p25_toPlan(' + i + ')">→ 출판 기획서</button>';
+      h += '</div>';
       h += '</div>';
     });
     h += '</div>';
@@ -388,11 +393,6 @@ function _renderResult(r) {
     h += '</ul></div>';
   }
 
-  // 액션 버튼
-  h += '<div class="p25-result-actions">';
-  h += '<button class="p25-card-btn primary" onclick="p25_toProposal()">→ 저자 제안서로 전달</button>';
-  h += '<button class="p25-card-btn primary" onclick="p25_toPlan()">→ 출판 기획서로 전달</button>';
-  h += '</div>';
 
   return h;
 }
@@ -677,18 +677,116 @@ window.p25_setStage = function(sel) {
   saveTracking(t);
 };
 
-window.p25_toProposal = function() {
+// ── AI 정제 후 전달 ──
+async function _refineAndSend(idx, target) {
   if (!_result) return;
-  window._p25_exportData = _result;
-  switchTab(3, document.getElementById('tab3'));
-  showToast('종합 의견을 저자 제안서로 전달했습니다.', 'green');
-};
-window.p25_toPlan = function() {
-  if (!_result) return;
-  window._p25_exportData = _result;
-  switchTab(5, document.getElementById('tab5'));
-  showToast('종합 의견을 출판 기획서로 전달했습니다.', 'green');
-};
+  var item = (_result.recommendedItems || [])[idx];
+  if (!item) return;
+  var matching = (_result.authorMatching || []).filter(function(am) {
+    return (am.bestFitItem || '').indexOf(item.concept) >= 0 || (item.concept || '').indexOf(am.bestFitItem || '___') >= 0;
+  });
+  var author = matching.length ? matching[0] : (_result.authorMatching || [])[0] || {};
+
+  var apiKey;
+  try { apiKey = await loadApiKey(); } catch(e) {}
+  if (!apiKey) {
+    // API 키 없으면 기존 방식 (정제 없이 전달)
+    window._p25_exportData = { summary: _result.summary, recommendedItems: [item], authorMatching: _result.authorMatching, cautions: _result.cautions };
+    _doSwitch(target, item.concept);
+    return;
+  }
+
+  showToast('AI가 내용을 정제하고 있습니다…', 'blue');
+
+  var context = '아이템: ' + (item.concept || '') + '\n대상: ' + (item.targetLevel || '') + '\n근거: ' + (item.rationale || '') + '\n유형: ' + (item.fitType || '');
+  if (author.author) context += '\n추천 저자: ' + author.author + ' (강점: ' + (author.strength || '') + ', 리스크: ' + (author.risk || '') + ')';
+  if (_result.summary) context += '\n시장 종합: ' + _result.summary;
+  if (_result.cautions && _result.cautions.length) context += '\n주의: ' + _result.cautions.join(', ');
+
+  var prompt;
+  var SYS = '너는 한빛미디어 콘텐츠 1팀 15년차 편집자다.\n' +
+    '[글쓰기 규칙]\n' +
+    '- 한 문장 40자 이내. 군더더기 제거. 수식어 최소화.\n' +
+    '- "~할 수 있습니다", "혁신적인", "획기적인", "다양한", "효과적인" 사용 금지.\n' +
+    '- 숫자·고유명사·구체적 도구명을 넣어 신뢰감을 줘라.\n' +
+    '- JSON만 출력. 마크다운 코드블록 금지.\n';
+
+  if (target === 'proposal') {
+    prompt = '[역할] 저자에게 보내는 출판 제안서를 작성한다.\n' +
+      '[톤] 저자를 설득하되 과장 없이. 팩트와 시장 데이터로 "이 책을 왜 지금 내야 하는가"를 납득시켜라.\n\n' +
+      '[아이템 정보]\n' + context + '\n\n' +
+      '[출력 JSON 스키마 — 모든 필드 필수]\n' +
+      '{\n' +
+      '  "title1": "헤더 첫줄 — 저자 이름/전문성 언급, 15자 이내",\n' +
+      '  "title2": "헤더 둘째줄 — 핵심 가치 한 문장, 20자 이내",\n' +
+      '  "heroHead": "Why This Book — 핵심 메시지 1~2문장, 총 60자 이내",\n' +
+      '  "heroDesc": "heroHead 보충 설명 3문장. 각 문장 40자 이내. 줄바꿈(\\n)으로 구분",\n' +
+      '  "why": [\n' +
+      '    {"num": "영문 키워드 1단어 (예: TIMING)", "title": "12자 이내 한줄 제목", "body": "근거 1~2문장, 총 60자 이내"}\n' +
+      '  ] // 정확히 4개. num은 TIMING/READER/PROOF/OSMU 등 각각 다른 키워드,\n' +
+      '  "toc": [\n' +
+      '    {"num": "1장", "title": "장 제목 15자 이내", "sub": "소제목 키워드 나열 · 구분자로 연결"}\n' +
+      '  ] // 정확히 5개 (1장~5장). 실제 도서 목차처럼 구체적으로,\n' +
+      '  "discuss": [\n' +
+      '    {"title": "논의 주제 15자 이내", "desc": "설명 1~2문장, 총 50자 이내"}\n' +
+      '  ] // 정확히 3개. 저자와 실제로 상의해야 할 구체적 사안,\n' +
+      '  "ctaHead": "미팅 제안 제목 15자 이내",\n' +
+      '  "ctaDesc": "미팅 제안 본문 2문장. 줄바꿈(\\n)으로 구분"\n' +
+      '}';
+  } else {
+    prompt = '[역할] 출판사 내부 기획 회의용 기획서를 작성한다.\n' +
+      '[톤] 시장 근거, 경쟁서 분석, 구체적 수치로 기획 의도를 설득하라.\n\n' +
+      '[아이템 정보]\n' + context + '\n\n' +
+      '[출력 JSON 스키마 — 모든 필드 필수]\n' +
+      '{\n' +
+      '  "title": "도서명 (가제) — 20자 이내, 부제 포함 가능",\n' +
+      '  "field": "분야 카테고리 (예: AI 활용/자동화)",\n' +
+      '  "concept": "이 책이 무엇이고 왜 지금인지 3문장. 각 문장 40자 이내. 줄바꿈(\\n)으로 구분",\n' +
+      '  "readerCore": "핵심 독자 — 직군+경력+수준 구체적으로 (예: AI 도구 경험 1년 미만 마케터/기획자)",\n' +
+      '  "readerExt": "확장 독자 — 2차 타겟 직군",\n' +
+      '  "readerBudget": "구매력 (하/중/중상/상 + 근거 한 줄)",\n' +
+      '  "readerNeeds": "독자가 겪는 구체적 문제 2~3개, 줄바꿈(\\n)으로 구분",\n' +
+      '  "diff": "경쟁서 대비 차별점 3줄. 각 줄 \'경쟁서A는 ~인 반면, 이 책은 ~\' 구조. 줄바꿈(\\n)으로 구분",\n' +
+      '  "keypoints": [\n' +
+      '    {"title": "포인트명 10자 이내", "desc": "설명 1문장 30자 이내"}\n' +
+      '  ] // 정확히 3개\n' +
+      '}';
+  }
+
+  try {
+    var text = await callClaudeApi({ apiKey: apiKey, model: 'claude-sonnet-4-6', system: SYS, prompt: prompt, maxTokens: 4000, noPersona: true });
+    var jsonStr = (text || '').replace(/```json?\s*/g, '').replace(/```/g, '').trim();
+    var m = jsonStr.match(/\{[\s\S]*\}/);
+    if (m) jsonStr = m[0];
+    var refined = JSON.parse(jsonStr);
+    window._p25_exportData = {
+      summary: _result.summary,
+      recommendedItems: [item],
+      authorMatching: _result.authorMatching,
+      cautions: _result.cautions,
+      refined: refined,
+      target: target
+    };
+  } catch (e) {
+    console.warn('[panel25] 정제 실패, 원본 전달:', e);
+    window._p25_exportData = { summary: _result.summary, recommendedItems: [item], authorMatching: _result.authorMatching, cautions: _result.cautions };
+  }
+  _doSwitch(target, item.concept);
+}
+
+function _doSwitch(target, concept) {
+  var label = (concept || '').length > 20 ? concept.substring(0, 20) + '…' : concept;
+  if (target === 'proposal') {
+    switchTab(3, document.getElementById('tab3'));
+    showToast('"' + label + '" → 저자 제안서로 전달', 'green');
+  } else {
+    switchTab(5, document.getElementById('tab5'));
+    showToast('"' + label + '" → 출판 기획서로 전달', 'green');
+  }
+}
+
+window.p25_toProposal = function(idx) { _refineAndSend(idx, 'proposal'); };
+window.p25_toPlan = function(idx) { _refineAndSend(idx, 'plan'); };
 
 // ── 초기화 ──
 function init() {

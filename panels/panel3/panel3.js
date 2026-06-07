@@ -268,29 +268,20 @@ function dlGuidePDF() {
   const root = document.getElementById('guide-page-root');
   if (!root) { alert('가이드 페이지를 찾을 수 없습니다.'); return; }
 
-  const gpNavy  = root.style.getPropertyValue('--gp-navy')  || '#1C3557';
-  const gpBlue  = root.style.getPropertyValue('--gp-blue')  || '#2B5BA8';
-  const gpBlueLt= root.style.getPropertyValue('--gp-blue-lt')|| '#EBF1FA';
+  /* guide-page 에 설정된 CSS 변수 읽기 (사용자 색상 선택 반영) */
+  const cs = getComputedStyle(root);
+  const gpNavy   = cs.getPropertyValue('--gp-navy').trim()    || '#18181B';
+  const gpBlue   = cs.getPropertyValue('--gp-blue').trim()    || '#4F46B8';
+  const gpBlueLt = cs.getPropertyValue('--gp-blue-lt').trim() || '#e3e5f9';
 
-  // guide-page CSS는 index.html 인라인 <style>에 있어 CSSOM으로 동일 문서 접근 가능
-  let guideCSS = '';
-  const isGuideRule = sel => sel && (sel.includes('guide-page') || sel.includes('gp-'));
-  for (const ss of document.styleSheets) {
-    try {
-      for (const r of ss.cssRules) {
-        if (r.selectorText && isGuideRule(r.selectorText)) {
-          guideCSS += r.cssText + '\n';
-        } else if (r.type === CSSRule.MEDIA_RULE) {
-          const inner = [...r.cssRules]
-            .filter(cr => cr.selectorText && isGuideRule(cr.selectorText))
-            .map(cr => cr.cssText).join('\n');
-          if (inner) guideCSS += `@media ${r.conditionText || r.media?.mediaText || ''} { ${inner} }\n`;
-        } else if (r.type === CSSRule.KEYFRAMES_RULE && isGuideRule(r.name)) {
-          guideCSS += r.cssText + '\n';
-        }
-      }
-    } catch(e) {}
-  }
+  /* :root CSS 변수도 함께 읽어서 PDF에 전달 */
+  const rs = getComputedStyle(document.documentElement);
+  const rootVars = [
+    '--bg','--surface','--surface2','--text','--muted','--muted2',
+    '--border','--border2','--accent','--accent-light','--accent-hover',
+    '--shadow-xs','--shadow-sm','--shadow-md','--shadow-lg','--transition',
+    '--sidebar-dark','--accent-shadow','--accent-shadow-lg','--accent-border','--accent-hover-bg'
+  ].map(v => `${v}:${rs.getPropertyValue(v).trim()}`).join(';');
 
   const base = getBaseUrl();
   const html = `<!DOCTYPE html>
@@ -299,24 +290,27 @@ function dlGuidePDF() {
 <meta charset="UTF-8">
 <link rel="stylesheet" href="${base}shared/styles.css">
 <link href="${base}libs/pretendard.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-body { height: auto !important; overflow: visible !important; display: block !important;
-  background: #fff !important; margin: 0 !important;
-  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-@page { size: A4; margin: 0; }
-@media print {
-  html, body { width: 210mm; }
-  .guide-page { width: 100% !important; box-shadow: none !important; }
+:root{${rootVars}}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;box-sizing:border-box;}
+@page{size:A4;margin:0;}
+body{height:auto!important;overflow:visible!important;display:block!important;
+  background:#fff!important;margin:0!important;padding:0!important;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.guide-page{width:210mm;height:297mm;max-height:297mm;overflow:hidden;box-shadow:none!important;margin:0!important;border-radius:0!important;
+  display:flex!important;flex-direction:column!important;}
+.guide-page .gp-body{gap:6px;padding:12px 40px 8px;flex:1!important;display:flex!important;flex-direction:column!important;min-height:0!important;}
+.guide-page .gp-body>div:first-child{flex:1!important;display:flex!important;flex-direction:column!important;min-height:0!important;}
+.guide-page .gp-steps-grid{flex:1!important;grid-template-columns:1fr 1fr!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;}
+.guide-page .gp-step{min-height:0!important;}
+.guide-page .gp-kpi-row{grid-template-columns:repeat(3,1fr)!important;}
+.guide-page .gp-formula-row{gap:4px!important;}
+@media print{
+  html,body{width:210mm;height:297mm;overflow:hidden;}
+  .guide-page{width:100%!important;height:297mm!important;max-height:297mm!important;overflow:hidden!important;}
 }
-${guideCSS}
-.guide-page {
-  --gp-navy: ${gpNavy};
-  --gp-blue: ${gpBlue};
-  --gp-blue-lt: ${gpBlueLt};
-  width: 794px; max-width: 100%; background: #fff;
-  font-family: 'Pretendard','Noto Sans KR',sans-serif; color: #1a1a1a;
+.guide-page{
+  --gp-navy:${gpNavy};--gp-blue:${gpBlue};--gp-blue-lt:${gpBlueLt};
 }
 </style>
 </head>
@@ -373,6 +367,61 @@ PanelRegistry.register(3, {
     if(!window._pInitDone){
       window._pInitDone = true;
       pInitFields();
+    }
+    // 기획 보드(panel25)에서 전달된 데이터 자동 채우기
+    if(window._p25_exportData){
+      const _r = window._p25_exportData;
+      const sv = (id,v) => { const el=document.getElementById(id); if(el&&v) el.value=v; };
+      const d = _r.refined || {};
+
+      if(d.title1 || d.heroHead){
+        // AI 정제 데이터 사용
+        sv('pf-title1', d.title1);
+        sv('pf-title2', d.title2);
+        sv('pf-hero-head', d.heroHead);
+        sv('pf-hero-desc', d.heroDesc);
+        sv('pf-cta-head', d.ctaHead);
+        sv('pf-cta-desc', d.ctaDesc);
+        // Why 카드 4개
+        const whyArr = d.why || [];
+        for(let i=0; i<4; i++){
+          const w = whyArr[i];
+          if(!w) continue;
+          sv('pw-num-'+i, w.num || '');
+          sv('pw-title-'+i, w.title || '');
+          sv('pw-body-'+i, w.body || '');
+        }
+        // 목차
+        if(d.toc && d.toc.length){
+          // 기존 목차 초기화 후 새로 추가
+          const tocRows = document.getElementById('ptoc-rows');
+          if(tocRows) tocRows.innerHTML = '';
+          pTocCnt = 0;
+          d.toc.forEach(t => pAddToc({num:t.num, title:t.title, sub:t.sub}));
+        }
+        // 논의 주제
+        if(d.discuss && d.discuss.length){
+          const discRows = document.getElementById('pdiscuss-rows');
+          if(discRows) discRows.innerHTML = '';
+          pDiscussCnt = 0;
+          d.discuss.forEach(dd => pAddDiscuss({title:dd.title, desc:dd.desc}));
+        }
+        // 저자명 (매칭된 저자가 있으면)
+        const am = (_r.authorMatching || [])[0];
+        if(am && am.author) sv('pf-author', am.author);
+      } else {
+        // 정제 실패 시 원본 사용
+        if(_r.summary){
+          const sentences = _r.summary.match(/[^.!?。]+[.!?。]?\s*/g) || [_r.summary];
+          sv('pf-hero-head', sentences.slice(0,2).join('').trim());
+          sv('pf-hero-desc', sentences.slice(2).join('').trim() || _r.summary);
+        }
+        const items = _r.recommendedItems || [];
+        if(items[0]){ sv('pw-title-0', items[0].concept || ''); sv('pw-body-0', items[0].rationale || ''); }
+      }
+      window._p25_exportData = null;
+      pRender();
+      showToast('기획 보드 → 저자 제안서 반영 완료', 'green');
     }
   }
 });

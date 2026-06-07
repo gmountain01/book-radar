@@ -32,6 +32,10 @@ function escHtml(s) {
 
 // ━━━ 기획 보드 공통 ━━━
 function addToPlanningBoard(item) {
+  if (isInBoard(item.type, item.title)) {
+    showToast('이미 기획 보드에 추가된 항목입니다', 'orange');
+    return;
+  }
   var board = JSON.parse(localStorage.getItem('p25_board') || '{"items":[],"drafts":[]}');
   item.id = 'pb_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
   item.addedAt = new Date().toISOString();
@@ -47,6 +51,36 @@ function addToPlanningBoard(item) {
 }
 function getPlanningBoard() {
   return JSON.parse(localStorage.getItem('p25_board') || '{"items":[],"drafts":[]}');
+}
+// 기획 보드에 이미 추가된 항목인지 체크 (type + title 매칭)
+function isInBoard(type, title) {
+  var board = getPlanningBoard();
+  return board.items.some(function(it) { return it.type === type && it.title === title; });
+}
+// 기획 보드에서 특정 항목 제거 (type + title 매칭)
+function removeFromBoard(type, title) {
+  var board = getPlanningBoard();
+  board.items = board.items.filter(function(it) { return !(it.type === type && it.title === title); });
+  savePlanningBoard(board);
+  _updateBoardBadge(board);
+  showToast('📌 기획 보드에서 제거됨', 'blue');
+}
+// 기획 보드 전체 비우기
+function clearBoard() {
+  if (!confirm('기획 보드의 모든 📌 항목을 제거합니다. 계속하시겠습니까?')) return false;
+  var board = getPlanningBoard();
+  board.items = [];
+  savePlanningBoard(board);
+  _updateBoardBadge(board);
+  showToast('기획 보드를 비웠습니다', 'blue');
+  return true;
+}
+function _updateBoardBadge(board) {
+  var badge = document.getElementById('p25Badge');
+  if (badge) {
+    badge.textContent = board.items.length;
+    badge.style.display = board.items.length > 0 ? 'inline-flex' : 'none';
+  }
 }
 function savePlanningBoard(board) {
   localStorage.setItem('p25_board', JSON.stringify(board));
@@ -2492,3 +2526,91 @@ function dlTemplate(){
   ]),'출간예정도서');
   XLSX.writeFile(wb,'출간예정_도서_템플릿.xlsx');
 }
+
+// ━━━ 세션 데이터 내보내기/가져오기 ━━━
+function exportSession() {
+  var EXCLUDE_KEYS = ['ai-api-key-enc', 'ai-api-iv'];
+  var data = {};
+  for (var i = 0; i < localStorage.length; i++) {
+    var key = localStorage.key(i);
+    if (EXCLUDE_KEYS.indexOf(key) !== -1) continue;
+    data[key] = localStorage.getItem(key);
+  }
+  var payload = {
+    version: '2.5.0',
+    exportedAt: new Date().toISOString(),
+    data: data
+  };
+  var json = JSON.stringify(payload, null, 2);
+  var blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  var d = new Date();
+  var yyyymmdd = d.getFullYear() +
+    String(d.getMonth() + 1).padStart(2, '0') +
+    String(d.getDate()).padStart(2, '0');
+  a.download = '출판도우미_세션_' + yyyymmdd + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('세션 데이터를 내보냈습니다', 'green');
+}
+window.exportSession = exportSession;
+
+function importSession(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (!confirm('기존 데이터가 덮어씌워집니다. 진행하시겠습니까?')) {
+    input.value = '';
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      var parsed = JSON.parse(e.target.result);
+      if (!parsed.data || typeof parsed.data !== 'object') {
+        showToast('유효하지 않은 세션 파일입니다', 'red');
+        return;
+      }
+      var keys = Object.keys(parsed.data);
+      var EXCLUDE_KEYS = ['ai-api-key-enc', 'ai-api-iv'];
+      for (var i = 0; i < keys.length; i++) {
+        if (EXCLUDE_KEYS.indexOf(keys[i]) !== -1) continue;
+        localStorage.setItem(keys[i], parsed.data[keys[i]]);
+      }
+      showToast('세션 데이터를 복원했습니다 (' + keys.length + '개 항목). 새로고침합니다…', 'green');
+      setTimeout(function () { location.reload(); }, 1200);
+    } catch (err) {
+      showToast('JSON 파싱 오류: ' + err.message, 'red');
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+window.importSession = importSession;
+
+// ━━━ 공통 DOCX 내보내기 유틸 ━━━
+// bodyXml: OOXML <w:p>...  문자열, filename: 다운로드 파일명
+function buildDocx(bodyXml, filename) {
+  if (typeof JSZip === 'undefined') { alert('JSZip 라이브러리가 필요합니다.'); return; }
+  var zip = new JSZip();
+  zip.file('[Content_Types].xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+  zip.file('_rels/.rels',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+  zip.file('word/_rels/document.xml.rels',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>');
+  zip.file('word/document.xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + bodyXml + '</w:body></w:document>');
+  zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+    .then(function(blob) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    });
+}
+// OOXML 문자열 이스케이프 헬퍼
+function docxEsc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+window.buildDocx = buildDocx;
+window.docxEsc = docxEsc;

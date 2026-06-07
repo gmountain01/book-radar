@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════════
 // API 키/캐시/fetch — shared/youtube.js에서 통합 관리
 // ytApiState.getKeys(), ytApiFetch(), ytApiState.refreshKeys() 등 사용
-const YT_LS = { saved: 'yt_saved', compare: 'yt_compare' };
+const YT_LS = { saved: 'yt_saved', compare: 'yt_compare', searchCache: 'yt_search_cache' };
 
 // ── API 유닛 사용량 트래킹 ──────────────────────────────────
 // shared/youtube.js가 관리하는 상태를 panel7 UI에서 표시하기 위한 브릿지
@@ -96,6 +96,29 @@ function ytLoadLS() {
 function ytSaveLS() {
   localStorage.setItem(YT_LS.saved,   JSON.stringify(YT_S.savedChannels));
   localStorage.setItem(YT_LS.compare, JSON.stringify(YT_S.compareList));
+}
+function ytSaveSearchCache() {
+  if (!YT_S.searchResults || !YT_S.searchResults.length) return;
+  try {
+    localStorage.setItem(YT_LS.searchCache, JSON.stringify({
+      ts: Date.now(),
+      query: YT_S.lastSearchQuery || '',
+      results: YT_S.searchResults,
+      sortBy: YT_S.sortBy
+    }));
+  } catch(_) {}
+}
+function ytLoadSearchCache() {
+  try {
+    var raw = localStorage.getItem(YT_LS.searchCache);
+    if (!raw) return false;
+    var cached = JSON.parse(raw);
+    if (!cached.results || !cached.results.length) return false;
+    YT_S.searchResults = cached.results;
+    YT_S.lastSearchQuery = cached.query || '';
+    YT_S.sortBy = cached.sortBy || 'relevance';
+    return true;
+  } catch(_) { return false; }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -640,6 +663,7 @@ async function doSearch() {
     YT_S.searchResults = YT_S.searchResults.slice(0, 50);
     YT_S.sortBy = 'relevance';
     renderSortedResults();
+    ytSaveSearchCache();
   } catch (e) {
     resEl.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(e.message)}</p></div>`;
   } finally {
@@ -786,7 +810,10 @@ function renderSearchResults(items) {
             <button class="btn btn-primary btn-sm" onclick="analyzeChannelById('${escHtml(cid)}')">
               📊 분석하기
             </button>
-            <button class="btn btn-sm" style="margin-left:4px;background:var(--accent-light,#e3e5f9);color:var(--accent,#4F46B8);border:none;cursor:pointer;" onclick="event.stopPropagation();p7_addBoard('${escHtml(cid)}',this.dataset.title,${subs})" data-title="${escHtml(sn.title||'')}">📌 기획 보드</button>
+            ${isInBoard('youtuber', sn.title||'')
+              ? `<button class="btn btn-sm" style="margin-left:4px;background:#dcfce7;color:#16a34a;border:none;cursor:pointer;" onclick="event.stopPropagation();p7_removeBoard(this.dataset.title);" data-title="${escHtml(sn.title||'')}">✅ 보드 추가됨</button>`
+              : `<button class="btn btn-sm" style="margin-left:4px;background:var(--accent-light,#e3e5f9);color:var(--accent,#4F46B8);border:none;cursor:pointer;" onclick="event.stopPropagation();p7_addBoard('${escHtml(cid)}',this.dataset.title,${subs});" data-title="${escHtml(sn.title||'')}">📌 기획 보드</button>`
+            }
           </div>
         `;
       }).join('')}
@@ -1050,6 +1077,11 @@ function p7_addBoard(cid, title, subs) {
     title: title,
     data: { channelId: cid, subs: subs }
   });
+  renderSortedResults();
+}
+function p7_removeBoard(title) {
+  removeFromBoard('youtuber', title);
+  renderSortedResults();
 }
 
 async function analyzeChannelById(cid) {
@@ -2027,6 +2059,10 @@ let _trendInterval = setInterval(() => loadTrendKeywords(true), 30 * 60 * 1000);
     _origSwitchTabYT(i, btn);
     if(i === 7){
       if(typeof loadTrendKeywords === "function") loadTrendKeywords();
+      // 검색 결과 캐시 복원 (세션 데이터가 비어있을 때만)
+      if(!YT_S.searchResults || !YT_S.searchResults.length){
+        if(ytLoadSearchCache()) renderSortedResults();
+      }
       // panel7 재진입 시 인터벌 없으면 재시작
       if(!_trendInterval){
         _trendInterval = setInterval(() => loadTrendKeywords(true), 30 * 60 * 1000);

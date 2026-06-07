@@ -981,7 +981,9 @@ function renderCards(cards, catData) {
       '</div>' +
       '<div class="card-actions">' +
         '<button class="kw-proposal-btn" onclick="kwGenerateProposal(' + idx + ', this)" title="이 키워드로 출판 기획 초안을 생성합니다">📋 기획 초안 생성</button>' +
-        '<button class="kw-proposal-btn" style="background:var(--accent-light);color:var(--accent);" onclick="p25_addKeyword(' + idx + ')" title="기획 보드에 추가">📌 기획 보드</button>' +
+        (isInBoard('keyword', card.keyword)
+          ? '<button class="kw-proposal-btn" style="background:#dcfce7;color:#16a34a;cursor:pointer;" onclick="p25_removeKeyword(' + idx + ')" title="기획 보드에서 제거">✅ 보드 추가됨</button>'
+          : '<button class="kw-proposal-btn" style="background:var(--accent-light);color:var(--accent);" onclick="p25_addKeyword(' + idx + ')" title="기획 보드에 추가">📌 기획 보드</button>') +
       '</div>' +
       '<div class="card-proposal" id="kwProposal-' + idx + '"></div>' +
       '<div class="card-foot">' +
@@ -1252,6 +1254,13 @@ window.p25_addKeyword = function(idx) {
     title: card.keyword,
     data: { pick_type: card.pick_type, reason: card.reason, views: card.views, category: card.category }
   });
+  renderCards(lastCards, lastCatData);
+};
+window.p25_removeKeyword = function(idx) {
+  var card = _displayedCards[idx];
+  if (!card) return;
+  removeFromBoard('keyword', card.keyword);
+  renderCards(lastCards, lastCatData);
 };
 
 /* ═══════════════════════════════════════════

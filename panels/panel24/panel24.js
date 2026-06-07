@@ -137,13 +137,16 @@ function render() {
 
     html += '<tr>';
     html += '<td style="color:var(--muted);font-size:.78rem;">' + (start + i + 1) + '</td>';
-    html += '<td><span class="p24-author-name">' + escHtml(a.name) + '</span></td>';
+    html += '<td><span class="p24-author-name" style="cursor:pointer;" onclick="p24_showProfile(' + (start+i) + ')">' + escHtml(a.name) + '</span></td>';
     html += '<td><span class="p24-book-count">' + a.count + '</span></td>';
     html += '<td>' + pubBadges + '</td>';
     html += '<td style="font-weight:600;color:var(--accent);">' + (a.bestRank < 999 ? a.bestRank + '위' : '-') + '</td>';
     html += '<td style="font-size:.78rem;color:var(--muted);">' + a.totalDays + '일</td>';
     html += '<td class="p24-book-list">' + bookHtml + '</td>';
-    html += '<td><button class="p24-expand-btn" style="white-space:nowrap;" onclick="p24_addBoard(' + (start+i) + ')" title="기획 보드에 추가">📌</button></td>';
+    html += '<td>' + (isInBoard('author', a.name)
+      ? '<button class="p24-expand-btn" style="white-space:nowrap;color:#16a34a;cursor:pointer;" onclick="p24_removeBoard(' + (start+i) + ')" title="기획 보드에서 제거">✅</button>'
+      : '<button class="p24-expand-btn" style="white-space:nowrap;" onclick="p24_addBoard(' + (start+i) + ')" title="기획 보드에 추가">📌</button>')
+    + '</td>';
     html += '</tr>';
   });
 
@@ -185,6 +188,13 @@ window.p24_addBoard = function(idx) {
     title: a.name,
     data: { count: a.count, pubs: a.pubs, bestRank: a.bestRank, totalDays: a.totalDays, books: a.books.slice(0, 5) }
   });
+  render();
+};
+window.p24_removeBoard = function(idx) {
+  var a = filtered[idx];
+  if (!a) return;
+  removeFromBoard('author', a.name);
+  render();
 };
 
 window.p24_toggle = function(btn) {
@@ -193,6 +203,64 @@ window.p24_toggle = function(btn) {
   var show = el.style.display === 'none';
   el.style.display = show ? 'block' : 'none';
   btn.textContent = show ? '접기' : '+ ' + btn.getAttribute('data-n') + '권 더 보기';
+};
+
+window.p24_showProfile = function(idx) {
+  var a = filtered[idx];
+  if (!a) return;
+
+  var old = document.getElementById('p24Modal');
+  if (old) old.remove();
+
+  var pubBadges = a.pubs.map(function(p) {
+    return '<span class="p24-pub-badge">' + escHtml(p) + '</span>';
+  }).join(' ');
+
+  var sortedBooks = a.books.slice().sort(function(x, y) {
+    return x.bestRank - y.bestRank;
+  });
+
+  var bookRows = sortedBooks.map(function(b, bi) {
+    return '<tr>' +
+      '<td style="color:var(--muted);font-size:.78rem;">' + (bi + 1) + '</td>' +
+      '<td>' + escHtml(b.title) + '</td>' +
+      '<td style="text-align:center;font-weight:600;color:var(--accent);">' + (b.bestRank < 999 ? b.bestRank + '위' : '-') + '</td>' +
+      '<td style="text-align:center;font-size:.82rem;color:var(--muted);">' + b.days + '일</td>' +
+      '</tr>';
+  }).join('');
+
+  var html = '<div id="p24Modal" class="p24-modal-overlay" onclick="if(event.target===this)p24_closeProfile()">' +
+    '<div class="p24-modal">' +
+      '<div class="p24-modal-header">' +
+        '<h3>' + escHtml(a.name) + '</h3>' +
+        '<button class="p24-modal-close" onclick="p24_closeProfile()">&times;</button>' +
+      '</div>' +
+      '<div class="p24-modal-stats">' +
+        '<div class="p24-modal-stat-card"><div class="p24-stat-value">' + a.count + '</div><div class="p24-stat-label">등장 도서</div></div>' +
+        '<div class="p24-modal-stat-card"><div class="p24-stat-value">' + (a.bestRank < 999 ? a.bestRank + '위' : '-') + '</div><div class="p24-stat-label">최고 순위</div></div>' +
+        '<div class="p24-modal-stat-card"><div class="p24-stat-value">' + a.totalDays + '일</div><div class="p24-stat-label">총 등장일수</div></div>' +
+        '<div class="p24-modal-stat-card"><div class="p24-stat-value">' + a.pubs.length + '</div><div class="p24-stat-label">출판사 수</div></div>' +
+      '</div>' +
+      '<div class="p24-modal-section"><div class="p24-modal-section-title">출판사</div>' + pubBadges + '</div>' +
+      '<div class="p24-modal-section"><div class="p24-modal-section-title">전체 도서 (' + a.books.length + '권)</div>' +
+        '<div class="p24-modal-books"><table class="p24-table"><thead><tr>' +
+          '<th style="width:35px">#</th><th>도서명</th><th style="width:70px;text-align:center;">최고순위</th><th style="width:70px;text-align:center;">등장일수</th>' +
+        '</tr></thead><tbody>' + bookRows + '</tbody></table></div>' +
+      '</div>' +
+      '<div class="p24-modal-footer">' +
+        (isInBoard('author', a.name)
+          ? '<button class="p24-modal-board-btn" style="background:#dcfce7;color:#16a34a;border-color:#bbf7d0;cursor:pointer;" onclick="p24_removeBoard(' + idx + ');p24_closeProfile();">✅ 보드에 추가됨 (클릭하여 해제)</button>'
+          : '<button class="p24-modal-board-btn" onclick="p24_addBoard(' + idx + ');p24_closeProfile();">📌 기획 보드에 추가</button>') +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
+  document.body.insertAdjacentHTML('beforeend', html);
+};
+
+window.p24_closeProfile = function() {
+  var el = document.getElementById('p24Modal');
+  if (el) el.remove();
 };
 
 if (typeof PanelRegistry !== 'undefined') {

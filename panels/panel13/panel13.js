@@ -85,18 +85,8 @@ window.cpUpdate = function(field, value) {
 };
 
 window.cpDownloadDocx = function() {
-  if (typeof JSZip === 'undefined') { alert('JSZip 라이브러리가 필요합니다.'); return; }
-  var x = function(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
-  var zip = new JSZip();
-  zip.file('[Content_Types].xml',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
-  zip.file('_rels/.rels',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
-  zip.file('word/_rels/document.xml.rels',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>');
-
+  var x = docxEsc;
   var body = '';
-  // 큰 제목
   body += '<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="48"/><w:szCs w:val="48"/><w:color w:val="2F3061"/></w:rPr><w:t>도서 컨셉 기획서</w:t></w:r></w:p>';
   body += '<w:p/>';
 
@@ -118,26 +108,14 @@ window.cpDownloadDocx = function() {
   fields.forEach(function(f) {
     var label = f[0], val = (f[1] || '').trim();
     if (!val) return;
-    // 라벨 (굵게, 보라색)
     body += '<w:p><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/><w:color w:val="3B3F8C"/></w:rPr><w:t>[' + x(label) + ']</w:t></w:r></w:p>';
-    // 내용
     val.split('\n').forEach(function(line) {
       body += '<w:p><w:r><w:t xml:space="preserve">' + x(line) + '</w:t></w:r></w:p>';
     });
     body += '<w:p/>';
   });
 
-  zip.file('word/document.xml',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + body + '</w:body></w:document>');
-
-  zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
-    .then(function(blob) {
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = (data.title || '도서컨셉').replace(/[^\w가-힣]/g, '_').slice(0, 30) + '_컨셉.docx';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-    });
+  buildDocx(body, (data.title || '도서컨셉').replace(/[^\w가-힣]/g, '_').slice(0, 30) + '_컨셉.docx');
 };
 
 window.cpAiDraft = async function() {

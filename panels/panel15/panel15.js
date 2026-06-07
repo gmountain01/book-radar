@@ -186,43 +186,20 @@ window.fmCopyAll = function() {
 window.fmDownloadDocx = function() {
   var el = document.getElementById('fm-content');
   if (el) { data[activeTab] = el.value; save(); }
-  if (typeof JSZip === 'undefined') { alert('JSZip 라이브러리가 필요합니다.'); return; }
-  var zip = new JSZip();
-  zip.file('[Content_Types].xml',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
-  zip.file('_rels/.rels',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
-  zip.file('word/_rels/document.xml.rels',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>');
 
   var body = '';
   TABS.forEach(function(t) {
     var content = (data[t.key] || '').trim();
     if (!content) return;
-    // 섹션 제목 (인라인 스타일 — 22pt 굵게 인디고)
-    body += '<w:p><w:pPr><w:spacing w:before="360" w:after="200"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="44"/><w:szCs w:val="44"/><w:color w:val="2F3061"/></w:rPr><w:t>' + _x(t.title) + '</w:t></w:r></w:p>';
-    // 본문
+    body += '<w:p><w:pPr><w:spacing w:before="360" w:after="200"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="44"/><w:szCs w:val="44"/><w:color w:val="2F3061"/></w:rPr><w:t>' + docxEsc(t.title) + '</w:t></w:r></w:p>';
     content.split('\n').forEach(function(line) {
-      body += '<w:p><w:r><w:t xml:space="preserve">' + _x(line) + '</w:t></w:r></w:p>';
+      body += '<w:p><w:r><w:t xml:space="preserve">' + docxEsc(line) + '</w:t></w:r></w:p>';
     });
-    // 페이지 나누기
     body += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
   });
 
-  zip.file('word/document.xml',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + body + '</w:body></w:document>');
-
-  zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
-    .then(function(blob) {
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = '앞부속.docx';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-    });
+  buildDocx(body, '앞부속.docx');
 };
-
-function _x(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 var _init15 = false;
 function initPanel15() {
