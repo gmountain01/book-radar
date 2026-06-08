@@ -1,6 +1,353 @@
 {
   "articles": [
     {
+      "id": "cd0e90b1bf40",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "SK, 엔비디아 전방위 AI 동맹...\"차세대 메모리 개발·GW급 AIDC 구축\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211453",
+      "date": "2026-06-08",
+      "summary": "SK그룹이 엔비디아와 반도체 공급을 넘어 인프라 전 영역으로 파트너십을 확대한다고 8일 밝혔다.먼저 SK하이닉스는 엔비디아와 차세대 메모리 공동 개발에 착수한다. 설계 단계부터 GPU(그래픽처리장치)와 메모리의 성능을 동시에 끌어올리는 새로운 컴퓨팅 아키텍처 연구를 통해, 기존 HBM(고대역폭 메모리) 중심 협업을 하드웨어 전반으로 확장한다는 구상이다.구체적으로 엔비디아의 차세대 AI 플랫폼인 '베라 루빈' AI 슈퍼컴퓨터와 '베라' CPU, 'RTX 스파크' AI PC, '젯슨 토르' 로보틱스 플랫폼용 메모리 등을 공동 개발한다.",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "17350b9f3a4f",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "크래프톤 “엔비디아 'RTX 스파크'에 게임 최적화…로보틱스 협력도 확장”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211452",
+      "date": "2026-06-08",
+      "summary": "크래프톤(대표 김창한)은 7일 서울 강남구 PC방에서 PUBG 팬들을 위한 이벤트를 진행, 엔비디아와 협력 확대를 논의했다고 밝혔다. '배틀그라운드' 이용자들을 위해 마련된 이벤트로, 장병규 크래프톤 의장과 젠슨 황 엔비디아 CEO가 직접 소통의 시간을 가졌다. 이번 만남을 계기로 두 회사는 AI 기술 협력을 가속하기로 했다. 크래프톤 주요 타이틀을 차세대 AI PC용 온디바이스 슈퍼칩 ‘RTX 스파크’ 플랫폼에 최적화할 예정이다.로보틱스 분야에서도 논의를 진행했다. 지난해 4월에는 김창한 크래프톤 대표가 미국 캘리포니아 엔비디아",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "6086a5e1b8e2",
+      "source": "toss",
+      "source_name": "토스",
+      "icon": "💙",
+      "title": "Skill 품질 관리를 위한 Rubric 설계와 시스템 구현",
+      "link": "https://toss.tech/article/skill-quality-rubric",
+      "date": "2026-06-08",
+      "summary": "갈수록 커지는 Skill의 품질 편차와 그 간극을 최소화하기 위한 방법",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "347aba1d7069",
+      "source": "huggingface",
+      "source_name": "Hugging Face",
+      "icon": "🤗",
+      "title": "Amazing Digital Dentures (a failed project)",
+      "link": "https://huggingface.co/blog/build-small-hackathon/amazingdigitaldentures",
+      "date": "2026-06-07",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "983ca5f5eaa4",
+      "source": "nvidia_ai",
+      "source_name": "NVIDIA AI",
+      "icon": "💚",
+      "title": "NVIDIA and Doosan Group Collaborate to Advance Physical AI and AI Factory Infrastructure",
+      "link": "https://blogs.nvidia.com/blog/nvidia-and-doosan-group-physical-ai/",
+      "date": "2026-06-07",
+      "summary": "NVIDIA and Doosan Group are expanding their collaboration to advance new opportunities across physical AI, robotics and AI factory infrastructure, spanning Doosan Robotics, Doosan Bobcat, Doosan Enerbility and Doosan Corporation Electro-Materials BG. The collaboration will bring together NVIDIA’s fu",
+      "keywords": [
+        "Robotics"
+      ],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "7e181edffb1c",
+      "source": "nvidia_ai",
+      "source_name": "NVIDIA AI",
+      "icon": "💚",
+      "title": "NVIDIA, KRAFTON, NC and Reigning ‘League of Legends’ Champions T1 Celebrate RTX Spark at Korea’s PC Bangs",
+      "link": "https://blogs.nvidia.com/blog/krafton-nc-t1-korea-gaming-pc-bang-rtx-spark/",
+      "date": "2026-06-07",
+      "summary": "At GTC Taipei at COMPUTEX last week, NVIDIA unveiled RTX Spark, the superchip that reinvents Windows PCs for the era of personal AI agents. On the heels of this announcement, NVIDIA founder and CEO Jensen Huang headed to South Korea, where he introduced RTX Spark to the nation’s passionate gaming co",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "823021378754",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Is this the dawn of the Tokenpocalypse?",
+      "link": "https://techcrunch.com/2026/06/07/is-this-the-dawn-of-the-tokenpocalypse/",
+      "date": "2026-06-07",
+      "summary": "We're likely to see more price increases as the big AI companies plan to go public.",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "c733bac7a8d4",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Notion restores access to Anthropic after service disruption",
+      "link": "https://techcrunch.com/2026/06/07/notion-restores-access-to-anthropic-after-service-disruption/",
+      "date": "2026-06-07",
+      "summary": "Notion's head of product said he was \"astonished\" at “the amount of people RT-ing this.\"",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "893947abd016",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "OpenAI is still working on that ‘super app’",
+      "link": "https://techcrunch.com/2026/06/07/openai-is-still-working-on-that-super-app/",
+      "date": "2026-06-07",
+      "summary": "\"Chat is dead\" — at least, according to a senior OpenAI employee.",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "5556d9191e75",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "TechCrunch Mobility: Inside GM’s $900M EV battery gamble",
+      "link": "https://techcrunch.com/2026/06/07/inside-gms-900m-ev-battery-gamble/",
+      "date": "2026-06-07",
+      "summary": "Welcome back to TechCrunch Mobility — your central hub for news and insights on the future of transportation.",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "e777cc8ad02a",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Hacked, leaked, and held for ransom: the worst breaches of 2026 so far",
+      "link": "https://techcrunch.com/2026/06/07/the-worst-hacks-and-breaches-of-2026-so-far/",
+      "date": "2026-06-07",
+      "summary": "From a massive DOGE data breach and the hacking of critical energy and water systems to the hack of an FBI surveillance system, here are the most damaging security incidents and data breaches of 2026.",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "83c693bbfd1e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "\"깐부 어게인\"...젠슨 황, 유퀴즈·야구장 시구 넘나든 종횡무진 행보",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211434",
+      "date": "2026-06-07",
+      "summary": "젠슨 황 엔비디아 CEO가 주말 일정을 활용해 방송 출연과 야구 시구부터 게임사, 반도체 총수 만남까지 종횡무진 행보를 선보였다.주말 공식 일정은 지난 6일 tvN 예능 프로그램 ‘유 퀴즈 온 더 블럭’ 녹화로 시작됐으며, 이날 저녁에는 종로구의 토속촌 삼계탕집을 찾았다. 지난 5일 '삼소 회동'에 이은 BBQ 2차 회동까지 이른바 'K-회식'을 즐긴 만큼, 일정을 여유롭게 소화한 것으로 확인됐다.이튿날인 7일 오찬에는 정의선 현대차그룹 회장과 만났다. 이는 8일 예정된 사옥 방문 전 사전 조율 목적으로, 현대차그룹의 모빌리티 제조",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "0db798d3d4f9",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "\"채팅은 죽었다\"...챗GPT, '에이전트 슈퍼 앱' 개편 초읽기",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211437",
+      "date": "2026-06-07",
+      "summary": "오픈AI가 '챗GPT' 출시 이후 최대의 개편을 앞둔 것으로 알려졌다. 앞으로 몇주 안으로 AI 챗봇을 넘어서 코딩과 에이전트 중심의 '슈퍼 앱'으로 전면 개편한다는 구상이다.파이낸셜타임스(FT)는 7일 다수의 관계자를 인용, 오픈AI가 기업공개(IPO)를 앞두고 몇주 안에 단계적으로 챗GPT를 개편할 예정이라고 보도했다. 이에 따라 챗GPT 웹사이트와 모바일 앱이 먼저 변경될 예정이다.오픈AI가 챗GPT와 코덱스, AI 브라우저를 통합한 슈퍼 앱을 개발 중이라는 소식은 이전에도 전해졌다. 그러나 이번에는 고객들이 별도의 화면 이탈",
+      "keywords": [
+        "AI Agent",
+        "Chatbot",
+        "GPT"
+      ],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "783776f907ba",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "알트먼·럭키, 실리콘 밸리 거물들 유튜브 예능서 '마피아 게임' 설전",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211435",
+      "date": "2026-06-07",
+      "summary": "샘 알트먼 오픈AI CEO와 팔머 럭키 안두릴 창립자 등 IT 업계 유명인들이 예능 프로그램에 출연, 마피아 게임을 펼쳤다.피터 틸이 창립한 벤처캐피털 파운더스 펀드는 4일(현지시간) 유튜브와 X를 통해 새로운 마피아 게임 프로그램을 공개했다.여기에는 알트먼과 럭키, 브라이언 존슨 바이오해커 창립자, 딜런 필드 피그마 창립자 등 기술 업계의 유명인과 투자자, 프로 포커 선수, 작가 등 셀럽 12명이 참여했다.33분 분량의 에피소드에서는 온갖 비난이 오가는 흥미진진한 경기가 펼쳐졌다. 특히 럭키는 경기 도중 농담을 자주 했는데, 이",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "82d8c683532f",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "월드컵, 축구공 속 ‘센서’와 ‘AI’가 판정 바꾼다… '반자동 오프사이드' 도입",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211433",
+      "date": "2026-06-07",
+      "summary": "다가오는 2026 FIFA 북중미 월드컵에서는 첨단 센서 기술과 AI가 경기장 안팎을 지배할 전망이다.BBC가 최근 공개한 영상에 따르면, 이번 대회 공인구 ‘트리온다(Trionda)’는 단순한 축구공이 아닌 첨단 전자 기기에 가까운 것으로 알려졌다. 공의 표면 아래에는 경기 중 발생하는 모든 충격을 견딜 수 있도록 특수 설계된 첨단 센서가 탑재됐다.이 스마트 공은 1초에 무려 500회(500Hz)에 달하는 속도로 공의 가속도와 회전, 3차원 공간에서의 움직임을 실시간으로 측정한다. 니콜라스 에반스 FIFA 연구 책임자는 \"공 내부",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "0d40785d0fc8",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "거장 마틴 스코세지 \"AI로 창의적 자유 얻어\"…할리우드 논쟁 격화",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211432",
+      "date": "2026-06-07",
+      "summary": "세계적인 거장 마틴 스콜세지 감독이 영화 사전 제작 과정에 AI 도구 사용을 지지했다가 논쟁에 휘말렸다.스콜세지 감독은 2일(현지시간) 뉴욕타임스를 통해 이미지 생성 스타트업 블랙 포레스트 랩스의 파트너 겸 고문으로 합류했다고 발표했다.이와 함께 블랙 포레스트 랩스가 공개한 영상에서 그는 AI로 스토리보드 이미지를 즉시 생성하는 모습을 선보였다. 이처럼 사전 제작 단계에서 AI를 활용하는 것은 영화 본편에 특수 효과를 AI로 일부 대체하는 다른 감독들의 시도와 비교해 제작 효율성에 초점을 맞춘 차별화된 접근 방식이다.그동안 '택시",
+      "keywords": [
+        "Image AI"
+      ],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "d92b60db6cd3",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "김형준 스퀴즈비츠 대표 “AI 경량화 넘어 '피지컬 AI' 솔루션으로 확장”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211415",
+      "date": "2026-06-07",
+      "summary": "“기존에 운영하던 AI 최적화 서비스와 기술을 바탕으로 피지컬 AI까지 영역을 넓혀 나가고 있습니다. AI가 더 많은 과업을 수행하게 될수록, 경량화 기술의 수요는 더 늘어날 것입니다.”AI 최적화 전문 스퀴즈비츠(대표 김형준)가 언어모델과 멀티모달모델을 넘어 월드모델로 사업 영역 확장에 나선다고 밝혔다.지난 2022년 설립된 스퀴즈비츠는 국내 대표 딥테크 스타트업으로, 임직원의 70%가 엔지니어로 구성됐다. 국내 AI 도입 초기부터 다양한 기업들과 현장 경험을 축적해 왔다. 지난해 12월에는 차세대 미세조정 기법 ‘그래롤라(Gra",
+      "keywords": [
+        "Fine-tuning"
+      ],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "8afdd64444b3",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "EU, 반도체·AI ‘기술 주권’ 전략 공개...\"미국 빅테크 의존 줄인다\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211430",
+      "date": "2026-06-07",
+      "summary": "유럽연합(EU)이 미국과 아시아 기술 기업 의존도를 줄이기 위해 반도체와 AI, 클라우드 컴퓨팅 분야의 공급망 자립을 목표로 하는 대규모 '기술 주권(Tech Sovereignty)' 전략을 발표했다.EU 집행위원회는 3일(현지시간) 유럽의 기술 자립성을 높이기 위한 종합 전략 패키지를 공개했다. 이번 계획은 반도체와 AI, 클라우드 인프라 등 핵심 디지털 산업에서 해외 의존도를 낮추고 유럽 내 기술 역량을 강화하는 데 초점을 맞추고 있다.최근 미국과 유럽 간 관계 변화도 이러한 움직임의 배경으로 꼽힌다. 특히 도널드 트럼프 미국",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "9d3829d3f3b2",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "화웨이·선전 연구진 \"중국산 AI 칩으로 ‘딥시크 V4-프로’ 사후학습 성공\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211428",
+      "date": "2026-06-07",
+      "summary": "화웨이와 중국 연구 기관들이 1000개 이상의 화웨이 AI 가속기를 활용해 딥시크의 AI 모델 'V4-프로(V4-Pro)'에 대한 사후학습을 완료했다고 밝혔다. 중국산 AI 칩이 그동안 약점으로 지적됐던 학습 단계에서도 성과를 냈다는 주장으로 주목받고 있지만, 구체적인 성능 지표가 공개되지 않아 실제 경쟁력을 평가하기에는 이르다는 지적도 나온다.5일(현지시간) 사우스차이나모닝포스트에 따르면, 중국 연구진은 화웨이의 AI 가속기 '어센드(Ascend) 910C'를 활용해 딥시크의 1조6000억개 매개변수 모델 '딥시크 V4-프로'의",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "72af63115dcb",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "AI 음악 스타트업 수노, 저작권 분쟁 속  8조 가치로 투자 유치",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211429",
+      "date": "2026-06-07",
+      "summary": "AI 음악 플랫폼 수노가 4억달러(약 6200억원) 규모의 시리즈D 투자를 유치하며 기업 가치 54억달러(약 8조원)를 인정받았다. 저작권 침해 소송이 이어지는 가운데서도 불과 7개월 만에 몸값을 2배 이상 끌어올리며 AI 음악 시장 대표 자리를 지켰다.노는 3일(현지시간) 4억달러 규모의 시리즈D 투자 유치를 완료했다고 발표했다. 이번 투자로 기업 가치는 54억달러로 평가됐다.이번 투자 라운드는 본드 캐피털이 주도했으며, IVP, 포어러너 벤처스, 유니언 스퀘어 벤처스 등이 참여했다. 기존 투자자인 라이트스피드 벤처 파트너스와 멘",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "d305471cc402",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "오픈AI, 프롬프트 인젝션 막는 ‘잠금 모드' 공개...\"외부  연결 제한\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211425",
+      "date": "2026-06-07",
+      "summary": "오픈AI가 프롬프트 인젝션(prompt injection) 공격으로 인한 민감 정보 유출 위험을 줄이기 위한 새로운 보안 기능 '잠금 모드(Lockdown Mode)'를 공개했다. 웹 브라우징과 딥 리서치(Deep Research), 에이전트 모드(Agent Mode) 등 외부 네트워크와 연결되는 기능을 제한하는 대신, 보안성을 높인 것이 특징이다.오픈AI는 4일(현지시간) 기업과 보안 민감 조직을 주요 대상으로 프롬프트 인젝션 공격에 대응하기 위한 고급 보안 기능 '잠금 모드'를 출시했다고 발표했다.이 기능은 악성 명령어가 숨겨진",
+      "keywords": [
+        "AI Agent",
+        "Prompt",
+        "Security"
+      ],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "ac467f5cf688",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "문샷 AI, 코딩 에이전트 '키미 코드 CLI' 공개…\"터미널서 병렬 작업 지원\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211424",
+      "date": "2026-06-07",
+      "summary": "문샷 AI가 터미널 환경에서 동작하는 오픈소스 코딩 에이전트를 공개했다. 문샷 AI는 6일(현지시간) 오픈소스 코딩 에이전트 '키미 코드 CLI(Kimi Code CLI)'를 공개했다. 개발자가 터미널 환경에서 코드 작성부터 디버깅, 테스트, 자동화 작업까지 AI 에이전트와 함께 수행할 수 있도록 설계된 도구로, 기존 'kimi-cli'의 후속 버전이다.키미 코드 CLI는 코드 읽기 및 수정, 셸 명령 실행, 파일 검색, 웹페이지 조회 등의 작업을 수행한 뒤 결과를 바탕으로 다음 행동을 스스로 결정하는 피드백 기반 에이전트다. 소스",
+      "keywords": [
+        "AI Agent",
+        "Automation",
+        "Coding",
+        "Open Source"
+      ],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "d129be8361ef",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "손정의 \"차세대 AI, 인간 아닌 AI가 설계…2년 내 초지능 올 것\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211431",
+      "date": "2026-06-07",
+      "summary": "손정의 소프트뱅크 회장이 오픈AI의 차세대 모델이 다른 모델에 의해 설계되고 있다며, 이로 인해 AGI가 예상보다 빠르게 도달할 것이라고 강조했다.손정의 회장은 5일(현지시간) 공개된 CNBC와의 인터뷰에서 최근 샘 알트먼 오픈AI CEO와 핵심 엔지니어들과 나눈 이야기를 소개했다.그는 \"이미 그들의 차세대 모델은 더 이상 인간이 설계하는 것이 아니라 그들의 AI 모델이 설계하고 있다\"라며 \"이런 현상은 다른 주요 AI 모델에서도 똑같이 일어나게 될 것이며, 이미 차세대 모델부터 일어나고 있다\"라고 말했다.이어 \"모델이 다음 모델을",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "b05fecb918ea",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "목포어린이도서관, AI·코딩 결합 독서 프로그램 ‘디지털 수사대’ 진행",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211368",
+      "date": "2026-06-07",
+      "summary": "목포어린이도서관이 초등학생을 대상으로 독서와 AI·코딩을 결합한 교육 프로그램을 운영한다고 밝혔다.목포어린이도서관은 오는 7월1일부터 22일까지 초등학교 4~6학년을 대상으로 ‘2026년 이야기가 있는 코딩’ 강좌를 진행한다. 이번 프로그램은 국립어린이청소년도서관 공모사업 선정에 따라 마련됐다.강좌 주제는 ‘디지털 수사대: 가짜뉴스 판독기 만들기’다. 참가 어린이들은 책을 읽고 가짜뉴스와 정보 판별의 의미를 이해한 뒤 AI와 코딩 실습을 통해 관련 결과물을 구현한다.프로그램은 단순 코딩 기술 습득보다 디지털 환경에서 정보를 비판적으",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "a0c3d813a739",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "나주, 폭염 취약·위기가구 대상 ‘맞춤형 건강꾸러미’ 지원",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211382",
+      "date": "2026-06-07",
+      "summary": "나주시가 여름철 폭염과 사회적 고립으로 어려움을 겪는 위기가구를 대상으로 맞춤형 돌봄 지원을 강화한다.나주는 사회적 고립 위기가구 90세대를 대상으로 ‘오늘의 안부, 내일의 안심 건강꾸러미 지원사업’을 추진한다.이번 사업은 1인 가구 증가와 사회적 관계 단절로 인한 고독사, 우울 위험에 선제적으로 대응하기 위해 마련됐다. 단순히 물품을 전달하는 데 그치지 않고 대상자의 건강 상태와 생활 실태를 직접 살피며 정서적 지지를 함께 제공하는 지역 밀착형 돌봄사업이다.지원 대상은 통합사례관리 실무분과가 사례관리 중인 사회적 고립 위기가구 9",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "4424c884831e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "LGU+ “2030년 AIDC 5조원 계약…AI 인프라 표준 제시“",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211423",
+      "date": "2026-06-07",
+      "summary": "LG유플러스는 5일 경기 파주시 AI데이터센터 건설 현장에서 차세대 AI 데이터센터 인프라 전략을 발표하고, 2030년까지 누적 계약 5조원을 달성하겠다고 밝혔다.LG그룹 계열사 내 기술 협력을 통한 ‘One LG’ 시너지를 기반으로 차세대 AI 인프라 표준을 제시하고, 글로벌 시장에서 국산 AI 인프라의 경쟁력을 입증하겠다는 전략이다.‘The ACE on Trust’ 전략을 내세웠다. ▲Agility(구축 속도) ▲Capacity(전력·규모) ▲Efficiency(냉각 효율) 등의 강점을 AI 데이터센터 운영 안정성이라는 ‘Tru",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
+      "id": "a2e66d32bb31",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "영국 태양광 누적 설비 22.3GW 돌파… 최근 1년 사이 11% 성장",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211381",
+      "date": "2026-06-07",
+      "summary": "영국 태양광 누적 설비용량이 2026년 4월 말 기준 22.3기가와트(GW)에 도달했다. 설치 건수는 200만건을 넘었고, 최근 1년 동안 2.3GW가 새로 보급됐다.영국 에너지안보탄소중립부(DESNZ)가 지난 28일(현지시간) 발표한 4월 태양광 보급 통계에 따르면 영국 태양광 누적 설비는 22.3GW, 설치 건수는 202만6000건으로 집계됐다.최근 12개월 동안 추가된 설비는 2.3GW로, 같은 기간 누적 설비는 11.2% 늘었다. 2026년 4월 한 달 신규 설치는 2만2733건, 107메가와트(MW)였다.2025~2026",
+      "keywords": [],
+      "first_seen": "2026-06-08"
+    },
+    {
       "id": "351a2dfb43fd",
       "source": "aitimes",
       "source_name": "AI타임스",
@@ -10029,6 +10376,20 @@
         "MCP"
       ],
       "first_seen": "2026-06-06"
+    },
+    {
+      "id": "f2867da43d0b",
+      "source": "yozm",
+      "source_name": "요즘IT",
+      "icon": "📱",
+      "title": "AI 시대의 시지프스: 멈추지 못하는 완벽주의자를 위한 안내서",
+      "link": "https://yozm.wishket.com/magazine/detail/3787",
+      "date": "",
+      "summary": "AI 에이전트는 작업물을 검토해 단점을 심각도별로 분류하고 대안까지 내놓는다. 완벽주의 기질이 있는 사람에게 이건 독이 든 성배다. 완벽한 코드란 없는데도 '한 번 더'를 멈추지 못한다. 그런 와중에 모델은 매일 좋아진다. 시지프스의 바위가 멈추지 않는 건 신의 벌이지만, 우리 바위가 멈추지 않는 건 멈추지 않기로 한 선택이다. 마감일을 정하고, 여러 세션을 번갈아 돌리고, 작업을 기록하고, 오늘의 최선에서 손을 떼기까지. 번아웃을 지나며 찾은 멈추는 법을 정리했다.",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-06-08"
     }
   ],
   "daily_stats": [
@@ -10106,6 +10467,11 @@
       "date": "2026-06-07",
       "added": 19,
       "total": 744
+    },
+    {
+      "date": "2026-06-08",
+      "added": 28,
+      "total": 772
     }
   ],
   "sources": {},
@@ -10234,54 +10600,54 @@
     {
       "week": "2026-W23",
       "keywords": {
-        "AI Agent": 49,
-        "Automation": 23,
-        "Security": 17,
-        "Coding": 12,
+        "AI Agent": 53,
+        "Automation": 24,
+        "Security": 19,
+        "Coding": 13,
+        "GPT": 9,
+        "Open Source": 9,
         "Deployment": 9,
-        "Claude": 8,
-        "Open Source": 8,
         "LLM": 8,
-        "GPT": 8,
-        "Robotics": 7,
+        "Robotics": 8,
+        "Claude": 8,
         "SDK/API": 7,
         "Enterprise AI": 7,
-        "Chatbot": 5,
+        "Chatbot": 6,
         "Optimization": 5,
-        "MCP": 5
+        "Fine-tuning": 5
       }
     }
   ],
   "source_stats": {
     "aitimes": {
-      "total": 217,
-      "recent_7d": 117,
-      "recent_30d": 117
+      "total": 235,
+      "recent_7d": 135,
+      "recent_30d": 135
+    },
+    "huggingface": {
+      "total": 46,
+      "recent_7d": 12,
+      "recent_30d": 12
     },
     "techcrunch": {
-      "total": 141,
-      "recent_7d": 80,
-      "recent_30d": 80
+      "total": 146,
+      "recent_7d": 85,
+      "recent_30d": 85
     },
     "toss": {
-      "total": 21,
-      "recent_7d": 1,
-      "recent_30d": 1
+      "total": 22,
+      "recent_7d": 2,
+      "recent_30d": 2
     },
     "google_ai": {
       "total": 27,
       "recent_7d": 3,
       "recent_30d": 3
     },
-    "huggingface": {
-      "total": 45,
-      "recent_7d": 11,
-      "recent_30d": 11
-    },
     "nvidia_ai": {
-      "total": 34,
-      "recent_7d": 13,
-      "recent_30d": 13
+      "total": 36,
+      "recent_7d": 15,
+      "recent_30d": 15
     },
     "openai": {
       "total": 55,
@@ -10324,11 +10690,11 @@
       "recent_30d": 0
     },
     "yozm": {
-      "total": 43,
-      "recent_7d": 8,
-      "recent_30d": 8
+      "total": 44,
+      "recent_7d": 9,
+      "recent_30d": 9
     }
   },
-  "last_updated": "2026-06-07",
-  "total_articles": 744
+  "last_updated": "2026-06-08",
+  "total_articles": 772
 }
