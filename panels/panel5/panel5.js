@@ -41,7 +41,7 @@ function initPropTab() {
     // 기본 정보
     'pf-title': '5분이면 끝나는 AI 에이전트 (가제)',
     'pf-field': 'AI 활용/자동화',
-    'pf-author': '권바이브',
+    'pf-author-prop': '권바이브',
     'pf-writer': '조아리',
     // 콘셉트
     'pf-concept': '비개발자도 5분 만에 AI 에이전트를 만들어 업무를 자동화할 수 있는 실습서.\n클로드 코드, n8n, MCP를 조합해 실무에서 바로 쓸 수 있는 자동화 워크플로우 20가지를 다룬다.',
@@ -154,7 +154,7 @@ async function propQuickGenerate() {
 
   // 저자명 반영
   if (author) {
-    const authorEl = document.getElementById('pf-author');
+    const authorEl = document.getElementById('pf-author-prop');
     if (authorEl) authorEl.value = author;
   }
 
@@ -262,7 +262,7 @@ function getPropData() {
     });
   }
   return {
-    title: g('pf-title'), field: g('pf-field'), author: g('pf-author'),
+    title: g('pf-title'), field: g('pf-field'), author: g('pf-author-prop'),
     writer: g('pf-writer'), date: g('pf-date'),
     concept: g('pf-concept'),
     readerCore: g('pf-reader-core'), readerBudget: g('pf-reader-budget'),
@@ -493,7 +493,7 @@ ${excerpt}
     if (!m) throw new Error('JSON 파싱 실패');
     const r = JSON.parse(m[0]);
     const sv = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
-    sv('pf-title', r.title); sv('pf-field', r.field); sv('pf-author', r.author);
+    sv('pf-title', r.title); sv('pf-field', r.field); sv('pf-author-prop', r.author);
     sv('pf-concept', r.concept); sv('pf-reader-core', r.reader_core);
     sv('pf-reader-ext', r.reader_ext); sv('pf-diff', r.diff);
     sv('pf-price', r.price); sv('pf-pages', r.pages);
@@ -514,7 +514,7 @@ ${excerpt}
 
 function propReset() {
   if (!confirm('입력 내용을 모두 초기화할까요?')) return;
-  ['pf-title','pf-field','pf-author','pf-writer','pf-concept',
+  ['pf-title','pf-field','pf-author-prop','pf-writer','pf-concept',
    'pf-reader-core','pf-reader-budget','pf-reader-needs','pf-reader-ext','pf-diff',
    'pf-price','pf-pages','pf-advance','pf-royalty',
    'pf-sch-start','pf-sch-submit','pf-sch-edit','pf-sch-pub',
@@ -677,7 +677,7 @@ window.switchTab = function(i, btn) {
         }
         // 저자명 (매칭된 저자가 있으면)
         const am = (_r.authorMatching || [])[0];
-        if(am && am.author) sv('pf-author', am.author);
+        if(am && am.author) sv('pf-author-prop', am.author);
       } else {
         // 정제 실패 시 원본 사용
         const items = _r.recommendedItems || [];

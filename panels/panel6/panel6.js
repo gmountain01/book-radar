@@ -788,7 +788,7 @@ function openMeetingFromProposal() {
   const sv = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
 
   // 기본 정보
-  const author = gv('pf-author');
+  const author = gv('pf-author-prop');
   sv('m-author', author);
   sv('m-editor', gv('pf-editor'));
 
@@ -912,7 +912,7 @@ function showConfirmModal(title, bodyHtml, onConfirm) {
 }
 
 function confirmAndGenerateProposal() {
-  const author = document.getElementById('pf-author')?.value || '미입력';
+  const author = document.getElementById('pf-author-prop')?.value || '미입력';
   const cat = (typeof _propSelectedCat !== 'undefined' && _propSelectedCat) || window._lastCatName || '미선택';
   const editor = document.getElementById('pf-editor')?.value || '미입력';
   showConfirmModal(

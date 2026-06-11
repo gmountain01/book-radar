@@ -51,6 +51,7 @@ const resolvedIndices = new Set();
 // 국립국어원 외래어 표기법 용례 — 오표기→올바른 표기 역색인
 // loanword-data.js가 window._LOANWORD_RULES를 설정하면 자동 구축
 let _loanwordIndex = null; // [[오표기, {c,o,w}], ...]
+const _LW_HANGUL_RE = /[가-힣]/;
 (function _buildLoanwordIndex() {
   if (!window._LOANWORD_RULES) return;
   var rules = window._LOANWORD_RULES;
@@ -59,7 +60,8 @@ let _loanwordIndex = null; // [[오표기, {c,o,w}], ...]
     var r = rules[i];
     for (var j = 0; j < r.w.length; j++) {
       var wrong = r.w[j];
-      if (wrong.length >= 2 && !map.has(wrong)) {
+      // 3글자 이상만 색인 (2글자 4,247건은 오탐률 과다)
+      if (wrong.length >= 3 && !map.has(wrong)) {
         map.set(wrong, r);
       }
     }
@@ -225,6 +227,48 @@ function p8_handleRulesDrop(file) { if (file) p8_handleRulesFile(file); }
 // ──────────────────────────────────────────────
 // PDF 텍스트 추출 — 계층적 TOC + 본문 페이지 번호 지원
 // ──────────────────────────────────────────────
+
+/**
+ * 펼침(2쪽 스프레드) PDF 감지
+ * 조건 1: 가로/세로 비율 > 1.2
+ * 조건 2: 페이지 중앙 ±5% 세로 띠(거터)를 가로지르는 텍스트 아이템이 전체의 2% 미만
+ * 둘 다 만족해야 펼침으로 판정 (가로형 슬라이드 오탐 방지)
+ */
+function _detectSpread(vpWidth, vpHeight, items) {
+  if (vpWidth / vpHeight <= 1.2) return false;
+  var textItems = items.filter(function(it) { return it.str && it.str.trim(); });
+  if (textItems.length < 5) return false;
+  var cx = vpWidth / 2;
+  var margin = vpWidth * 0.05; // 중앙 ±5%
+  var gutterCount = 0;
+  for (var i = 0; i < textItems.length; i++) {
+    var ix = textItems[i].transform[4];
+    var iw = textItems[i].width || 0;
+    // 아이템이 거터 영역을 가로지르는지 (시작이 좌측에, 끝이 우측에)
+    if (ix < cx - margin && ix + iw > cx + margin) gutterCount++;
+    // 아이템의 중심이 거터 안에 있는지
+    else if (ix >= cx - margin && ix <= cx + margin) gutterCount++;
+  }
+  var ratio = gutterCount / textItems.length;
+  console.debug('[panel8] spread check: aspect=' + (vpWidth / vpHeight).toFixed(2) +
+    ', gutter=' + gutterCount + '/' + textItems.length + ' (' + (ratio * 100).toFixed(1) + '%)');
+  return ratio < 0.02;
+}
+
+/**
+ * 텍스트 아이템을 중앙 X 기준으로 좌/우 그룹 분리 (펼침 PDF용)
+ */
+function _splitItemsByCenter(items, centerX) {
+  var left = [], right = [];
+  for (var i = 0; i < items.length; i++) {
+    var it = items[i];
+    if (!it.str || !it.str.trim()) continue;
+    var midX = it.transform[4] + (it.width || 0) / 2;
+    if (midX < centerX) left.push(it);
+    else right.push(it);
+  }
+  return { left: left, right: right };
+}
 
 /** 텍스트 아이템을 y좌표 기준으로 줄(line) 단위로 묶는다 */
 function groupTextIntoLines(items, yTol = 3) {
@@ -713,23 +757,64 @@ async function extractPDF(file) {
     const content = await pg.getTextContent();
     const vp = pg.getViewport({ scale: 1 });
     const pageH = vp.height;
+    const pageW = vp.width;
     pg.cleanup(); // 렌더링 리소스 해제
 
-    // 줄 단위 그룹핑 + 강제 개행 제거
-    const lines = groupTextIntoLines(content.items);
-    const text = _joinLinesSmartly(lines, pageH);
+    // ── 펼침(스프레드) 감지 ──
+    const isSpread = _detectSpread(pageW, pageH, content.items);
+    let lines, text, bodyPageNum = null;
 
-    // 본문 페이지 번호: 하단 12% + 좌측 20%/우측 80% 영역의 단독 숫자
-    let bodyPageNum = null;
-    const bottomY = pageH * 0.12;
-    const leftX = vp.width * 0.20;
-    const rightX = vp.width * 0.80;
-    for (const line of lines) {
-      if (line.y <= bottomY && /^\s*\d+\s*$/.test(line.text)) {
-        const x = line.x || (line.items && line.items[0]?.transform?.[4]) || 0;
-        if (x <= leftX || x >= rightX) {
-          const n = parseInt(line.text.trim());
-          if (n >= 1 && n <= 9999) bodyPageNum = n;
+    if (isSpread) {
+      // 좌/우 분리 → 각각 줄 그룹핑 → 합산
+      const centerX = pageW / 2;
+      const halves = _splitItemsByCenter(content.items, centerX);
+      const linesL = groupTextIntoLines(halves.left);
+      const linesR = groupTextIntoLines(halves.right);
+      const textL = _joinLinesSmartly(linesL, pageH);
+      const textR = _joinLinesSmartly(linesR, pageH);
+      lines = linesL.concat(linesR);
+      text = textL + (textL && textR ? '\n' : '') + textR;
+      console.debug('[panel8] spread page ' + i + ': L=' + linesL.length +
+        ' lines, R=' + linesR.length + ' lines');
+
+      // 펼침 페이지 번호: 좌/우 각각 하단 단독 숫자 탐색
+      const bottomY = pageH * 0.12;
+      let leftNum = null, rightNum = null;
+      const _findPageNum = function(lineArr, regionLeftX, regionRightX) {
+        for (const line of lineArr) {
+          if (line.y <= bottomY && /^\s*\d+\s*$/.test(line.text)) {
+            const x = line.x || (line.items && line.items[0]?.transform?.[4]) || 0;
+            if (x <= regionLeftX || x >= regionRightX) {
+              const n = parseInt(line.text.trim());
+              if (n >= 1 && n <= 9999) return n;
+            }
+          }
+        }
+        return null;
+      };
+      leftNum = _findPageNum(linesL, pageW * 0.10, centerX * 0.80);
+      rightNum = _findPageNum(linesR, centerX + (centerX * 0.20), pageW * 0.90);
+      bodyPageNum = leftNum || rightNum || null;
+      // 양쪽 다 찾으면 {left, right} 형태로도 저장 (참고용)
+      if (leftNum && rightNum) {
+        bodyPageNum = leftNum; // 대표값: 왼쪽 쪽번호
+      }
+    } else {
+      // 낱장 PDF: 기존 로직 유지
+      lines = groupTextIntoLines(content.items);
+      text = _joinLinesSmartly(lines, pageH);
+
+      // 본문 페이지 번호: 하단 12% + 좌측 20%/우측 80% 영역의 단독 숫자
+      const bottomY = pageH * 0.12;
+      const leftX = pageW * 0.20;
+      const rightX = pageW * 0.80;
+      for (const line of lines) {
+        if (line.y <= bottomY && /^\s*\d+\s*$/.test(line.text)) {
+          const x = line.x || (line.items && line.items[0]?.transform?.[4]) || 0;
+          if (x <= leftX || x >= rightX) {
+            const n = parseInt(line.text.trim());
+            if (n >= 1 && n <= 9999) bodyPageNum = n;
+          }
         }
       }
     }
@@ -745,7 +830,7 @@ async function extractPDF(file) {
     // 계층 헤딩 추출
     const headings = extractHeadingsFromLines(lines, medianFS);
 
-    pages.push({ page: i, text, lines, headings, bodyPageNum });
+    pages.push({ page: i, text, lines, headings, bodyPageNum, isSpread });
   }
 
   // TOC 추출 — outline 우선, 부족하면 텍스트 파싱
@@ -1053,6 +1138,18 @@ const JSTYLE_PATS = [
 //     문장 단위로 검사하므로 addAll 대신 별도 루프에서 처리
 const MULTI_PARTICLE_RE = /(?:에서의|에의|로의|에게의|에게서의|로부터의|과의|와의|로서의|에\s*관해서의|을\s*통해서의|에\s*따라서의|사이에서의)/g;
 
+// 10-b. 동일 조사 반복 탐지 — 같은 유형의 조사가 문장 내 2회 이상
+//       "우리는 내일는", "학교에서 집에서" 등 같은 조사 타입이 반복되는 경우
+//       동사 활용(하는/만드는/있는 등)은 관형사형 어미이므로 제외
+const _VERB_NEUN_RE = /(?:하|되|있|없|같|다르|만들|주|받|쓰|읽|보|먹|가|오|나|살|서|알|모르|크|작|놓|두|느끼|잡|찍|찾|끝나|시작하|시작되)는/;
+const SAME_PARTICLE_GROUPS = [
+  { label: '은/는', re: /[가-힣](?:는|은)(?=\s|[,;.]|$)/g, threshold: 2, verbFilter: true },
+  { label: '이/가', re: /[가-힣](?:이|가)(?=\s|[,;.]|$)/g, threshold: 3 },
+  { label: '을/를', re: /[가-힣](?:을|를)(?=\s|[,;.]|$)/g, threshold: 3 },
+  { label: '에서',  re: /[가-힣]에서(?=\s|[,;.]|$)/g,      threshold: 2 },
+  { label: '으로/로', re: /[가-힣](?:으로|로)(?=\s|[,;.]|$)/g, threshold: 3 },
+];
+
 // 11. AI투 상투어 — AI 판독기에서 가장 신뢰도 높은 단서
 const AI_CLICHE_PATS = [
   // 도입부 상투어
@@ -1210,10 +1307,29 @@ function checkSurface(extracted) {
     addAll(PUNCT_PATS, text, page);
     // 외래어 오표기 (정규식 패턴)
     addAll(LOANWORD_PATS, text, page);
-    // 외래어 오표기 (국립국어원 용례 19,558건)
+    // 외래어 오표기 (국립국어원 용례 — 단어 경계 검사)
+    // 앞: 한글이면 더 긴 단어의 부분 매칭 → 스킵
+    // 뒤: 한글 1글자(조사 을/를/이/가/의/에/은/는/도)까지 허용,
+    //     2글자 이상 이어지면 더 긴 단어의 일부 → 스킵 (5글자+ 오표기는 2글자까지 허용)
     if (_loanwordIndex) {
       for (const [wrong, rule] of _loanwordIndex) {
-        if (text.indexOf(wrong) >= 0) {
+        let pos = text.indexOf(wrong);
+        if (pos < 0) continue;
+        const wLen = wrong.length;
+        const maxTrail = wLen >= 5 ? 2 : 1; // 5글자+: 에서/까지 허용, 3~4글자: 1음절 조사만
+        let matched = false;
+        while (pos >= 0) {
+          const before = pos > 0 ? text[pos - 1] : '';
+          if (!_LW_HANGUL_RE.test(before)) {
+            // 뒤쪽 한글 연속 길이 체크
+            const afterStr = text.substring(pos + wLen);
+            const hangulRun = afterStr.match(/^[가-힣]+/);
+            const trailingHangul = hangulRun ? hangulRun[0].length : 0;
+            if (trailingHangul <= maxTrail) { matched = true; break; }
+          }
+          pos = text.indexOf(wrong, pos + 1);
+        }
+        if (matched) {
           issues.push({
             type: '외래어표기오류', severity: 'medium', page,
             found: wrong,
@@ -1253,6 +1369,27 @@ function checkSurface(extracted) {
           suggestion: `다중조사 ${matches.join(', ')}이(가) 한 문장에 ${matches.length}회 중첩 — 동사로 풀거나 '-의' 계열 조사 삭제`,
           description: `조사중복: '-의' 계열 다중조사 ${matches.length}회 중첩`
         });
+      }
+
+      // 동일 조사 반복 (은/는, 이/가, 을/를, 에서, 으로/로)
+      for (const grp of SAME_PARTICLE_GROUPS) {
+        grp.re.lastIndex = 0;
+        const hits = [];
+        let gm;
+        while ((gm = grp.re.exec(sent)) !== null) {
+          const word = gm[0];
+          // 은/는: 동사 활용형(하는/되는/있는 등)은 관형사형 어미이므로 제외
+          if (grp.verbFilter && _VERB_NEUN_RE.test(word)) continue;
+          hits.push(word);
+        }
+        if (hits.length >= grp.threshold) {
+          const found = sent.slice(0, 120);
+          issues.push({
+            type: '조사중복', severity: 'medium', page, found,
+            suggestion: `'${grp.label}' 조사가 한 문장에 ${hits.length}회 반복(${hits.join(', ')}) — 조사를 바꾸거나 문장을 나누세요`,
+            description: `조사중복: '${grp.label}' ${hits.length}회 반복`
+          });
+        }
       }
     }
   }

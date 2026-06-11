@@ -22,6 +22,28 @@ function _updateBadge(board) {
 }
 
 // ── 리스크 플래그 자동 태깅 (명세 3-3) ──
+// ── YES24 아카이브 동적 로드 (5.1MB — 패널 진입 시 1회만) ──
+var _archiveLoaded = false;
+var _archiveLoading = false;
+var _archiveCallbacks = [];
+function ensureArchiveLoaded(cb) {
+  if (_archiveLoaded || (window._YES24_ARCHIVE && window._YES24_ARCHIVE.snapshots)) {
+    _archiveLoaded = true;
+    if (cb) cb();
+    return;
+  }
+  if (cb) _archiveCallbacks.push(cb);
+  if (_archiveLoading) return; // 이미 로딩 중 — 콜백만 큐에 추가
+  _archiveLoading = true;
+  var script = document.createElement('script');
+  script.src = 'data/yes24/archive.js';
+  script.setAttribute('data-yes24-archive', '1');
+  function _flush() { var cbs = _archiveCallbacks.splice(0); cbs.forEach(function(fn){ fn(); }); }
+  script.onload = function() { _archiveLoaded = true; _archiveLoading = false; _flush(); };
+  script.onerror = function() { _archiveLoading = false; console.warn('YES24 archive.js 로드 실패 — 추세 기능이 제한됩니다.'); _flush(); };
+  document.head.appendChild(script);
+}
+
 var RISK_PATTERNS = [
   { flag: '🔴 저서 보유', patterns: ['저자','저서','출간','지음','집필','저작'], meaning: '타사 계약 가능성' },
   { flag: '🟡 캐시카우', patterns: ['강의 문의','클래스101','패스트캠퍼스','전자책','VIP','마스터클래스','인프런','유데미','코딩 테스트','멘토링'], meaning: '출판 동기 약함' },
@@ -798,7 +820,7 @@ function init() {
 
 if (typeof PanelRegistry !== 'undefined') {
   PanelRegistry.register(25, {
-    onActivate: function() { init(); },
+    onActivate: function() { ensureArchiveLoaded(); init(); },
     onDeactivate: function() {}
   });
 }

@@ -469,7 +469,7 @@ function renderSignals(articles, trends) {
     if (sig.articles.length) {
       h += '<div class="p23-signal-refs">';
       sig.articles.forEach(function(a) {
-        h += '<div class="p23-signal-ref">' + a.icon + ' <a href="' + esc(a.link) + '" target="_blank">' + esc(a.title) + '</a></div>';
+        h += '<div class="p23-signal-ref">' + (a.icon||'') + ' <a href="' + esc(a.link) + '" target="_blank">' + esc(a.title) + '</a></div>';
       });
       h += '</div>';
     }

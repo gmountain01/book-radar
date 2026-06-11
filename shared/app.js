@@ -2,6 +2,10 @@
 const CLAUDE_API_KEY = '';  // 예: 'sk-ant-api03-...'
 
 // ━━━ YouTube API 키 (공통) ━━━
+// ⚠️  WARNING: 아래 API 키들이 하드코딩되어 있습니다.
+// ⚠️  이 파일이 public repository에 push되면 키가 노출되어
+// ⚠️  무단 사용·할당량 소진·과금 피해가 발생할 수 있습니다.
+// ⚠️  public repo 운영 시 키를 제거하고 localStorage(API 키 설정 UI) 방식만 사용하세요.
 // 모든 패널(panel7·panel10·panel11)이 이 배열을 참조한다.
 const YT_API_KEYS_SHARED = [
   'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo',
@@ -467,12 +471,14 @@ window.getMyPub = function() { return myPub; };
 // ── 탭 전환 ──
 var _activePanel = 0;
 function switchTab(i,btn){
+  if(!btn || !btn.classList) return;
   if(btn.classList.contains('locked'))return;
   var prevPanel = _activePanel;
   document.querySelectorAll('#mainSidebar .nav-item').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('panel'+i).classList.add('active');
+  var panelEl = document.getElementById('panel'+i);
+  if(panelEl) panelEl.classList.add('active');
   _activePanel = i;
   if(i===2 && typeof AUTHOR_DATA !== 'undefined') filterAuthors();
   // 패널 비활성화 훅 실행

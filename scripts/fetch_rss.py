@@ -13,7 +13,7 @@ import re
 import sys
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 
 FEEDS = [
@@ -294,9 +294,12 @@ def compute_source_stats(archive: dict) -> dict:
         src = a["source"]
         stats[src]["total"] += 1
         fs = a.get("first_seen", "")
-        if fs >= (datetime.now(timezone.utc).strftime("%Y-%m-%d")[:8] + "01"):  # 이번 달
+        now_dt = datetime.now(timezone.utc)
+        month_start = now_dt.strftime("%Y-%m") + "-01"
+        week_ago = (now_dt - timedelta(days=7)).strftime("%Y-%m-%d")
+        if fs >= month_start:
             stats[src]["recent_30d"] += 1
-        if fs >= TODAY[:8] + str(max(1, int(TODAY[8:10]) - 7)).zfill(2):
+        if fs >= week_ago:
             stats[src]["recent_7d"] += 1
     return dict(stats)
 

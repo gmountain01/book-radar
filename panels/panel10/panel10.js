@@ -1454,7 +1454,7 @@ window.kwSendToProposal = function(idx) {
   sv('pf-pages', p.pages || '320~400쪽');
 
   // 기획 초안에서 추출 가능한 추가 필드
-  sv('pf-author', p.author_profile ? '(저자 섭외 필요) ' + p.author_profile : '(저자 섭외 필요)');
+  sv('pf-author-prop', p.author_profile ? '(저자 섭외 필요) ' + p.author_profile : '(저자 섭외 필요)');
   sv('pf-reader-budget', '중급 (2~4만원대)');
   sv('pf-reader-needs', card ? (card.hook_idea || card.target_reader || '') : '');
 
