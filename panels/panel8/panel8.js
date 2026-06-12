@@ -2597,8 +2597,10 @@ function stepError(n, msg) {
 }
 
 function setBar(pct) {
-  document.getElementById('p8_loadingBar').style.width = pct + '%';
-  document.getElementById('p8_loadingPct').textContent = pct + '%';
+  var bar = document.getElementById('p8_loadingBar');
+  var lbl = document.getElementById('p8_loadingPct');
+  if (bar) bar.style.width = pct + '%';
+  if (lbl) lbl.textContent = pct + '%';
 }
 
 // ──────────────────────────────────────────────
@@ -2627,7 +2629,8 @@ async function p8_startProofread() {
 
   show('loadingPanel');
   // 이전 실행의 "교정 완료!" 텍스트 초기화
-  document.getElementById('p8_loadingTitle').textContent = '교정 진행 중…';
+  var _lt = document.getElementById('p8_loadingTitle');
+  if (_lt) _lt.textContent = '교정 진행 중…';
   // 스텝 아이콘·텍스트 초기화 (이전 실행 잔재 제거)
   for (let i = 1; i <= 5; i++) {
     const icon = document.getElementById(`p8_step${i}-icon`);
@@ -2646,7 +2649,7 @@ async function p8_startProofread() {
   // 캐시 있지만 AI 미실행이고 지금 키 제공: AI만 실행
   const aiOnlyRun = useCache && !cached.aiWasRun && apiProvided;
 
-  let extracted, surfaceIssues, structuralIssues = [];
+  let extracted = null, surfaceIssues = [], structuralIssues = [];
 
   if (useCache) {
     // ── Step 1: 캐시에서 복원 ──
@@ -2819,7 +2822,8 @@ async function p8_startProofread() {
   stepDone(5, `${total}건`);
   document.getElementById('p8_step5-detail').textContent = `이슈 ${total}건 정리 완료`;
   setBar(100);
-  document.getElementById('p8_loadingTitle').textContent = '교정 완료!';
+  var _lt2 = document.getElementById('p8_loadingTitle');
+  if (_lt2) _lt2.textContent = '교정 완료!';
 
   // ── 캐시 저장 ──
   // extracted는 용량이 크므로 최소 필드만 보관 (lines 제외, headings 제외)
