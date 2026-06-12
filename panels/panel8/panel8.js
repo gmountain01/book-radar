@@ -2646,7 +2646,7 @@ async function p8_startProofread() {
   // 캐시 있지만 AI 미실행이고 지금 키 제공: AI만 실행
   const aiOnlyRun = useCache && !cached.aiWasRun && apiProvided;
 
-  let extracted, surfaceIssues, structuralIssues;
+  let extracted, surfaceIssues, structuralIssues = [];
 
   if (useCache) {
     // ── Step 1: 캐시에서 복원 ──
