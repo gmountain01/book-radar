@@ -39,6 +39,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/ panels/panel24/authors-data.js
+          git add data/ panels/panel24/authors-data.js data/naver-speller-key.js
           git diff --staged --quiet || git commit -m "auto-update data $(date -u +'%Y-%m-%d')"
           git push

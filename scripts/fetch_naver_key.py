@@ -30,7 +30,12 @@ def fetch_passport_key():
 
 
 def main():
-    key = fetch_passport_key()
+    try:
+        key = fetch_passport_key()
+    except Exception as e:
+        print(f"[naver-key] 키 추출 실패: {e} — 기존 파일 유지")
+        return  # 실패 시 기존 키 파일 유지, 파이프라인 중단하지 않음
+
     kst = datetime.now(timezone(timedelta(hours=9)))
     data = {
         "passportKey": key,

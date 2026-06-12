@@ -672,7 +672,7 @@ async function extractHWPX(file) {
   const sectionFiles = Object.keys(zip.files)
     .filter(n => /^Contents\/section\d+\.xml$/i.test(n))
     .sort((a, b) => {
-      const na = parseInt(a.match(/\d+/)[0]), nb = parseInt(b.match(/\d+/)[0]);
+      const na = parseInt((a.match(/\d+/) || ['0'])[0]), nb = parseInt((b.match(/\d+/) || ['0'])[0]);
       return na - nb;
     });
 
@@ -1885,23 +1885,6 @@ function checkTermConsistency(extracted) {
   return issues;
 }
 
-// ──────────────────────────────────────────────
-// 구조 검사
-// ──────────────────────────────────────────────
-function sim(t1, t2) {
-  const n = s => s.replace(/[^\w가-힣]/g,' ').replace(/\s+/g,' ').trim();
-  const a = n(t1), b = n(t2);
-  if (a === b) return 1;
-  if (a.includes(b) || b.includes(a)) return 0.85;
-  const sa = new Set(a), sb = new Set(b);
-  const inter = [...sa].filter(c => sb.has(c)).length;
-  return inter / Math.max(sa.size, sb.size);
-}
-
-// 목차 불일치 검사 — 원고·조판 교정에서는 불필요하여 비활성화
-function checkStructural(/* extracted */) {
-  return [];
-}
 
 // ──────────────────────────────────────────────
 // RAG: 교정 규칙 파싱 및 검색
@@ -2682,12 +2665,7 @@ async function p8_startProofread() {
     document.getElementById('p8_step2-detail').textContent = `캐시 복원 — ${surfaceIssues.length}건`;
     setBar(45);
 
-    // ── Step 3: 캐시에서 복원 ──
-    stepRun(3, '캐시에서 복원 중…');
-    await tick();
-    structuralIssues = cached.structuralIssues || [];
-    stepDone(3, `캐시 ⚡ ${structuralIssues.length}건`);
-    document.getElementById('p8_step3-detail').textContent = `캐시 복원 — ${structuralIssues.length}건`;
+    structuralIssues = [];
     setBar(60);
   } else {
     // ── Step 1: PDF 추출 ──
@@ -2728,13 +2706,6 @@ async function p8_startProofread() {
     } catch(e) { console.warn('[panel8] 네이버 맞춤법 스킵:', e.message); }
     setBar(50);
 
-    // ── Step 3: 구조 검사 ──
-    stepRun(3, '목차·헤딩 비교 중…');
-    await tick();
-    structuralIssues = checkStructural(extracted);
-    stepDone(3, `${structuralIssues.length}건`);
-    document.getElementById('p8_step3-detail').textContent =
-      structuralIssues.length ? `${structuralIssues.length}건 발견` : '이슈 없음';
     setBar(60);
   }
 
@@ -3007,7 +2978,7 @@ const AI_ONLY         = ['비문','주술호응오류','잘못된표현','수동
 // 표면(인접오타)+AI(문맥반복) 양쪽에서 생성 가능 (크로스 중복 제거: AI 우선)
 const CROSS_TYPES     = ['조사중복','번역체','일본식표현','외래어표기오류','용어불일치','내용보완필요','문단연결불량','문장부호오류','띄어쓰기','맞춤법','문체불일치'];
 // 구조검사에서 생성
-const STRUCT_TYPES    = [];
+const STRUCT_TYPES    = []; // 구조 검사 비활성화 — 빈 배열 유지 (캐시 호환)
 // 호환용 집합 (기존 렌더링 코드와 호환)
 const SURFACE_TYPES   = [...SURFACE_ONLY, ...CROSS_TYPES];
 const LINGUISTIC_TYPES= [...AI_ONLY, ...CROSS_TYPES];
@@ -3576,7 +3547,7 @@ async function p8_downloadCorrected() {
     } else if (ext === 'pdf') {
       // PDF 텍스트 직접 수정 불가 → 교정 보고서 출력
       const rows = corrs.map(c =>
-        `<tr><td>${c.page||''}</td><td><del style="color:#c0392b;background:#fde8e8">${_esc(c.found)}</del></td><td style="color:#27ae60;background:#e8f8e8">${_esc(c.repl)}</td></tr>`
+        `<tr><td>${c.page||''}</td><td><del style="color:#c0392b;background:#fde8e8">${esc(c.found)}</del></td><td style="color:#27ae60;background:#e8f8e8">${esc(c.repl)}</td></tr>`
       ).join('');
       const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>교정 보고서</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Pretendard,'Malgun Gothic',sans-serif;font-size:11px;padding:24px;line-height:1.6}
@@ -3584,8 +3555,8 @@ h1{font-size:16px;margin-bottom:8px}table{width:100%;border-collapse:collapse;fo
 th,td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;word-break:break-all}
 th{background:#f0f0f0;font-weight:600}del{text-decoration:line-through}
 @media print{body{padding:12px}}</style></head><body>
-<h1>${_esc(base)} — 교정 보고서 (${corrs.length}건)</h1>
-<p style="color:#666;font-size:10px;margin-bottom:12px">${_esc(selectedFile.name)} · ${new Date().toLocaleDateString('ko')}</p>
+<h1>${esc(base)} — 교정 보고서 (${corrs.length}건)</h1>
+<p style="color:#666;font-size:10px;margin-bottom:12px">${esc(selectedFile.name)} · ${new Date().toLocaleDateString('ko')}</p>
 <table><thead><tr><th>p.</th><th>원문 (삭제)</th><th>수정 (반영)</th></tr></thead><tbody>${rows}</tbody></table>
 </body></html>`;
       if (typeof openPrintPopup === 'function') openPrintPopup(html);
@@ -3600,9 +3571,7 @@ th{background:#f0f0f0;font-weight:600}del{text-decoration:line-through}
   }
 }
 
-function _esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+// _esc → esc로 통합 (3265줄 정의)
 
 // ──────────────────────────────────────────────
 // 유틸

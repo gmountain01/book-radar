@@ -6,6 +6,21 @@
 
 ## 2026-06-12
 
+### 전체 QA + 코드 정리
+- sim() 미사용 함수 삭제, checkStructural 함수·Step 3 UI·캐시 복원 코드 완전 제거
+- _esc() 중복 함수 제거 → esc()로 통일
+- match()[0] null 가드 추가 (HWPX 파싱 안정성)
+- panel25 CSS 버전 불일치 수정 (v=13→v=230)
+- .badge-page CSS 중복 선언 병합
+- fetch-rss.yml git add에 naver-speller-key.js 추가
+- fetch_naver_key.py 예외 처리 추가 (실패 시 기존 키 유지)
+- **대상:** panels/panel8/, index.html, .github/workflows/, scripts/
+
+### 혼동어·자주 틀리는 표현 45종 추가
+- 되/돼 혼동 4종, ㄹ탈락·불규칙 4종, 어미 혼동 3종
+- 사이시옷 4종, ㅎ불규칙 3종, 기타 빈출 혼동어 27종
+- **대상:** panels/panel8/panel8.js
+
 ### 네이버 맞춤법 검사기 연동 (나라 맞춤법 대체)
 - speller.town/nara-speller.co.kr 폐기 확인 → 기존 `_checkSpellerApi` 삭제
 - 네이버 SpellerProxy JSONP 방식으로 신규 구현(`_checkNaverSpeller`)
