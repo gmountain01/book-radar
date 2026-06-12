@@ -1498,7 +1498,7 @@ function checkSurface(extracted) {
     // 한국어 종결어미 확장: 서술(다/요/죠/함/됨/음/임), 의문(까/나/지), 청유(자/세요), 감탄(네/군/걸) + 마침표
     const sentences = text.split(/(?<=[.!?다요죠함됨음임까나지세네군걸])\s+/);
     for (const sent of sentences) {
-      if (sent.length < 30) continue; // 짧은 문장은 조사 반복이 자연스러움
+      if (sent.length < 15) continue;
       MULTI_PARTICLE_RE.lastIndex = 0;
       const matches = [];
       let mm;
@@ -1515,23 +1515,41 @@ function checkSurface(extracted) {
       }
 
       // 동일 조사 반복 (은/는, 이/가, 을/를, 에서, 으로/로)
+      // 같은 형태의 조사가 3회 이상 반복되면 조사중복으로 보고
+      // 예: "아빠가 엄마가 오빠가" → '가' 3회 → 조사중복
       for (const grp of SAME_PARTICLE_GROUPS) {
         grp.re.lastIndex = 0;
         const hits = [];
         let gm;
         while ((gm = grp.re.exec(sent)) !== null) {
           const word = gm[0];
-          // 은/는: 동사 활용형(하는/되는/있는 등)은 관형사형 어미이므로 제외
           if (grp.verbFilter && _VERB_NEUN_RE.test(word)) continue;
           hits.push(word);
         }
-        if (hits.length >= grp.threshold) {
-          const found = sent.slice(0, 120);
-          issues.push({
-            type: '조사중복', severity: 'medium', page, found,
-            suggestion: `'${grp.label}' 조사가 한 문장에 ${hits.length}회 반복(${hits.join(', ')}) — 조사를 바꾸거나 문장을 나누세요`,
-            description: `조사중복: '${grp.label}' ${hits.length}회 반복`
-          });
+        // 같은 형태별로 카운트 (가/이 구분, 을/를 구분)
+        const formCount = {};
+        for (const h of hits) {
+          // 마지막 조사 부분만 추출 (예: "아빠가" → "가", "학교에서" → "에서")
+          const particle = grp.label === '에서' ? '에서'
+            : grp.label === '으로/로' ? (h.endsWith('으로') ? '으로' : '로')
+            : h.slice(-1);
+          formCount[particle] = (formCount[particle] || 0) + 1;
+        }
+        for (const [particle, count] of Object.entries(formCount)) {
+          if (count >= grp.threshold) {
+            const found = sent.slice(0, 120);
+            const matched = hits.filter(h => {
+              const p = grp.label === '에서' ? '에서'
+                : grp.label === '으로/로' ? (h.endsWith('으로') ? '으로' : '로')
+                : h.slice(-1);
+              return p === particle;
+            });
+            issues.push({
+              type: '조사중복', severity: 'medium', page, found,
+              suggestion: `'${particle}' 조사가 한 문장에 ${count}회 반복(${matched.join(', ')}) — 조사를 바꾸거나 문장을 나누세요`,
+              description: `조사중복: '${particle}' ${count}회 반복`
+            });
+          }
         }
       }
     }
@@ -2129,9 +2147,11 @@ Check ALL of the following issue types:
 MEDIUM severity — 조사중복 (확실한 경우만 보고할 것):
 주의: 한국어에서 같은 조사가 2회 반복되는 것은 자연스러운 경우가 많다. 3회 이상 반복되거나 가독성을 명백히 해치는 경우만 보고할 것.
 
-(A) 같은 조사 반복: 을/를, 은/는, 이/가, 에서, 으로/로, 와/과, 에 등이 한 문장에서 3회 이상 반복
+(A) 같은 형태의 조사 반복: 같은 형태의 조사(예: '가'만, '를'만, '는'만)가 한 문장에서 3회 이상 반복
+- 예: found="아빠가 엄마가 오빠가 밥을 먹어요" → suggestion="아빠와 엄마, 오빠가 밥을 먹어요" (가→와/,로 교체)
 - 예: found="데이터를 수집하고 결과를 분석하고 보고서를 작성했다" → suggestion="데이터를 수집하고 결과 분석 후 보고서를 작성했다"
 - 주의: "나는 학생이고 그는 선생이다"처럼 대조 구문에서 은/는 2회 사용은 정상이므로 잡지 말 것
+- 핵심: '이/가' 그룹이 아닌, '가'라는 같은 형태가 3회 이상일 때만 보고
 
 (B) 다중조사 중첩: '-에서의', '-로부터의', '-에 대한', '-로의', '-에게의', '-과의', '-로서의' 같은 '-의' 계열 조사구가 한 문장에 2회 이상
 - 예: found="프로젝트에서의 팀원들과의 협업에서의 소통 방식에 대한 논의가 필요하다" → suggestion="프로젝트에서 팀원들과 어떻게 협업하고 소통할지 논의해야 한다"
