@@ -29,6 +29,9 @@ jobs:
       - name: Build author list (archive.json 기반)
         run: python scripts/build_authors.py
 
+      - name: Fetch Naver speller passportKey
+        run: python scripts/fetch_naver_key.py
+
       - name: Build report index
         run: python scripts/build_reports.py
 

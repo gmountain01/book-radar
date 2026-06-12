@@ -55,19 +55,28 @@ const _LW_HANGUL_RE = /[가-힣]/;
 (function _buildLoanwordIndex() {
   if (!window._LOANWORD_RULES) return;
   var rules = window._LOANWORD_RULES;
+  // 1단계: 올바른 표기(c) 집합 구축 — 다른 항목의 오표기(w)와 충돌하는지 체크용
+  var correctSet = new Set();
+  for (var i = 0; i < rules.length; i++) {
+    correctSet.add(rules[i].c.trim());
+  }
+  // 2단계: 오표기 색인 구축 (충돌 항목 제외)
   var map = new Map();
+  var skipped = 0;
   for (var i = 0; i < rules.length; i++) {
     var r = rules[i];
     for (var j = 0; j < r.w.length; j++) {
       var wrong = r.w[j];
       // 3글자 이상만 색인 (2글자 4,247건은 오탐률 과다)
-      if (wrong.length >= 3 && !map.has(wrong)) {
-        map.set(wrong, r);
-      }
+      if (wrong.length < 3 || map.has(wrong)) continue;
+      // 충돌 방지: 이 오표기가 다른 항목에서 올바른 표기로 등재되어 있으면 제외
+      // 예: "베이스"는 bass/base의 올바른 표기이므로 vise의 오표기로 잡으면 안 됨
+      if (correctSet.has(wrong)) { skipped++; continue; }
+      map.set(wrong, r);
     }
   }
   _loanwordIndex = Array.from(map.entries());
-  console.log('[panel8] 외래어 표기법 용례 로드:', _loanwordIndex.length + '건 오표기 색인');
+  console.log('[panel8] 외래어 표기법 용례 로드:', _loanwordIndex.length + '건 오표기 색인 (충돌 제외 ' + skipped + '건)');
 })();
 
 // ──────────────────────────────────────────────
@@ -342,16 +351,42 @@ function _joinLinesSmartly(lines, pageH) {
   var medianGap = gaps.length ? gaps[Math.floor(gaps.length / 2)] : 14;
   var paraThreshold = medianGap * 1.6; // 행간의 1.6배 이상이면 문단 구분
 
+  // 본문 폰트 크기 추정: 전체 줄의 폰트 크기 중앙값
+  var fontSizes = [];
+  for (var fi = 0; fi < lines.length; fi++) {
+    var fItem = lines[fi].items && lines[fi].items[0];
+    if (fItem && fItem.transform) fontSizes.push(Math.abs(fItem.transform[0]));
+  }
+  fontSizes.sort(function(a, b) { return a - b; });
+  var bodyFontSize = fontSizes.length ? fontSizes[Math.floor(fontSizes.length / 2)] : 10;
+
   var parts = [lines[0].text];
   for (var i = 1; i < lines.length; i++) {
     var prevText = lines[i - 1].text.trimEnd();
     var yGap = Math.abs(lines[i - 1].y - lines[i].y);
+
+    // 폰트 크기 변화 감지 (제목 ↔ 본문 전환)
+    var prevFS = lines[i - 1].items && lines[i - 1].items[0] && lines[i - 1].items[0].transform ? Math.abs(lines[i - 1].items[0].transform[0]) : bodyFontSize;
+    var currFS = lines[i].items && lines[i].items[0] && lines[i].items[0].transform ? Math.abs(lines[i].items[0].transform[0]) : bodyFontSize;
+    var fontSizeChanged = Math.abs(prevFS - currFS) > bodyFontSize * 0.15; // 15% 이상 차이
+
+    // Bold → Regular 전환 감지
+    var prevBold = lines[i - 1].items && lines[i - 1].items.some(function(it) { return (it.fontName || '').toLowerCase().includes('bold'); });
+    var currBold = lines[i].items && lines[i].items.some(function(it) { return (it.fontName || '').toLowerCase().includes('bold'); });
+    var boldChanged = prevBold && !currBold;
+
+    // 이전 줄이 제목처럼 짧은 단독 행 (40자 미만 + 종결 부호 없음 + 본문보다 큰 폰트)
+    var prevLooksHeading = prevText.length < 40 && !/[.!?:;。다요죠함됨음임]$/.test(prevText) && prevFS > bodyFontSize * 1.1;
+
     // 문단 구분 조건
     var isParagraphBreak =
       yGap > paraThreshold ||                         // Y 간격 큼
       /[.!?:;。]\s*$/.test(prevText) ||               // 문장 종결 부호
       /^[\s]*$/.test(prevText) ||                      // 빈 줄
-      /^(Chapter|CHAPTER|Part|PART|\d+[.-]\d+|제\s*\d+)/.test(lines[i].text.trim()); // 헤딩 시작
+      /^(Chapter|CHAPTER|Part|PART|\d+[.-]\d+|제\s*\d+)/.test(lines[i].text.trim()) || // 헤딩 시작
+      fontSizeChanged ||                              // 폰트 크기 변화 (제목↔본문)
+      boldChanged ||                                  // Bold → Regular 전환
+      prevLooksHeading;                               // 이전 줄이 제목 형태
     if (isParagraphBreak) {
       parts.push('\n' + lines[i].text);
     } else {
@@ -1141,12 +1176,13 @@ const MULTI_PARTICLE_RE = /(?:에서의|에의|로의|에게의|에게서의|로
 // 10-b. 동일 조사 반복 탐지 — 같은 유형의 조사가 문장 내 2회 이상
 //       "우리는 내일는", "학교에서 집에서" 등 같은 조사 타입이 반복되는 경우
 //       동사 활용(하는/만드는/있는 등)은 관형사형 어미이므로 제외
-const _VERB_NEUN_RE = /(?:하|되|있|없|같|다르|만들|주|받|쓰|읽|보|먹|가|오|나|살|서|알|모르|크|작|놓|두|느끼|잡|찍|찾|끝나|시작하|시작되)는/;
+// 관형사형 어미 '-는'을 조사 '는'으로 오인하지 않도록 동사 활용형 필터 확장
+const _VERB_NEUN_RE = /(?:하|되|있|없|같|다르|만들|주|받|쓰|읽|보|먹|가|오|나|살|서|알|모르|크|작|놓|두|느끼|잡|찍|찾|끝나|시작하|시작되|나오|들어가|들어오|올라가|내려가|돌아가|돌아오|넘어가|지나가|따르|이루|속하|걸리|열리|닫히|풀리|걸치|이르|다가오|떠나|떠오르|흘러가|펼치|펼쳐지|이끌|이어지|맞|부딪히|드러나|나타나|사라지|생기|일어나|변하|바뀌|달라지|늘어나|줄어들|커지|작아지|높아지|낮아지|빨라지|느려지|좋아지|나빠지|많아지|적어지|넓어지|좁아지|깊어지|얕아지|밝아지|어두워지|강해지|약해지|빠르|느리|높|낮|넓|좁|깊|얕|밝|어둡|강하|약하|뛰어나|뒤떨어지|앞서|뒤따르|포함하|포함되|관련되|해당하|해당되|의미하|필요로\s*하|요구하|요구되|제공하|제공되|사용하|사용되|활용하|활용되|적용하|적용되|실행하|실행되|처리하|처리되|구성하|구성되|설정하|설정되|정의하|정의되|생성하|생성되|삭제하|삭제되|수정하|수정되|변환하|변환되|전달하|전달되|반환하|반환되|저장하|저장되|로드하|로드되|출력하|출력되|입력하|입력되|표시하|표시되|나타내|가리키|돌아가|실행되|동작하|작동하|작동되|지원하|지원되|존재하|발생하|발생되|유지하|유지되|연결하|연결되|분리하|분리되|결합하|결합되|비교하|비교되|검사하|검사되|확인하|확인되|판단하|판단되|선택하|선택되|결정하|결정되|달하|미치|이루어지|수행하|수행되|진행하|진행되|완료하|완료되|종료하|종료되|시작되|끝나|위치하|배치하|배치되|호출하|호출되|참조하|참조되|상속하|상속되|구현하|구현되|개발하|개발되|설계하|설계되|배포하|배포되|설치하|설치되|업데이트하|업데이트되|다루|맡|담당하|책임지)는/;
 const SAME_PARTICLE_GROUPS = [
-  { label: '은/는', re: /[가-힣](?:는|은)(?=\s|[,;.]|$)/g, threshold: 2, verbFilter: true },
+  { label: '은/는', re: /[가-힣](?:는|은)(?=\s|[,;.]|$)/g, threshold: 3, verbFilter: true },
   { label: '이/가', re: /[가-힣](?:이|가)(?=\s|[,;.]|$)/g, threshold: 3 },
   { label: '을/를', re: /[가-힣](?:을|를)(?=\s|[,;.]|$)/g, threshold: 3 },
-  { label: '에서',  re: /[가-힣]에서(?=\s|[,;.]|$)/g,      threshold: 2 },
+  { label: '에서',  re: /[가-힣]에서(?=\s|[,;.]|$)/g,      threshold: 3 },
   { label: '으로/로', re: /[가-힣](?:으로|로)(?=\s|[,;.]|$)/g, threshold: 3 },
 ];
 
@@ -1355,7 +1391,7 @@ function checkSurface(extracted) {
     // 한국어 종결어미 확장: 서술(다/요/죠/함/됨/음/임), 의문(까/나/지), 청유(자/세요), 감탄(네/군/걸) + 마침표
     const sentences = text.split(/(?<=[.!?다요죠함됨음임까나지세네군걸])\s+/);
     for (const sent of sentences) {
-      if (sent.length < 10) continue;
+      if (sent.length < 30) continue; // 짧은 문장은 조사 반복이 자연스러움
       MULTI_PARTICLE_RE.lastIndex = 0;
       const matches = [];
       let mm;
@@ -1504,65 +1540,154 @@ function _checkStyleConsistency(extracted, issues) {
 }
 
 // ──────────────────────────────────────────────
-// 나라 맞춤법 검사기 API (speller.town — 부산대/나라인포테크)
-// CORS 허용, rate limit 1분 10회, 한 번에 500자 제한
 // ──────────────────────────────────────────────
-const SPELLER_URL = 'https://speller.town';
-const SPELLER_MAX_LEN = 500;
-const SPELLER_DELAY = 300; // ms between requests (rate limit 보호)
+// 네이버 맞춤법 검사기 (JSONP — passportKey는 GitHub Actions에서 매일 갱신)
+// data/naver-speller-key.js → window._NAVER_SPELLER.passportKey
+// ──────────────────────────────────────────────
+const _NAVER_SPELLER_URL = 'https://m.search.naver.com/p/csearch/ocontent/util/SpellerProxy';
+const _NAVER_MAX_WORDS = 80;   // 한 번에 80단어(약 500자)
+const _NAVER_MAX_CHUNKS = 10;  // 최대 10청크
+const _NAVER_DELAY = 400;      // ms between requests
 
-async function _checkSpellerApi(extracted) {
-  const issues = [];
-  // 네트워크 연결 확인 (file:// 환경에서는 스킵)
-  if (location.protocol === 'file:') return issues;
-
-  // 페이지 텍스트를 500자 청크로 분할, 최대 10청크 (rate limit)
+/**
+ * 텍스트를 단어 수 기준으로 청크 분할
+ */
+function _splitByWords(text, maxWords) {
+  const words = text.split(/\s+/);
   const chunks = [];
-  for (const p of extracted.pages) {
-    const text = p.text.trim();
+  for (let i = 0; i < words.length; i += maxWords) {
+    chunks.push(words.slice(i, i + maxWords).join(' '));
+  }
+  return chunks;
+}
+
+/**
+ * JSONP로 네이버 맞춤법 검사 호출
+ * @returns {Promise<object>} 응답 JSON
+ */
+function _naverJsonp(text, passportKey) {
+  return new Promise(function(resolve, reject) {
+    var cbName = '_naverSpCb_' + Math.random().toString(36).slice(2);
+    var timer = setTimeout(function() {
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      reject(new Error('timeout'));
+    }, 8000);
+
+    window[cbName] = function(data) {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      resolve(data);
+    };
+
+    var url = _NAVER_SPELLER_URL
+      + '?_callback=' + cbName
+      + '&q=' + encodeURIComponent(text)
+      + '&where=nexearch&color_blindness=0'
+      + '&passportKey=' + passportKey;
+
+    var script = document.createElement('script');
+    script.src = url;
+    script.onerror = function() {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      reject(new Error('script load error'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+/**
+ * 네이버 응답 HTML 파싱 → [{found, suggestion, info}]
+ */
+function _parseNaverResult(result) {
+  if (!result || result.errata_count === 0) return [];
+  var origins = [];
+  var reSpan = /<span class='result_underline'>([\s\S]*?)<\/span>/g;
+  var m;
+  while ((m = reSpan.exec(result.origin_html)) !== null) origins.push(m[1]);
+
+  var fixes = [];
+  var reEm = /<em class='([a-z]+)_text'>([\s\S]*?)<\/em>/g;
+  while ((m = reEm.exec(result.html)) !== null) fixes.push({ color: m[1], text: m[2] });
+
+  var colorInfo = {
+    red: '맞춤법 오류', green: '띄어쓰기 오류',
+    blue: '표준어 의심/대치어', violet: '통계적 교정'
+  };
+  var len = Math.min(origins.length, fixes.length);
+  var typos = [];
+  for (var i = 0; i < len; i++) {
+    // HTML 엔티티 디코딩
+    var div = document.createElement('div');
+    div.innerHTML = origins[i]; var orig = div.textContent;
+    div.innerHTML = fixes[i].text; var fix = div.textContent;
+    typos.push({ found: orig, suggestion: fix, info: colorInfo[fixes[i].color] || '' });
+  }
+  return typos;
+}
+
+/**
+ * 네이버 맞춤법 검사 실행 — extracted 전체를 검사
+ * @returns {Promise<Array>} issues 배열
+ */
+async function _checkNaverSpeller(extracted) {
+  var issues = [];
+  var speller = window._NAVER_SPELLER;
+  if (!speller || !speller.passportKey) {
+    console.warn('[panel8] 네이버 맞춤법: passportKey 없음 (data/naver-speller-key.js 확인)');
+    return issues;
+  }
+  var passportKey = speller.passportKey;
+
+  // 페이지별 텍스트를 단어 수 기준으로 청크 분할
+  var chunks = [];
+  for (var pi = 0; pi < extracted.pages.length; pi++) {
+    var p = extracted.pages[pi];
+    var text = p.text.trim();
     if (text.length < 10) continue;
-    for (let i = 0; i < text.length && chunks.length < 10; i += SPELLER_MAX_LEN) {
-      chunks.push({ page: p.page, text: text.slice(i, i + SPELLER_MAX_LEN), offset: i });
+    var parts = _splitByWords(text, _NAVER_MAX_WORDS);
+    for (var ci = 0; ci < parts.length && chunks.length < _NAVER_MAX_CHUNKS; ci++) {
+      chunks.push({ page: p.page, text: parts[ci] });
     }
-    if (chunks.length >= 10) break;
+    if (chunks.length >= _NAVER_MAX_CHUNKS) break;
   }
   if (!chunks.length) return issues;
 
-  console.log(`[panel8] 맞춤법 API: ${chunks.length}청크 검사`);
+  console.log('[panel8] 네이버 맞춤법: ' + chunks.length + '청크 검사');
 
-  for (const chunk of chunks) {
+  for (var i = 0; i < chunks.length; i++) {
     try {
-      const res = await fetch(SPELLER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: chunk.text })
-      });
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (data.suggestions && data.suggestions.length) {
-        for (const s of data.suggestions) {
-          // 이미 표면 검사에서 잡은 것과 중복 방지
-          const found = s.text || '';
-          if (!found) continue;
+      var data = await _naverJsonp(chunks[i].text, passportKey);
+      var result = data && data.message && data.message.result;
+      if (data && data.message && data.message.error) {
+        console.warn('[panel8] 네이버 맞춤법 키 만료:', data.message.error);
+        break; // 키 만료 시 나머지 청크 스킵
+      }
+      if (result) {
+        var typos = _parseNaverResult(result);
+        for (var ti = 0; ti < typos.length; ti++) {
+          var t = typos[ti];
           issues.push({
-            type: '맞춤법', severity: 'medium', page: chunk.page,
-            found: found,
-            suggestion: '→ ' + (s.candidates || []).join(' / ') + ' — 나라 맞춤법 검사기',
-            description: s.description || ('맞춤법: \'' + found + '\'')
+            type: '맞춤법', severity: 'medium', page: chunks[i].page,
+            found: t.found,
+            suggestion: '→ ' + t.suggestion + ' — 네이버 맞춤법 검사기 (' + t.info + ')',
+            description: '맞춤법: \'' + t.found + '\' → \'' + t.suggestion + '\''
           });
         }
       }
       // rate limit 보호
-      if (chunks.indexOf(chunk) < chunks.length - 1) {
-        await new Promise(r => setTimeout(r, SPELLER_DELAY));
+      if (i < chunks.length - 1) {
+        await new Promise(function(r) { setTimeout(r, _NAVER_DELAY); });
       }
     } catch(e) {
-      // 네트워크 오류 시 조용히 중단
-      console.warn('[panel8] 맞춤법 API 오류:', e.message);
+      console.warn('[panel8] 네이버 맞춤법 오류:', e.message);
       break;
     }
   }
-  console.log(`[panel8] 맞춤법 API 결과: ${issues.length}건`);
+  console.log('[panel8] 네이버 맞춤법 결과: ' + issues.length + '건');
   return issues;
 }
 
@@ -1655,58 +1780,9 @@ function sim(t1, t2) {
   return inter / Math.max(sa.size, sb.size);
 }
 
-function checkStructural(extracted) {
-  const issues = [];
-  const { toc, pages } = extracted;
-  if (!toc || toc.length === 0) return issues;
-
-  // 본문 페이지 번호(하단 인쇄 번호) → 헤딩 맵
-  // 두 종류의 맵을 모두 구성: PDF 인덱스 기반 + 인쇄 번호 기반
-  const hmapPdf    = {};  // PDF 페이지 인덱스(1-based) → headings
-  const hmapPrint  = {};  // 본문 하단 인쇄 번호 → headings
-
-  for (const pd of pages) {
-    const hdgs = (pd.headings || []).map(h =>
-      typeof h === 'string' ? h : (h.fullText || h.title || '')
-    );
-    hmapPdf[pd.page] = hdgs;
-    if (pd.bodyPageNum != null) {
-      if (!hmapPrint[pd.bodyPageNum]) hmapPrint[pd.bodyPageNum] = [];
-      hmapPrint[pd.bodyPageNum].push(...hdgs);
-    }
-  }
-
-  const LEVEL_LABEL = { 1: 'Part', 2: 'Chapter', 3: '중절', 4: '소절' };
-
-  for (const item of toc) {
-    if (!item.title || item.title.length < 2) continue;
-    const pg = item.page;
-    if (!pg && pg !== 0) continue;  // 페이지 정보 없으면 skip
-
-    // 허용 오차 ±3페이지 범위에서 헤딩 탐색
-    // 인쇄 번호 기반 먼저, 없으면 PDF 인덱스 기반
-    const offsets = [-3, -2, -1, 0, 1, 2, 3];
-    const found = offsets.some(off => {
-      const printHdgs = hmapPrint[pg + off] || [];
-      const pdfHdgs   = hmapPdf[(item.pdfPage || pg) + off] || [];
-      const combined  = [...new Set([...printHdgs, ...pdfHdgs])];
-      return combined.some(h => sim(item.title, h) >= 0.7);
-    });
-
-    if (!found) {
-      const levelLabel = LEVEL_LABEL[item.level] || '항목';
-      const sev = item.level <= 2 ? 'high' : 'medium';
-      issues.push({
-        type: '목차불일치',
-        severity: sev,
-        page: item.pdfPage || pg || 1,
-        found: item.title.slice(0, 60),
-        suggestion: '목차와 본문 제목을 일치시키세요.',
-        description: `[${levelLabel}] 목차 '${item.title}' (p.${pg}) — 본문에서 일치하는 제목을 찾을 수 없음`
-      });
-    }
-  }
-  return issues;
+// 목차 불일치 검사 — 원고·조판 교정에서는 불필요하여 비활성화
+function checkStructural(/* extracted */) {
+  return [];
 }
 
 // ──────────────────────────────────────────────
@@ -1949,11 +2025,12 @@ TYPE CLASSIFICATION RULES (type 분류를 반드시 지킬 것):
 
 Check ALL of the following issue types:
 
-MEDIUM severity — 조사중복 (가장 적극적으로 검사할 것):
-두 가지 유형 모두 잡을 것:
+MEDIUM severity — 조사중복 (확실한 경우만 보고할 것):
+주의: 한국어에서 같은 조사가 2회 반복되는 것은 자연스러운 경우가 많다. 3회 이상 반복되거나 가독성을 명백히 해치는 경우만 보고할 것.
 
-(A) 같은 조사 반복: 을/를, 은/는, 이/가, 에서, 으로/로, 와/과, 에 등이 한 문장에서 2회 이상 반복
+(A) 같은 조사 반복: 을/를, 은/는, 이/가, 에서, 으로/로, 와/과, 에 등이 한 문장에서 3회 이상 반복
 - 예: found="데이터를 수집하고 결과를 분석하고 보고서를 작성했다" → suggestion="데이터를 수집하고 결과 분석 후 보고서를 작성했다"
+- 주의: "나는 학생이고 그는 선생이다"처럼 대조 구문에서 은/는 2회 사용은 정상이므로 잡지 말 것
 
 (B) 다중조사 중첩: '-에서의', '-로부터의', '-에 대한', '-로의', '-에게의', '-과의', '-로서의' 같은 '-의' 계열 조사구가 한 문장에 2회 이상
 - 예: found="프로젝트에서의 팀원들과의 협업에서의 소통 방식에 대한 논의가 필요하다" → suggestion="프로젝트에서 팀원들과 어떻게 협업하고 소통할지 논의해야 한다"
@@ -2138,7 +2215,7 @@ IMPORTANT — suggestion 작성 기준:
   - 저자확인필요: 저자에게 보낼 구체적인 확인 질문
 
 - Report every issue you find — do not skip borderline cases. Be aggressive: if a sentence is hard to read, report it. If explanation is thin, report it.
-- 조사중복은 특히 적극적으로 찾을 것. IT 기술서 원고에서 가장 흔한 문제이며, 편집자가 가장 많이 수정하는 항목이다.
+- 조사중복은 확실한 경우만 보고할 것. 같은 조사 2회 반복은 한국어에서 자연스러운 경우가 많으므로, 3회 이상 반복되거나 가독성을 명백히 해치는 경우만 잡을 것. 정상적인 대조문·나열문을 오탐하지 않도록 주의.
 
 HALLUCINATION PREVENTION (CRITICAL):
 - "found" MUST be copied character-by-character from the input text. Do NOT paraphrase, summarize, or reconstruct.
@@ -2522,15 +2599,15 @@ async function p8_startProofread() {
       surfaceIssues.length ? `${surfaceIssues.length}건 발견` : '이슈 없음';
     setBar(45);
 
-    // ── Step 2.5: 나라 맞춤법 검사기 API (선택적) ──
+    // ── Step 2.5: 네이버 맞춤법 검사기 (JSONP) ──
     try {
-      var spellerIssues = await _checkSpellerApi(extracted);
-      if (spellerIssues.length) {
-        surfaceIssues = surfaceIssues.concat(spellerIssues);
+      var naverIssues = await _checkNaverSpeller(extracted);
+      if (naverIssues.length) {
+        surfaceIssues = surfaceIssues.concat(naverIssues);
         document.getElementById('p8_step2-detail').textContent =
-          `${surfaceIssues.length}건 발견 (맞춤법 API ${spellerIssues.length}건 포함)`;
+          `${surfaceIssues.length}건 발견 (네이버 ${naverIssues.length}건 포함)`;
       }
-    } catch(e) { console.warn('[panel8] 맞춤법 API 스킵:', e.message); }
+    } catch(e) { console.warn('[panel8] 네이버 맞춤법 스킵:', e.message); }
     setBar(50);
 
     // ── Step 3: 구조 검사 ──
@@ -2812,7 +2889,7 @@ const AI_ONLY         = ['비문','주술호응오류','잘못된표현','수동
 // 표면(인접오타)+AI(문맥반복) 양쪽에서 생성 가능 (크로스 중복 제거: AI 우선)
 const CROSS_TYPES     = ['조사중복','번역체','일본식표현','외래어표기오류','용어불일치','내용보완필요','문단연결불량','문장부호오류','띄어쓰기','맞춤법','문체불일치'];
 // 구조검사에서 생성
-const STRUCT_TYPES    = ['목차불일치'];
+const STRUCT_TYPES    = [];
 // 호환용 집합 (기존 렌더링 코드와 호환)
 const SURFACE_TYPES   = [...SURFACE_ONLY, ...CROSS_TYPES];
 const LINGUISTIC_TYPES= [...AI_ONLY, ...CROSS_TYPES];
@@ -2858,9 +2935,6 @@ const EDIT_CATEGORIES = [
   // ── 10. 저자 확인 ──
   { key:'저자확인필요', label:'저자 확인 필요',  sub:'수치·인용·기술 검증 필요',
     types:['저자확인필요'] },
-  // ── 11. 목차 불일치 ──
-  { key:'목차불일치',  label:'목차 불일치',     sub:'목차-본문 제목 불일치',
-    types:['목차불일치'] },
 ];
 
 function renderResults(extracted, aiUsed, aiSkipped) {

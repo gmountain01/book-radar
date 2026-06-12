@@ -6,6 +6,33 @@
 
 ## 2026-06-12
 
+### 네이버 맞춤법 검사기 연동 (나라 맞춤법 대체)
+- speller.town/nara-speller.co.kr 폐기 확인 → 기존 `_checkSpellerApi` 삭제
+- 네이버 SpellerProxy JSONP 방식으로 신규 구현(`_checkNaverSpeller`)
+- `scripts/fetch_naver_key.py` — passportKey 추출 스크립트 신규
+- `data/naver-speller-key.js` — 매일 GitHub Actions로 키 자동 갱신
+- `.github/workflows/fetch-rss.yml`에 Fetch Naver speller passportKey 단계 추가
+- **대상:** panels/panel8/panel8.js, scripts/, data/, .github/workflows/, index.html
+
+### panel8 교정 도우미 오탐률 개선 6건
+- **조사중복**: 은/는 threshold 2→3, 에서 threshold 2→3, 문장 최소 길이 10→30자
+- **조사중복**: 동사 필터 `_VERB_NEUN_RE` 22개→150개+ (IT 기술서 빈출 동사 대폭 추가)
+- **조사중복**: AI 프롬프트 톤 "가장 적극적으로"→"확실한 경우만", 기준 2회→3회 이상
+- **외래어 오탐**: 올바른 표기(c)로 등재된 단어가 다른 항목의 오표기(w)에 있으면 색인 제외 (143건 충돌 해소)
+- **목차불일치**: 원고·조판 교정에서 불필요 → `checkStructural` 비활성화, 카테고리 UI 제거
+- **대상:** panels/panel8/panel8.js, panels/panel8/panel8.css
+
+### PDF 제목/본문 분리 강화
+- `_joinLinesSmartly`에 폰트 크기 변화 감지(15%+), Bold→Regular 전환, 짧은 제목형 행 감지 추가
+- 기존에 제목과 본문이 이어 붙던 문제 해결
+- **대상:** panels/panel8/panel8.js
+
+### 편집 카테고리 UI 통일
+- cat-box 높이 통일(min-height:68px + flex 수직 중앙 정렬)
+- cat-count 폰트 크기 상태별 다름(1.3em/1em/.85em) → .95em 통일
+- cat-grid 6열 고정(12개 카테고리 → 2줄), 모바일 3열/2열 반응형
+- **대상:** panels/panel8/panel8.css
+
 ### 버전 업데이트 + CHANGELOG 신규 생성
 - 타이틀+헤더 날짜 2026-06-07 → 2026-06-12 업데이트
 - 버전 v2.5.0 → v2.5.1
