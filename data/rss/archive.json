@@ -1,6 +1,674 @@
 {
   "articles": [
     {
+      "id": "c7e415fadd44",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[6월15일] 소버린 AI가 아니라 ‘첨단 모델 접근권’이 냉정한 현실",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211727",
+      "date": "2026-06-16",
+      "summary": "미국 정부의 수출 통제 조치로 앤트로픽의 최신 모델인 ‘페이블 5’와 ‘미소스 5’에 대한 외국인 접근이 차단되면서, 기술 주권과 소버린 AI, 오픈소스 논의가 다시 떠오르는 분위기입니다. 마크 카니 캐나다 총리는 \"특정 모델에 대한 과도한 의존이 초래할 수 있는 위험을 보여준 사례\"라고 평가했고, 인도에서는 미국 AI 기업 의존에서 벗어나 자체 역량을 강화해야 한다는 주장이 제기됐습니다. 유럽연합(EU)도 \"이번 사태는 유럽이 기술 주권을 강화해야 하는 이유를 더욱 분명히 보여주는 사례\"라고 밝혔습니다.미국 모델 대신 대안을 마련",
+      "keywords": [
+        "Open Source"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "a99c4765b42b",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "‘생체 모방’ 휴머노이드…뜨거운 초기 반응",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211746",
+      "date": "2026-06-16",
+      "summary": "AI타임스 조예주 기자 joyejuoffice@aitimes.com",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "46bbb0409f2e",
+      "source": "toss",
+      "source_name": "토스",
+      "icon": "💙",
+      "title": "디자이너가 시안 대신 앱을 만든 이유",
+      "link": "https://toss.tech/article/deadend",
+      "date": "2026-06-16",
+      "summary": "툴의 제약을 넘어, 머릿속에 있던 디자인을 AI로 그대로 구현해본 이야기를 들려드립니다.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "a2d5ddb82b1a",
+      "source": "toss",
+      "source_name": "토스",
+      "icon": "💙",
+      "title": "2,800만 MAU를 이해하는 유저 Segmentation, TUES",
+      "link": "https://toss.tech/article/tues",
+      "date": "2026-06-16",
+      "summary": "토스가 자체 개발한 이용서비스 기반 유저 세그먼트 TUES(Toss User Engagement Segment)를 활용해 2,800만 MAU를 어떻게 분석하고 의사결정에 녹이는지 소개합니다.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "72386a5f1b1c",
+      "source": "google_ai",
+      "source_name": "Google AI",
+      "icon": "🔵",
+      "title": "We’re strengthening our presence in Alabama through new investments and community support.",
+      "link": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/alabama-investment-june-2026/",
+      "date": "2026-06-15",
+      "summary": "Google has announced a $1.5 billion investment for 2026 and 2027 to expand its data center campus in Jackson County, Alabama. Operating since 2019 on a repurposed former…",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "c0d1dc402103",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "icon": "🟠",
+      "title": "Introducing Gemma 4 models on Amazon Bedrock",
+      "link": "https://aws.amazon.com/blogs/machine-learning/introducing-gemma-4-models-on-amazon-bedrock/",
+      "date": "2026-06-15",
+      "summary": "Today, we are announcing the availability of the Gemma 4 family on Amazon Bedrock. Built by Google DeepMind and released under the Apache 2.0 license, Gemma 4 is a family of open-weight models designed with a focus on intelligence-per-parameter across a broad range of deployment scenarios. The famil",
+      "keywords": [
+        "Deployment"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "c012a3b421a3",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "icon": "🟠",
+      "title": "AI Agent Failure Detection and Root Cause Analysis with Strands Evals",
+      "link": "https://aws.amazon.com/blogs/machine-learning/ai-agent-failure-detection-and-root-cause-analysis-with-strands-evals/",
+      "date": "2026-06-15",
+      "summary": "In this post, we walk you through calling the detector functions to diagnose real agent failures. You learn how to interpret their structured output: categorized failures with confidence scores, causal chains linking root causes to downstream symptoms, and fix recommendations specifying whether a ch",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "58a47f7a2f52",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "icon": "🟠",
+      "title": "Build context-rich research agents with Deep Agents and Bedrock AgentCore",
+      "link": "https://aws.amazon.com/blogs/machine-learning/build-context-rich-research-agents-with-deep-agents-and-bedrock-agentcore/",
+      "date": "2026-06-15",
+      "summary": "In this post, you'll build a competitive research agent that demonstrates this pattern end to end. This walkthrough targets developers building multi-step AI workflows who need isolated execution environments for their agents. In Part 2 of the notebook, you can deploy this same agent to Bedrock Agen",
+      "keywords": [
+        "AI Agent",
+        "Automation",
+        "Deployment",
+        "Developer Tools"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "ea8ad6c2bdaa",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Sundar Pichai faces boos, walkout at Stanford graduation ceremony over Google’s Israel, ICE ties",
+      "link": "https://techcrunch.com/2026/06/15/sundar-pichai-faces-boos-walkout-at-stanford-graduation-ceremony-over-googles-israel-ice-ties/",
+      "date": "2026-06-15",
+      "summary": "AI is once again at the heart of a college graduation protest — this time for the technology's use in Google's defense contracts.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "71ed2eea4532",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "The US government’s Anthropic models ban was never about an AI jailbreak",
+      "link": "https://techcrunch.com/2026/06/15/the-us-governments-anthropic-models-ban-was-never-about-an-ai-jailbreak/",
+      "date": "2026-06-15",
+      "summary": "The Trump administration's decision that forced Anthropic to pull its latest cybersecurity models could be reactionary, retaliatory, or both, but the message is clear: The AI industry isn't immune from U.S. government interference.",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "a3f67405a753",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Meta’s new ‘AI Mode’ on Facebook pulls from public info across its platforms",
+      "link": "https://techcrunch.com/2026/06/15/metas-new-ai-mode-on-facebook-pulls-from-public-info-across-its-platforms/",
+      "date": "2026-06-15",
+      "summary": "Meta announced Monday that it's rolling out a wave of new AI features on Facebook, the latest sign of the company's effort to catch up in the AI race and keep users more engaged on the platform.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "d69d5c32ea58",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "SpaceX is public: Everything you need to know post-IPO",
+      "link": "https://techcrunch.com/2026/06/15/spacex-is-public-everything-you-need-to-know-post-ipo/",
+      "date": "2026-06-15",
+      "summary": "TechCrunch has followed SpaceX's start, struggles, and successes from the early days. And we're here for what happens next too. This package of SpaceX IPO coverage includes who stands to win (and maybe some who won't), pre-IPO deals, and what's tucked inside its S-1 registration document.",
+      "keywords": [
+        "RAG"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "d37aed3c0e36",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "These are the countries moving to ban social media for children",
+      "link": "https://techcrunch.com/2026/06/15/social-media-ban-children-countries-list/",
+      "date": "2026-06-15",
+      "summary": "Australia was the first country to issue a ban in late 2025, aiming to reduce the pressures and risks that young users may face on social media, including cyberbullying, social media addiction, and exposure to predators.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "0a59211a2c97",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Cybersecurity vets protest ‘dangerous’ US government ban on Anthropic’s most powerful models",
+      "link": "https://techcrunch.com/2026/06/15/cybersecurity-vets-protest-dangerous-us-government-ban-on-anthropics-most-powerful-models/",
+      "date": "2026-06-15",
+      "summary": "A group made up of dozens of cybersecurity experts urged the White House to remove export-control restrictions on Anthropic’s Fable and Mythos models, arguing that the order is going to limit the ability of cybersecurity defenders to secure their software and products.",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "4bb0306465ef",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "SpaceX’s biggest-ever IPO just grew to $85.7 billion raised",
+      "link": "https://techcrunch.com/2026/06/15/spacexs-biggest-ever-ipo-just-grew-to-85-7-billion-raised/",
+      "date": "2026-06-15",
+      "summary": "SpaceX's IPO underwriters maxed out their share purchases, adding to an already historic amount of money raised.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "a7fe3ff83b3e",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "UK unveils sweeping social media ban for users under 16",
+      "link": "https://techcrunch.com/2026/06/15/uk-unveils-sweeping-social-media-ban-for-users-under-16/",
+      "date": "2026-06-15",
+      "summary": "The ban would apply to a range of social media platforms, including Snapchat, TikTok, YouTube, Instagram, Facebook, and X.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "f85f662961de",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Salesforce acquires AI customer service platform Fin for $3.6B",
+      "link": "https://techcrunch.com/2026/06/15/salesforce-acquires-ai-customer-service-platform-fin-for-3-6b/",
+      "date": "2026-06-15",
+      "summary": "Salesforce says it wants to use Fin's team and technology to improve Agentforce, its existing enterprise platform that businesses can use to build custom AI agents that automate tasks.",
+      "keywords": [
+        "AI Agent",
+        "Automation",
+        "Enterprise AI"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "bfeca2ee1bfe",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Sarvam becomes India’s newest AI unicorn with $234 million funding round led by HCLTech",
+      "link": "https://techcrunch.com/2026/06/15/sarvam-becomes-indias-newest-ai-unicorn-with-234-million-funding-round-led-by-hcltech/",
+      "date": "2026-06-15",
+      "summary": "Indian IT services company HCLTech is investing $150 million in the Bengaluru startup.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "0496e0cc9211",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Fox to acquire Roku in $22B deal",
+      "link": "https://techcrunch.com/2026/06/15/fox-to-acquire-roku-in-22-billion-deal/",
+      "date": "2026-06-15",
+      "summary": "Fox says the deal will create the third-largest television company in the United States.",
+      "keywords": [
+        "Vision"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "da4b5edf73d1",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "As AI agents become employees, NewCore emerges with $66M to give them identities",
+      "link": "https://techcrunch.com/2026/06/15/ai-agents-are-becoming-employees-newcore-emerges-with-66m-to-give-them-identities/",
+      "date": "2026-06-15",
+      "summary": "NewCore argues the next challenge in enterprise security will be managing AI agents, not people.",
+      "keywords": [
+        "AI Agent",
+        "Enterprise AI",
+        "Security"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "e3d090f143fc",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "A satellite just learned to find things on its own — here’s what that means",
+      "link": "https://techcrunch.com/2026/06/15/a-satellite-just-learned-to-find-things-on-its-own-heres-what-that-means/",
+      "date": "2026-06-15",
+      "summary": "In April, for the first time ever, an Earth observation satellite found what it was looking for, all on its own.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "0340f2ccb5a1",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "The AI layoff wave is becoming a powder keg",
+      "link": "https://techcrunch.com/2026/06/15/the-ai-layoff-wave-is-becoming-a-powder-keg/",
+      "date": "2026-06-15",
+      "summary": "At the very moment that tens of thousands of workers are being shown the door, a small cohort of AI insiders is becoming wealthy on a scale that's hard to comprehend.",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "95e19e3336b0",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Orbio raises $21 million to automate hiring and onboarding for frontline workers",
+      "link": "https://techcrunch.com/2026/06/14/orbio-raises-21-million-to-automate-hiring-and-onboarding-for-frontline-workers/",
+      "date": "2026-06-15",
+      "summary": "Orbio announces $21 million Series A in round led by Dawn Capital.",
+      "keywords": [
+        "Automation",
+        "SDK/API"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "cbc8ff4c274e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "\"월 200불로 1만4000불 토큰 제공\"…챗GPT·클로드 '구독료' 실체",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211728",
+      "date": "2026-06-15",
+      "summary": "오픈AI와 앤트로픽의 월정액 구독 서비스가 실제 사용량 기준으로는 수천~수만달러 상당의 AI 연산 비용을 제공하고 있는 것으로 나타났다. AI 모델 사용량이 폭증하면서 구독형 서비스의 수익성이 악화하고 있지만, 양사는 시장 점유율 확대를 위해 현재의 가격 정책을 유지하고 있다는 분석이다.반도체·AI 분석 전문 세미애널리시스(SemiAnalysis)는 10일(현지시간) 오픈AI와 앤트로픽의 모든 구독 상품을 직접 구매해 분석한 결과, 이용자가 허용된 한도까지 서비스를 사용하면 실제 API 요금 기준 비용이 구독료를 크게 웃돈다고 밝혔",
+      "keywords": [
+        "Claude",
+        "GPT",
+        "SDK/API"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "397841cd7190",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "지프라, 맘바2·트랜스포머 결합 '잠바2-VL' 공개...\"정확도 유지하며 추론 10배 빨라\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211745",
+      "date": "2026-06-15",
+      "summary": "AI 스타트업 지프라가 하이브리드 맘바2-트랜스포머 구조를 적용한 오픈소스 비전-언어모델(VLM) 제품군 '잠바2-VL(Zamba2-VL)'을 공개했다. 동급의 트랜스포머 기반 VLM과 비슷한 정확도를 유지하면서도 추론 속도는 최대 10배 이상 빠르다고 강조했다.지프라는 최근 12억(1.2B), 27억(2.7B), 70억(7B) 매개변수 규모의 ‘잠바2-VL’ 시리즈를 온라인 아카이브를 통해 공개했다.모든 모델은 자사의 하이브리드 언어모델 아키텍처인 잠바2를 기반으로 구축됐으며, 아파치 2.0 라이선스로 허깅페이스에 공개됐다.비전-",
+      "keywords": [
+        "Open Source"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "475f747365bf",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "\"클로드 코드·코덱스를 하나로\"…데이터브릭스, 에이전트 통합 플랫폼 공개",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211742",
+      "date": "2026-06-15",
+      "summary": "'클로드 코드'와 '코덱스' 등 서로 다른 도구를 하나의 상위 계층에서 조합하고 통제할 수 있는 AI 에이전트 통합 플랫폼이 등장했다.데이터브릭스는 12일(현지시간) 여러 AI 에이전트를 하나의 시스템으로 통합해 관리할 수 있는 오픈소스 플랫폼 '옴니전트(Omnigent)'를 공개했다. 데이터브릭스는 AI 에이전트 개발의 다음 단계가 개별 모델이나 에이전트가 아닌, 이들을 조율하는 상위 계층인 '메타 하네스(meta-harness)'에 있다고 강조했다.옴니전트는 아파치 2.0 라이선스로 깃허브에 공개된 오픈소스 프로젝트로, 데이터브",
+      "keywords": [
+        "AI Agent",
+        "Claude",
+        "Open Source"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "2547908eb348",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[게시판] 한컴, 폴란드 기업과 유럽 '에이전틱 OS 시장' 공략 등 단신",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211743",
+      "date": "2026-06-15",
+      "summary": "■ 한컴(대표 김연수)은 폴란드 연구개발(R&D) 센터 7불스와 폴란드 AI 기업 알고마인과 업무협약(MOU)을 체결, 폴란드 공공부문의 온프레미스 고객을 대상으로 에이전틱 OS 도입을 위한 개념검증(PoC)을 진행할 예정이다. 하반기 에이전틱 OS 베타 버전 출시를 앞두고 이번 PoC를 통해 유럽 현지의 규제 정합성과 기술 적합성을 검증하고 잠재 고객사를 확보할 계획이다.■ 에스투더블유(대표 서상덕)는 'AI 시대의 보안 전략'을 주제로 대만 타이베이에서 열린 기업 초청 컨퍼런스에 참여했다고 밝혔다. 'AI 시대의 보이지 않는 전",
+      "keywords": [
+        "AI Agent",
+        "Security"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "1e9dc60d4186",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "오픈AI·앤트로픽, 상장 전 이미 직원 주식 ‘21조’ 현금화",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211736",
+      "date": "2026-06-15",
+      "summary": "기업공개(IPO)를 앞둔 오픈AI와 앤트로픽이 수년간 대규모 비상장 주식 매각 프로그램을 운영하며 직원과 초기 투자자들에게 막대한 현금화 기회를 제공한 것으로 나타났다. 이에 따라 일반적으로 스타트업의 상장을 압박하는 주요 요인인 직원들의 유동성 요구가 상당 부분 해소됐다는 분석이 나오고 있다.디 인포메이션은 14일(현지시간) 오픈AI와 앤트로픽이 지난 5년 동안 직원과 초기 투자자들이 보유한 주식을 매각할 수 있도록 지원했으며, 이를 통해 거래된 주식 규모는 총 140억달러(약 21조원)에 달하는 것으로 추산된다고 보도했다.특히",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "f324e25ee2f2",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "유클릭스,김정인 사장 영입...\"기업 AX 컨설팅 속도 낸다\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211747",
+      "date": "2026-06-15",
+      "summary": "유클릭스(대표 김철)는 글로벌 컨설팅사 맥킨지앤드컴퍼니와 현대카드 출신의 김정인 사장을 영입, 기업 AX 컨설팅 사업 강화에 나선다고 15일 밝혔다.김정인 사장은 유클릭스의 기업 AX 컨설팅 브랜드 '에이파이(Aify)'를 중심으로 서비스 사업을 총괄한다.김 사장은 맥킨지앤드컴퍼니에서 파트너로 재직하며 기업 전략, 리스크 관리, 디지털 전환, 인수합병 및 기업 혁신 프로젝트를 이끌었다. 현대카드에서는 운영 총괄과 최고전략책임자(CSO), 카드 사업본부장 등을 역임했다.에이파이 사업뿐 아니라 총괄 법인 터틀날리지 산하 주요 사업 전반",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "05c0c6fff6db",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "미소정보기술, 반도체 부품 생산라인에 AI-사람 협업 ‘제품 결함 검사’ 구축",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211741",
+      "date": "2026-06-15",
+      "summary": "데이터 전문 미소정보기술(대표 남상도)은 반도체 공정용 소재부품 전문 씨엠티엑스(CMTX) 제조 공정에 AI 비전 검사를 위한 차세대 지능형 제조 플랫폼 ‘닥시(DAXI)’를 구축했다고 15일 밝혔다.CMTX는 반도체 생산 품질을 좌우하는 핵심인 식각 공정에 사용되는 실리콘 부품을 글로벌 반도체 기업에 공급하고 있다.그동안은 생산 제품의 미세 이물과 결함 여부를 숙련 작업자의 육안에 의존해 검사해 왔지만, 작업자 숙련도에 따른 검사 품질 편차, 판정 일관성 부족, 생산량 증가 대응 한계 등의 문제를 겪고 있었다.미소정보기술은 닥시를",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "832a769fd0bb",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "FT \"삼성·SK하이닉스 AI 보너스에 동탄 부동산·소비 호황\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211744",
+      "date": "2026-06-15",
+      "summary": "AI 반도체 수요 폭발이 동탄 등 반도체 거점 도시의 경제 지형을 완전히 바꾸고 있다는 보도가 나왔다. 13일(현지시간) 파이낸셜타임스(FT) 보도에 따르면, 삼성전자와 SK하이닉스 등 글로벌 메모리 반도체 기업들이 AI 붐에 따른 역대급 수익을 임직원들과 공유하면서 경기도 화성시 동탄 등 주요 '반도체 벨트' 지역의 부동산과 소비 시장이 전례 없는 호황을 맞이했다.FT는 두 회사 직원이 연평균 6억원의 보너스를 받을 것으로 예상하며, 이는 전국 평균 연봉인 약 5000만원과 비교된다고 밝혔다.또 이로 인해 화성시 동탄역 인근 롯데",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "5d3f09bfbd8e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "스페이스X, '콜로서스' 자체 사용 어려워지자 앤트로픽에 임대",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211738",
+      "date": "2026-06-15",
+      "summary": "스페이스X가 대형 AI 데이터센터 '콜로서스 1(Colossus 1)'의 전체 용량을 앤트로픽에 임대한 배경에는 자체 AI 모델 개발 과정에서 발생한 기술적 한계가 있었던 것으로 알려졌다.12일(현지시간) 블룸버그에 따르면, 스페이스X는 xAI의 차세대 AI 모델 '그록' 학습을 위해 멤피스의 콜로서스 1과 인근의 두 데이터센터를 하나의 초대형 컴퓨팅 클러스터로 묶어 운영할 계획이었다.그러나 3곳을 연결하는 과정에서 예상보다 큰 네트워크 지연 문제가 발생하면서 계획에 차질을 빚었다.특히 콜로서스 1과 다른 두 데이터센터는 10마일(",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "f627a0f1744f",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "클라썸, 대학교 AI 역량 강화 플랫폼 ‘클라썸 부스트’ 출시",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211739",
+      "date": "2026-06-15",
+      "summary": "AI 에듀테크 전문 클라썸은 구성원 AI 활용 역량 강화를 지원하는 AI 플랫폼 ‘클라썸 부스트(Boost)’를 출시했다고 15일 밝혔다.클라썸 부스트는 단순히 생성 AI를 제공하는 플랫폼이 아니라, 대학 구성원의 AI 활용 역량을 진단하고 성장까지 지원하는 ‘대학을 위한 AI 역량 강화 플랫폼’이다.이를 위해 챗GPT, 클로드, 제미나이 등 생성 AI를 하나의 플랫폼에서 통합 제공한다. 학생과 교수, 교직원은 목적에 따라 적합한 AI 모델을 선택해 활용할 수 있으며, 대학은 통합 로그인 체계와 크레딧 기반 관리 기능을 통해 AI",
+      "keywords": [
+        "Claude",
+        "GPT",
+        "Gemini",
+        "Generative AI"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "dbfc861a1d9b",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "네이버클라우드, 국방 최적화 옴니모달 '하이퍼클로바X 시드 4B' 공개",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211737",
+      "date": "2026-06-15",
+      "summary": "네이버클라우드(대표 김유원)는 '2026 한국군사과학기술학회 종합학술대회'에서 자체 개발한 경량 옴니모달 '하이퍼클로바X 시드 4B' 모델을 공개하고, 드론·전술차량 등 엣지 환경에서의 실시간 분석을 포함한 국방 AI 활용 사례를 선보였다고 15일 밝혔다.네이버클라우드가 이번에 공개한 모델은 국방 환경에 최적화된 경량 옴니모달 모델이다. 자체 개발 비전 인코더(HyperCLOVA X CLIP)와 오디오 인코더를 탑재해 다양한 데이터를 동시 처리할 수 있는 독자적 기술 경쟁력을 확보했다는 설명이다. 또, 한글 문서를 포함한 한국적인",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "b002c5f3ae69",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "피차이, 스탠포드 졸업식서 'AI' 침묵했지만…중동 이슈에 빛바랜 축사",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211734",
+      "date": "2026-06-15",
+      "summary": "순다르 피차이 구글 CEO가 스탠포드대학교 졸업식 축사에서 AI를 언급하는 대신 '낙관주의(optimism)'를 강조했다. 그러나 이번에는 팔레스타인 문제를 이유로 일부 학생들이 항의하며 퇴장했다.비즈니스 인사이더에 따르면, 피차이 CEO는 13일(현지시간) 미국 스탠포드대 졸업식 연설자로 나서 졸업생들에게 미래를 바라보는 태도와 낙관적인 시각의 중요성을 강조했다. 최근 AI가 일자리와 사회에 미칠 영향에 대한 우려가 커지고 있음에도 불구하고, 그는 연설 내내 AI에 대한 직접적인 언급을 피했다.연설 초반 \"오늘은 여러분에게 조언하",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "991cc4de70ee",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "스페이스X·테슬라 합병설 재점화...\"머스크 편해질 수 있어\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211733",
+      "date": "2026-06-15",
+      "summary": "일론 머스크 CEO의 스페이스X와 기업 테슬라의 합병 가능성이 다시 주목받고 있다. 스페이스X의 최고 운영책임자(COO)가 양사의 결합 가능성을 명확히 부인하지 않으면서 시장의 관심이 커지고 있다.그윈 샷웰 스페이스X COO는 12일(현지시간) CNBC와의 인터뷰에서 스페이스X와 테슬라의 합병 가능성에 대한 질문에 \"그것이 일론 머스크의 삶을 조금 더 편하게 만들어줄 수도 있다\"라고 말했다.그는 \"테슬라와 스페이스X의 미래에는 분명한 시너지가 있다\"라며 \"우리가 궁극적으로 이루고자 하는 목표들이 점점 하나로 모이고 있다\"라고 말했다",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "47d99a4c4b0d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "캘리포니아 커뮤니티 태양광, 보상가격 놓고 갈등",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211732",
+      "date": "2026-06-15",
+      "summary": "캘리포니아 공공요금위원회(CPUC)가 커뮤니티 재생에너지 프로그램(CRE) 시행 세부안을 확정했다. CPUC는 11일(현지시간) 공식 발표를 통해 저소득층 고객의 전기요금 절감 기회를 넓히고, 프로그램에 참여하지 않는 고객에게 비용이 전가되지 않도록 제도를 설계했다고 밝혔다.커뮤니티 태양광은 세입자와 공동주택 거주자, 비영리단체, 기업 등이 공유 태양광 발전설비의 전력 생산분에 가입하고 전기요금 고지서에서 할인이나 크레딧을 받는 방식이다. 지붕형 태양광을 직접 설치하기 어려운 고객도 재생에너지 혜택을 받을 수 있다는 점에서 미국 여",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "52182618ac24",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "카카오, 삼성전자와 'AI 민생 프로젝트' 해커톤 개최",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211721",
+      "date": "2026-06-15",
+      "summary": "카카오(대표 정신아)는 13~14일 카카오 AI캠퍼스에서 삼성전자와 공동으로 '사피(SSAFY) X 카카오 테크 부트캠프 AI 해커톤'을 개최했다고 밝혔다.이번 행사는 양사가 운영해온 기술 인재 양성 프로그램인 '카카오테크 부트캠프'와 '삼성 청년 SW·AI 아카데미(SSAFY)'를 연계해 처음으로 마련한 공동 해커톤이다.고용노동부의 K-디지털 트레이닝(KDT) 사업을 통해 개발자 교육 프로그램을 운영해온 양사는 인재 양성과 취업 지원을 넘어 개발자 생태계를 확대하기 위해 이번 행사를 기획했다.양사 교육생 중 사전 예선을 거쳐 선발",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "43d332a7f807",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "스페이스X 시총 2조달러 돌파하자 \"매그니피센트 7 대신 새 이름 필요\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211722",
+      "date": "2026-06-15",
+      "summary": "스페이스X가 기업 가치 2조달러(약 3000조원)를 넘어서는 초대형 기업공개(IPO)에 성공하자, 월가를 대표해 온 '매그니피센트 7(Magnificent Seven)'라는 명칭의 변경이 필요하다는 목소리가 힘을 얻고 있다. 특히 오픈AI와 앤트로픽 등 차세대 AI 기업들까지 상장을 앞두고 있어, 시장 변화를 반영한 새로운 그룹 명칭이 필요하다는 지적이다.13일(현지시간) 로이터에 따르면, 스페이스X가 상장 직후 시가 총액에서 테슬라와 메타를 제치는 등 기업 순위가 재편되면서, 기존 매그니피센트 7 체제에도 변화가 불가피하다는 관측",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "cee22c5ae77b",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "순천, 정원예술제 20일 개막",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211725",
+      "date": "2026-06-15",
+      "summary": "AI 생성 영상순천의 음식문화와 공연예술을 함께 즐길 수 있는 도심형 문화예술축제가 원도심 남문터광장에서 열린다고 15일 밝혔다.한국예술문화단체총연합회 순천지회는 오는 20일부터 21일까지 순천부 읍성 남문터광장에서 ‘남문열락’을 주제로 2026 정원예술제를 개최한다.올해 행사는 ‘2026 순천미식주간’과 연계해 ‘맛, 예술을 만나다’를 주제로 진행된다. 음악, 국악, 무용, 연극, 문학, 미술, 사진 등 8개 예술 분야가 참여하는 융복합 공연과 전시, 체험 프로그램이 마련된다.주요 프로그램은 융복합 공연 ‘남문열락’, 클래식과 발",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "4517f91a6d2e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "페이블 5 금지시킨 '탈옥'의 실체 ...\"GPT-5.5도 똑같이 뚫린다\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211718",
+      "date": "2026-06-15",
+      "summary": "미국 정부가 앤트로픽의 '페이블 5'와 '미소스 5'에 대한 수출 통제를 발동하며 사실상 서비스 중단을 초래한 가운데, 이번 사태의 배경이 된 '탈옥(jailbreak)' 문제가 일 전부터 공개적으로 제기됐던 것으로 나타났다.이번 논란의 출발점은 지난 10일(현지시간) X에 공개된 유명 AI 탈옥 연구자 플리니 더 리버레이터(Pliny the Liberator)의 게시물이었다.그는 페이블 5의 안전장치를 우회해 사이버 공격, 폭발물 제조, 화학 합성 경로 등에 대한 정보를 추출할 수 있었다고 주장하며 시연 내용을 공개했다.플리니는",
+      "keywords": [
+        "GPT"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "afb316b00146",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "앤트로픽 서비스 중단 배경에 \"중국 연계 조직 접근 의혹\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211715",
+      "date": "2026-06-15",
+      "summary": "미국 백악관이 앤트로픽의 '페이블 5'과 '미스스 5'에 대한 수출 통제를 단행한 배경에는 중국과 연계된 조직이 모델에 접근했다는 우려가 있었던 것으로 전해졌다.13일(현지시간) 세마포에 따르면, 트럼프 행정부는 중국과 연계된 단체가 앤트로픽의 미소스 모델에 접근했을 수 있다는 의혹을 제기하며 수출 통제를 발동했다.이 조치가 시행되면 외국 국적의 앤트로픽 직원들조차 모델을 사용할 수 없게 되기 때문에, 앤트로픽은 결국 두 모델의 서비스를 전면 중단하는 결정을 내렸다.사안에 정통한 관계자는 백악관이 중국 접근 가능성을 국가안보 위험으",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "6733b271ba68",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "광양 백운산 옥룡 권역 아트월, 천년의 이야기와 자연유산을 공간에 담다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211731",
+      "date": "2026-06-15",
+      "summary": "전남 광양시 옥룡면 일원에 조성된 백운산 4대 권역 조성사업의 아트월이 지역의 역사와 문화, 자연유산을 담아낸 상징 공간으로 주목받고 있다. 이번 사업은 백운산 권역의 관광 자원을 활성화하고 지역 고유의 이야기를 방문객들에게 효과적으로 전달하기 위해 추진됐으며, 옥룡권역이 지닌 역사성과 장소성을 시각적으로 표현한 것이 특징이다.아트월은 옥룡사지와 동백나무 숲, 물과 산이 어우러진 백운산의 자연경관을 주제로 구성됐다. 벽면과 조형 구조물에는 용과 봉황, 동백꽃, 전통 문양 등 지역을 상징하는 요소들이 적용돼 자연과 역사, 문화가 하나",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "3ee98851ecf0",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "백악관 \"탈옥 경고 무시\" vs  앤트로픽 \"사실상 통보\"...또 정면 충돌",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211713",
+      "date": "2026-06-15",
+      "summary": "앤트로픽이 최신 AI 모델 서비스 중단 사태를 수습하기 위해 고위 기술진을 워싱턴으로 급파하며 백악관과의 갈등 봉합에 나섰다. 그러나 미국 정부는 앤트로픽이 사전에 제기된 보안 우려를 심각하게 받아들이지 않았으며, 탈옥(jailbreak) 취약점 수정 요청도 거부했다고 주장하고 있어 책임 공방이 격화되고 있다.14일(현지시간) 악시오스와 비즈니스 인사이더 등에 따르면, 앤트로픽은 주말 동안 최고 수준의 기술 전문가들을 워싱턴으로 보내 백악관 및 정부 보안 관계자들과 협상에 착수했다.이번 협상은 미국 정부가 국가안보를 이유로 최첨단",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "49c4aab02999",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "코난테크놀로지, 부산역에 AI 통역 솔루션 '링고엑스' 도입",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211716",
+      "date": "2026-06-15",
+      "summary": "코난테크놀로지(대표 김영섬)는 부산교통공사와 손잡고 부산역에 AI 통역 안내 솔루션 '링고엑스(Lingo-X)'를 공급한다고 15일 밝혔다.링고엑스는 13개 언어 실시간 통역을 지원하는 AI 통역 안내 솔루션으로 자체 대형언어모델(LLM) 기반 생성형 AI 기술과 음성인식(STT) 엔진을 탑재했다. 외부 API에 의존하는 타사 솔루션과 달리 원천 기술을 기반으로 도입 및 운영 비용을 줄인 것이 특징이다.이를 통해 이용객들은 자국어로 편리하게 도시철도 이용법, 환승 경로, 주변 관광 정보 등을 안내받을 수 있다고 설명했다.AI로 해결",
+      "keywords": [
+        "Generative AI",
+        "LLM",
+        "SDK/API"
+      ],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "a7e394e59f64",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "앤드리슨 호로위츠, 서울 사무소 열었다...\"암호화폐 한국 진출 지원\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211719",
+      "date": "2026-06-15",
+      "summary": "글로벌 벤처캐피털(VC) 앤드리슨 호로위츠(a16z)가 서울 사무소를 공식 개소했다고 15일 밝혔다.a16z는 1000억 달러(약 150조원) 규모의 자산을 운용하는 실리콘 밸리의 글로벌 벤처캐피털로 스페이스X, 오픈AI, 인스타그램, 페이스북 등을 초기 투자해 성장시킨 바 있다.지난해 12월 아시아 진출 계획을 발표한 데 이어, 포트폴리오 기업의 한국 및 아시아 시장 진출을 지원하기 위해 서울 사무소를 설립했다.a16z는 AI, 제조업, 방위산업, 암호화폐(크립토), 콘텐츠, 소비재 등에서 한국의 경쟁력을 높게 평가해 아시아 내",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "95c4c2b68ed5",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "\"음향 AI로 불량품 검출\"...디플리, 25억 신규 투자 유치",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211714",
+      "date": "2026-06-15",
+      "summary": "디플리(대표 이수지)는 25억원 규모의 신규 투자 유치를 완료했다고 15일 밝혔다. 데브시스터즈벤처스가 리드 투자사로 나섰고, 수인베스트먼트캐피탈과 노틸러스인베스트먼트가 공동 투자자로 참여했다.디플리는 산업용 음향 AI 솔루션 '리슨 AI'를 개발했다. 사람의 발화 소리와 주변 잡음을 제거하고 타깃 음향만을 추출해 정상 범위 여부를 판별함으로써, 사람의 귀로는 감지하기 어려운 음향의 미세한 차이까지 분석할 수 있다는 설명이다.리슨 AI는 실제 양산라인에서 99.87% 이상의 검사 정확도를 보이며 기계 부품 품질 검사, 체결음 검사,",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "88abb0f4f9ce",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "목포, 호국보훈의 달 맞아 국가보훈대상자에게 특별위로금 지급",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211724",
+      "date": "2026-06-15",
+      "summary": "AI 생성 영상목포시가 국가를 위해 희생하고 헌신한 국가보훈대상자에 대한 예우를 강화하기 위해 ‘호국보훈의 달 특별위로금’을 지급했다고 15일 밝혔다.이번 특별위로금은 국가유공자의 자긍심을 높이고 보훈가족의 생활 안정을 지원하기 위한 보훈복지사업의 하나로 마련됐다.지급 대상은 목포시에 거주하며 참전·보훈명예수당을 받고 있는 국가보훈대상자 1782명이다. 지원금은 1인당 5만원씩 총 8910만원 규모이며, 재원은 전액 시비로 마련됐다.목포 관계자는 “오늘날 우리가 누리는 자유와 평화는 국가보훈대상자 여러분의 숭고한 희생과 헌신이 있었",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "b1f3e3578c15",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "여수서 국내 최대 해상풍력 공급망 행사 열린다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211723",
+      "date": "2026-06-15",
+      "summary": "AI 생성 영상여수시는 16일부터 17일까지 여수엑스포컨벤션센터에서 ‘2026 해상풍력 공급망 컨퍼런스 전시회’가 개최된다고 밝혔다.행사는 한국풍력산업협회와 전남이 공동 주최하며, 국내외 해상풍력 기업과 연구기관, 산업 관계자 등 2000여 명이 참가할 예정이고 이는 국내 최대 규모다.이번 행사에는 해상풍력 관련 기업 73개 사가 참여해 102개 부스를 운영한다. 개막식과 컨퍼런스, 비즈니스 상담회, 전문 세미나, 네트워킹 프로그램 등을 통해 해상풍력 기술과 시장 동향, 공급망 현황을 공유한다.17일에는 국무총리 주재 해상풍력 산업",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "585bc6f3e89f",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "광주, 사회연대경제 청년 일경험 참여자 모집",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211712",
+      "date": "2026-06-15",
+      "summary": "AI 생성 영상광주시가 지역 청년의 실무 경험을 지원하고 사회연대경제 기업의 인력난 해소를 돕기 위해 ‘사회연대경제 청년 일경험 시범사업’ 참여자를 모집한다.모집 기간은 18일부터 24일까지다. 대상은 2026년 1월1일 기준 광주에 거주하는 19세 이상 39세 이하 미취업 청년이다.선발된 청년은 7월부터 11월까지 5개월간 사회연대경제 기업에서 근무하며 실무 경험을 쌓는다. 참여 청년에게는 1인당 월 234만원 수준의 지원이 제공된다.신청은 온라인 고용서비스 통합 플랫폼 ‘고용24’에서 하면 된다. 신청자는 공고문에 게시된 참여기",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
+      "id": "6053c35a7ac6",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "전남, 찾아가는 무료법률상담실 확대",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211717",
+      "date": "2026-06-15",
+      "summary": "AI 생성 영상전라남도가 법률서비스 이용이 어려운 농어촌 주민과 고령층을 위해 시군을 직접 찾아가는 무료법률상담실 운영을 확대한다고 15일 밝혔다.상담은 전남이 무료법률상담관으로 위촉한 변호사 40명이 맡는다. 부동산, 가사, 형사, 민사 등 생활 속 법률문제를 무료로 상담하며, 대면 상담 외에도 전화와 온라인 상담이 가능하다. 본청과 동부지역본부에서는 주 1회 대면 상담실도 운영 중이다.찾아가는 상담은 도청 방문이 어려운 주민을 위해 올해부터 병행하고 있다. 지난 5월 29일 목포시청 별관에서 가사·민사 분야 상담이 진행됐고, 오",
+      "keywords": [],
+      "first_seen": "2026-06-16"
+    },
+    {
       "id": "38c70bbff9aa",
       "source": "techcrunch",
       "source_name": "TechCrunch",
@@ -15299,22 +15967,15 @@
       "date": "2026-06-15",
       "added": 15,
       "total": 1131
+    },
+    {
+      "date": "2026-06-16",
+      "added": 51,
+      "total": 1182
     }
   ],
   "sources": {},
   "weekly_trends": [
-    {
-      "week": "2026-W17",
-      "keywords": {
-        "AI Agent": 2,
-        "Automation": 2,
-        "Security": 2,
-        "Claude": 1,
-        "LLM": 1,
-        "Developer Tools": 1,
-        "MCP": 1
-      }
-    },
     {
       "week": "2026-W18",
       "keywords": {
@@ -15435,8 +16096,8 @@
         "Coding": 23,
         "Claude": 21,
         "Security": 16,
-        "Open Source": 12,
         "Generative AI": 12,
+        "Open Source": 12,
         "Enterprise AI": 11,
         "GPT": 10,
         "SDK/API": 9,
@@ -15446,48 +16107,68 @@
         "Cloud/DevOps": 7,
         "Robotics": 6
       }
+    },
+    {
+      "week": "2026-W25",
+      "keywords": {
+        "AI Agent": 6,
+        "Security": 5,
+        "Automation": 3,
+        "SDK/API": 3,
+        "Open Source": 3,
+        "Claude": 3,
+        "GPT": 3,
+        "Deployment": 2,
+        "Enterprise AI": 2,
+        "Generative AI": 2,
+        "Developer Tools": 1,
+        "RAG": 1,
+        "Vision": 1,
+        "Gemini": 1,
+        "LLM": 1
+      }
     }
   ],
   "source_stats": {
     "techcrunch": {
-      "total": 252,
-      "recent_7d": 111,
-      "recent_30d": 191
+      "total": 267,
+      "recent_7d": 121,
+      "recent_30d": 206
     },
     "aitimes": {
-      "total": 410,
-      "recent_7d": 193,
-      "recent_30d": 310
-    },
-    "anthropic": {
-      "total": 23,
-      "recent_7d": 6,
-      "recent_30d": 11
+      "total": 440,
+      "recent_7d": 205,
+      "recent_30d": 340
     },
     "openai": {
       "total": 71,
       "recent_7d": 16,
       "recent_30d": 33
     },
+    "anthropic": {
+      "total": 23,
+      "recent_7d": 6,
+      "recent_30d": 11
+    },
     "huggingface": {
       "total": 53,
-      "recent_7d": 8,
+      "recent_7d": 7,
       "recent_30d": 19
     },
     "aws_ml": {
-      "total": 71,
-      "recent_7d": 20,
-      "recent_30d": 38
+      "total": 74,
+      "recent_7d": 23,
+      "recent_30d": 41
     },
     "nvidia_ai": {
       "total": 43,
-      "recent_7d": 9,
+      "recent_7d": 7,
       "recent_30d": 22
     },
     "google_ai": {
-      "total": 28,
-      "recent_7d": 1,
-      "recent_30d": 4
+      "total": 29,
+      "recent_7d": 2,
+      "recent_30d": 5
     },
     "lycorp": {
       "total": 33,
@@ -15500,9 +16181,9 @@
       "recent_30d": 6
     },
     "toss": {
-      "total": 24,
-      "recent_7d": 3,
-      "recent_30d": 4
+      "total": 26,
+      "recent_7d": 4,
+      "recent_30d": 6
     },
     "meta_eng": {
       "total": 11,
@@ -15521,10 +16202,10 @@
     },
     "yozm": {
       "total": 56,
-      "recent_7d": 13,
+      "recent_7d": 12,
       "recent_30d": 21
     }
   },
-  "last_updated": "2026-06-15",
-  "total_articles": 1131
+  "last_updated": "2026-06-16",
+  "total_articles": 1182
 }
