@@ -1,6 +1,148 @@
 {
   "articles": [
     {
+      "id": "cdf93af6a8fe",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "He made your free video player run smoothly. Now he’s doing that for robots.",
+      "link": "https://techcrunch.com/2026/06/19/he-made-your-free-video-player-run-smoothly-now-hes-doing-that-for-robots/",
+      "date": "2026-06-20",
+      "summary": "French serial entrepreneur and open-source legend Jean-Baptiste Kempf has been building Kyber, an infrastructure layer to control remote devices in real time.",
+      "keywords": [
+        "Open Source",
+        "Robotics",
+        "Video AI"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "8d86b6e3e995",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "'알파폴드' 노벨상 존 점퍼, 구글 떠나 앤트로픽 합류",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211937",
+      "date": "2026-06-20",
+      "summary": "알파폴드 개발로 2024년 노벨 화학상을 받은 존 점퍼 구글 딥마인드 부사장이 앤트로픽에 합류한다.점퍼 부사장은 20일(현지시간) X를 통해 \"거의 9년 만에 구글 딥마인드를 떠나 앤트로픽에 합류하기로 했다\"라고 밝혔다.이어 \"데미스 허사비스는 내가 박사 학위를 마친 지 불과 6개월 만에 알파폴드 팀을 이끌도록 큰 기회를 줬다\"라며 감사를 표시했다.구글 딥마인드 대변인은 성명을 통해 점퍼의 퇴사를 확인하고, 그의 공로에 감사를 표했다. 앤트로픽 대변인은 그가 회사에 합류할 예정이라고 밝혔다. 허사비스 CEO도 이날 X를 통해 \"지난",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "b43459f1469d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "삼성전자, 공간제작소와 손잡고 AI 홈 기반 ‘삼성 AI 모듈러 홈’ 출시",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211933",
+      "date": "2026-06-20",
+      "summary": "삼성전자가 목조 모듈러 주택 전문 기업인 공간제작소와 협력해 ‘삼성 AI 모듈러 홈’을 출시하며 단독주택 형 모듈러 건축 시장에 본격 진출한다고 18일 밝혔다.공간제작소는 모듈러 주택 전문 기업으로 기존의 현장 중심 건축 방식과 달리 AI 기반 설계와 자동화된 생산 시스템을 통해 주택의 80% 이상을 공장에서 사전 제작한 후 현장으로 운반해 조립 및 설치를 진행한다.이런 모듈러 주택은 공사기간이 비교적 짧고 균일한 건축 품질을 보장하며 건축 시 발생하는 폐기물을 줄일 수 있다는 장점이 있다.삼성전자와 공간제작소는 경기도 화성시에 양",
+      "keywords": [
+        "Automation"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "3d7f8ca1992c",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "KAIST, AI 환각 줄이고 속도 20배 높인 차세대 '옴니 RAG' 기술 개발",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211929",
+      "date": "2026-06-20",
+      "summary": "한국과학기술원(KAIST, 총장 이광형)은 김민수 전산학부 교수 연구팀이 교원창업기업인 그래파이와 협력해 차세대 데이터베이스 기술 ‘아카식DB(AkasicDB)’와 이를 바탕으로 하는 새로운 검색증강생성(RAG) 기법 ‘옴니RAG’를 개발했다고 20일 밝혔다.아카식DB는 벡터 DB, 그래프DB, 관계형 DB의 기능을 하나의 데이터베이스 관리시스템에서 통합 실행할 수 있도록 설계됐다. 이를 바탕으로 개발한 옴니RAG는 문서 의미 정보와 개체 간 관계, 구조화된 데이터를 동시 활용해 생성AI의 답변 정확도를 높여준다.실제 기업 데이터는",
+      "keywords": [
+        "Generative AI",
+        "RAG",
+        "Vector DB"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "84a3d7102eca",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[AI카툰] Bob, Senior IT guy - 밥, 길거리에 나앉을지도…",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211927",
+      "date": "2026-06-20",
+      "summary": "글·그림 Dr. Alf",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "1ecb145bd457",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[내면 지도 그리기] 21 Inner Mapping: 나를 찾는 지도",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211928",
+      "date": "2026-06-20",
+      "summary": "내면지도 -〈내가 행운이라고 부를 것들〉실험노트■ 그리기 전에이번 주 실험은 행운의 위치를 찾는 시간처럼 보이지만, 사실은 내 삶에 숨어 있는 행운의 진짜 모양을 발견하는 시간입니다.기억하시나요? 어릴 적 소풍날의 보물찾기. 우리는 수풀을 뒤지기 전부터 보물이 어떻게 생겼는지 이미 알고 있었습니다. '하얀색의 아주 작은 종이 쪽지'. 네모나게 접혀 보물이라고 적힌 그 모양을 기억하며 눈을 불을 켜고 찾았죠.어른이 된 지금도 우리는 행운을 그렇게 찾고 있지는 않을까요? 복권 당첨, 뜻밖의 횡재, 남들이 부러워하는 승진과 연봉 인상,",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "299e7ad5b003",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "폭염에 스페인 전력가격 출렁…최저 1000원대에서 최고 26만원까지",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211923",
+      "date": "2026-06-20",
+      "summary": "폭염이 스페인 전력시장의 저녁 피크 부담을 키우고 있다. 낮에는 태양광 발전이 전력 수요를 흡수하지만, 해가 진 뒤에도 냉방 수요가 이어지면서 전력가격과 계통 운영 부담이 저녁 시간대로 옮겨간다는 분석이다. 스페인 전력시장 운영기관 OMIE에 따르면, 19일(현지시간) 스페인 하루 전 시장 최고 가격은 메가와트시(MWh)당 150유로(26만 2700원), 최저가격은 0.84유로(1471원)였다.최저와 최고 가격 차가 150유로(26만 2700원) 가까이 벌어졌다는 점에서 시간대별 수급 여건이 가격에 크게 반영된 것으로 보인다. 같은",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "e341b82a5dbd",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "목포 동부시장 ‘별별 야시장’ 개장",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211904",
+      "date": "2026-06-20",
+      "summary": "AI 생성 영상목포시 동부시장 ‘별별 야시장’이 20일 오후 6시 동부시장 주차장에서 개장식을 열고 운영에 들어간다.목포는 8월2일까지 매주 토·일요일 오후 6시부터 9시까지 야시장을 열고 홍어삼합 등 지역 특산물 먹거리와 플리마켓을 앞세워 전통시장 방문 수요를 끌어올린다고 19일 밝혔다.별별 야시장은 중소벤처기업부 공모사업인 2026년 전통시장 특성화사업 문화관광형시장 사업의 하나로 마련됐다. 전통시장에 문화와 관광 콘텐츠를 접목해 시장 경쟁력을 높이고 지역 상권에 활력을 더하는 데 초점을 뒀다.야시장에는 특산물을 활용한 먹거리",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "459a06fbe6bd",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "인도 태양광 셀 생산능력 60GW 전망…제조 공급망 확대 속도",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211890",
+      "date": "2026-06-20",
+      "summary": "인도 태양광 셀 시장이 수입 중심에서 자국 내 생산 중심으로 빠르게 이동하고 있다. 인도 정부가 태양광 모듈에 이어 셀 단계까지 자국산 사용 기준을 넓히면서 2026~2027회계연도 인도 태양광 셀 수요의 절반가량을 인도 내 생산 제품이 담당할 것이라는 분석이 나왔다.신용평가·리서치 회사 크리실 레이팅스는 18일(현지시간) 인도 태양광 셀 수요가 2027회계연도에 60~65기가와트(GW)에 이를 것으로 전망했다.이 가운데 약 절반은 자국 내에서 생산된 셀이 공급하고, 나머지는 수입산으로 채워질 것으로 봤다. 직전 회계연도 자국산 셀",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "ea8eb93a23b5",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "광양 마동저수지생태공원서 폐플라스틱 악기 캔들 콘서트",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211888",
+      "date": "2026-06-20",
+      "summary": "AI 생성 영상광양시가 마동저수지생태공원 중마교역소에서 폐플라스틱 악기로 연주하는 캔들 콘서트를 연다고 18일 밝혔다.광양문화도시센터는 24일 오후 8시 광양 마동저수지생태공원 내 중마교역소에서 문화콘텐츠 초청 프로그램 ‘빛, 그리고 다시 태어난 소리’를 개최한다.이번 공연은 시민들이 생활권 안에서 문화예술 콘텐츠를 접할 수 있도록 마련된 올해 첫 초청 프로그램이다. 관람객은 수백 개의 캔들이 놓인 공간에서 업사이클 악기로 연주되는 클래식과 대중음악을 무료로 감상할 수 있다.공연에는 업사이클 악기 공연팀 플라스틱 콰르텟이 참여한다.",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "758209a1b63e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "전남, 여수 성두마을 등 일본식 지명 정비",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211883",
+      "date": "2026-06-20",
+      "summary": "AI 생성 영상전라남도가 여수 성두마을과 성두치, 기포마을의 잘못된 한자 표기를 바로잡았다고 19일 밝혔다.일제강점기 이후 지역 유래와 다르게 쓰인 일본식 지명을 정비하고, 화순 동면~순천 주암 도로시설개량공사로 새로 생기는 교차로와 터널 등 11곳에도 이름을 붙였다.이번 지명 정비 대상은 여수 성두마을, 성두치, 기포마을 등 3건이다. 성두마을은 조선왕조실록에 돌산읍 제일 남단에서 성이 시작되는 곳이라는 뜻의 성두(城頭)로 기록됐다. 그러나 일제강점기 이후 별 성(星), 말 두(斗)를 쓴 성두(星斗)로 잘못 표기돼 지역 유래에 맞",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
       "id": "43dd03f73350",
       "source": "techcrunch",
       "source_name": "TechCrunch",
@@ -134,6 +276,429 @@
       "summary": "토스의 Technical Writer들이 어떻게 '문서를 쓰는 사람'에서 '조직의 지식 시스템을 설계하는 사람'으로 일을 넓혀왔는지 소개해요.",
       "keywords": [],
       "first_seen": "2026-06-19"
+    },
+    {
+      "id": "26573a4dcd11",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "icon": "🟠",
+      "title": "Introducing Web Search on Amazon Bedrock AgentCore",
+      "link": "https://aws.amazon.com/blogs/machine-learning/introducing-web-search-on-amazon-bedrock-agentcore/",
+      "date": "2026-06-19",
+      "summary": "Web Search on Amazon Bedrock AgentCore is now generally available. In this post, we walk through what makes Web Search on Amazon Bedrock AgentCore different, why it matters, and how to wire it in with a few lines of code.",
+      "keywords": [
+        "AI Agent",
+        "Automation",
+        "Coding"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "ff2487fd34ed",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "icon": "🟠",
+      "title": "Accelerate campaign workflow with insights from Adobe Marketing Agent for Amazon Quick",
+      "link": "https://aws.amazon.com/blogs/machine-learning/accelerate-campaign-workflow-with-insights-from-adobe-marketing-agent-for-amazon-quick/",
+      "date": "2026-06-19",
+      "summary": "This post shows how to enable Adobe Marketing Agent for Amazon Quick using a Model Context Protocol (MCP). We walk you through how to configure the integration, authenticate using your Adobe credentials, and get the latest insights in Amazon Quick. The sample workflow returns audience rankings, loya",
+      "keywords": [
+        "AI Agent",
+        "Automation",
+        "MCP"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "d0d9430b3e14",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Encryption, spyware, and now Mythos: History shows why cyber export control doesn’t work",
+      "link": "https://techcrunch.com/2026/06/19/encryption-spyware-and-now-mythos-history-shows-why-cyber-export-control-doesnt-work/",
+      "date": "2026-06-19",
+      "summary": "For the last 30 years, stopping the flow of cybersecurity-related software has proven to be ineffective. It's unclear why it would work now with Anthropic’s cybersecurity model Mythos.",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "a93cb6472fd1",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Go eyes robotaxis and acquisitions after Japan’s biggest IPO of 2026. Here’s why it matters",
+      "link": "https://techcrunch.com/2026/06/19/go-eyes-robotaxis-and-acquisitions-after-japans-biggest-ipo-of-2026-heres-why-it-matters/",
+      "date": "2026-06-19",
+      "summary": "Go&#8217;s IPO — Japan&#8217;s biggest so far this year — has done more than provide a much-needed boost to the country&#8217;s languishing listing season. It has also supplied the taxi-hailing app with the capital required to address an existential issue: Japan&#8217;s shortage of drivers. Go, whic",
+      "keywords": [
+        "Robotics",
+        "SDK/API"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "2c2b2e8f147a",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Aura’s impressive e-ink photo frame doesn’t even look digital",
+      "link": "https://techcrunch.com/2026/06/19/auras-impressive-e-ink-photo-frame-doesnt-even-look-digital/",
+      "date": "2026-06-19",
+      "summary": "What&#8217;s the most cliche possible gift you can give a relative? A digital photo frame, displaying a rotating slideshow of family photos. Now Aura has completely refreshed this product space with its gorgeous Aura Ink frame, which uses e-ink to create a display that doesn&#8217;t even look digita",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "29e6f4e816a3",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Every fusion startup that has raised over $100M",
+      "link": "https://techcrunch.com/2026/06/19/every-fusion-startup-that-has-raised-over-100m/",
+      "date": "2026-06-19",
+      "summary": "Fusion startups have raised $7.1 billion to date, with the majority of it going to a handful of companies.",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "d131d924d4b8",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Is the US government’s Anthropic ban accidentally helping the brand?",
+      "link": "https://techcrunch.com/video/is-the-us-governments-anthropic-ban-accidentally-helping-the-brand/",
+      "date": "2026-06-19",
+      "summary": "Just as last week&#160;was ending,&#160;the US government&#160;forced Anthropic to pull its two newest models, Fable 5 and Mythos 5, citing national security concerns after Amazon researchers allegedly found a way to bypass Fable 5&#8217;s guardrails.&#160; Cybersecurity researchers have&#160;since",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "e35040ffdf08",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Billionaire Ambani wants AI in every call, app, and home",
+      "link": "https://techcrunch.com/2026/06/19/billionaire-ambani-wants-ai-in-every-call-app-and-home/",
+      "date": "2026-06-19",
+      "summary": "Reliance is weaving AI into telecom services used by more than 500 million people.",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "076b29791c7a",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "The CEO of Allbirds’ new AI biz has a plan, but no team",
+      "link": "https://techcrunch.com/2026/06/19/the-ceo-of-allbirds-new-ai-biz-has-a-plan-but-no-employees/",
+      "date": "2026-06-19",
+      "summary": "Call it a startup with a sole founder and a very large seed round, but what's next is less clear.",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "bd33e41be4e5",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "The US says ASML’s top chip tool may be in China, but how?",
+      "link": "https://techcrunch.com/2026/06/19/the-us-says-asmls-top-chip-tool-may-be-in-china-asml-says-it-isnt/",
+      "date": "2026-06-19",
+      "summary": "There's a commercial logic that cuts against the idea that ASML would risk its export license to arm a Chinese customer.",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "a78a10cba8a4",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "\"미소스 5는 막혔지만 프리뷰는 사용 가능\"...일부는 차단돼 '혼란 가중'",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211926",
+      "date": "2026-06-19",
+      "summary": "미국 정부의 명령으로 앤트로픽의 '페이블 5'와 '미소스 5'의 서비스는 중단됐지만, 앞서 출시된 '미소스 프리뷰'는 아직도 접근 권한이 유지되는 것으로 나타났다.19일 블룸버그에 따르면, '프로젝트 글래스윙'을 통해 미소스 프리뷰 사용 권한을 승인받은 일부 기업들은 현재까지도 모델에 접근할 수 있는 것으로 알려졌다. 프로젝트 글래스윙에는 200여개의 기업과 기관이 참여하고 있으며, 그중 시스코와 드라고스(Dragos), 그리고 익명을 요구한 일부 기업들은 미소소 프리뷰에 아직 접근 중이라고 밝혔다.이 문제가 부각된 것은 지난주 미",
+      "keywords": [
+        "RAG"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "7eccd9f2a0a3",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "오픈AI, 스스로 가설 세우고 실험·검증하는 'AI 화학자' 프로젝트 공개",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211903",
+      "date": "2026-06-19",
+      "summary": "오픈AI가 'AI 과학자' 시대를 열 새로운 시스템을 공개했다. AI가 단순히 연구를 위한 보조 역할 넘어, 스스로 가설을 만들고 이를 실험으로 연결하고 결과를 검증하는 '자율 연구 시스템'을 갖췄다는 것이 특징이다.오픈AI는 17일(현지시간) 화학 및 제약 전문 AI 스타트업 몰레큘 원(Molecule.one)과 협력해 개발한 '자율 AI 화학자' 시스템을 공개했다. 이는 ▲GPT-5.4 ▲마리아 AI(Maria AI) ▲마리아 랩(Maria Lab) 등 3부분으로 구성된다. 우선 GPT-5.4는 계획 수립을 담당한다. 화학 문헌",
+      "keywords": [
+        "GPT"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "edad6f01ca97",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "앤트로픽, 클로드 코드에 ‘아티팩트’ 도입…\"실시간 공유로 협업 강화\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211911",
+      "date": "2026-06-19",
+      "summary": "앤트로픽이 AI 코딩 에이전트 '클로드 코드'에 새로운 ‘아티팩트(Artifacts)’ 기능을 도입했다. 이를 통해 개발 과정에서 생성되는 작업 내용을 실시간으로 시각화하고 팀원들과 공유할 수 있게 되며, 소프트웨어 개발 협업 방식에도 변화가 예상된다.앤트로픽은 18일(현지시간) 클로드 코드가 세션 내 작업 진행 상황을 자동으로 웹 페이지 형태의 아티팩트로 생성할 수 있도록 지원한다고 발표했다.아티팩트는 단순한 결과물 요약을 넘어 코드베이스, 외부 커넥터, 대화 내용 등 세션 전체 컨텍스트를 활용해 실시간으로 업데이트하는 시각적 문",
+      "keywords": [
+        "AI Agent",
+        "Claude"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "81bb9cb02f06",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "오픈AI, '챗GPT 엔터프라이즈'에 사용량 분석·비용 통제 기능 출시",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211908",
+      "date": "2026-06-19",
+      "summary": "오픈AI가 기업 고객들의 AI 운영 비용 관리와 사용 현황 파악을 지원하기 위해 '챗GPT 엔터프라이즈' 플랫폼에 새로운 사용량 분석 기능과 비용 통제 기능을 도입했다.오픈AI는 18일(현지시간) 기업용 서비스인 챗GPT 엔터프라이즈를 대상으로 고도화된 사용량 분석(Usage Analytics)과 업데이트된 비용 통제(Spend Controls) 기능을 출시했다고 밝혔다.최근 기업 내 AI 활용이 급증하면서 일부 고사용자를 중심으로 AI 사용 비용이 빠르게 증가하는 가운데, 기업들이 효율적으로 예산을 관리할 수 있도록 지원하기 위한",
+      "keywords": [
+        "GPT"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "0a61b2eb2c1d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "오픈AI, 생명과학 AI 벤치마크 '라이프사이벤치' 공개...\"실제 연구 역량 측정\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211895",
+      "date": "2026-06-19",
+      "summary": "오픈AI가 최근 생명과학 특화 모델 'GPT-로절린드(GPT-Rosalind)'를 선보인 데 이어, 이번에는 실제 연구 현장에서 AI가 얼마나 유용한지를 측정할 수 있는 평가 체계까지 내놨다.오픈AI는 17일(현지시간) 실제 생명과학 연구 환경에서 AI의 활용 능력을 평가하기 위한 새로운 벤치마크 ‘라이프사이벤치(LifeSciBench)’를 공개했다. 라이프사이벤치는 기존 생물학 벤치마크가 사실 암기나 정답이 명확한 문제 위주로 구성돼 있다는 한계를 극복하기 위해 개발됐다. 실제 연구에서는 과학자들이 불완전한 증거를 해석하고, 상충",
+      "keywords": [
+        "GPT"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "32a58b236177",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[게시판] 베스핀글로벌, 구글 시큐리티 오퍼레이션스 'MSSP' 선정 등 단신",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211924",
+      "date": "2026-06-19",
+      "summary": "■ 베스핀글로벌(대표 김써니·허양호)은 구글 시큐리티 오퍼레이션스 공식 관리형 보안 서비스 사업자(MSSP)로 선정됐다고 밝혔다. MSSP는 고객사의 보안 컨설팅부터 솔루션 구축, 통합 운영·관제를 아우르는 전문 사업자를 의미한다. 베스핀글로벌은 자체 보안 운영 센터(SOC) 전문 에이전트인 '헬프나우 AI SOC'를 통해 AI-SOC를 구축하는 기업을 지원할 예정이다.■ 빅밸류는 구름 대표가 서울 코엑스에서 열린 '넥스트라이즈'의 연계 프로그램인 한국프롭테크포럼에서 AI 부동산 비서 '복덕방 가재'를 소개했다고 밝혔다. 시중은행과",
+      "keywords": [
+        "AI Agent",
+        "Security"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "8c89d8599e46",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "중국, ‘AI+소비’ 지침 발표...휴머노이드·스마트가전 집중 육성",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211916",
+      "date": "2026-06-19",
+      "summary": "중국 정부가 AI를 소비 시장 전반에 확산하기 위한 종합 지원책을 내놓으며 휴머노이드 로봇과 스마트 가전, 스마트홈 등 차세대 소비 산업 육성에 나섰다.중국 국영방송 CCTV에 따르면, 중국 상무부는 18일 국가발전개혁위원회 등 8개 부처와 ‘AI+소비’ 발전을 가속하기 위한 시행 지침을 발표했다.이번 지침에는 AI와 소비 시장의 융합을 촉진하기 위한 5개 분야, 17개 세부 조치가 담겼다.중국 정부는 우선 상품 소비 부문에서 AI 기반 제품 공급을 확대하고, 기존 소비자 전자기기와 가전제품, 생활용품을 단순 기능형 제품에서 지능형",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "1c781ad1c487",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "EU, 자금난에 데이터센터 구축 계획 축소...'미국 추격'에 제동",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211919",
+      "date": "2026-06-19",
+      "summary": "유럽연합(EU)이 AI 경쟁력 강화를 위해 추진해 온 대규모 데이터센터 구축 계획을 축소했다. 미국과 중국을 추격하려는 유럽의 AI 전략에 차질이 불가피할 전망이다.18일(현지시간) 블룸버그에 따르면, EU는 최근 데이터센터 건설 입찰 계획을 발표하면서 기존 구상보다 규모를 크게 낮춘 방안을 제시했다.1단계 사업에서는 최소 2만5000개의 GPU를 갖춘 데이터센터 4곳과 최소 4만개의 프로세서를 탑재한 데이터센터 3곳에 대한 입찰을 진행할 예정이다.이는 당초 논의됐던 계획보다 크게 축소된 규모다. 초기 구상에서는 각각 10만개의 첨",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "7aee29cc1eb5",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "메타, 크루소와 1.6GW 컴퓨팅 공급 계약...AI 인프라 확장 가속",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211909",
+      "date": "2026-06-19",
+      "summary": "메타가 대규모 AI 인프라 확장을 위해 데이터센터 개발업체 크루소와 새로운 계약을 체결하며 컴퓨팅 자원 확보에 속도를 내고 있다. 블룸버그에 따르면, 메타는 18일(현지시간) 크루소가 개발 중인 미국 텍사스주 차일드레스와 미주리주 워런턴의 데이터센터 두 곳에서 AI 컴퓨팅 용량을 공급받기로 계약했다.구체적인 계약 규모와 공급 시점을 공개하지 않았지만, 관계자들은 메타가 시설 두 곳에서 총 1.6기가와트(GW) 규모의 컴퓨팅 용량을 확보할 예정이라고 전했다. 1GW는 미국 가정 75만 가구에 전력을 공급할 수 있는 수준이다.이번 계약",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "a5ef51d81c0b",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "여수, 섬박람회 앞두고 국내외 여행사 팸투어 진행",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211898",
+      "date": "2026-06-19",
+      "summary": "AI 생성 영상여수시가 2026여수세계섬박람회를 앞두고 국내외 여행업계를 상대로 섬 관광과 체류형 관광 콘텐츠 알리기에 나섰다고 19일 밝혔다. 여수는 18일부터 19일까지 국내 여행사와 미국·중국·동남아 등 외국인 관광객 유치 전문 여행사 관계자를 초청해 팸투어를 진행했다.팸투어는 여수의 역사문화, 미식, 해양관광 자원을 함께 소개하는 방식으로 구성됐다. 참가자들은 진남관, 고소대, 하멜전시관 등 역사문화 관광지를 둘러본 뒤 요트와 유람선을 이용해 낭도부터 추도까지 이어지는 섬 투어를 체험했다.여수는 이번 행사를 2026여수세계섬",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "7770ba6c9097",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "순천, 제6기 지역사회보장계획 수립 절차 돌입",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211905",
+      "date": "2026-06-19",
+      "summary": "AI 생성 영상순천시가 2027년부터 2030년까지 적용할 제6기 지역사회보장계획 수립 절차에 들어갔다고 19일 밝혔다.순천은 지난 17일 순천육아종합지원센터에서 공무원과 읍·면·동 지역사회보장협의체 위원 등 82명이 참석한 가운데 워크숍을 열고 일자리·돌봄·건강·문화 등 시민 생활과 맞닿은 복지 의제를 다뤘다.이번 워크숍은 제6기 지역사회보장계획의 비전과 추진전략을 마련하기 위해 열렸다. 참석자들은 지역사회보장계획에 대한 이해를 넓히고, 조별 공감 투표 등을 통해 현장 의견을 나누는 방식으로 지역 복지정책의 방향을 점검했다.순천은",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "ac2067706d04",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "LG CNS, 두산과 AI·로봇·데이터센터 분야 협력",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211922",
+      "date": "2026-06-19",
+      "summary": "LG CNS(대표 현신균)는 두산과 'AX·로봇 전환(RX)·데이터센터 및 클라우드 등 신사업 글로벌 경쟁력 확보를 위한 업무협약(MOU)'을 체결했다고 19일 밝혔다.LG CNS의 기업용 에이전틱 AI 플랫폼 '에이전틱웍스'를 기반으로 두산의 에이전틱 AI 경쟁력 강화를 위한 사업 로드맵을 수립하고, RX 분야 협업도 검토할 계획이다.데이터센터 및 클라우드 사업에서는 LG CNS의 클라우드·데이터센터 기술력을 활용해 두산의 IT 인프라를 고도화하고, 수소연료전지를 LG CNS 데이터센터 사업에 도입하는 방안도 협의할 예정이다.이와",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "5ad33cdc7e7d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "미 의회, 트럼프 정부의 '앤트로픽 AI 수출 금지' 근거 요구",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211914",
+      "date": "2026-06-19",
+      "summary": "미국 의원들이 트럼프 행정부에 앤트로픽의 최신 AI 모델에 대한 수출 통제 조치 근거를 공개하라고 요구했다. 의원들은 이번 조치가 특정 기업에 대한 개별 규제를 넘어 첨단 AI 모델 전반에 대한 새로운 통제 체계의 시작일 수 있다며 우려를 나타냈다.워싱턴포스트에 따르면, 민주·공화 양당 소속 하원의원들은 18일(현지시간) 하워드 러트닉 상무부 장관에게 서한을 보내 앤트로픽의 '미소스 5'와 '페이블 5'에 대한 수출 통제 결정의 배경과 앞으로 다른 AI 기업들도 유사한 규제를 받을 가능성이 있는지에 대한 설명을 요구했다.의원들은 서",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "ecc69cea3424",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "피지컬 AI 얼라이언스, ‘실행’ 중심 2기 체계 본격 가동",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211920",
+      "date": "2026-06-19",
+      "summary": "과학기술정보통신부(장관 배경훈)는 19일 더플라자 호텔 서울에서 ‘피지컬 AI 얼라이언스 2기 출범식’을 개최했다고 밝혔다.피지컬 AI 얼라이언스 1기는 지난해 9월 출범했다. 민관 협력의 출발점으로, 산업 현장의 수요와 애로사항을 발굴해 정책 방향을 논의하고, 피지컬 AI 국내 생태계 활성화를 위한 주요 과제를 도출하는 것이 목적이었다. 2기는 '피지컬 AI 실행'에 맞춰 3가지에 초점을 맞췄다. K-피지컬 AI 풀스택 확보가 우선적으로 꼽혔다. 외산 솔루션 의존을 줄이고, 국산 AI 반도체, AI 모델, 소프트웨어, 로봇·센서,",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "f0a2cfe8cc91",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "국내 챗GPT 무료·Go 요금제에 ‘광고’ 도입",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211910",
+      "date": "2026-06-19",
+      "summary": "오픈AI는 19일부터 '챗GPT 광고' 파일럿을 국내로 확대했다고 밝혔다.챗GPT 광고는 미국, 영국, 캐나다, 호주, 뉴질랜드에서 먼저 적용됐다. 이를 통해 초기 파일럿 시장부터 기업들의 높은 관심을 확인했다고 설명했다.광고는 챗GPT 무료와 고(Go) 요금제를 이용하는 성인 사용자를 대상으로 노출된다. 챗GPT 플러스, 프로, 비즈니스, 엔터프라이즈, 에듀 요금제 이용자에게는 광고가 표시되지 않는다.미성년자로 확인되거나 미성년자일 가능성이 있다고 예측되는 계정에는 광고를 표시하지 않는다. 정신건강이나 정치 등 민감하거나 규제 대",
+      "keywords": [
+        "GPT"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "c8cdabadf72b",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "KAIST, 로보틱스·컴퓨터비전 국제 챌린지서 잇달아 우승",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211915",
+      "date": "2026-06-19",
+      "summary": "한국과학기술원(KAIST, 총장 이광형)은 명현 전기및전자공학부 교수 연구실 소속 ACDC-K팀과 큐레이터(Curaytor)팀이 국제 로봇 및 자동화 학술대회인 ‘ICRA 2026’와 컴퓨터비전 및 패턴 인식 학술대회 ‘CVPR’ 워크숍 국제 챌린지에서 각각 1위를 차지했다고 19일 밝혔다.ACDC-K팀은 지난 1일부터 5일까지 오스트리아 비엔나에서 열린 ‘ICRA 2026’의 워크숍 ‘힐티X트림블 SLAM 챌린지 2026’에서 동시 위치추정 및 지도작성 분야 60여개 출전팀 가운데 1위를 차지했다.건설 현장에서 수집한 센서 데이터",
+      "keywords": [
+        "Automation"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "b547f2d82378",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "\"AI 음악, 99.9% 정확도로 걸러낸다\"...AI 곡 판별 솔루션 ‘에이다’ 출시",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211918",
+      "date": "2026-06-19",
+      "summary": "디지털 콘텐츠 식별 전문 에이드(AIID, 대표 방경식)는 생성 AI로 제작된 음원을 구분하는 AI 곡 판별 솔루션 ‘아이다(AIDAR)’를 출시했다고 19일 밝혔다.아이다는 수노와 유디오, 뮤레카 등 AI 음악 서비스로 만들어진 음원을 식별한다고 소개했다. 특히 음원 플랫폼과 스트리밍 서비스, 저작권 정산 시스템에 출처가 불명확한 AI 음악이 빠르게 유입되며 제한된 정산 구조에서 창작자의 수익을 침해할 우려를 덜 수 있도록 돕는다고 전했다.글로벌 AI 음악 서비스 전반에 대한 높은 검출 정확도를 장점으로 내세웠다. 주요 AI 작곡",
+      "keywords": [
+        "Generative AI"
+      ],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "94e60fde4d4e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "트럼프 \"애플-인텔, 미국서 칩 생산 합의\"…인텔, 이석희 전 하이닉스 대표 영입",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211900",
+      "date": "2026-06-19",
+      "summary": "도널드 트럼프 대통령이 애플과 인텔의 미국 내 반도체 설계·생산 합의 사실을 밝히며 자국의 반도체 제조 부흥 전략에 힘을 실었다. 트럼프 대통령은 19일(현지시간) 트루스소셜을 통해 \"과거의 멍청한 대통령들은 대만과 다른 나라들이 우리의 반도체 공장을 가져가도록 내버려뒀다\"라며 \"하지만, 이제 애플은 인텔과 협력해 미국에서 칩을 설계하고 생산하기로 합의했다\"라고 밝혔다.이번 협력이 미국의 반도체 제조 역량 강화를 위한 행정부의 노력 때문라고 강조했다. 또 엔비디아와 테슬라의 인텔 파운드리 활용을 지원한 데 이어 애플과의 협력도 성사",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "a866a1ace785",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "마스오토, 미국서 자율주행 화물운송 왕복 7000km 돌파...\"역대 최고 기록\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211897",
+      "date": "2026-06-19",
+      "summary": "마스오토(대표 박일수)는 LX판토스와 미국 자율주행 화물운송 노선을 왕복 체계로 확대해, 상용 노선 기준 세계 최장 운송 기록을 경신했다고 19일 밝혔다.마스오토는 현대모비스, 롯데글로벌로지스, LX판토스 등 국내 주요 물류·제조 기업과 '팀 코리아'를 구성해 프로젝트를 진행 중이다.서부에서 동부로 향하는 구간은 현대모비스의 자동차 부품을, 복귀 구간은 국내 제조기업의 건축자재를 운송하는 방식으로 편도 약 3500km를 7000km 이상으로 확대했다.특히 이번 프로젝트로 업계 평균 공차운송률인 16.7%를 약 5%까지 낮추면서 운영",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "bcfab5f9e95d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "얀 르쿤 \"머스크의 xAI는 실패작...오픈AI·앤트로픽과 경쟁 안 돼\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=211894",
+      "date": "2026-06-19",
+      "summary": "얀 르쿤 AMI 랩스 창립자가 일론 머스크 CEO의 xAI를 두고 \"실패한 회사\"라고 강하게 비판했다. 나아가 현재 AI 산업 전반에 대규모 거품 붕괴 가능성이 있다고 경고했다.르쿤 창립자는 18일(현지시간) CNBC와의 인터뷰에서 \"xAI는 일종의 실패((kind of a failure)\"라는 평을 내놓았다.\"창립 멤버들이 모두 떠났고, 머스크는 이제 최고 수준의 AI 인재를 영입하기 매우 어려운 위치에 놓여 있다\"라는 것을 이유로 들었다. \"그가 이전 팀원들을 대하는 방식이 좋지 않았기 때문에, 업계 최고의 연구자들이 xAI에",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "67e4259cd7f7",
+      "source": "toss",
+      "source_name": "토스",
+      "icon": "💙",
+      "title": "디자이너에게 AI로 뭐든 만들어보라고 한다면",
+      "link": "https://toss.tech/article/ai_contest",
+      "date": "2026-06-19",
+      "summary": "토스 디자인챕터에서 AI Contest를 열었어요. 그중 인상적이었던 네 가지 사례를 소개합니다.",
+      "keywords": [],
+      "first_seen": "2026-06-20"
+    },
+    {
+      "id": "ea09c5a3b32e",
+      "source": "toss",
+      "source_name": "토스",
+      "icon": "💙",
+      "title": "Spark Connect on Kubernetes #1: 견고한 Spark Connect 만들기",
+      "link": "https://toss.tech/article/spark-connect-on-kubernetes-1",
+      "date": "2026-06-19",
+      "summary": "Spark Connect 서버에 세션이 몰리면, 무거운 작업이 다른 사용자까지 느리게 만들고 그 서버가 죽는 순간 모두가 실패합니다. 이 문제들을 어떻게 풀었는지 공유합니다.",
+      "keywords": [
+        "Cloud/DevOps"
+      ],
+      "first_seen": "2026-06-20"
     },
     {
       "id": "e304a2af2a1b",
@@ -1735,6 +2300,18 @@
         "Security"
       ],
       "first_seen": "2026-06-18"
+    },
+    {
+      "id": "5e3ebd833dec",
+      "source": "toss",
+      "source_name": "토스",
+      "icon": "💙",
+      "title": "매일 하던 업무를 디자인하기",
+      "link": "https://toss.tech/article/todolist",
+      "date": "2026-06-17",
+      "summary": "반복되는 업무를 프로덕트처럼 정의하고, AI와 함께 해결했어요.",
+      "keywords": [],
+      "first_seen": "2026-06-20"
     },
     {
       "id": "c7e415fadd44",
@@ -18591,6 +19168,11 @@
       "date": "2026-06-19",
       "added": 65,
       "total": 1378
+    },
+    {
+      "date": "2026-06-20",
+      "added": 44,
+      "total": 1422
     }
   ],
   "sources": {},
@@ -18730,64 +19312,69 @@
     {
       "week": "2026-W25",
       "keywords": {
-        "AI Agent": 36,
-        "Automation": 20,
-        "Security": 16,
+        "AI Agent": 41,
+        "Automation": 24,
+        "Security": 19,
+        "GPT": 13,
+        "SDK/API": 10,
+        "Claude": 10,
         "Gemini": 9,
-        "GPT": 9,
-        "SDK/API": 9,
-        "Claude": 9,
-        "Robotics": 7,
-        "LLM": 7,
+        "Robotics": 9,
+        "Generative AI": 7,
         "Deployment": 7,
+        "RAG": 7,
+        "LLM": 7,
         "Chatbot": 6,
-        "Optimization": 5,
-        "RAG": 5,
         "Enterprise AI": 5,
-        "Generative AI": 5
+        "Optimization": 5
       }
     }
   ],
   "source_stats": {
     "techcrunch": {
-      "total": 327,
-      "recent_7d": 121,
-      "recent_30d": 266
+      "total": 336,
+      "recent_7d": 110,
+      "recent_30d": 275
     },
     "aitimes": {
-      "total": 530,
+      "total": 560,
       "recent_7d": 205,
-      "recent_30d": 430
+      "recent_30d": 460
     },
-    "anthropic": {
-      "total": 24,
-      "recent_7d": 6,
+    "toss": {
+      "total": 32,
+      "recent_7d": 8,
       "recent_30d": 12
     },
     "openai": {
       "total": 77,
-      "recent_7d": 12,
+      "recent_7d": 9,
       "recent_30d": 39
-    },
-    "google_ai": {
-      "total": 30,
-      "recent_7d": 3,
-      "recent_30d": 6
     },
     "huggingface": {
       "total": 60,
-      "recent_7d": 9,
+      "recent_7d": 8,
       "recent_30d": 26
     },
     "aws_ml": {
-      "total": 83,
-      "recent_7d": 20,
-      "recent_30d": 50
+      "total": 85,
+      "recent_7d": 18,
+      "recent_30d": 52
     },
-    "toss": {
-      "total": 29,
-      "recent_7d": 5,
-      "recent_30d": 9
+    "nvidia_ai": {
+      "total": 51,
+      "recent_7d": 9,
+      "recent_30d": 30
+    },
+    "anthropic": {
+      "total": 24,
+      "recent_7d": 4,
+      "recent_30d": 12
+    },
+    "google_ai": {
+      "total": 30,
+      "recent_7d": 2,
+      "recent_30d": 6
     },
     "lycorp": {
       "total": 34,
@@ -18796,13 +19383,8 @@
     },
     "deepmind": {
       "total": 38,
-      "recent_7d": 3,
+      "recent_7d": 2,
       "recent_30d": 8
-    },
-    "nvidia_ai": {
-      "total": 51,
-      "recent_7d": 10,
-      "recent_30d": 30
     },
     "meta_eng": {
       "total": 11,
@@ -18821,10 +19403,10 @@
     },
     "yozm": {
       "total": 64,
-      "recent_7d": 20,
+      "recent_7d": 10,
       "recent_30d": 29
     }
   },
-  "last_updated": "2026-06-19",
-  "total_articles": 1378
+  "last_updated": "2026-06-20",
+  "total_articles": 1422
 }
