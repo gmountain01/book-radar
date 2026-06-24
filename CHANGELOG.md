@@ -4,6 +4,70 @@
 
 ---
 
+## 2026-06-25 — v2.6.0
+
+### 버전 업데이트
+- v2.5.1 → v2.6.0
+- **대상:** index.html, shared/app.js
+
+### dev-advisor 에이전트 신규 추가
+- 코드·시장 데이터 종합 진단, severity별 문제점 분류([H]/[M]/[L])
+- 즉시 액션 TOP3, 3개월 예측, 6개월 로드맵 생성
+- `_workspace/advisory_YYYYMMDD.md`에 결과 저장
+- **대상:** .claude/agents/dev-advisor.md, .claude/skills/dev-advisory/SKILL.md
+
+### panel8 교정 도우미 품질 강화
+- **모델 고정:** Haiku → Sonnet 전면 전환 (기술서 맥락 분석 깊이 향상)
+- **배치 오버랩:** 이전 배치 마지막 페이지를 다음 배치 문맥으로 전달 (배치 경계 누락 방지)
+- **SYS 프롬프트 개선:** 번역체·일본식표현·수동태과용 섹션에 before/after 예시 대폭 추가
+- **UI:** 이슈 없는 카테고리 박스 숨김 (이슈 있는 항목만 표시)
+- **버그 수정:** 배치 오버랩 hallucination 필터 오탐 수정 (컨텍스트 페이지 found 처리)
+- **대상:** panels/panel8/panel8.js
+
+### panel10 키워드 분석 고도화
+- 속도비(velocity ratio) 도입: 최근 3개월 vs 이전 영상 조회수 증가율 비교
+- 급상승 트렌드(🔥 3x이상 / 📈 1.5x이상) 우선 감지
+- preempt 검증에 속도비 조건 추가 (isRising 기준)
+- **대상:** panels/panel10/panel10.js
+
+### panel23 핵심 인사이트 강조 렌더링
+- `## 핵심 인사이트` 섹션을 `.p23-insight-box`로 자동 래핑
+- 보라색 그라데이션 배경 + 강조 테두리 스타일 추가
+- generate_report.py: Claude API 없을 때 통계 기반 폴백 인사이트 자동 생성
+- **대상:** panels/panel23/panel23.js, panels/panel23/panel23.css, scripts/generate_report.py
+
+### shared/app.js 안정성 개선
+- **safeLSSet + _gcLocalStorage:** localStorage 5MB 한도 초과 시 오래된 캐시 자동 정리 후 재시도
+- **전역 에러 핸들러:** window.onerror + unhandledrejection → 화면 하단 배너로 사용자 노출 (6초 자동 닫힘)
+- **AES-GCM dead code 제거:** loadApiKey() 내 레거시 마이그레이션 블록 ~25줄 삭제
+- **YouTube API 키 분리:** 하드코딩 제거 → shared/api-keys.js (gitignore), api-keys.example.js 템플릿 추가
+- **대상:** shared/app.js, shared/api-keys.example.js, .gitignore, index.html
+
+### shared/youtube.js race condition 수정
+- 선점 트래킹(optimistic tracking) 도입: fetch 완료 후 → fetch 전으로 _ytTrackUnit 이동
+- 병렬 태스크 3개가 동일 키를 선택하는 문제 해소
+- **대상:** shared/youtube.js
+
+### silent catch 전체 전환 (75곳)
+- `catch(_){}` / `catch(e){}` → `console.warn('[파일명] 설명', e)` 전환
+- 대상 파일: panel6~25, shared/app.js, shared/youtube.js
+
+### 전체 패널 QA — 버그 수정 7건
+- **[H] panel21:313** — zip.files['word/document.xml'] null guard 추가 (손상된 DOCX 대응)
+- **[M] panel7** — ytSaveLS() localStorage.setItem try/catch 추가
+- **[M] panel10** — saveCustomTax() localStorage.setItem try/catch 추가
+- **[M] panel11** — OpenAI 키 저장 localStorage.setItem try/catch 추가
+- **[M] panel13** — buildDocx() 호출 try/catch + 에러 alert 추가
+- **[M] panel16** — clipboard.writeText() .catch() 핸들러 추가
+- **[M] panel25** — saveInProgress() / saveTracking() localStorage.setItem try/catch 추가
+- **대상:** panels/panel7·10·11·13·16·21·25
+
+### GitHub Actions
+- actions/checkout v4 → v5 (Node.js 20 deprecation 경고 해소)
+- **대상:** .github/workflows/fetch-rss.yml
+
+---
+
 ## 2026-06-12
 
 ### 전체 QA + 코드 정리
