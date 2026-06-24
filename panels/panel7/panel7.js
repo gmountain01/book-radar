@@ -106,7 +106,7 @@ function ytSaveSearchCache() {
       results: YT_S.searchResults,
       sortBy: YT_S.sortBy
     }));
-  } catch(_) {}
+  } catch(_) { console.warn('[panel7] ytSaveSearchCache: localStorage 저장 실패', _); }
 }
 function ytLoadSearchCache() {
   try {
@@ -118,7 +118,7 @@ function ytLoadSearchCache() {
     YT_S.lastSearchQuery = cached.query || '';
     YT_S.sortBy = cached.sortBy || 'relevance';
     return true;
-  } catch(_) { return false; }
+  } catch(_) { console.warn('[panel7] ytLoadSearchCache: 캐시 파싱 실패', _); return false; }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -287,7 +287,7 @@ async function resolveInput(input) {
       const name = path.split('/').filter(Boolean).pop();
       return await fetchBySearch(name);
     }
-  } catch (_) { /* not a URL */ }
+  } catch (_) { console.warn('[panel7] resolveChannelInput: URL 파싱 실패, 채널명으로 검색 진행', _); }
 
   // @handle
   if (input.startsWith('@')) return await fetchByHandle(input.slice(1));
@@ -308,7 +308,7 @@ async function fetchByHandle(handle) {
   try {
     const data = await apiGetChannelByHandle(handle);
     if (data.items?.length) return data.items[0];
-  } catch (_) {}
+  } catch (_) { console.warn('[panel7] fetchByHandle: 핸들 API 조회 실패, 검색으로 폴백', _); }
   // fallback to search
   return await fetchBySearch(handle);
 }
@@ -578,7 +578,7 @@ async function doSearch() {
             if (!dateData.nextPageToken) break;
             datePageToken = dateData.nextPageToken;
           }
-        } catch (_) { /* date 검색 실패해도 진행 */ }
+        } catch (_) { console.warn('[panel7] doSearch: order:date 검색 실패, 다른 검색 결과로 진행', _); }
       })(),
       // (2) 채널 직접 검색 (type:channel, 최대 3페이지)
       (async () => {
@@ -602,7 +602,7 @@ async function doSearch() {
             if (!chDirect.nextPageToken) break;
             chPageToken = chDirect.nextPageToken;
           }
-        } catch (_) { /* 직접 검색 실패해도 영상 검색 결과로 진행 */ }
+        } catch (_) { console.warn('[panel7] doSearch: 채널 직접 검색 실패, 영상 검색 결과로 진행', _); }
       })()
     ]);
 
@@ -1998,7 +1998,7 @@ async function loadTrendKeywords(forceRefresh = false) {
         renderKeywordChips(cached.keywords);
         return;
       }
-    } catch (e) { /* 캐시 없거나 파손 */ }
+    } catch (e) { console.warn('[panel7] onActivate: 키워드 캐시 로드 실패 (캐시 없거나 파손)', e); }
   }
 
   // API 키 없으면 정적 목록 사용

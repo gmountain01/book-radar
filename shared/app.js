@@ -2,22 +2,14 @@
 const CLAUDE_API_KEY = '';  // 예: 'sk-ant-api03-...'
 
 // ━━━ YouTube API 키 (공통) ━━━
-// ⚠️  WARNING: 아래 API 키들이 하드코딩되어 있습니다.
-// ⚠️  이 파일이 public repository에 push되면 키가 노출되어
-// ⚠️  무단 사용·할당량 소진·과금 피해가 발생할 수 있습니다.
-// ⚠️  public repo 운영 시 키를 제거하고 localStorage(API 키 설정 UI) 방식만 사용하세요.
-// 모든 패널(panel7·panel10·panel11)이 이 배열을 참조한다.
-const YT_API_KEYS_SHARED = [
-  'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo',
-  'AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c',
-  'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM',
-  'AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
-  'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis',
-  'AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc',
-  'AIzaSyDskh4OhwBoBYfl-LHUiN1HEbaLFgO_hsk',
-  'AIzaSyAXY7UnvqS0qT44o7StAHE3QoSScYH_0Ts',
-  'AIzaSyDLKaH0_N8t3ROU5Y_oOqLdwxBOEtt2n8g'
-];
+// shared/api-keys.js 에서 로드됩니다 (index.html에서 먼저 로드).
+// api-keys.js는 .gitignore 처리되어 있어 git에 올라가지 않습니다.
+// 키가 없으면 localStorage(패널11 API 키 설정 UI)를 사용하세요.
+// YT_API_KEYS_SHARED는 api-keys.js에서 선언됩니다.
+if (typeof YT_API_KEYS_SHARED === 'undefined') {
+  // api-keys.js가 없을 때 빈 배열로 초기화 (localStorage 키만 사용)
+  var YT_API_KEYS_SHARED = [];
+}
 
 // 내장 + localStorage 추가 키를 병합하여 전체 YouTube API 키 목록 반환
 // 모든 패널(panel7·panel10·panel11)이 이 함수를 사용해야 함
@@ -45,7 +37,7 @@ function addToPlanningBoard(item) {
   item.addedAt = new Date().toISOString();
   if (!item.memo) item.memo = '';
   board.items.push(item);
-  localStorage.setItem('p25_board', JSON.stringify(board));
+  safeLSSet('p25_board', JSON.stringify(board));
   showToast('📌 기획 보드에 추가됨', 'green');
   var badge = document.getElementById('p25Badge');
   if (badge) {
@@ -87,7 +79,56 @@ function _updateBoardBadge(board) {
   }
 }
 function savePlanningBoard(board) {
-  localStorage.setItem('p25_board', JSON.stringify(board));
+  safeLSSet('p25_board', JSON.stringify(board));
+}
+
+/**
+ * localStorage 안전 저장 — 5MB 한도 초과 시 오래된 캐시 자동 정리 후 재시도
+ */
+function safeLSSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch(e) {
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      console.warn('[app] localStorage 한도 초과 — 캐시 정리 후 재시도');
+      _gcLocalStorage();
+      try {
+        localStorage.setItem(key, value);
+      } catch(e2) {
+        console.warn('[app] localStorage 재시도 실패 — 저장 건너뜀', key, e2);
+      }
+    } else {
+      console.warn('[app] localStorage 저장 실패', key, e);
+    }
+  }
+}
+
+/**
+ * localStorage GC — _cache_, _p8_, _p10_, _p7_ 접두사 캐시 항목 중
+ * 가장 오래된 것부터 삭제해 공간 확보
+ */
+function _gcLocalStorage() {
+  const CACHE_PREFIXES = ['_cache_', '_p8_', '_p10_', '_p7_', 'p8_', 'p10_', 'p7_', 'ub_best', 'ub_lecture', 'ub_planned', 'ub_best_gs', 'ub_lecture_gs'];
+  const entries = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (CACHE_PREFIXES.some(p => k.startsWith(p))) {
+      try {
+        const raw = localStorage.getItem(k);
+        const parsed = JSON.parse(raw);
+        entries.push({ key: k, ts: parsed.ts || parsed.savedAt || 0 });
+      } catch(_) {
+        entries.push({ key: k, ts: 0 });
+      }
+    }
+  }
+  // 오래된 순으로 정렬, 절반 삭제
+  entries.sort((a, b) => a.ts - b.ts);
+  const toDelete = entries.slice(0, Math.max(1, Math.floor(entries.length / 2)));
+  toDelete.forEach(e => {
+    localStorage.removeItem(e.key);
+    console.info('[app] GC 삭제:', e.key);
+  });
 }
 
 // ━━━ 공통 인쇄 유틸 ━━━
@@ -111,7 +152,7 @@ function openPrintPopup(html) {
     printed = true;
     pw.focus();
     pw.print();
-    setTimeout(function() { try { document.body.removeChild(iframe); } catch(e) {} }, 500);
+    setTimeout(function() { try { document.body.removeChild(iframe); } catch(e) { console.warn('[app.js] printBlob: iframe 제거 실패', e); } }, 500);
   };
   if (pw.document && pw.document.fonts) {
     pw.document.fonts.ready.then(function() { setTimeout(doPrint, 150); });
@@ -196,7 +237,7 @@ async function callClaudeApi(opts) {
     try {
       var j = await res.json();
       if (j.error && j.error.message) errMsg += ': ' + j.error.message;
-    } catch (e2) {}
+    } catch (e2) { console.warn('[app.js] callClaudeApi: 오류 응답 JSON 파싱 실패', e2); }
     if (res.status === 401 || res.status === 403) errMsg += '\n→ API 키가 올바른지 확인하세요.';
     else if (res.status === 429) errMsg += '\n→ 요청 한도 초과 — 잠시 후 재시도하세요.';
     throw new Error(errMsg);
@@ -223,14 +264,14 @@ async function saveApiKey(rawKey) {
   }
   var key = rawKey.trim();
   _cachedApiKey = key;
-  localStorage.setItem(_SESSION_AK, key);
+  safeLSSet(_SESSION_AK, key);
   // 이전 잔재 정리
   try {
     sessionStorage.removeItem('ub_session_ak');
     localStorage.removeItem(_AK_STORE);
     localStorage.removeItem(_AK_SALT_STORE);
     localStorage.removeItem('ub_apikey');
-  } catch(e) {}
+  } catch(e) { console.warn('[app.js] saveApiKey: 이전 잔재 정리 실패', e); }
   // 모든 API 키 입력 필드에 자동 동기화
   _syncApiKeyInputs(key);
 }
@@ -269,32 +310,7 @@ async function loadApiKey() {
   try {
     const plain = localStorage.getItem('ub_apikey');
     if (plain) { await saveApiKey(plain); return plain; }
-  } catch(e) {}
-  // 이전 AES-GCM 암호화 저장소 마이그레이션
-  try {
-    const saltB64 = localStorage.getItem(_AK_SALT_STORE);
-    const stored  = localStorage.getItem(_AK_STORE);
-    if (saltB64 && stored) {
-      const enc2 = new TextEncoder();
-      const km = await crypto.subtle.importKey(
-        'raw', enc2.encode('hb_pub_tool_2026_' + window.location.hostname),
-        { name: 'PBKDF2' }, false, ['deriveKey']
-      );
-      const b64d = b => Uint8Array.from(atob(b), c => c.charCodeAt(0));
-      const salt = b64d(saltB64);
-      const dk = await crypto.subtle.deriveKey(
-        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-        km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
-      );
-      const { iv, data } = JSON.parse(stored);
-      const dec = await crypto.subtle.decrypt(
-        { name: 'AES-GCM', iv: b64d(iv) }, dk, b64d(data)
-      );
-      const recovered = new TextDecoder().decode(dec);
-      await saveApiKey(recovered); // sessionStorage로 마이그레이션 후 localStorage 삭제
-      return recovered;
-    }
-  } catch(e) {}
+  } catch(e) { console.warn('[app.js] loadApiKey: 이전 평문 키 마이그레이션 실패', e); }
   return '';
 }
 
@@ -526,6 +542,34 @@ window.toggleMobileSidebar = toggleMobileSidebar;
     lastMap.set(t, y);
   }, true);
 })();
+
+// ── 전역 에러 핸들러 ──
+// 잡히지 않은 JS 에러와 Promise reject를 콘솔에 기록하고 사용자에게 간단히 알림
+window.addEventListener('error', function(e) {
+  console.error('[전역 오류]', e.message, '\n파일:', e.filename, '\n줄:', e.lineno, e.error);
+  _showGlobalError(e.message);
+});
+window.addEventListener('unhandledrejection', function(e) {
+  const msg = e.reason instanceof Error ? e.reason.message : String(e.reason);
+  console.error('[전역 Promise 오류]', msg, e.reason);
+  _showGlobalError(msg);
+});
+function _showGlobalError(msg) {
+  // 이미 표시 중이면 스킵 (도배 방지)
+  if (document.getElementById('_globalErrBanner')) return;
+  const MAX_LEN = 80;
+  const short = msg && msg.length > MAX_LEN ? msg.slice(0, MAX_LEN) + '…' : (msg || '알 수 없는 오류');
+  const ban = document.createElement('div');
+  ban.id = '_globalErrBanner';
+  ban.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;'
+    + 'background:#1e1e2e;color:#f38ba8;border:1px solid #f38ba8;border-radius:8px;'
+    + 'padding:10px 16px;font-size:13px;max-width:480px;box-shadow:0 4px 16px rgba(0,0,0,.4);'
+    + 'display:flex;align-items:center;gap:10px;';
+  ban.innerHTML = '<span>⚠ 오류 발생: ' + short.replace(/</g,'&lt;') + '</span>'
+    + '<button onclick="this.parentNode.remove()" style="background:none;border:none;color:#f38ba8;cursor:pointer;font-size:16px;line-height:1;">✕</button>';
+  (document.body || document.documentElement).appendChild(ban);
+  setTimeout(function() { if (ban.parentNode) ban.parentNode.removeChild(ban); }, 6000);
+}
 
 // 사이드바 기본 collapsed + 호버 확장
 document.addEventListener('DOMContentLoaded', function() {
@@ -942,8 +986,8 @@ function _fetchSheetViaJsonp(fileId, gid) {
 
     function cleanup() {
       clearTimeout(timer);
-      try { delete window[cbName]; } catch(_) {}
-      try { document.head.removeChild(script); } catch(_) {}
+      try { delete window[cbName]; } catch(_) { console.warn('[app.js] _fetchSheetViaJsonp: JSONP 콜백 정리 실패', _); }
+      try { document.head.removeChild(script); } catch(_) { console.warn('[app.js] _fetchSheetViaJsonp: script 태그 제거 실패', _); }
     }
 
     window[cbName] = function(data) {
@@ -1053,10 +1097,10 @@ async function loadGoogleSheet(type) {
     const data = await fetchSheetAsCsv(url);
     if (type === 'best') {
       await handleBestData(data, 'Google Sheets (베스트셀러)');
-      localStorage.setItem(LS_KEYS.bestSheetUrl, url);
+      safeLSSet(LS_KEYS.bestSheetUrl, url);
     } else {
       await handleLectureData(data, 'Google Sheets (강의 플랫폼)');
-      localStorage.setItem(LS_KEYS.lectureSheetUrl, url);
+      safeLSSet(LS_KEYS.lectureSheetUrl, url);
     }
     showToast('✅ Google Sheets 데이터를 불러왔습니다.', 'green');
   } catch(e) {
@@ -1094,21 +1138,18 @@ function checkLSVersion(){
     if(saved!==CURRENT_VERSION){
       // 버전 불일치 → 구버전 캐시 전체 삭제
       Object.values(LS_KEYS).forEach(k=>localStorage.removeItem(k));
-      localStorage.setItem(LS_VERSION_KEY,CURRENT_VERSION);
+      safeLSSet(LS_VERSION_KEY,CURRENT_VERSION);
     }
-  }catch(e){}
+  }catch(e){ console.warn('[app.js] checkLSVersion: LS 버전 체크/캐시 초기화 실패', e); }
 }
 
 function saveToLS(key, b64, name){
-  try{localStorage.setItem(key, JSON.stringify({b64, name}));}catch(e){
-    // localStorage 용량 초과 시 조용히 실패
-    console.warn('localStorage 저장 실패:', e);
-  }
+  safeLSSet(key, JSON.stringify({b64, name}));
 }
 
 function loadFromLS(key){
   try{const s=localStorage.getItem(key);return s?JSON.parse(s):null;}
-  catch(e){return null;}
+  catch(e){ console.warn('[app.js] loadFromLS: localStorage 파싱 실패', e); return null; }
 }
 
 async function loadDefaults(){
@@ -1140,7 +1181,7 @@ async function loadDefaults(){
   // 베스트셀러 결과 처리
   if (bestResult.status === 'fulfilled') {
     await handleBestData(bestResult.value, 'Google Sheets (베스트셀러)');
-    localStorage.setItem(LS_KEYS.bestSheetUrl, bestUrl);
+    safeLSSet(LS_KEYS.bestSheetUrl, bestUrl);
   } else {
     console.warn('[loadDefaults] 베스트셀러 시트 로드 실패:', bestUrl, bestResult.reason);
     showToast('⚠️ 베스트셀러 시트 불러오기 실패\n' + bestResult.reason.message, 'red');
@@ -1152,7 +1193,7 @@ async function loadDefaults(){
   // 강의 플랫폼 결과 처리
   if (lectureResult.status === 'fulfilled') {
     await handleLectureData(lectureResult.value, 'Google Sheets (강의 플랫폼)');
-    localStorage.setItem(LS_KEYS.lectureSheetUrl, lectureUrl);
+    safeLSSet(LS_KEYS.lectureSheetUrl, lectureUrl);
   } else {
     console.warn('[loadDefaults] 강의 시트 로드 실패:', lectureUrl, lectureResult.reason);
     showToast('⚠️ 강의 시트 불러오기 실패\n' + lectureResult.reason.message, 'red');
@@ -2046,7 +2087,7 @@ function showCatAuthors(catName,blockId){
       const name=(r.저자명||'').toLowerCase();
       return keywords.some(k=>tags.includes(k)||name.includes(k));
     });
-  }catch(e){}
+  }catch(e){ console.warn('[app.js] renderCatAuthors: 저자 데이터 필터링 실패', e); }
 
   const panel=document.createElement('div');
   panel.id=panelId;
@@ -2581,7 +2622,7 @@ function importSession(input) {
       var EXCLUDE_KEYS = ['ai-api-key-enc', 'ai-api-iv'];
       for (var i = 0; i < keys.length; i++) {
         if (EXCLUDE_KEYS.indexOf(keys[i]) !== -1) continue;
-        localStorage.setItem(keys[i], parsed.data[keys[i]]);
+        safeLSSet(keys[i], parsed.data[keys[i]]);
       }
       showToast('세션 데이터를 복원했습니다 (' + keys.length + '개 항목). 새로고침합니다…', 'green');
       setTimeout(function () { location.reload(); }, 1200);

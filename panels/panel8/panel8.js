@@ -95,7 +95,7 @@ function getCache(key) {
     const raw = localStorage.getItem(CACHE_PREFIX + key);
     if (!raw) return null;
     return JSON.parse(raw);
-  } catch(e) { return null; }
+  } catch(e) { console.warn('[panel8] getCache: localStorage 파싱 실패', e); return null; }
 }
 
 function setCache(key, data) {
@@ -118,14 +118,14 @@ function setCache(key, data) {
         .sort((a, b) => a.ts - b.ts);
       for (var ri = 0; ri < Math.min(3, oldKeys.length); ri++) {
         localStorage.removeItem(oldKeys[ri].k);
-        try { localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(data)); break; } catch(e3) { /* 다음 시도 */ }
+        try { localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(data)); break; } catch(e3) { console.warn('[panel8] setCache: localStorage 재시도 실패', e3); }
       }
-    } catch(e2) { /* 무시 */ }
+    } catch(e2) { console.warn('[panel8] setCache: 오래된 캐시 정리 후 재저장 실패', e2); }
   }
 }
 
 function clearCache(key) {
-  try { localStorage.removeItem(CACHE_PREFIX + key); } catch(e) {}
+  try { localStorage.removeItem(CACHE_PREFIX + key); } catch(e) { console.warn('[panel8] clearCache: localStorage 삭제 실패', e); }
 }
 
 
@@ -2176,9 +2176,42 @@ HIGH severity (명백한 오류):
 MEDIUM severity (개선 필요):
 - 윤문필요: Polishing needed — awkward rhythm, convoluted sentence structure, weak word choice, overly long sentences that should be split, or passages that are technically correct but significantly impair readability
 - 내용보완필요: Content supplement needed — concept explained incompletely or too superficially, missing prerequisite knowledge that would confuse readers, abrupt topic transition, logical gap between ideas, claim made without supporting explanation
-- 번역체: Unnatural translation-style Korean — ~함에 있어서, ~에 대해서, ~의 경우에 있어서, ~라고 하는, ~적(的) 남용, ~를 통해서
-- 일본식표현: Japanese-influenced — ~에 있어서, ~로 인하여, ~에 의한, ~하는 바이다, ~(이)라고 하는
-- 수동태과용: Excessive passive — -어지다/-되어지다(high), ~에 의해 ~되다, ~받다 남용
+- 번역체: Unnatural translation-style Korean. Detect and fix ALL of the following patterns:
+  · ~함에 있어서 → ~할 때 / ~하려면
+    예) "코드를 작성함에 있어서" → "코드를 작성할 때"
+  · ~에 대해서/~에 관하여 남용 → 주어·목적어 직접 연결
+    예) "이 기능에 대해서 설명한다" → "이 기능을 설명한다"
+  · ~의 경우에 있어서/~의 경우에는 → ~라면 / ~일 때
+    예) "에러가 발생하는 경우에 있어서는" → "에러가 발생하면"
+  · ~라고 하는/~이라고 불리는 → 직접 표현
+    예) "머신러닝이라고 하는 기술은" → "머신러닝은"
+  · ~적(的) 남용: 기술적, 효율적, 혁신적, 전략적 등이 수식어로만 쓰이고 구체성 없을 때
+    예) "전략적 접근이 필요하다" → "구체적인 계획이 필요하다"
+  · ~를 통해서/~를 통한 → 직접 동사
+    예) "API 호출을 통해서 데이터를 가져온다" → "API를 호출해 데이터를 가져온다"
+  · ~이 가능하다/~이 필요하다 → 동사 직접 사용
+    예) "설정 변경이 가능하다" → "설정을 바꿀 수 있다"
+  · 이중피동: ~되어지다, ~받아지다 → ~되다, ~받다
+
+- 일본식표현: Japanese-influenced Korean. Detect and fix ALL of the following:
+  · ~에 있어서 → ~에서 / ~할 때
+    예) "개발에 있어서 중요한 점은" → "개발에서 중요한 점은"
+  · ~로 인하여/~에 의하여 → ~때문에 / 직접 주어
+    예) "버그로 인하여 서비스가 중단됐다" → "버그로 서비스가 중단됐다"
+  · ~에 의한 → ~의 / 직접 표현
+    예) "팀에 의한 결정" → "팀의 결정"
+  · ~하는 바이다/~한 바 있다 → ~한다 / ~했다
+    예) "공지하는 바이다" → "공지한다"
+  · ~(이)라고 하는 → 직접 표현 (번역체와 중복되나 일본식에서 더 빈번)
+  · ~에 대한 이해가 필요하다 → ~를 이해해야 한다
+  · ~을 행하다/~을 실시하다 → ~하다
+    예) "테스트를 실시하다" → "테스트하다"
+  · ~의 증가에 따라 → ~이 늘면서 / ~이 증가하면서
+- 수동태과용: Excessive passive. Flag when passive voice hides the actor or makes sentences harder to understand:
+  · -어지다/-되어지다 (이중피동 — HIGH): "처리되어지다"× → "처리되다"○
+  · ~에 의해 ~되다: "팀에 의해 결정됐다" → "팀이 결정했다"
+  · ~받다 남용: "검토를 받다" → "검토하다" / "피드백을 받았다"는 OK (수신 의미)
+  · 주의: "설정이 저장된다"(시스템 동작 묘사)는 OK. 행위자를 숨기는 경우만 잡을 것.
 - 외래어표기오류: WRONG loanword spelling per Korean standard orthography rules. IMPORTANT: Using a loanword itself is NOT an error. Only flag when the SPELLING is wrong. 컨텐츠→콘텐츠, 메세지→메시지, 리더쉽→리더십, 악세서리→액세서리, 카페인→카페인(OK), 인터페이스(OK — do NOT flag correct loanwords). Common errors: 데스크탑→데스크톱, 프리젠테이션→프레젠테이션, 컴퓨팅(OK), 소프트웨어(OK), 어플→앱/애플리케이션, 시뮬레이션(OK), 커뮤니케이션(OK), 콘텐트→콘텐츠, 다이나믹→다이내믹, 로보트→로봇, 싸이트→사이트, 웹사이트(OK), 매니저→매니저(OK), 네비게이션→내비게이션, 가이드라인(OK)
 - 용어불일치: Inconsistent term notation — same concept written differently in the SAME batch
 - 문체불일치: Inconsistent register. Check these THREE aspects:
@@ -2355,11 +2388,8 @@ async function callClaude(apiKey, text, rulesContext = '') {
   } else {
     systemPrompt = SYS;
   }
-  // 모델 자동 선택: 텍스트 길이 기반
-  // 3000자 초과 또는 코드 블록 포함 시 Sonnet (정교한 분석)
-  var textLen = text.length;
-  var hasCode = /```|def |class |function |import |from /.test(text);
-  var model = (textLen > 3000 || hasCode) ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001';
+  // 교정은 항상 Sonnet — Haiku는 기술서 맥락 분석에 너무 얕음
+  var model = 'claude-sonnet-4-6';
 
   return callClaudeApi({
     apiKey: apiKey,
@@ -2449,7 +2479,7 @@ function _parseClaudeJson(raw) {
           const r = JSON.parse(truncFixed);
           console.info(`JSON 잘림 복구 성공 — ${(r.issues||[]).length}건 구출`);
           return r;
-        } catch (e3) { /* 복구 실패 시 null 반환 */ }
+        } catch (e3) { console.warn('[panel8] parseAiResponse: 잘린 JSON 스택 복구 실패, null 반환', e3); }
       }
       console.warn('JSON 파싱 실패:', e2.message, '\n원본 응답:', raw.slice(0, 300));
       return null;
@@ -2518,8 +2548,13 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
     const batchIdx = Math.floor(i / batchSize) + 1;
     if (onBatch) onBatch(batchIdx, total);
     const batch = pages.slice(i, i + batchSize);
+    // 이전 배치 마지막 페이지를 문맥으로 전달 (배치 경계 오류 누락 방지)
+    const prevPage = i > 0 ? pages[i - 1] : null;
+    const contextPrefix = prevPage
+      ? `[이전 문맥 — 분석 제외, 연속성 참고용]\n${_compressForTokens(prevPage.text)}\n\n[분석 대상]\n`
+      : '';
     // 페이지 텍스트를 압축하여 토큰 절감
-    const txt = batch.map(p => `\n[p.${p.page}]\n${_compressForTokens(p.text)}\n`).join('');
+    const txt = contextPrefix + batch.map(p => `\n[p.${p.page}]\n${_compressForTokens(p.text)}\n`).join('');
     const relevant = rulesChunks ? findRelevantChunks(rulesChunks, txt) : [];
     const rulesCtx = relevant.length > 0 ? relevant.map(c => c.text).join('\n') : '';
     try {
@@ -2527,10 +2562,14 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
       const parsed = _parseClaudeJson(raw);
       if (parsed) {
         const batchText = batch.map(p => p.text).join('\n');
+        // 컨텍스트 페이지 포함 범위 — AI가 이전 문맥에서 found를 가져왔을 때도 할루시네이션 오탐 방지
+        const fullText = prevPage ? prevPage.text + '\n' + batchText : batchText;
         for (const iss of (parsed.issues || [])) {
           const found = (iss.found || '').trim();
           // 할루시네이션 필터: found가 실제 텍스트에 없으면 제외
-          if (!found || !batchText.includes(found)) continue;
+          if (!found || !fullText.includes(found)) continue;
+          // 컨텍스트 전용 페이지 이슈는 건너뜀 (이미 이전 배치에서 처리됨)
+          if (prevPage && prevPage.text.includes(found) && !batchText.includes(found)) continue;
           // 동일 내용 필터: suggestion이 found와 실질적으로 같으면 제외
           const sugg = (iss.suggestion || '').trim();
           if (sugg && _isSameSuggestion(found, sugg)) {
@@ -2631,7 +2670,7 @@ async function p8_startProofread() {
   // API 키: app.js loadApiKey() (AES-GCM 암호화 저장소) 우선, 없으면 p8 input 폴백
   let apiKey = '';
   if (typeof loadApiKey === 'function') {
-    try { apiKey = (await loadApiKey()) || ''; } catch(e) {}
+    try { apiKey = (await loadApiKey()) || ''; } catch(e) { console.warn('[panel8] runCheck: API 키 로드 실패', e); }
   }
   if (!apiKey) {
     const keyInput = document.getElementById('p8_apiKey');
@@ -2900,7 +2939,7 @@ async function p8_startProofread() {
         total_pages: extracted.total_pages,
       },
     }));
-  } catch (e) { /* 용량 초과 등 무시 */ }
+  } catch (e) { console.warn('[panel8] saveSession: 세션 저장 실패 (용량 초과 등)', e); }
 }
 
 // 브라우저 렌더링 한 프레임 대기 (UI 업데이트 반영)
@@ -3113,7 +3152,7 @@ function renderResults(extracted, aiUsed, aiSkipped) {
           const k = await loadApiKey();
           if (k) inp.value = k;
         }
-      } catch(e) {}
+      } catch(e) { console.warn('[panel8] onActivate: API 키 입력창 초기화 실패', e); }
       inp.addEventListener('input', () => {
         inp.style.borderColor = '';
         if (typeof saveApiKey === 'function') saveApiKey(inp.value.trim() || '');
@@ -3165,11 +3204,7 @@ function renderResults(extracted, aiUsed, aiSkipped) {
         <div class="cat-sub">API 키 필요</div>
       </div>`;
     }
-    return `<div class="cat-box no-issues" data-cat-idx="${catIdx}" onclick="p8_filterByCatIdx(this)">
-      <div class="cat-name">${cat.label}</div>
-      <div class="cat-count">✓ 없음</div>
-      <div class="cat-sub">${cat.sub}</div>
-    </div>`;
+    return '';
   });
 
   // 미분류 카테고리 박스 — 집계 누락 이슈 시각화
@@ -3679,7 +3714,7 @@ function p8_reset() {
   document.getElementById('p8_pvPrev').disabled = true;
   document.getElementById('p8_pvNext').disabled = true;
   // 세션 상태 삭제
-  try { sessionStorage.removeItem('pf_session'); } catch(e) {}
+  try { sessionStorage.removeItem('pf_session'); } catch(e) { console.warn('[panel8] p8_reset: 세션 상태 삭제 실패', e); }
   show('uploadPanel');
 }
 
@@ -3695,7 +3730,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (inp && !inp.value) inp.value = key;
         }
       }
-    } catch(e) {}
+    } catch(e) { console.warn('[panel8] DOMContentLoaded: API 키 세션 복원 실패', e); }
   })();
 
   // p8_apiKey 입력 시 세션에 즉시 저장 + 형식 검증
@@ -3737,7 +3772,7 @@ document.addEventListener('DOMContentLoaded', () => {
       !!sess.aiSkipped
     );
     show('resultPanel');
-  } catch (e) { /* 무시 */ }
+  } catch (e) { console.warn('[panel8] DOMContentLoaded: 이전 세션 결과 복원 실패', e); }
 });
 
   // ──────────────────────────────────────────────
@@ -3748,7 +3783,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const noticeInp = document.getElementById('p8_noticeKeyInp');
     let apiKey = (noticeInp && noticeInp.value.trim()) || '';
     if (!apiKey && typeof loadApiKey === 'function') {
-      try { apiKey = await loadApiKey(); } catch(e) {}
+      try { apiKey = await loadApiKey(); } catch(e) { console.warn('[panel8] p8_rerunAI: API 키 로드 실패', e); }
     }
     if (!apiKey) {
       alert('API 키를 입력해 주세요.\n\n배너의 입력창에 Anthropic API 키(sk-ant-...)를 붙여넣으세요.');

@@ -217,6 +217,15 @@
 .p23-content tbody tr:hover{background:var(--accent-light,#eeedfb);}
 .p23-content tbody tr:last-child td{border-bottom:none;}
 
+/* 핵심 인사이트 박스 */
+.p23-insight-box{background:linear-gradient(135deg,#f0f4ff 0%,#fafbff 100%);border:1.5px solid #c5cef5;border-radius:14px;padding:20px 24px;margin:0 0 24px;}
+.p23-insight-box h2{font-size:16px;color:#3b3f8c;margin:0 0 14px;padding:0;border:none;display:flex;align-items:center;gap:8px;}
+.p23-insight-box h2::before{content:'💡';font-size:18px;}
+.p23-insight-box ol{margin:0;padding-left:20px;}
+.p23-insight-box ol li{font-size:13.5px;line-height:1.8;margin-bottom:8px;color:#2a2a2a;}
+.p23-insight-box ol li:last-child{margin-bottom:0;}
+.p23-insight-box strong{color:#3b3f8c;}
+
 /* 기획 아이템 카드 */
 .p23-plan-card{border-radius:12px;padding:18px 20px;margin:16px 0;border-left:4px solid var(--blue,#1e4a8a);background:var(--surface,#fff);box-shadow:var(--shadow-sm,0 1px 3px rgba(0,0,0,.05));}
 .p23-plan-card h3{margin:0 0 10px;font-size:16px;border:none;padding:0;}

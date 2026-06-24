@@ -849,6 +849,14 @@ function parseMd(md) {
 
 function renderMd(md) {
   var r=parseMd(md); $empty.style.display='none'; $content.style.display='block'; $content.innerHTML=r.html; tocItems=r.headings;
+  // 핵심 인사이트 강조 박스
+  $content.querySelectorAll('h2').forEach(function(h){
+    if(!h.textContent.match(/핵심\s*인사이트/)) return;
+    var box=document.createElement('div'); box.className='p23-insight-box';
+    var sibs=[],nx=h.nextElementSibling;
+    while(nx&&nx.tagName!=='H2'){sibs.push(nx);nx=nx.nextElementSibling;}
+    h.parentNode.insertBefore(box,h); box.appendChild(h); sibs.forEach(function(s){box.appendChild(s);});
+  });
   // 기획 카드 강조
   $content.querySelectorAll('h3').forEach(function(h){
     if(!h.textContent.match(/^기획\s*\d+/)) return;

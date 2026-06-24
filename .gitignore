@@ -1,3 +1,6 @@
+# API 키 (절대 커밋 금지)
+shared/api-keys.js
+
 # 작업 공간 (분석 결과, 임시 파일)
 _workspace/
 

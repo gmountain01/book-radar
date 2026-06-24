@@ -80,8 +80,8 @@ var STYLES = {
   }
 };
 
-function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(sections)); } catch(e) {} }
-function loadStyle() { try { var s = localStorage.getItem(STYLE_KEY); if (s && STYLES[s]) currentStyle = s; } catch(e) {} }
+function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(sections)); } catch(e) { console.warn('[panel12] save() 목차 데이터 저장 실패', e); } }
+function loadStyle() { try { var s = localStorage.getItem(STYLE_KEY); if (s && STYLES[s]) currentStyle = s; } catch(e) { console.warn('[panel12] loadStyle() 스타일 설정 로드 실패', e); } }
 function load() {
   try {
     var raw = localStorage.getItem(LS_KEY);
@@ -90,7 +90,7 @@ function load() {
       // v1 호환: level 없으면 1로 설정
       sections.forEach(function(s) { if (!s.level) s.level = 1; });
     }
-  } catch(e) {}
+  } catch(e) { console.warn('[panel12] load() 목차 데이터 파싱 실패', e); }
   if (!sections.length) sections = _defaultSections();
 }
 
@@ -161,7 +161,7 @@ function renderTree() {
 window.msSetStyle = function(key) {
   if (!STYLES[key]) return;
   currentStyle = key;
-  try { localStorage.setItem(STYLE_KEY, key); } catch(e) {}
+  try { localStorage.setItem(STYLE_KEY, key); } catch(e) { console.warn('[panel12] msSetStyle() 스타일 저장 실패', e); }
   render();
 };
 

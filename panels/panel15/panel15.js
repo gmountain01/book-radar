@@ -35,9 +35,9 @@ var TABS = [
     placeholder: '일러두기, 약어표, 용어 정리, 판권 표기 등 자유롭게 작성하세요.' }
 ];
 
-function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch(e) {} }
+function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch(e) { console.warn('[panel15] save() 앞부속 데이터 저장 실패', e); } }
 function load() {
-  try { var r = localStorage.getItem(LS_KEY); if (r) data = JSON.parse(r); } catch(e) {}
+  try { var r = localStorage.getItem(LS_KEY); if (r) data = JSON.parse(r); } catch(e) { console.warn('[panel15] load() 앞부속 데이터 로드 실패', e); }
   if (!data || typeof data !== 'object' || !Object.keys(data).length) data = _defaults();
 }
 
@@ -134,7 +134,7 @@ window.fmAiDraft = async function() {
     if (cp.subtitle) bookInfo += '부제: ' + cp.subtitle + '\n';
     if (cp.reader) bookInfo += '대상 독자: ' + cp.reader + '\n';
     if (cp.oneLiner) bookInfo += '한 줄 콘셉트: ' + cp.oneLiner + '\n';
-  } catch(e) {}
+  } catch(e) { console.warn('[panel15] fmAiDraft() 기획 컨셉 데이터 로드 실패', e); }
 
   var tabPrompts = {
     author: '저자의 말(머리말)을 작성하라. 이 책을 왜 쓰게 되었는지, 독자에게 어떤 도움이 되길 바라는지, 집필 과정의 에피소드를 자연스럽게 풀어내라. 600~800자.',

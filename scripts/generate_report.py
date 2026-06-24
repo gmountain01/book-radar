@@ -515,6 +515,141 @@ def compute_stats(archive: dict) -> str:
 
 
 # ══════════════════════════════════════════════════════
+# 4-b. Claude 미사용 시 통계 기반 폴백 인사이트 생성
+# ══════════════════════════════════════════════════════
+
+def generate_fallback_insights(archive: dict) -> str:
+    """Claude API 없이 archive 데이터만으로 핵심 인사이트 5줄을 생성한다."""
+    dates = sorted(archive["snapshots"].keys())
+    if not dates:
+        return ""
+
+    all_records = []
+    for d in dates:
+        for item in archive["snapshots"][d]:
+            all_records.append({**item, "date": d})
+
+    unique_titles = set(r["title"] for r in all_records)
+    title_days: dict = defaultdict(set)
+    title_ranks: dict = defaultdict(list)
+    title_info: dict = {}
+    title_first: dict = {}
+    for r in all_records:
+        t = r["title"]
+        title_days[t].add(r["date"])
+        if r.get("rank"):
+            title_ranks[t].append(r["rank"])
+        if t not in title_info:
+            title_info[t] = {k: r[k] for k in ("author", "publisher") if k in r}
+        if t not in title_first or r["date"] < title_first[t]:
+            title_first[t] = r["date"]
+
+    num_days = len(dates)
+    recent30 = set(dates[-30:]) if len(dates) >= 30 else set(dates)
+    prev30   = set(dates[-60:-30]) if len(dates) >= 60 else set()
+
+    # 주제별 집계
+    topic_titles: dict = defaultdict(set)
+    for t in unique_titles:
+        for topic in _classify_topics_multi(t):
+            topic_titles[topic].add(t)
+
+    topic_stats = []
+    for topic, titles in sorted(topic_titles.items(), key=lambda x: -len(x[1])):
+        r30 = set(t for t in titles if any(d in recent30 for d in title_days[t]))
+        p30 = set(t for t in titles if any(d in prev30  for d in title_days[t]))
+        ranks = [rk for t in titles for rk in title_ranks[t]]
+        avg_r = sum(ranks) / len(ranks) if ranks else 999
+        avg_d = sum(len(title_days[t]) for t in titles) / len(titles) if titles else 0
+        if prev30:
+            trend = "📈 상승" if len(r30) > len(p30) * 1.1 else ("📉 하락" if len(r30) < len(p30) * 0.9 else "➡️ 유지")
+        else:
+            trend = "➡️ 유지"
+        topic_stats.append((topic, len(titles), avg_r, avg_d, trend))
+
+    # 출판사 점유
+    pub_days: dict = defaultdict(int)
+    for t, days in title_days.items():
+        pub = title_info.get(t, {}).get("publisher", "")
+        if pub:
+            pub_days[pub] += len(days)
+    total_days_all = sum(pub_days.values()) or 1
+    top_pub = sorted(pub_days.items(), key=lambda x: -x[1])
+
+    # 스테디셀러 (70일+)
+    steady_thr = max(int(num_days * 0.5), 10)
+    steady = sorted(
+        [(t, len(title_days[t]), min(title_ranks[t]) if title_ranks[t] else 999, title_info.get(t, {}).get("publisher", ""))
+         for t in unique_titles if len(title_days[t]) >= steady_thr],
+        key=lambda x: -x[1]
+    )
+
+    # 신규 급상승 (최근 60일 첫 등장, 30위 이내)
+    cutoff_60 = dates[-60] if len(dates) >= 60 else dates[0]
+    new_surge = sorted(
+        [(t, min(title_ranks[t]) if title_ranks[t] else 999, len(title_days[t]), title_info.get(t, {}).get("publisher", ""))
+         for t in unique_titles if title_first.get(t, "") >= cutoff_60 and len(title_days[t]) >= 3 and min(title_ranks.get(t, [999])) <= 30],
+        key=lambda x: x[1]
+    )
+
+    # ── 인사이트 문장 생성 ──
+    insights = []
+
+    # 1. 최대 카테고리
+    top_topic = max(topic_stats, key=lambda x: x[1]) if topic_stats else None
+    if top_topic:
+        insights.append(
+            f"**{top_topic[0]} 카테고리가 {top_topic[1]}권으로 최다 출판.** "
+            f"평균 순위 {top_topic[2]:.0f}위, 평균 등장 {top_topic[3]:.0f}일. "
+            f"IT 베스트셀러의 핵심 카테고리다."
+        )
+
+    # 2. 상승 트렌드 카테고리
+    rising = [t for t in topic_stats if t[4] == "📈 상승"]
+    if rising:
+        names = "·".join(t[0] for t in rising[:3])
+        insights.append(
+            f"**{names} 카테고리가 최근 30일 트렌드 상승 중.** "
+            f"최근 출간 도서가 전달보다 10% 이상 증가한 신호다."
+        )
+
+    # 3. 1위 출판사
+    if top_pub:
+        p1, d1 = top_pub[0]
+        p2, d2 = top_pub[1] if len(top_pub) > 1 else ("", 0)
+        share1 = d1 / total_days_all * 100
+        share2 = d2 / total_days_all * 100 if d2 else 0
+        insights.append(
+            f"**{p1}이 등장일수 기준 점유율 {share1:.1f}%로 1위.** "
+            + (f"2위 {p2}({share2:.1f}%)와 {share1-share2:.1f}%p 격차를 유지하고 있다." if p2 else "")
+        )
+
+    # 4. 스테디셀러
+    if steady:
+        t, nd, best, pub = steady[0]
+        insights.append(
+            f"**'{t[:30]}'이 {nd}일 등장으로 최장 스테디셀러.** "
+            f"({pub}, 최고 {best}위) 해당 카테고리 수요가 지속적임을 보여준다."
+        )
+
+    # 5. 신규 급부상
+    if new_surge:
+        t, best, nd, pub = new_surge[0]
+        insights.append(
+            f"**최근 60일 내 '{t[:30]}'이 최고 {best}위, {nd}일 등장으로 급부상.** "
+            f"({pub}) 신규 트렌드 카테고리 선점 기회다."
+        )
+
+    if not insights:
+        return ""
+
+    lines = ["## 핵심 인사이트\n"]
+    for i, s in enumerate(insights, 1):
+        lines.append(f"{i}. {s}")
+    return "\n".join(lines) + "\n"
+
+
+# ══════════════════════════════════════════════════════
 # 5. Claude API
 # ══════════════════════════════════════════════════════
 
@@ -673,7 +808,10 @@ def main():
 
         report = header + insight_part + "\n" + stats + "\n\n" + planning_part
     else:
-        report = header + stats + "\n"
+        # Claude 미사용 시 통계 기반 폴백 인사이트 삽입
+        fallback = generate_fallback_insights(archive)
+        print("  ℹ 폴백 인사이트 생성 (Claude 미사용)")
+        report = header + fallback + "\n" + stats + "\n"
 
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         f.write(report)

@@ -286,7 +286,7 @@ window.kwTaxSelectNone = function() {
    Taxonomy Custom Additions
    ═══════════════════════════════════════════ */
 var LS_KEY_CUSTOM_TAX = 'kw_custom_taxonomy';
-function loadCustomTax() { try { return JSON.parse(localStorage.getItem(LS_KEY_CUSTOM_TAX)) || {}; } catch (_) { return {}; } }
+function loadCustomTax() { try { return JSON.parse(localStorage.getItem(LS_KEY_CUSTOM_TAX)) || {}; } catch (_) { console.warn('[panel10] loadCustomTax: 커스텀 분류 로드 실패', _); return {}; } }
 function saveCustomTax(custom) { localStorage.setItem(LS_KEY_CUSTOM_TAX, JSON.stringify(custom)); }
 
 function mergeCustomTax() {
@@ -456,7 +456,7 @@ async function refreshTaxonomy(forceRefresh) {
         }
         return;
       }
-    } catch (e) { /* 캐시 오류 → 하드코딩 기본값 사용 */ }
+    } catch (e) { /* 캐시 오류 → 하드코딩 기본값 사용 */ console.warn('[panel10] refreshTaxonomy: 캐시 파싱 오류 — 기본값 사용', e); }
     // 캐시 없으면 하드코딩 KEYWORD_TAXONOMY 기본값 그대로 사용 (API 호출 안 함)
     mergeCustomTax();
     _autoSelectFirst();
@@ -517,9 +517,9 @@ function safeParseCards(raw) {
   s = s.slice(start, end + 1);
   s = s.replace(/"views"\s*:\s*"?(\d[\d,]*)[\d,]*"?\s*[가-힣A-Za-z]+/g, function(m, num) { return '"views": ' + parseInt(num.replace(/,/g, ''), 10); });
   s = s.replace(/"views"\s*:\s*(\d{1,3}(?:,\d{3})+)/g, function(m, num) { return '"views": ' + num.replace(/,/g, ''); });
-  try { return JSON.parse(s); } catch (_) {}
+  try { return JSON.parse(s); } catch (_) { console.warn('[panel10] safeParseCards: 1차 JSON 파싱 실패', _); }
   var repaired = repairJSON(s);
-  try { return JSON.parse(repaired); } catch (_) {}
+  try { return JSON.parse(repaired); } catch (_) { console.warn('[panel10] safeParseCards: 수리 후 JSON 파싱 실패', _); }
   var cards = extractCardsIndividually(repaired.length > 10 ? repaired : s);
   if (cards.length > 0) return cards;
   throw new Error('결과 파싱 실패. 잠시 후 다시 시도해주세요.');
@@ -553,7 +553,7 @@ function extractCardsIndividually(s) {
     else if (ch === '}') {
       depth--;
       if (depth === 0 && start !== -1) {
-        try { cards.push(JSON.parse(repairJSON(s.slice(start, i + 1)))); } catch (_) {}
+        try { cards.push(JSON.parse(repairJSON(s.slice(start, i + 1)))); } catch (_) { console.warn('[panel10] extractCardsIndividually: 개별 카드 파싱 실패', _); }
         start = -1;
       }
     }
@@ -597,7 +597,7 @@ async function fetchYT(query) {
     });
     merged.sort(function(a, b) { return b.viewsPerDay - a.viewsPerDay; });
     return merged;
-  } catch (e) { return []; }
+  } catch (e) { console.warn('[panel10] fetchYT: YouTube 검색 실패', e); return []; }
 }
 
 // shared/youtube.js의 _ytParallelLimit, YT_PARALLEL_LIMIT 사용
@@ -642,7 +642,7 @@ function loadCache() {
     if (!cached.ts || !cached.cards) return null;
     // taxonomy 버전이 달라도 캐시 유지 (API 비용 절약 — 새 분석 시 자동 갱신)
     return cached;
-  } catch (_) { return null; }
+  } catch (_) { console.warn('[panel10] loadCache: 캐시 로드 실패', _); return null; }
 }
 
 function saveCache(cards, catData) {
@@ -652,7 +652,7 @@ function saveCache(cards, catData) {
       taxonomyVersion: TAXONOMY_VERSION,
       activeCats: Array.from(activeCats)
     }));
-  } catch (_) {}
+  } catch (_) { console.warn('[panel10] saveCache: 캐시 저장 실패', _); }
 }
 
 function showCacheBanner(ts) {
@@ -720,7 +720,7 @@ async function runAnalysis() {
         for (var qi = 0; qi < queries.length; qi++) {
           if (ytApiState.isAllExhausted()) break;
           try { var vids = await fetchYT(queries[qi]); if (vids) allVideos.push.apply(allVideos, vids); }
-          catch(e) { /* skip */ }
+          catch(e) { /* skip */ console.warn('[panel10] kwRunAnalysis: 쿼리 fetchYT 실패 — 건너뜀', queries[qi], e); }
         }
         doneCount++;
         $('kwLoadingText').textContent = 'YouTube 수집 중… (' + doneCount + '/' + activeLeaves.length + ')';
@@ -745,15 +745,41 @@ async function runAnalysis() {
     $('kwLoadingText').textContent = '데이터 정제 중...';
     await new Promise(function(r) { setTimeout(r, 300); });
 
+    var _threeMonthsAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
     var ytSummary = activeLeaves.map(function(pathKey) {
       var parts = pathKey.split('|');
       var vids = catData[pathKey] || [];
-      var topTitles = vids.slice(0, 15).map(function(v) {
+
+      // 최근 3개월 vs 이전 영상 분리
+      var recentVids = vids.filter(function(v) { return new Date(v.published).getTime() >= _threeMonthsAgo; });
+      var olderVids  = vids.filter(function(v) { return new Date(v.published).getTime() <  _threeMonthsAgo; });
+
+      var totalViews = vids.reduce(function(s, v) { return s + v.views; }, 0);
+      var avgVpd     = vids.length ? Math.round(vids.reduce(function(s, v) { return s + (v.viewsPerDay || 0); }, 0) / vids.length) : 0;
+      var recentAvgVpd = recentVids.length ? Math.round(recentVids.reduce(function(s, v) { return s + (v.viewsPerDay || 0); }, 0) / recentVids.length) : 0;
+      var olderAvgVpd  = olderVids.length  ? Math.round(olderVids.reduce(function(s, v)  { return s + (v.viewsPerDay || 0); }, 0) / olderVids.length)  : 0;
+      // 속도비: 최근 3개월 평균 vpd / 이전 평균 vpd (이전 영상 없으면 최근만으로 판단)
+      var velocityRatio = olderAvgVpd > 0 ? Math.round(recentAvgVpd / olderAvgVpd * 10) / 10
+                        : (recentVids.length > 0 ? 99 : 0);
+      var velocityLabel = velocityRatio >= 3 ? '🔥급상승(' + velocityRatio + 'x)' :
+                          velocityRatio >= 1.5 ? '📈상승(' + velocityRatio + 'x)' : '';
+
+      // 최근 3개월 급상승 영상 (상위 5개)
+      var recentSection = recentVids.length
+        ? '\n▶ 최근 3개월 신규 영상 (급상승 신호):\n' + recentVids.slice(0, 5).map(function(v) {
+            return '  ★ "' + v.title + '" (' + fmtNum(v.viewsPerDay || 0) + '회/일, ' + v.published + ')';
+          }).join('\n')
+        : '';
+      // 전체 인기 영상 (상위 10개)
+      var topTitles = vids.slice(0, 10).map(function(v) {
         return '  - "' + v.title + '" (' + fmtNum(v.views) + '회, 일평균 ' + fmtNum(v.viewsPerDay || 0) + '회/일, ' + v.published + ')';
       }).join('\n');
-      var totalViews = vids.reduce(function(s, v) { return s + v.views; }, 0);
-      var avgVpd = vids.length ? Math.round(vids.reduce(function(s, v) { return s + (v.viewsPerDay || 0); }, 0) / vids.length) : 0;
-      return '[경로: ' + parts.join(' > ') + ']\n총 조회수: ' + fmtNum(totalViews) + ', 영상 수: ' + vids.length + ', 평균 성장속도: ' + fmtNum(avgVpd) + '회/일\n상위 영상 (성장속도순):\n' + topTitles;
+
+      return '[경로: ' + parts.join(' > ') + '] ' + velocityLabel + '\n' +
+        '총 조회수: ' + fmtNum(totalViews) + ', 영상 수: ' + vids.length +
+        ', 전체 평균 ' + fmtNum(avgVpd) + '회/일, 최근3개월 평균 ' + fmtNum(recentAvgVpd) + '회/일' +
+        recentSection +
+        '\n▶ 전체 인기 영상:\n' + topTitles;
     }).join('\n\n');
 
     // 대시보드 데이터를 프롬프트 컨텍스트로 구성
@@ -781,13 +807,15 @@ async function runAnalysis() {
       '   - **hook** (혹할 기획): 책이 1~2권 있지만, 관점·포맷·타겟이 새로워서 편집자가 혹할 것\n' +
       '   - **safe** (안전 기획): 수요가 검증됐고 경쟁 도서가 3권 이상 있지만 더 잘 만들 수 있는 것\n' +
       '3. **preempt 분류 기준** (엄격히 따를 것):\n' +
-      '   - YouTube 관련 영상의 일평균 조회수 합이 높다 (최소 500회/일 이상)\n' +
-      '   - 위 예스24 목록에서 직접적으로 겹치는 도서가 0~1권\n' +
-      '   - "이 주제로 지금 책을 내면 시장을 선점할 수 있다"고 확신할 수 있는 근거 필수\n' +
-      '   - 데이터 근거가 충분할 때만 preempt로 분류하라. 근거 없이 억지로 preempt를 늘리지 말 것.\n' +
-      '4. hook_idea는 이 책이 왜 지금 나와야 하는지, 서점에서 뭐가 다른지를 편집자에게 설득하는 한 마디.\n\n' +
+      '   - 🔥급상승(Nx) 표시 경로는 preempt 1순위. 최근 3개월 조회 속도가 이전보다 빠르다 = 시장이 막 열리는 신호.\n' +
+      '   - 조회수가 낮더라도 ★ 최근 3개월 신규 영상이 있고 📈상승 이상이면 preempt 가능. 앞서나가는 주제가 목표.\n' +
+      '   - 총 조회수가 많아도 최근 3개월 신규 영상이 없거나 성장 정체면 safe 또는 hook. 이미 알려진 주제.\n' +
+      '   - 예스24 목록에서 직접적으로 겹치는 도서가 0~1권이어야 함.\n' +
+      '   - 데이터 근거가 충분할 때만 preempt. 단, "속도"를 "절대 조회수"보다 우선시하라.\n' +
+      '4. hook_idea는 이 책이 왜 지금 나와야 하는지, 서점에서 뭐가 다른지를 편집자에게 설득하는 한 마디.\n' +
+      '5. **앞서나가는 키워드 원칙**: 이미 인기 있는 주제(ChatGPT 활용법, 파이썬 입문 등)는 safe로만. 최근 3개월 안에 막 뜨기 시작한 것, 한국 커뮤니티에서 아직 책이 없는 것을 우선 발굴하라.\n\n' +
       '[글쓰기 원칙] AI 투 문장 금지(~할 수 있습니다/혁신적인/필수적인). 편집자가 기획회의에서 실제로 쓰는 말투로. 구어체 OK.\n\n' +
-      '[YouTube 트렌드 - 최근 12개월, 성장속도순]\n' + ytSummary + '\n\n' +
+      '[YouTube 트렌드 - 최근 12개월 / 🔥=최근3개월 급상승 신호 포함]\n' + ytSummary + '\n\n' +
       '[' + aladinSummary + ']\n\n' +
       (lectureSummary ? '[' + lectureSummary + ']\n\n' : '') +
       '총 ' + totalCards + '개 키워드. 반드시 아래 JSON 배열만 출력하세요.\n\n활성 경로: ' + pathListStr + '\n\n' +
@@ -815,8 +843,14 @@ async function runAnalysis() {
       var vids = catData[pk] || [];
       var sumVpd = vids.reduce(function(s, v) { return s + (v.viewsPerDay || 0); }, 0);
       var hasBooks = (c.competitor_books && c.competitor_books.length > 1);
-      // 일평균 조회수 합 500 미만이거나 경쟁 도서 2권 이상이면 hook으로 다운그레이드
-      if (sumVpd < 500 || hasBooks) {
+      // 최근 3개월 급상승 신호 계산
+      var recentV = vids.filter(function(v) { return new Date(v.published).getTime() >= _threeMonthsAgo; });
+      var olderV  = vids.filter(function(v) { return new Date(v.published).getTime() <  _threeMonthsAgo; });
+      var recentVpd = recentV.length ? recentV.reduce(function(s,v){return s+(v.viewsPerDay||0);},0)/recentV.length : 0;
+      var olderVpd  = olderV.length  ? olderV.reduce(function(s,v) {return s+(v.viewsPerDay||0);},0)/olderV.length  : 0;
+      var isRising  = recentVpd > 0 && (olderVpd === 0 || recentVpd / olderVpd >= 1.5);
+      // 급상승(속도비 1.5x 이상)이면 조회수 낮아도 preempt 유지, 아니면 기존 500 기준 적용
+      if (hasBooks || (!isRising && sumVpd < 500)) {
         c.pick_type = 'hook';
         c._downgraded = true;
       }

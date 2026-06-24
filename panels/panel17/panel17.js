@@ -237,7 +237,7 @@ function _loadData() {
   try {
     var raw = localStorage.getItem(LS_KEY);
     if (raw) { _applyData(JSON.parse(raw)); return; }
-  } catch(e) {}
+  } catch(e) { console.warn('[panel17] _loadData: localStorage 로드/파싱 실패, 기본값 적용', e); }
   // 저장된 데이터 없으면 기본값 적용
   _applyData(DEFAULTS);
 }

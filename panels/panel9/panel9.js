@@ -120,7 +120,7 @@ async function extractTOC(pdf) {
 
   // 1) Outline / bookmarks
   let outline = null;
-  try { outline = await pdf.getOutline(); } catch(e) {}
+  try { outline = await pdf.getOutline(); } catch(e) { console.warn('[panel9] extractTOC: PDF outline(북마크) 가져오기 실패, 텍스트 패턴 폴백 사용', e); }
 
   if (outline && outline.length > 0) {
     // Flatten outline recursively
@@ -151,7 +151,7 @@ async function extractTOC(pdf) {
           const idx = await pdf.getPageIndex(dest[0]);
           e.page = idx + 1;
         }
-      } catch(_) {}
+      } catch(_) { console.warn('[panel9] extractTOC: outline destination 페이지 번호 해석 실패', _); }
     }
     return entries;
   }
@@ -920,7 +920,7 @@ function p9_reset() {
   document.getElementById('p9_bodyInput').value = '';
   document.getElementById('p9_startBtn').disabled = true;
   // 세션 상태 삭제
-  try { sessionStorage.removeItem('toc_session'); } catch(e) {}
+  try { sessionStorage.removeItem('toc_session'); } catch(e) { console.warn('[panel9] p9_reset: sessionStorage 삭제 실패', e); }
   showPanel('uploadPanel');
 }
 

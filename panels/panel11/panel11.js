@@ -325,7 +325,7 @@ function _renderKeyStatus() {
   }
   // OpenAI 배지
   var openaiKey = '';
-  try { openaiKey = localStorage.getItem('p17_openai_key') || localStorage.getItem('p11_openai_key') || ''; } catch(e) {}
+  try { openaiKey = localStorage.getItem('p17_openai_key') || localStorage.getItem('p11_openai_key') || ''; } catch(e) { console.warn('[panel11] OpenAI 키 localStorage 읽기 실패', e); }
   if (openaiKey && openaiKey.startsWith('sk-')) {
     _setBadge('p11-openai-badge', 'ok', '연결됨');
     var oaiStatus = ROOT.querySelector('#p11-openai-status');
@@ -360,7 +360,7 @@ function _getYtKeyList() {
     var defaults = typeof YT_API_KEYS_SHARED !== 'undefined' ? YT_API_KEYS_SHARED : [];
     var saved = JSON.parse(localStorage.getItem('p11_extra_yt_keys') || '[]');
     return defaults.concat(saved);
-  } catch (e) { return []; }
+  } catch (e) { console.warn('[panel11] _getYtKeyList localStorage 파싱 실패', e); return []; }
 }
 
 window.p11_saveClaudeKey = async function() {
@@ -430,7 +430,7 @@ window.p11_addYtKey = async function() {
   try {
     var saved = JSON.parse(localStorage.getItem('p11_extra_yt_keys') || '[]');
     if (saved.indexOf(key) === -1) { saved.push(key); localStorage.setItem('p11_extra_yt_keys', JSON.stringify(saved)); }
-  } catch (e) {}
+  } catch (e) { console.warn('[panel11] p11_saveYtKey YouTube 추가 키 저장 실패', e); }
   input.value = '';
 
   // 2) 진행 중
@@ -463,7 +463,7 @@ window.p11_removeYtKey = function(idx) {
     var saved = JSON.parse(localStorage.getItem('p11_extra_yt_keys') || '[]');
     saved.splice(idx, 1);
     localStorage.setItem('p11_extra_yt_keys', JSON.stringify(saved));
-  } catch (e) {}
+  } catch (e) { console.warn('[panel11] p11_removeYtKey YouTube 키 삭제 실패', e); }
   _renderKeyStatus();
   _push('info', ['YouTube 추가 키 삭제됨'], 'panel11');
 };

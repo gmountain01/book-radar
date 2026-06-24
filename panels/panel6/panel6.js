@@ -451,7 +451,7 @@ async function generateMeetingSummary(){
 
   // API 키 확인
   let apiKey = '';
-  try { apiKey = (await loadApiKey()).trim(); } catch(e) {}
+  try { apiKey = (await loadApiKey()).trim(); } catch(e) { console.warn('[panel6] loadApiKey 실패', e); }
 
   if (apiKey) {
     // AI 경로

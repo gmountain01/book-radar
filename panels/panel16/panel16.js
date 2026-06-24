@@ -1029,7 +1029,7 @@ function p16_filter(btn) {
 async function p16_aiEnhance() {
   var apiKey = '';
   if (typeof loadApiKey === 'function') {
-    try { apiKey = (await loadApiKey()) || ''; } catch(e) {}
+    try { apiKey = (await loadApiKey()) || ''; } catch(e) { console.warn('[panel16] p16_aiEnhance() API 키 로드 실패', e); }
   }
   if (!apiKey) {
     alert('AI 정제에는 Claude API 키가 필요합니다.\n통합현황 탭에서 API 키를 설정하세요.');
@@ -1102,7 +1102,7 @@ async function p16_aiEnhance() {
       var cleaned = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
       var m = cleaned.match(/\{[\s\S]*\}/);
       result = m ? JSON.parse(m[0]) : null;
-    } catch(e) {}
+    } catch(e) { console.warn('[panel16] p16_aiEnhance() AI 응답 JSON 파싱 실패', e); }
 
     var changes = 0;
     if (result) {

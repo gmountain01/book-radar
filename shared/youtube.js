@@ -114,6 +114,10 @@ async function ytApiFetch(endpoint, params) {
 
   // 3) 키 순회하며 시도
   for (const keyIdx of tryKeys) {
+    // 병렬 호출이 동일 키를 중복 선택하지 않도록 fetch 전에 유닛을 선점한다.
+    // 요청 실패(쿼터 초과) 시에는 해당 키를 exhausted 처리하므로 롤백 불필요.
+    _ytTrackUnit(endpoint, keyIdx);
+
     const url = new URL(YT_BASE + endpoint);
     Object.entries({ ...params, key: _ytKeys[keyIdx] }).forEach(([k, v]) => url.searchParams.set(k, v));
     const res = await fetch(url.toString());
@@ -131,7 +135,6 @@ async function ytApiFetch(endpoint, params) {
     }
 
     // 4) 성공
-    _ytTrackUnit(endpoint, keyIdx);
     if (ttl) _ytCacheSet(_ytCacheKey(endpoint, params), data);
     return data;
   }

@@ -266,7 +266,7 @@ function _parseConceptsJson(raw) {
     var objRe = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
     var om;
     while ((om = objRe.exec(clean)) !== null) {
-      try { objs.push(JSON.parse(om[0])); } catch(oe) {}
+      try { objs.push(JSON.parse(om[0])); } catch(oe) { console.warn('[p17-concepts] _parseConceptsJson: 개별 객체 JSON 파싱 실패(폴백1)', oe); }
     }
     return objs.length > 0 ? objs : null;
   }
@@ -290,7 +290,7 @@ function _parseConceptsJson(raw) {
       var objRe2 = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
       var om2;
       while ((om2 = objRe2.exec(fixed)) !== null) {
-        try { objs2.push(JSON.parse(om2[0])); } catch(oe2) {}
+        try { objs2.push(JSON.parse(om2[0])); } catch(oe2) { console.warn('[p17-concepts] _parseConceptsJson: 개별 객체 JSON 파싱 실패(폴백2)', oe2); }
       }
       return objs2.length > 0 ? objs2 : null;
     }
@@ -349,7 +349,7 @@ async function p17_analyzeRef() {
   // OpenAI API 키 사용 (표지 시안과 동일)
   var apiKey = '';
   try { apiKey = localStorage.getItem('p17_openai_key') || localStorage.getItem('p11_openai_key') || ''; }
-  catch(e) {}
+  catch(e) { console.warn('[p17-concepts] p17_analyzeRef: OpenAI API 키 localStorage 읽기 실패', e); }
   if (!apiKey) {
     alert('OpenAI API 키가 설정되지 않았습니다.\n개발자 콘솔(Ctrl+Alt+Enter)에서 등록하세요.');
     return;

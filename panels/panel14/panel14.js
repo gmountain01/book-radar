@@ -12,9 +12,9 @@ var activeIdx = 0;
 var LV_NAMES = ['', '장', '절', '중절', '소절', '소소절'];
 var LV_INDENT = [0, 0, 20, 40, 60, 80];
 
-function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(items)); } catch(e) {} }
+function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(items)); } catch(e) { console.warn('[panel14] save: localStorage 저장 실패', e); } }
 function load() {
-  try { var r = localStorage.getItem(LS_KEY); if (r) items = JSON.parse(r); } catch(e) {}
+  try { var r = localStorage.getItem(LS_KEY); if (r) items = JSON.parse(r); } catch(e) { console.warn('[panel14] load: localStorage 로드/파싱 실패, 기본값 사용', e); }
   if (!items.length) items = _defaults();
 }
 
@@ -146,7 +146,7 @@ window.tcApplyToManuscript = function() {
   // panel12의 localStorage에 직접 저장
   try {
     localStorage.setItem('ms_manuscript_v3', JSON.stringify(msSections));
-  } catch(e) {}
+  } catch(e) { console.warn('[panel14] 목차→원고 적용: ms_manuscript_v3 localStorage 저장 실패', e); }
   alert('목차가 원고 작성에 적용되었습니다.\n"원고 작성" 메뉴로 이동하면 목차 구조가 반영됩니다.');
   // 원고 작성 탭으로 이동
   var tab12El = document.getElementById('tab12');

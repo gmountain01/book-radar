@@ -9,9 +9,9 @@ if (!ROOT) return;
 var LS_KEY = 'ms_concept_v2';
 var data = {};
 
-function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch(e) {} }
+function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch(e) { console.warn('[panel13] save: localStorage 저장 실패', e); } }
 function load() {
-  try { var r = localStorage.getItem(LS_KEY); if (r) data = JSON.parse(r); } catch(e) {}
+  try { var r = localStorage.getItem(LS_KEY); if (r) data = JSON.parse(r); } catch(e) { console.warn('[panel13] load: localStorage 로드/파싱 실패, 기본값 사용', e); }
   if (!data.title) data = _defaults();
 }
 

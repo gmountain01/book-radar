@@ -313,11 +313,11 @@ async function _parseDocx(file){
   var docXml = await zip.files['word/document.xml'].async('string');
   // relationships for images
   var relsXml = '';
-  try{ relsXml = await zip.files['word/_rels/document.xml.rels'].async('string'); }catch(e){}
+  try{ relsXml = await zip.files['word/_rels/document.xml.rels'].async('string'); }catch(e){ console.warn('[panel21] DOCX relationships XML 읽기 실패', e); }
 
   // numbering.xml for list detection
   var numXml = '';
-  try{ numXml = await zip.files['word/numbering.xml'].async('string'); }catch(e){}
+  try{ numXml = await zip.files['word/numbering.xml'].async('string'); }catch(e){ console.warn('[panel21] DOCX numbering.xml 읽기 실패 (목록 없음으로 처리)', e); }
 
   // Build numId → numFmt map
   var numFmtMap = {}; // abstractNumId → numFmt
@@ -349,7 +349,7 @@ async function _parseDocx(file){
         var ext2 = imgPath.split('.').pop().toLowerCase();
         var mime = ext2==='png'?'image/png':ext2==='gif'?'image/gif':ext2==='svg'?'image/svg+xml':'image/jpeg';
         imageMap[idM[1]] = 'data:'+mime+';base64,'+imgBuf;
-      }catch(e){}
+      }catch(e){ console.warn('[panel21] DOCX 이미지 로드 실패: ' + imgPath, e); }
     }
   }
 

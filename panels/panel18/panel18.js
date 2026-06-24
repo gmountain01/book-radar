@@ -65,7 +65,7 @@ function _defaults() {
 
 var data = _defaults();
 
-function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch(e) {} }
+function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch(e) { console.warn('[panel18] save: localStorage 저장 실패', e); } }
 function load() {
   try {
     var r = localStorage.getItem(LS_KEY);
@@ -601,11 +601,11 @@ function _safeParseJson(raw) {
   console.log('[p18] AI 원본 응답 길이:', raw.length, '앞 200자:', raw.slice(0, 200));
 
   // 1단계: 직접 파싱 시도
-  try { return JSON.parse(raw); } catch(e) {}
+  try { return JSON.parse(raw); } catch(e) { console.warn('[panel18] _safeParseJson: 1단계 직접 파싱 실패', e); }
 
   // 2단계: 마크다운 코드블록 제거 후 시도
   var text = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-  try { return JSON.parse(text); } catch(e) {}
+  try { return JSON.parse(text); } catch(e) { console.warn('[panel18] _safeParseJson: 2단계 마크다운 제거 후 파싱 실패', e); }
 
   // 3단계: 최외곽 { } 추출
   var start = text.indexOf('{');

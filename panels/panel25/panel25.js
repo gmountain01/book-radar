@@ -711,7 +711,7 @@ async function _refineAndSend(idx, target) {
   var author = matching.length ? matching[0] : (_result.authorMatching || [])[0] || {};
 
   var apiKey;
-  try { apiKey = await loadApiKey(); } catch(e) {}
+  try { apiKey = await loadApiKey(); } catch(e) { console.warn('[panel25] p25_openPlanDetail: API 키 로드 실패', e); }
   if (!apiKey) {
     // API 키 없으면 기존 방식 (정제 없이 전달)
     window._p25_exportData = { summary: _result.summary, recommendedItems: [item], authorMatching: _result.authorMatching, cautions: _result.cautions };
