@@ -287,7 +287,7 @@ window.kwTaxSelectNone = function() {
    ═══════════════════════════════════════════ */
 var LS_KEY_CUSTOM_TAX = 'kw_custom_taxonomy';
 function loadCustomTax() { try { return JSON.parse(localStorage.getItem(LS_KEY_CUSTOM_TAX)) || {}; } catch (_) { console.warn('[panel10] loadCustomTax: 커스텀 분류 로드 실패', _); return {}; } }
-function saveCustomTax(custom) { localStorage.setItem(LS_KEY_CUSTOM_TAX, JSON.stringify(custom)); }
+function saveCustomTax(custom) { try { localStorage.setItem(LS_KEY_CUSTOM_TAX, JSON.stringify(custom)); } catch(e) { console.warn('[panel10] saveCustomTax: localStorage 저장 실패', e); } }
 
 function mergeCustomTax() {
   var custom = loadCustomTax();

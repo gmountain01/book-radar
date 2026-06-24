@@ -94,8 +94,10 @@ function ytLoadLS() {
   YT_S.compareList   = JSON.parse(localStorage.getItem(YT_LS.compare) || '[]');
 }
 function ytSaveLS() {
-  localStorage.setItem(YT_LS.saved,   JSON.stringify(YT_S.savedChannels));
-  localStorage.setItem(YT_LS.compare, JSON.stringify(YT_S.compareList));
+  try {
+    localStorage.setItem(YT_LS.saved,   JSON.stringify(YT_S.savedChannels));
+    localStorage.setItem(YT_LS.compare, JSON.stringify(YT_S.compareList));
+  } catch(e) { console.warn('[panel7] ytSaveLS: localStorage 저장 실패', e); }
 }
 function ytSaveSearchCache() {
   if (!YT_S.searchResults || !YT_S.searchResults.length) return;

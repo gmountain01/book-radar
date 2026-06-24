@@ -76,7 +76,7 @@ var INPROGRESS_KEY = 'p25_inprogress';
 function getInProgress() {
   try { return JSON.parse(localStorage.getItem(INPROGRESS_KEY) || '[]'); } catch(e) { return []; }
 }
-function saveInProgress(list) { localStorage.setItem(INPROGRESS_KEY, JSON.stringify(list)); }
+function saveInProgress(list) { try { localStorage.setItem(INPROGRESS_KEY, JSON.stringify(list)); } catch(e) { console.warn('[panel25] saveInProgress: localStorage 저장 실패', e); } }
 
 // ── [개선2] 집필 능력 시그널 추출 ──
 var WRITING_URL_RE = /(?:github\.com|velog\.io|tistory\.com|brunch\.co\.kr|medium\.com|notion\.so|blog\.naver\.com|substack\.com)[\/\w\-.]*/gi;
@@ -149,7 +149,7 @@ var TRACK_STAGES = ['검토','섭외중','계약','집필중','출간','보류']
 function getTracking() {
   try { return JSON.parse(localStorage.getItem(TRACKING_KEY) || '{}'); } catch(e) { return {}; }
 }
-function saveTracking(t) { localStorage.setItem(TRACKING_KEY, JSON.stringify(t)); }
+function saveTracking(t) { try { localStorage.setItem(TRACKING_KEY, JSON.stringify(t)); } catch(e) { console.warn('[panel25] saveTracking: localStorage 저장 실패', e); } }
 
 // ── 데이터 자동 수집 ──
 function collectAllData() {
