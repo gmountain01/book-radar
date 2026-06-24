@@ -216,6 +216,429 @@
       "first_seen": "2026-06-24"
     },
     {
+      "id": "24a3a922502a",
+      "source": "openai",
+      "source_name": "OpenAI",
+      "icon": "🟢",
+      "title": "OpenAI and Broadcom unveil LLM-optimized inference chip",
+      "link": "https://openai.com/index/openai-broadcom-jalapeno-inference-chip",
+      "date": "2026-06-24",
+      "summary": "OpenAI and Broadcom introduce Jalapeño, a custom AI chip built for LLM inference to improve performance, efficiency, and scale across AI systems.",
+      "keywords": [
+        "LLM",
+        "Optimization"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "65d449d9cc0d",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Zoox upgrades its robotaxi as it prepares for commercial service",
+      "link": "https://techcrunch.com/2026/06/24/zoox-upgrades-its-robotaxi-as-it-prepares-for-commercial-service/",
+      "date": "2026-06-24",
+      "summary": "The new Zoox robotaxi has more cushioning, lighter colors, and a better microphone and speaker for communicating with Zoox Support.",
+      "keywords": [
+        "Robotics"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "77329bf24b79",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "This new tracking label could help solve cargo theft",
+      "link": "https://techcrunch.com/2026/06/24/this-new-tracking-label-could-help-solve-cargo-theft/",
+      "date": "2026-06-24",
+      "summary": "The Samsara Tracking Label hides a BLE system that can offer real-time location in a disposable package.",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "b2b283d1fdd4",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "OpenAI unveils its first custom chip, built by Broadcom",
+      "link": "https://techcrunch.com/2026/06/24/openai-unveils-its-first-custom-chip-built-by-broadcom/",
+      "date": "2026-06-24",
+      "summary": "Named Jalapeño, the new processor was designed specifically for the unique needs of OpenAI's inference systems.",
+      "keywords": [
+        "Optimization"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "8900fe233f15",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "If you want to cut your screen time, just get a Brick",
+      "link": "https://techcrunch.com/2026/06/24/if-you-want-to-cut-your-screen-time-just-get-a-brick/",
+      "date": "2026-06-24",
+      "summary": "After years of struggling to curb my screen time, apparently all I needed was a $59 hunk of plastic.",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "ffe3eb188173",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "3 days left to save up to $190 on your TechCrunch Founder Summit 2026 pass",
+      "link": "https://techcrunch.com/2026/06/24/3-days-left-to-save-up-to-190-on-techcrunch-founder-summit-2026/",
+      "date": "2026-06-24",
+      "summary": "You have just 3 days left to save up to $190 on your pass to TechCrunch Founder Summit 2026 before Early Bird rates end on June 26 at 11:59 p.m. PT. Register here.",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "aba866e36e00",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Valor Equity Partners looks to raise a $2.5B Fund VII, per Bloomberg",
+      "link": "https://techcrunch.com/2026/06/24/valor-equity-partners-looks-to-raise-a-2-5b-fund-vii-per-bloomberg/",
+      "date": "2026-06-24",
+      "summary": "New details have emerged about Valor's latest fund, which last year announced it was raising an unspecified amount of capital.",
+      "keywords": [
+        "SDK/API"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "ce403666bde6",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Slate Auto’s radically simple electric truck starts at $24,950",
+      "link": "https://techcrunch.com/2026/06/24/slate-autos-radically-simple-electric-truck-starts-at-24950/",
+      "date": "2026-06-24",
+      "summary": "The Jeff Bezos-backed startup finally revealed more pricing details for its debut EV, including a $29,950 starting price for the SUV variant, and boosted the base range to 205 miles.",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "2b7f6348f5d7",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "How to invest when everything is moving too fast",
+      "link": "https://techcrunch.com/2026/06/23/how-to-invest-when-everything-is-moving-too-fast/",
+      "date": "2026-06-24",
+      "summary": "TechCrunch's StrictlyVC evening in Los Angeles late last week brought together two of the more straight-talking investors working in AI right now. They were as entertaining as they were illuminating.",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "ba1bb9387bbb",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "\"미소스가 미국 정부 기밀 시스템서 취약점 발견\"…규제 논란도 확산",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212070",
+      "date": "2026-06-24",
+      "summary": "앤트로픽의 '미소스'가 미국 정부의 고도 보안 컴퓨터 시스템에서 취약점을 단 몇 시간 만에 찾아낸 것으로 확인됐다. 이 때문에 정부도 AI 안보를 위해 규제에 나섰다는 논리이지만, 이에 대한 반발도 심화고 있다.미국 정부 관계자는 24일(현지시간) AP와의 인터뷰에서 앤트로픽의 미소스가 테스트 도중 미국 정부의 매우 민감하고 보안이 철저한 컴퓨터 시스템에서 취약점을 발견했다고 말했다.익명을 요구한 관계자는 앤트로픽이 미국 정보기관과 협력해 미소스를 이용한 테스트를 진행했다고 밝혔다. 그는 테스트 결과 몇 시간 만에 특정 취약점을 발",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "3b3140027fdb",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[게시판] 퀄컴, ‘AI 이노베이터 프로그램 APAC’ 선정 스타트업 15개사 발표 등 단신",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212072",
+      "date": "2026-06-24",
+      "summary": "■ 퀄컴 테크날러지스는 ‘퀄컴 AI 이노베이터 프로그램 (QAIPI) 2026’에 선정된 스타트업 총 15개사를 발표했다. QAIPI 2026은 아태지역의 스타트업이 퀄컴 플랫폼을 활용해 확장 가능한 엣지 AI 솔루션을 개발하도록 지원한다. 참가 기업들은 퀄컴 드래곤윙 및 스냅드래곤 플랫폼, 새롭게 출시된 아두이노 우노 Q 개발 보드를 비롯한 첨단 개발 도구를 이용할 수 있다.■ 한국투자액셀러레이터와 한국투자파트너스는 글로벌 AI 기업 앤트로픽, AI 개발 플랫폼 리플릿과 공동으로 지난 18일 서울 강남구 코엑스에서 AI 해커톤 '",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "683800bcd279",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "[게시판] 웹케시, 농협은행에 기업뱅킹 전용 AI 에이전트 구축 등 단신",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212068",
+      "date": "2026-06-24",
+      "summary": "■ 웹케시(대표 강원주)는 NH농협은행과 ‘AI 에이전트 기반 기업뱅킹 조회 서비스’를 구축한다고 밝혔다. 기업 고객이 자연어 대화로 수신·여신 정보를 조회하고 비교·분석할 수 있는 AI 기업뱅킹 환경 구현이 목표다. 이전 대화의 맥락을 이어가며 조건을 추가하거나 비교 대상을 바꾸는 멀티턴 대화도 지원한다. 웹케시는 자체 개발한 NL2SQL 솔루션과 AI 에이전트 관리자 사이트를 적용할 예정이다.■ 메가존클라우드 관계사인 메가존소프트(대표 이주완)는 구글 클라우드와 '에이전틱 WX 리더십 세미나'를 개최했다고 밝혔다. 국내 기업 임",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "5a36bacaf5fa",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "KAIST, 적은 데이터로 정밀 동작 구현하는 로봇 AI 개발…추론 효율까지 강화",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212069",
+      "date": "2026-06-24",
+      "summary": "디스포를 활용한 로봇 시연 영상 (영상=KAIST)한국과학기술원(KAIST, 총장 이광형)은 박대형 전산학부 교수 연구팀이 적은 양의 동작 데이터만으로 사용자가 원하는 정밀도에 맞춰 움직임을 세밀하게 생성하는 다중 정밀도 조작 모델 ‘디스포(DiSPo)'를 개발했다고 24일 밝혔다.기존의 로봇 AI는 사람이 움직이는 모습을 매우 짧은 시간 간격으로 기록한 방대한 양의 데이터를 학습해야만 정밀한 작업을 수행할 수 있었다. 예를 들면, 나사를 조이거나 좁은 틈에 부품을 끼워 넣는 작업을 배우려면 수많은 동작 데이터를 세밀하게 수집해야",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "c931d6e512be",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "딥시크, ‘하네스’ 팀 조직… 글로벌 AI 에이전트 시장 선점 가속화",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212059",
+      "date": "2026-06-24",
+      "summary": "딥시크가 급성장하는 AI 에이전트 시장 공략에 속도를 내고 있다. 최근 '하네스(Harness)' 전담 조직을 신설하고 대규모 인재 확보에 나서면서, 대형언어모델(LLM)을 자율적으로 업무를 수행하는 AI 에이전트로 발전시키기 위한 글로벌 경쟁에 본격 뛰어들었다.사우스차이나모닝포스트에 따르면, 딥시크의 하네스 팀을 이끌고 있는 추이 텐이는 21일(현지시간) 소셜미디어 X를 통해 \"매일 지원자들을 면접하고 여러 플랫폼에 채용 공고를 올리고 있다\"며 인력 부족 상황을 공개했다.그는 세계적인 퀀트 트레이딩 기업인 제인 스트리트 출신으로,",
+      "keywords": [
+        "AI Agent",
+        "LLM"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "f7b618ad0ac3",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "오픈소스 이미지 모델 '크레아 2' 출시... \"2초 만에 기업용 이미지 생성\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212064",
+      "date": "2026-06-24",
+      "summary": "AI 이미지 생성 스타트업 크레아가 새로운 오픈웨이트 이미지 생성 모델 '크레아 2(Krea 2)'를 공개했다. 최대 2초 만에 고해상도 이미지를 생성할 수 있는 초고속 성능과 높은 창작 자유도를 앞세워, 폐쇄형 AI 모델 중심의 생성 이미지 시장에 도전장을 내밀었다.크레아는 23일(현지시간) 차세대 이미지 생성 모델인 '크레아 2'를 공개하고, '크레아 2 로우(Raw)'와 '크레아 2 터보(Turbo)' 두 가지 버전을 오픈웨이트로 배포한다고 밝혔다.today, we release the open weights of Krea 2",
+      "keywords": [
+        "Image AI",
+        "Open Source"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "9a06d0cac630",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "엔비디아, 생명과학 분야용 소프트웨어 출시...코딩 지식 없어도 에이전트 구축",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212067",
+      "date": "2026-06-24",
+      "summary": "엔비디아가 생명과학 연구자와 바이오 기업들이 코딩 전문 지식 없이도 AI 에이전트를 구축할 수 있도록 지원하는 오픈소스 소프트웨어를 공개하며 AI 기반 신약 개발 및 과학 연구 시장 공략에 나섰다.엔비디아는 22일(현지시간) 생명과학 전용 AI 에이전트 개발 플랫폼인 ‘바이오네모 에이전트 툴킷(BioNeMo Agent Toolkit)’을 발표했다.이 플랫폼은 연구자와 AI 에이전트가 협력해 과학적 근거를 수집하고, 연구 결과를 분석하며, 계산 실험을 수행한 뒤 최적의 다음 연구 단계를 제안할 수 있도록 설계됐다.엔비디아가 지난 10",
+      "keywords": [
+        "AI Agent",
+        "Open Source"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "2731938fb586",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "테슬라 FSD, 텍사스서 70대 사망 사고로 미 연방 조사 착수",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212063",
+      "date": "2026-06-24",
+      "summary": "테슬라의 운전자 보조 시스템인 ‘완전자율주행(FSD)’ 기능이 사용된 것으로 알려진 차량이 미국 텍사스의 한 주택으로 돌진해 70대 여성이 사망하는 사고가 발생했다. 미국 도로교통안전국(NHTSA)은 즉각 특별 사고 조사에 착수했으며, 테슬라는 운전자의 수동 개입이 원인이라고 주장하고 있어 사고 책임을 둘러싼 논란이 커지고 있다. CNBC에 따르면, 미국 도로교통안전국(NHTSA)은 22일(현지시간) 텍사스주 케이티에서 발생한 치명적인 교통사고와 관련해 테슬라의 자율주행 보조 시스템 사용 여부를 조사하기 위한 특별 사고 조사에 착수",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "629e5baea9f6",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "오픈AI, IPO 앞두고 광고 시장 조준…칸에서 챗GPT 광고 비즈니스 공개",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212058",
+      "date": "2026-06-24",
+      "summary": "오픈AI가 세계 최대 광고 행사인 칸 라이언즈(Cannes Lions)에 처음 참가해 챗GPT 광고 사업과 AI 코딩 에이전트 '코덱스'를 전면에 내세우며 광고 시장 공략에 나섰다. 기업공개(IPO)를 앞두고 새로운 수익원을 확보하기 위한 행보로 풀이된다.파이낸셜타임스에 따르면, 오픈AI는 22일(현지시간) 프랑스 칸에서 열린 칸 라이언즈 광고 페스티벌에서 광고주와 마케팅 업계를 대상으로 자사의 광고 플랫폼과 AI 기술을 소개했다.행사장에는 구글과 메타 등 기존 광고 기술 강자들이 자리한 가운데, 오픈AI도 별도 전시 공간을 마련하",
+      "keywords": [
+        "AI Agent",
+        "GPT"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "f14feebc65a0",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "법률 AI 서비스 ‘슈퍼로이어’, 변호사시험 선택형 ‘만점’ 달성…”수석보다 15점 높아”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212066",
+      "date": "2026-06-24",
+      "summary": "리걸테크 전문 로앤컴퍼니(대표 김본환)는 '슈퍼로이어'가 제15회 변호사시험 선택형에서 만점을 기록했다고 24일 밝혔다. 법률 AI 서비스 슈퍼로이어는 제15회 대한민국 변호사시험 선택형(객관식)에서 150개 문항을 모두 맞혀 정답률 100%, 375점 만점을 달성했다. 현재까지 변호사시험 선택형 만점은 공식적으로 알려진 바 없으며, 이번 375점은 같은 시험 수석의 360점보다도 15점이 높다는 설명이다. 지난해 비영어권 최초로 선택형 합격선을 통과한 데 이은 또 하나의 '최초' 기록이라고 강조했다. 변호사시험 선택형은 민사법·형",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "e909a4ddce11",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "전남도립미술관, 24일 ‘뮤지엄 나이트’ 운영",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212054",
+      "date": "2026-06-24",
+      "summary": "AI 생성 영상전남도립미술관이 24일 문화가 있는 날을 맞아 야간 관람 프로그램 뮤지엄 나이트를 운영한다고 밝혔다.전남도립미술관은 24일 오후 7시부터 뮤지엄 나이트 프로그램으로 큐레이터 토크&스낵을 연다. 담당 큐레이터가 허달재 작가의 작품 세계와 전시 구성 배경을 소개하고, 관람객과 전시에 관한 이야기를 나누는 방식으로 진행된다.참여자는 네이버 예약 시스템을 통해 사전 신청할 수 있다. 잔여석이 있으면 행사 당일 현장 신청도 가능하다. 전남도립미술관 뮤지엄 나이트는 매월 마지막 수요일인 문화가 있는 날 오후 9시까지 개관 시간을",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "fee3ec43ab97",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "광주, 여성친화마을 전문가 50명 선착순 모집",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212057",
+      "date": "2026-06-24",
+      "summary": "AI 생성 영상광주시가 여성친화마을 사업의 전문성을 높이기 위해 ‘2026년 여성친화마을 전문가 양성과정’을 운영한다고 24일 밝혔다.교육은 전일빌딩245 중회의실에서 매주 화요일 총 4차례 진행되며, 참가자는 50명 선착순으로 모집한다. 마을 돌봄과 성평등 문화 확산에 관심 있는 시민과 공동체 구성원이 참여할 수 있다.이번 과정은 올해 여성친화마을 조성사업을 수행하는 6개 단체와 2021년부터 2025년까지 여성친화마을 조성사업을 수행한 단체, 5개 자치구 주민자치회 등을 대상으로 마련됐다. 여성친화마을에 관심 있는 시민도 신청할",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "a09e8790bc46",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "순천, 안력산병원 역사 담은 근대의료체험 개최",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212060",
+      "date": "2026-06-24",
+      "summary": "AI 생성 영상순천시가 원도심에서 근대 의료 유산을 체험하는 ‘알렉산더, 순천 근대의료체험’ 프로그램을 연다고 24일 밝혔다.전남 동부권 최초의 종합병원인 안력산병원 등 지역 의료 유산을 해설과 체험으로 살펴보는 행사로, 가족 단위 시민과 어린이가 순천 근대사를 생활 가까이에서 접할 수 있는 프로그램이다.프로그램은 ‘근대의료의 길 투어’로 시작된다. 참가자들은 순천 최초의 현대식 상수도 시설과 안력산병원 격리병동인 현 안력산의료문화센터 등 역사적 거점을 전문가 해설과 함께 답사한다. 이를 통해 근대 의료 시설이 지역사회와 주민 생활",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "8ba42feeefaf",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "여수, '보라보리' 특화작목 육성…2027년까지 6억 투입",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212062",
+      "date": "2026-06-24",
+      "summary": "AI 생성 영상여수시가 전남농업기술원의 ‘2026년 미래전략 지역특화작목 육성 시범사업’ 공모에 선정돼 자색찰보리를 기후변화 대응 지역특화 소득작목으로 본격 육성한다고 24일 밝혔다.여수는 2027년까지 6억원을 투입해 생산 기반을 넓히고 가공·유통·체험을 연계한 고부가가치 산업 기반을 만들 계획이다. 현재 12ha인 자색보리 재배면적은 2030년까지 50ha로 확대하는 것이 목표다.여수 대표 브랜드인 자색찰보리를 ‘보라보리’로 키우고 생산과 가공, 체험을 묶은 산업 기반 구축에 나선다. 보라보리는 찰기가 뛰어나 쫀득하고 탱글한 식",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "d3e6b88fbd1e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "목포, 청소차량 운전원·환경실무원 안전보건교육 실시",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212061",
+      "date": "2026-06-24",
+      "summary": "AI 생성 영상목포시가 생활폐기물 수거·운반 현장의 산업재해를 줄이기 위해 청소차량 운전원과 환경실무원을 대상으로 안전보건교육을 실시했다고 24일 밝혔다.목포는 23일 목포국제축구센터에서 청소차량 운전직 공무원과 환경실무원 등 170여명을 대상으로 안전보건교육을 열었다. 이번 교육은 생활폐기물 수거와 운반 과정에서 발생할 수 있는 안전사고를 예방하고, 산업재해 대응 역량을 높이기 위해 마련됐다.교육에는 산업안전보건 분야 전문강사가 참여했다. 강의는 실제 산업재해 사례와 청소현장 주요 사고 유형을 중심으로 구성됐다. 청소차량 운전원",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "64e53ee4a1ff",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "바이트댄스, 비디오 모델 ‘시댄스 2.5’ 공개",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212048",
+      "date": "2026-06-24",
+      "summary": "중국 바이트댄스가 차세대 AI 영상 생성 모델 '시댄스(Seedance) 2.5'를 공개하며 비디오 생성 시장 공략에 속도를 내고 있다. 새 모델은 지난해 큰 주목을 받았던 시댄스 2.0의 후속작으로, 영상 길이와 제어 능력, 화질 등을 대폭 개선해 실무 활용성을 높인 것이 특징이다.바이트댄스는 23일(현지시간) 베이징에서 열린 볼케이노 엔진 FORCE 컨퍼런스에서 ‘시댄스 2.5’를 공개했다. 바이트댄스는 다음 달 중국 시장에 정식 출시할 예정이며, 글로벌 출시 일정은 아직 공개하지 않았다.BYTEDANCE : Seedance 2",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "3a650020213c",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "손정의, 머스크 '우주 데이터센터' 구상 비판...\"별 이점 없어\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212041",
+      "date": "2026-06-24",
+      "summary": "일본 소프트뱅크의 창업자 손정의 회장이 우주에 AI 데이터센터를 건설하겠다는 일론 머스크의 구상에 대해 실질적인 경제성이 부족하다고 평가하며, AI 경쟁의 승부는 결국 지상 데이터센터에서 결정될 것이라고 주장했다.블룸버그 에 따르면, 손 회장은 23일 열린 소프트뱅크 이동통신 자회사 주주총회에서 주주의 질문에 답하는 과정에서 우주 기반 데이터센터의 필요성에 의문을 제기했다. 그는 \"AI 데이터센터를 우주에 건설하는 것이 어떤 의미가 있는가. 무엇이 장점인가\"라고 반문하며, 전력 비용 절감만으로는 우주 데이터센터 구축을 정당화하기 어",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "3ecbbd98b2ed",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "엔비디아, ‘온수 욕조’보다 뜨거운 데이터센터 액체 냉각 기술 공개",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212053",
+      "date": "2026-06-24",
+      "summary": "엔비디아가 차세대 AI 데이터센터를 위한 새로운 액체 냉각 기술을 공개했다. 온수 욕조보다 높은 섭씨 45도의 냉각수를 사용하는 방식으로, 냉각 과정에서 발생하는 물 사용량을 사실상 없애고 전력 소비도 크게 줄일 수 있었다.엔비디아는 23일(현지시간) 최근 공개한 차세대 AI 인프라 플랫폼 '루빈(Rubin)'에 업계 최초의 100% 액체 냉각 구조를 적용했다고 밝혔다. GPU와 CPU는 물론 네트워크 장비까지 모든 핵심 부품을 액체로만 냉각하는 완전 밀폐형 시스템으로, 기존 데이터센터에서 필수적으로 사용되던 냉각 팬도 제거했다.이",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "b7cc613861f2",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "에이쓰리, 플랜트·조선 산업 특화 AI 에이전트 개발 나선다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212051",
+      "date": "2026-06-24",
+      "summary": "에이쓰리(대표 박의환)는 과학기술정보통신부의 AI 에이전트 융합·확산 지원사업에 선정돼 '플랜트·조선 수주산업 특화 AI 플랫폼' 개발에 착수한다고 24일 밝혔다.이번 사업은 플랜트·조선 프로젝트의 수주 단계에서 발생 가능한 리스크를 AI 에이전트가 사전 분석하고 의사결정을 지원하는 것을 목표로 한다. 계약·입찰부터 원가 상승, 납기 지연, 설계 변경에 따른 기술·일정·원가 리스크 등이 해당한다.에이쓰리가 주관기관으로 NC AI와 인터엑스, 범한메카텍이 컨소시엄으로 사업을 수행한다.에이쓰리는 AI 에이전트가 계약서·입찰안내서·기술사",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "520213057cf8",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "저커버그, 비밀리에 '시장 예측 앱' 개발 지시",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212056",
+      "date": "2026-06-24",
+      "summary": "마크 저커버그 메타 CEO가 최근 급성장하고 있는 예측 시장 서비스에 주목하며, 관련 스마트폰 애플리케이션 개발을 비밀리에 추진하고 있는 것으로 알려졌다.23일(현지시간) 뉴욕타임스(NYT)에 따르면 저커버그 CEO는 최근 사내 소규모 팀에 예측 시장 플랫폼인 폴리마켓과 칼시를 모델로 한 독립형 모바일 앱 개발을 지시했다. 해당 프로젝트는 내부적으로 '아레나(Arena)'라는 이름으로 불리고 있으며, 페이스북·인스타그램·왓츠앱·메신저 등 기존 메타 서비스와는 별도로 운영될 예정이다.현재 개발 중인 아레나는 실제 현금을 걸고 베팅하는",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "1156c18ed10a",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "알리바바, 미 국방부 '중국 군수기업' 지정에 맞소송",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212055",
+      "date": "2026-06-24",
+      "summary": "중국 알리바바가 미국 국방부가 자사를 '중국 군수기업(Chinese Military Company)' 명단에 포함한 것에 반발해 소송을 제기했다. 알리바바는 해당 결정이 사실과 법적 근거가 없는 자의적 조치라며 명단에서 즉각 제외해 줄 것을 요구했다.로이터에 따르면 알리바바는 23일(현지시간) 미국 캘리포니아주 새너제이 연방지방법원에 소장을 제출하고 미국 국방부를 상대로 법적 대응에 나섰다. 이번 소송은 미 국방부가 이달 초 중국군과 연계됐다고 판단한 기업 명단인 '1260H 리스트'를 기존보다 확대하면서 촉발됐다. 현재 명단에는",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "a7345da78430",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "스페인 태양광·풍력, 가구 전기요금 월 10유로 낮췄다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212052",
+      "date": "2026-06-24",
+      "summary": "국제 가스 가격이 3월 이후 급등했지만 스페인 가정의 전기요금 충격은 제한적이었다는 분석이 나왔다.에너지 싱크탱크 엠버는 16일(현지시간) 공개한 분석에서 스페인이 2021년 이후 늘린 태양광과 풍력 덕분에 가구당 전기요금을 월평균 10유로(약 1만7000원) 낮추는 효과를 봤다고 밝혔다.스페인은 2021년 이후 태양광과 풍력 비중을 빠르게 높였다. 스페인 전력에서 풍력과 태양광이 차지하는 비중이 2021년 33%에서 2025년 42%로 상승했다. 이 과정에서 재생에너지는 탄소 감축 수단을 넘어 에너지 가격 충격을 줄이는 완충장치",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "a1dc4e577525",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "세계 태양광 누적 설치량 연 27% 성장…고효율 경쟁 본격화",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=212044",
+      "date": "2026-06-24",
+      "summary": "세계 태양광 시장이 가격 하락과 고효율 모듈 확산을 바탕으로 빠르게 커지고 있다. 독일 프라운호퍼 태양에너지시스템연구소(ISE)는 22일(현지시간) 보고서에서 2015년부터 2025년까지 세계 태양광 누적 설치량이 연평균 약 27% 성장했다고 밝혔다.보고서에 따르면 세계 태양광 시장은 결정질 실리콘 기술이 주도하고 있다. 최근에는 n형 TOPCon 기술이 빠르게 확산되며 고효율 모듈 경쟁을 이끌고 있다. 태양광 보급 방식도 보조금 중심에서 경쟁입찰과 전력구매계약 중심으로 이동하고 있다.효율 경쟁은 태양광 산업의 핵심 변수라는 평가다",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
+      "id": "e0fbc14ba403",
+      "source": "toss",
+      "source_name": "토스",
+      "icon": "💙",
+      "title": "es-toolkit: How a Small Internal Library Became a Global Project",
+      "link": "https://toss.tech/article/50693",
+      "date": "2026-06-24",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-06-24"
+    },
+    {
       "id": "44208f99c618",
       "source": "techcrunch",
       "source_name": "TechCrunch",
@@ -21584,6 +22007,11 @@
       "date": "2026-06-24",
       "added": 69,
       "total": 1601
+    },
+    {
+      "date": "2026-06-24",
+      "added": 33,
+      "total": 1634
     }
   ],
   "sources": {},
@@ -21726,49 +22154,59 @@
     {
       "week": "2026-W26",
       "keywords": {
-        "AI Agent": 25,
+        "AI Agent": 30,
         "Automation": 11,
-        "Security": 9,
+        "Security": 10,
+        "LLM": 9,
         "Claude": 7,
-        "LLM": 7,
-        "Open Source": 5,
-        "GPT": 5,
+        "Open Source": 7,
+        "GPT": 6,
         "Generative AI": 5,
         "Coding": 5,
+        "Optimization": 3,
+        "SDK/API": 3,
         "Video AI": 3,
-        "Prompt": 2,
-        "Deployment": 2,
-        "RAG": 2,
-        "Embeddings": 2,
-        "Cloud/DevOps": 2
+        "Robotics": 3,
+        "Vector DB": 2,
+        "Chatbot": 2
       }
     }
   ],
   "source_stats": {
+    "nvidia_ai": {
+      "total": 61,
+      "recent_7d": 18,
+      "recent_30d": 40
+    },
     "techcrunch": {
-      "total": 379,
-      "recent_7d": 112,
-      "recent_30d": 318
+      "total": 387,
+      "recent_7d": 120,
+      "recent_30d": 326
     },
     "aitimes": {
-      "total": 646,
-      "recent_7d": 206,
-      "recent_30d": 546
-    },
-    "toss": {
-      "total": 37,
-      "recent_7d": 11,
-      "recent_30d": 17
+      "total": 669,
+      "recent_7d": 229,
+      "recent_30d": 569
     },
     "lycorp": {
       "total": 40,
       "recent_7d": 7,
       "recent_30d": 8
     },
+    "toss": {
+      "total": 38,
+      "recent_7d": 12,
+      "recent_30d": 18
+    },
+    "anthropic": {
+      "total": 25,
+      "recent_7d": 2,
+      "recent_30d": 13
+    },
     "openai": {
-      "total": 84,
-      "recent_7d": 13,
-      "recent_30d": 46
+      "total": 85,
+      "recent_7d": 14,
+      "recent_30d": 47
     },
     "meta_eng": {
       "total": 13,
@@ -21784,16 +22222,6 @@
       "total": 90,
       "recent_7d": 16,
       "recent_30d": 57
-    },
-    "nvidia_ai": {
-      "total": 61,
-      "recent_7d": 18,
-      "recent_30d": 40
-    },
-    "anthropic": {
-      "total": 25,
-      "recent_7d": 2,
-      "recent_30d": 13
     },
     "google_ai": {
       "total": 30,
@@ -21822,5 +22250,5 @@
     }
   },
   "last_updated": "2026-06-24",
-  "total_articles": 1601
+  "total_articles": 1634
 }
