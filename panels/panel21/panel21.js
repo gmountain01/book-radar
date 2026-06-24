@@ -310,6 +310,7 @@ async function _parseDocx(file){
   var ab = await file.arrayBuffer();
   var zip = await JSZip.loadAsync(ab);
 
+  if (!zip.files['word/document.xml']) throw new Error('word/document.xml을 찾을 수 없습니다. 올바른 DOCX 파일인지 확인하세요.');
   var docXml = await zip.files['word/document.xml'].async('string');
   // relationships for images
   var relsXml = '';

@@ -481,8 +481,10 @@ window.p11_saveOpenAiKey = async function() {
     return;
   }
 
-  localStorage.setItem('p17_openai_key', key);
-  localStorage.setItem('p11_openai_key', key);
+  try {
+    localStorage.setItem('p17_openai_key', key);
+    localStorage.setItem('p11_openai_key', key);
+  } catch(e) { console.warn('[panel11] OpenAI 키 저장 실패', e); }
   input.value = '';
 
   _setBadge('p11-openai-badge', 'loading', '검증 중…');

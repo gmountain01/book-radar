@@ -115,7 +115,9 @@ window.cpDownloadDocx = function() {
     body += '<w:p/>';
   });
 
-  buildDocx(body, (data.title || '도서컨셉').replace(/[^\w가-힣]/g, '_').slice(0, 30) + '_컨셉.docx');
+  try {
+    buildDocx(body, (data.title || '도서컨셉').replace(/[^\w가-힣]/g, '_').slice(0, 30) + '_컨셉.docx');
+  } catch(e) { console.warn('[panel13] DOCX 내보내기 실패', e); alert('DOCX 내보내기 실패: ' + e.message); }
 };
 
 window.cpAiDraft = async function() {

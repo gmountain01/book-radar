@@ -1177,7 +1177,8 @@ function p16_copy() {
     return e.term + '\t' + (CATS[e.cat]?.label || e.cat) + '\t' + (e.score||0) + '\t' + e.freq + '\t' + pArr.join(', ');
   });
   navigator.clipboard.writeText(header + '\n' + lines.join('\n'))
-    .then(function(){ _setStatus(idxData.length + '개 용어 클립보드 복사 완료'); });
+    .then(function(){ _setStatus(idxData.length + '개 용어 클립보드 복사 완료'); })
+    .catch(function(e){ console.warn('[panel16] 클립보드 복사 실패', e); _setStatus('클립보드 복사 실패 — 브라우저 권한을 확인하세요'); });
 }
 
 function p16_download() {
