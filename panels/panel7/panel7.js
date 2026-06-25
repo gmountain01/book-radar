@@ -737,6 +737,12 @@ function setSort(key) {
   renderSortedResults();
 }
 
+function toggleSearchView(mode) {
+  YT_S.searchViewMode = mode || 'card';
+  renderSortedResults();
+}
+window.toggleSearchView = toggleSearchView;
+
 function renderSortedResults() {
   let sorted = [...YT_S.searchResults];
   if (YT_S.sortBy === 'relevance') {
@@ -761,6 +767,13 @@ function renderSearchResults(items) {
     { key: 'views',      label: '총 조회수 ↓' }
   ];
 
+  const viewMode = YT_S.searchViewMode || 'card';
+
+  if (!items.length) {
+    el.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>검색 결과가 없습니다<br><small>다른 키워드로 검색하거나 한국 채널이 있는지 확인하세요</small></p></div>';
+    return;
+  }
+
   el.innerHTML = `
     <div class="sort-bar">
       <span class="sort-label">정렬</span>
@@ -768,9 +781,22 @@ function renderSearchResults(items) {
         <button class="sort-btn ${YT_S.sortBy === o.key ? 'active' : ''}"
                 onclick="setSort('${o.key}')">${escHtml(o.label)}</button>
       `).join('')}
+      <div class="view-toggle-wrap">
+        <button class="view-toggle-btn ${viewMode === 'card' ? 'active' : ''}"
+                onclick="toggleSearchView('card')">◼ 카드 보기</button>
+        <button class="view-toggle-btn ${viewMode === 'list' ? 'active' : ''}"
+                onclick="toggleSearchView('list')">📋 평점 목록 보기 (${items.length}개)</button>
+      </div>
       <span class="sort-count">${items.length}개 채널</span>
     </div>
-    <div class="channel-grid">
+    <div id="searchViewContainer">
+      ${viewMode === 'list' ? renderScoreList(items) : renderCardGrid(items)}
+    </div>
+  `;
+}
+
+function renderCardGrid(items) {
+  return `<div class="channel-grid">
       ${items.map(item => {
         const sn    = item.snippet;
         const cid   = item._cid || item.id.channelId || item.id;
@@ -819,8 +845,47 @@ function renderSearchResults(items) {
           </div>
         `;
       }).join('')}
-    </div>
-  `;
+    </div>`;
+}
+
+function renderScoreList(items) {
+  const maxSubs = Math.max(1, ...items.map(it => parseInt(it._stats?.subscriberCount || 0)));
+  const maxRel  = Math.max(1, ...items.map(it => relevanceScore(it)));
+  return `<div class="score-list">
+    ${items.map((item, i) => {
+      const sn    = item.snippet;
+      const cid   = item._cid || item.id.channelId || item.id;
+      const thumb = sn.thumbnails?.default?.url || '';
+      const subs  = parseInt(item._stats?.subscriberCount || 0);
+      const hidden     = item._stats?.hiddenSubscriberCount;
+      const videoCount = item._videoCount || 0;
+      const pct   = hidden ? 0 : (subs / maxSubs * 100);
+      // relevanceScore를 0~100으로 정규화하여 scoreTag에 전달
+      const normScore = Math.round(relevanceScore(item) / maxRel * 100);
+      const [tagCls, tagLbl] = scoreTag(normScore);
+      return `
+        <div class="score-list-row" onclick="analyzeChannelById('${escHtml(cid)}')" title="분석하기">
+          <div class="sim-rank">${i + 1}</div>
+          ${thumb
+            ? `<img class="sim-thumb" src="${escHtml(thumb)}" alt="">`
+            : `<div class="sim-thumb sim-thumb-empty" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--bg);border:1px solid #E5E7EB">📺</div>`}
+          <div class="sim-info">
+            <div class="sim-name">${escHtml(sn.title || '')}</div>
+            <div class="sim-meta">
+              <span>구독자 ${hidden ? '비공개' : fmtNum(subs)}</span>
+              ${videoCount > 0 ? `<span>관련 영상 ${videoCount}개</span>` : ''}
+            </div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track">
+              <div class="score-bar-fill" style="width:${pct.toFixed(1)}%"></div>
+            </div>
+            <span class="score-bar-label">${hidden ? '비공개' : fmtNum(subs)}</span>
+            <span class="tag ${tagCls}">${tagLbl}</span>
+          </div>
+        </div>`;
+    }).join('')}
+  </div>`;
 }
 
 // ═══════════════════════════════════════════════════════════════

@@ -738,4 +738,101 @@
   .yt-scope #yt-main{padding:12px!important;}
 }
 
+    /* ── 평점 목록 보기 ── */
+    .yt-scope .view-toggle-wrap{
+      display: flex;
+      gap: 4px;
+      margin-left: 12px;
+      border-left: 1px solid var(--border);
+      padding-left: 12px;
+    }
+    .yt-scope .view-toggle-btn{
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text-muted);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .yt-scope .view-toggle-btn:hover{ border-color: var(--accent); color: var(--accent); }
+    .yt-scope .view-toggle-btn.active{
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .yt-scope .score-list{ display: flex; flex-direction: column; gap: 8px; }
+    .yt-scope .score-list-row{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--bg);
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+    .yt-scope .score-list-row:hover{ background: #EEF2FF; box-shadow: 0 2px 8px rgba(79,70,184,0.12); }
+    .yt-scope .score-list-row .sim-rank{
+      font-size: 16px;
+      font-weight: 800;
+      min-width: 28px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .yt-scope .score-list-row .sim-thumb{
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .yt-scope .score-list-row .sim-info{ flex: 1; min-width: 0; }
+    .yt-scope .score-list-row .sim-name{
+      font-weight: 600;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .yt-scope .score-list-row .sim-meta{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+      color: #6B7280;
+    }
+    .yt-scope .score-bar-wrap{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 160px;
+    }
+    .yt-scope .score-bar-track{
+      flex: 1;
+      height: 6px;
+      background: #E5E7EB;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .yt-scope .score-bar-fill{
+      height: 100%;
+      border-radius: 3px;
+      background: var(--accent);
+      transition: width 0.5s ease;
+    }
+    .yt-scope .score-bar-label{
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      min-width: 48px;
+      text-align: right;
+    }
+
 /* ═══════ 유튜버 분석 끝 ═══════ */

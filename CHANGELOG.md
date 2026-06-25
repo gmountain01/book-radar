@@ -4,6 +4,18 @@
 
 ---
 
+## 2026-06-25 — v2.6.2
+
+### panel7 평점 목록 보기 복원
+- 채널 검색 결과에 **카드 보기 / 📋 평점 목록 보기** 토글 버튼 추가
+- 평점 목록: 번호(1~N) + 썸네일 + 채널명+구독자 + 구독자 정규화 바 + 출판적합도 태그
+- relevanceScore 0~100 정규화 후 scoreTag 전달 (태그 변별력 보장)
+- 0건 empty-state 메시지 추가
+- `YT_S.searchViewMode` 상태 유지 (정렬 변경 시에도 뷰 모드 유지)
+- **대상:** panels/panel7/panel7.js, panels/panel7/panel7.css
+
+---
+
 ## 2026-06-25 — v2.6.1
 
 ### YouTube API 키 안정화
