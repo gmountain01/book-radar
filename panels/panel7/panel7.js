@@ -1224,53 +1224,53 @@ async function loadSimilarChannels(channel) {
 
   // ── 키워드 추출: 현재 채널 영상 제목에서 주제어 뽑기 ──
   // YT_S.videos가 있으면 실제 영상 제목 활용, 없으면 채널 description 활용
+  // sanitize: 한글·영문·숫자만 허용, YouTube 검색 연산자(|, -, ", +, _) 제거
+  function _sanitizeKw(raw) {
+    return raw.replace(/[^a-zA-Z0-9가-힣\s]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 50);
+  }
   let keywords = '';
   const videos = YT_S.videos || [];
   if (videos.length > 0) {
     const freq = {};
     videos.slice(0, 30).forEach(v => {
-      const t = (v.snippet?.title || v._sn?.title || '').replace(/[^\w\s가-힣]/g, ' ');
+      const t = (v.snippet?.title || v._sn?.title || '').replace(/[^a-zA-Z0-9가-힣\s]/g, ' ');
       t.split(/\s+/).forEach(w => {
-        if (w.length < 2) return;
+        if (w.length < 2 || /^\d+$/.test(w)) return; // 순수 숫자 토큰 제외
         const wl = w.toLowerCase();
         if (STOP_KO.has(w) || STOP_EN.has(wl)) return;
         freq[wl] = (freq[wl] || 0) + 1;
       });
     });
-    keywords = Object.entries(freq)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([w]) => w)
-      .join(' ');
+    keywords = _sanitizeKw(
+      Object.entries(freq)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([w]) => w)
+        .join(' ')
+    );
   }
   // 영상 없거나 키워드 추출 실패 → 채널 description에서 시도
   if (!keywords) {
     const desc = channel.snippet?.description || '';
-    keywords = desc.replace(/[^\w\s가-힣]/g, ' ')
-      .split(/\s+/)
-      .filter(w => w.length > 1 && !STOP_KO.has(w) && !STOP_EN.has(w.toLowerCase()))
-      .slice(0, 3)
-      .join(' ')
-      .trim();
+    keywords = _sanitizeKw(
+      desc.replace(/[^a-zA-Z0-9가-힣\s]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 1 && !/^\d+$/.test(w) && !STOP_KO.has(w) && !STOP_EN.has(w.toLowerCase()))
+        .slice(0, 3)
+        .join(' ')
+    );
   }
   if (!keywords) { el.innerHTML = ''; return; }
 
   try {
-    // 주제 키워드로 영상 검색 (2페이지) → 같은 주제 영상을 올리는 채널 수집
-    var simItems = [];
-    var simPageToken = null;
-    for (var sp = 0; sp < 2; sp++) {
-      var simParams = {
-        part: 'snippet', type: 'video', q: keywords,
-        maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko'
-      };
-      if (simPageToken) simParams.pageToken = simPageToken;
-      var videoRes = await ytFetch('/search', simParams);
-      if (!videoRes.items?.length) break;
-      simItems = simItems.concat(videoRes.items);
-      if (!videoRes.nextPageToken) break;
-      simPageToken = videoRes.nextPageToken;
-    }
+    // 주제 키워드로 영상 검색 (1페이지) → 같은 주제 영상을 올리는 채널 수집
+    // pageToken + regionCode 조합은 간헐적 "invalid filter parameter" 오류 유발 → 페이지네이션 제거
+    var simParams = {
+      part: 'snippet', type: 'video', q: keywords,
+      maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko'
+    };
+    var videoRes = await ytFetch('/search', simParams);
+    var simItems = videoRes.items || [];
 
     if (!simItems.length) { el.innerHTML = ''; return; }
 
