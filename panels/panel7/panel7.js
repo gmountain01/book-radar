@@ -239,7 +239,7 @@ async function apiSearchChannels(q) {
   return ytFetch('/search', {
     part: 'snippet', type: 'channel', q,
     maxResults: 50,
-    regionCode: 'KR',          // 한국 지역 기반 검색 결과 편향
+    // regionCode: type=channel에서 사용 불가 (API 오류 "invalid filter parameter")
     relevanceLanguage: 'ko'    // 한국어 관련성 우선
   });
 }
@@ -594,7 +594,8 @@ async function doSearch() {
           for (let cp = 0; cp < 3; cp++) {
             const chParams = {
               part: 'snippet', type: 'channel', q,
-              maxResults: 50, regionCode: 'KR', relevanceLanguage: 'ko'
+              maxResults: 50, relevanceLanguage: 'ko'
+              // regionCode: type=channel에서 사용 불가 (API 오류 "invalid filter parameter")
             };
             if (chPageToken) chParams.pageToken = chPageToken;
             const chDirect = await ytFetch('/search', chParams);
