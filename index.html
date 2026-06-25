@@ -1560,6 +1560,11 @@
       sep.style.display = 'block';
       tab.style.display = 'flex';
       if (typeof switchTab === 'function') switchTab(11, tab);
+      // API 키 탭 자동 전환 (초기화 완료 후)
+      setTimeout(function() {
+        var keysBtn = document.querySelector('#panel11 [data-p11-tab="keys"]');
+        if (keysBtn && typeof p11_switchTab === 'function') p11_switchTab('keys', keysBtn);
+      }, 50);
     } else {
       // 닫기 — 콘솔 숨기고 이전 패널로 복귀
       sep.style.display = 'none';

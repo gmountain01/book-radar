@@ -7,8 +7,18 @@ const CLAUDE_API_KEY = '';  // 예: 'sk-ant-api03-...'
 // 키가 없으면 localStorage(패널11 API 키 설정 UI)를 사용하세요.
 // YT_API_KEYS_SHARED는 api-keys.js에서 선언됩니다.
 if (typeof YT_API_KEYS_SHARED === 'undefined') {
-  // api-keys.js가 없을 때 빈 배열로 초기화 (localStorage 키만 사용)
-  var YT_API_KEYS_SHARED = [];
+  // api-keys.js가 없을 때 하드코딩 키로 초기화
+  var YT_API_KEYS_SHARED = [
+    'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo',
+    'AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c',
+    'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM',
+    'AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
+    'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis',
+    'AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc',
+    'AIzaSyDskh4OhwBoBYfl-LHUiN1HEbaLFgO_hsk',
+    'AIzaSyAXY7UnvqS0qT44o7StAHE3QoSScYH_0Ts',
+    'AIzaSyDLKaH0_N8t3ROU5Y_oOqLdwxBOEtt2n8g',
+  ];
 }
 
 // 내장 + localStorage 추가 키를 병합하여 전체 YouTube API 키 목록 반환

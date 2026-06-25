@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-06-25 — v2.6.1
+
+### YouTube API 키 안정화
+- **api-keys.js:** `const` → `var` 변경 (app.js var 선언과 충돌 방지)
+- **youtube.js:** `_YT_BUILTIN_KEYS` 9개 직접 하드코딩 — api-keys.js 없어도 키 동작 보장. `refreshKeys()` 폴백도 `_YT_BUILTIN_KEYS.slice()`로 통일
+- **app.js:** fallback 빈 배열 → 9개 키 하드코딩 (3중 안전장치 완성)
+- **index.html:** Ctrl+Alt+Enter 시 panel11 열리면서 "API 키" 탭 자동 전환 (50ms setTimeout)
+- **대상:** shared/api-keys.js, shared/youtube.js, shared/app.js, index.html
+
+---
+
 ## 2026-06-25 — v2.6.0
 
 ### 버전 업데이트

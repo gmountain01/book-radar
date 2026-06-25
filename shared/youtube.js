@@ -23,8 +23,19 @@ const YT_CACHE_TTL = {
 const YT_PARALLEL_LIMIT = 4; // 동시 최대 API 호출 수
 
 // ── 키 관리 ───────────────────────────────────────────────────
+const _YT_BUILTIN_KEYS = [
+  'AIzaSyDNjvfk8ZYRPumWeHCY9Axgswd80vHHSKo',
+  'AIzaSyChNq2hCvxPC6gN9oNi1gw5hTTJqGGaR6c',
+  'AIzaSyB3scxbgQ5zR1-bhNfD6qWxuOky8uIRXgM',
+  'AIzaSyC-ynVQpZgd1b6-PLVrwqOteA6aXPruQAc',
+  'AIzaSyDQYU8o3Oaa-anZ5PZqRzLvbFJifOU1bis',
+  'AIzaSyAVKzuZ2Wr9G6xQE687ZEypnPx6FadAvoc',
+  'AIzaSyDskh4OhwBoBYfl-LHUiN1HEbaLFgO_hsk',
+  'AIzaSyAXY7UnvqS0qT44o7StAHE3QoSScYH_0Ts',
+  'AIzaSyDLKaH0_N8t3ROU5Y_oOqLdwxBOEtt2n8g',
+];
 let _ytKeys = typeof getAllYtKeys === 'function' ? getAllYtKeys() :
-              typeof YT_API_KEYS_SHARED !== 'undefined' ? YT_API_KEYS_SHARED.slice() : [];
+              typeof YT_API_KEYS_SHARED !== 'undefined' ? YT_API_KEYS_SHARED.slice() : _YT_BUILTIN_KEYS.slice();
 
 let _ytUnitsPerKey = (() => {
   try {
@@ -249,7 +260,7 @@ window.ytApiState = {
   refreshKeys: function() {
     var prev = _ytKeys.length;
     _ytKeys = typeof getAllYtKeys === 'function' ? getAllYtKeys() :
-              typeof YT_API_KEYS_SHARED !== 'undefined' ? YT_API_KEYS_SHARED.slice() : [];
+              typeof YT_API_KEYS_SHARED !== 'undefined' ? YT_API_KEYS_SHARED.slice() : _YT_BUILTIN_KEYS.slice();
     if (_ytKeys.length !== prev) {
       while (_ytUnitsPerKey.length < _ytKeys.length) _ytUnitsPerKey.push(0);
       _ytUnitsPerKey = _ytUnitsPerKey.slice(0, _ytKeys.length);
