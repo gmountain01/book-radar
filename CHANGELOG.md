@@ -4,6 +4,19 @@
 
 ---
 
+## 2026-06-25 — v2.6.5
+
+### panel7 비슷한 채널 오류 수정 3건
+- **[H] type:channel + regionCode 조합 제거:** `apiSearchChannels()` 및 doSearch 채널 직접 검색에서 `regionCode: 'KR'` 제거 — YouTube API 스펙상 `type=channel`에서 `regionCode` 사용 불가 → "invalid filter parameter" 400 오류 발생
+- **[M] 키워드 sanitize 강화 (`_sanitizeKw`):** 한글·영문·숫자 외 전체 제거, 순수 숫자 토큰 제외, 50자 상한 — YouTube 검색 연산자(`|`, `-`, `_`, `+`, `"`) 잔류로 인한 간헐적 API 오류 방지
+- **[M] 페이지네이션 제거:** 비슷한 채널 검색 2페이지 → 1페이지(50건)로 축소 — `pageToken` + `regionCode` 조합의 API 컨텍스트 충돌로 인한 간헐적 오류 제거
+- **[M] 한국 채널 필터 fallback:** 한국 채널 0건 시 전체 채널 상위 표시 (기존: 빈 화면)
+- **[L] 에러 catch 묵음 → 사용자 메시지:** 비슷한 채널 로드 실패 시 안내 문구 표시 (기존: 완전 빈 화면)
+- **[L] 🇰🇷 한국 배지:** `_isKorean=false` 채널에 배지 미표시 (fallback 케이스 대응)
+- **대상:** panels/panel7/panel7.js
+
+---
+
 ## 2026-06-25 — v2.6.4
 
 ### QA 버그 수정 4건
