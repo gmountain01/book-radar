@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-06-25 — v2.6.4
+
+### QA 버그 수정 4건
+- **[M] panel7 ytLoadLS:** `JSON.parse` try-catch 미보호 → localStorage 손상 시 panel7 전체 초기화 실패 방지
+- **[M] shared/app.js getPlanningBoard / addToPlanningBoard:** `JSON.parse` try-catch 추가 → `p25_board` 손상 시 기획 보드(panel25) 전체 기능 중단 방지
+- **[L] panel7 YT_S:** `searchViewMode: 'card'` 초기 속성 추가 (명시적 초기화)
+- **[L] panel7 ytSaveSearchCache / ytLoadSearchCache:** `searchViewMode` 저장·복원 추가 → 패널 재진입 시 카드/평점 목록 뷰 유지
+- **대상:** panels/panel7/panel7.js, shared/app.js
+
+---
+
 ## 2026-06-25 — v2.6.3
 
 ### 캐시버스팅 버전 파라미터 일괄 정정
