@@ -1314,9 +1314,9 @@ async function loadSimilarChannels(channel) {
       return { ch, score, pubScore: null, subs, videoCount: vc, hiddenSubs: !!st.hiddenSubscriberCount, _isKorean: isKorean };
     }).sort((a, b) => b.score - a.score);
 
-    // 한국 채널만 필터 후 상위 15개 선정
-    const biasedPre = ranked
-      .filter(i => i._isKorean)
+    // 한국 채널 우선, 없으면 전체에서 선정
+    const koreanRanked = ranked.filter(i => i._isKorean);
+    const biasedPre = (koreanRanked.length > 0 ? koreanRanked : ranked)
       .sort((a, b) => b.videoCount - a.videoCount || b.score - a.score)
       .slice(0, 15);
 
@@ -1360,7 +1360,7 @@ async function loadSimilarChannels(channel) {
                   <div class="sim-meta">
                     <span>구독자 ${hiddenSubs ? '비공개' : fmtNum(subs)}</span>
                     ${videoCount > 0 ? `<span class="match-video">관련 영상 ${videoCount}개</span>` : ''}
-                    <span class="kr-badge">🇰🇷 한국</span>
+                    ${_isKorean ? '<span class="kr-badge">🇰🇷 한국</span>' : ''}
                   </div>
                 </div>
                 <div class="sim-score-wrap">
@@ -1377,8 +1377,8 @@ async function loadSimilarChannels(channel) {
       </div>
     `;
   } catch (e) {
-    // 비슷한 채널 로드 실패는 조용히 무시 (메인 분석에 영향 없음)
-    el.innerHTML = '';
+    console.warn('[panel7] loadSimilarChannels 실패:', e);
+    el.innerHTML = `<div class="empty-state" style="font-size:.85em;padding:12px 0;color:var(--muted2)">📡 비슷한 채널을 불러오지 못했습니다<br><small>${escHtml(e.message || '')}</small></div>`;
   }
 }
 
