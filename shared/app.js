@@ -42,7 +42,8 @@ function addToPlanningBoard(item) {
     showToast('이미 기획 보드에 추가된 항목입니다', 'orange');
     return;
   }
-  var board = JSON.parse(localStorage.getItem('p25_board') || '{"items":[],"drafts":[]}');
+  var _raw = localStorage.getItem('p25_board') || '{"items":[],"drafts":[]}';
+  var board; try { board = JSON.parse(_raw); } catch(e) { console.warn('[app] addToPlanningBoard: 파싱 실패, 초기화', e); board = {"items":[],"drafts":[]}; }
   item.id = 'pb_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
   item.addedAt = new Date().toISOString();
   if (!item.memo) item.memo = '';
@@ -56,7 +57,8 @@ function addToPlanningBoard(item) {
   }
 }
 function getPlanningBoard() {
-  return JSON.parse(localStorage.getItem('p25_board') || '{"items":[],"drafts":[]}');
+  try { return JSON.parse(localStorage.getItem('p25_board') || '{"items":[],"drafts":[]}'); }
+  catch(e) { console.warn('[app] getPlanningBoard: 파싱 실패, 초기화', e); return {"items":[],"drafts":[]}; }
 }
 // 기획 보드에 이미 추가된 항목인지 체크 (type + title 매칭)
 function isInBoard(type, title) {

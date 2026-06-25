@@ -65,7 +65,8 @@ const YT_S = {
   sortBy: 'relevance',   // 검색 결과 정렬 기준
   lastSearchQuery: '',   // relevanceScore 키워드 매칭에 사용
   rookieResults: [],     // 슈퍼 루키 검색 결과 보관
-  rookieSortMode: 'score' // 루키 정렬 기준: score|subs|views|country
+  rookieSortMode: 'score', // 루키 정렬 기준: score|subs|views|country
+  searchViewMode: 'card'   // 검색 결과 뷰 모드: card|list
 };
 window.YT_S = YT_S; // panel25(기획 보드) 등 IIFE 내부에서 접근 가능하도록 노출
 
@@ -90,8 +91,10 @@ function countryName(code) {
 }
 
 function ytLoadLS() {
-  YT_S.savedChannels = JSON.parse(localStorage.getItem(YT_LS.saved) || '[]');
-  YT_S.compareList   = JSON.parse(localStorage.getItem(YT_LS.compare) || '[]');
+  try {
+    YT_S.savedChannels = JSON.parse(localStorage.getItem(YT_LS.saved) || '[]');
+    YT_S.compareList   = JSON.parse(localStorage.getItem(YT_LS.compare) || '[]');
+  } catch(e) { console.warn('[panel7] ytLoadLS: localStorage 파싱 실패, 초기화', e); YT_S.savedChannels = []; YT_S.compareList = []; }
 }
 function ytSaveLS() {
   try {
@@ -106,7 +109,8 @@ function ytSaveSearchCache() {
       ts: Date.now(),
       query: YT_S.lastSearchQuery || '',
       results: YT_S.searchResults,
-      sortBy: YT_S.sortBy
+      sortBy: YT_S.sortBy,
+      searchViewMode: YT_S.searchViewMode || 'card'
     }));
   } catch(_) { console.warn('[panel7] ytSaveSearchCache: localStorage 저장 실패', _); }
 }
@@ -119,6 +123,7 @@ function ytLoadSearchCache() {
     YT_S.searchResults = cached.results;
     YT_S.lastSearchQuery = cached.query || '';
     YT_S.sortBy = cached.sortBy || 'relevance';
+    YT_S.searchViewMode = cached.searchViewMode || 'card';
     return true;
   } catch(_) { console.warn('[panel7] ytLoadSearchCache: 캐시 파싱 실패', _); return false; }
 }
