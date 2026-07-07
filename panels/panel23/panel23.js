@@ -284,9 +284,9 @@ function renderFeedList() {
 }
 
 function hasPubSignal(t) {
-  t = t.toLowerCase();
+  t = ' ' + t.toLowerCase() + ' '; // 공백 패딩 — 단어 경계 매칭 (storage/dragon 등 오탐 방지)
   // 강한 신호: 단독으로 출판 기회를 시사하는 키워드
-  var strong = ['new model','open source','framework','sdk','llm','fine-tun','rag','mcp','출시','오픈소스','프레임워크'];
+  var strong = ['new model','open source','framework','sdk','llm','fine-tun',' rag ','mcp','출시','오픈소스','프레임워크'];
   for (var i=0;i<strong.length;i++) if (t.indexOf(strong[i])!==-1) return true;
   // 약한 신호: IT 맥락 키워드와 함께 있어야 출판 기회로 판정
   var weak = ['launch','release','announce','introduce','agent','coding','benchmark'];
