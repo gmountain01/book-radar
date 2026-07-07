@@ -444,7 +444,30 @@ function _fillFields() {
   var fields = ROOT.querySelectorAll('[data-field]');
   fields.forEach(function(el) {
     var key = el.getAttribute('data-field');
-    if (data[key] !== undefined) el.value = data[key];
+    if (data[key] === undefined) return;
+    var val = data[key];
+    if (el.tagName === 'SELECT') {
+      var opts = Array.from(el.options).map(function(o) { return o.value; });
+      if (opts.indexOf(val) !== -1) {
+        el.value = val;
+      } else {
+        // 근접 매핑: 입문/초급/중급/고급·심화 패턴
+        var mapped = '초급'; // 기본값
+        var v = String(val).toLowerCase();
+        if (/입문/.test(v)) mapped = opts.find(function(o) { return /입문/.test(o); }) || mapped;
+        else if (/초.*중|중.*초/.test(v)) mapped = opts.find(function(o) { return /초/.test(o); }) || mapped;
+        else if (/중상|중·상/.test(v)) mapped = opts.find(function(o) { return /중/.test(o) && /상/.test(o); }) || opts.find(function(o) { return /중급/.test(o); }) || mapped;
+        else if (/중급|중간/.test(v)) mapped = opts.find(function(o) { return /중급/.test(o); }) || mapped;
+        else if (/고급|심화/.test(v)) mapped = opts.find(function(o) { return /고급|심화/.test(o); }) || mapped;
+        else if (/초급/.test(v)) mapped = opts.find(function(o) { return /초급/.test(o); }) || mapped;
+        // 정확히 매핑되는 옵션이 없으면 기본값 '초급' 사용
+        if (opts.indexOf(mapped) === -1) mapped = opts[0] || '';
+        console.warn('[panel18] _fillFields: SELECT "' + key + '" 값 "' + val + '" → 근접 매핑 "' + mapped + '"');
+        el.value = mapped;
+      }
+    } else {
+      el.value = val;
+    }
   });
 }
 
