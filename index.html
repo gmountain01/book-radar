@@ -1573,7 +1573,9 @@
       tab.classList.remove('active');
       if (typeof switchTab === 'function') {
         var restoreEl = _prevEl || document.querySelector('.nav-item:not(#tab11)');
-        switchTab(_prevIdx, restoreEl);
+        // _prevIdx 대신 restoreEl에서 인덱스를 파싱해 불일치 방지
+        var restoreIdx = _getIdx(restoreEl);
+        switchTab(restoreIdx, restoreEl);
       }
     }
   });
