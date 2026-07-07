@@ -434,8 +434,34 @@ window.p18_genPromo = async function(type) {
 
 window.p18_copyPromo = function() {
   var el = ROOT.querySelector('#p18-promo-result pre');
-  if (el) { navigator.clipboard.writeText(el.textContent).then(function() { showToast('클립보드에 복사됨', 'green'); }); }
+  if (!el) return;
+  var text = el.textContent;
+  if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('클립보드에 복사됨', 'green');
+    }).catch(function() {
+      _fallbackCopy(text);
+    });
+  } else {
+    _fallbackCopy(text);
+  }
 };
+
+function _fallbackCopy(text) {
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (ok) { showToast('클립보드에 복사됨', 'green'); }
+    else { showToast('복사 실패 — 직접 선택해서 복사해주세요', 'red'); }
+  } catch (e) {
+    showToast('복사 실패 — 직접 선택해서 복사해주세요', 'red');
+  }
+}
 
 window.p18_clearPromo = function() {
   delete data._promoResult;
