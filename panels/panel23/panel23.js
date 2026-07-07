@@ -604,6 +604,17 @@ function _clearChipActive() {
   if (chips) chips.querySelectorAll('.p23-kw-chip').forEach(function(b){ b.classList.remove('active'); });
 }
 
+// ── ISO 8601 주차 헬퍼 — 파이프라인 trends[].week 라벨과 동일 형식 생성
+function isoWeek(date) {
+  var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  var day = d.getUTCDay() || 7; // 일요일=0 → 7
+  d.setUTCDate(d.getUTCDate() + 4 - day); // 해당 주 목요일로 이동
+  var y = d.getUTCFullYear();
+  var jan1 = new Date(Date.UTC(y, 0, 1));
+  var wn = Math.ceil((((d - jan1) / 86400000) + 1) / 7);
+  return y + '-W' + (wn < 10 ? '0' + wn : wn);
+}
+
 // ── 6. 소스 활동 히트맵 ──
 function renderSourceHeatmap(articles, trends) {
   // 최근 4주 × 소스 그리드
@@ -617,11 +628,8 @@ function renderSourceHeatmap(articles, trends) {
     if (!a.date || !a.source) return;
     sourceNames[a.source] = { name: a.source_name, icon: a.icon };
     var d = new Date(a.date);
-    // ISO week 계산
-    var jan1 = new Date(d.getFullYear(), 0, 1);
-    var days = Math.floor((d - jan1) / 86400000);
-    var wn = Math.ceil((days + jan1.getDay() + 1) / 7);
-    var wk = d.getFullYear() + '-W' + (wn < 10 ? '0' + wn : wn);
+    // ISO 8601 주차 — trends[].week 라벨과 동일 방식으로 계산
+    var wk = isoWeek(d);
     if (!sourceWeekly[a.source]) sourceWeekly[a.source] = {};
     sourceWeekly[a.source][wk] = (sourceWeekly[a.source][wk] || 0) + 1;
   });
