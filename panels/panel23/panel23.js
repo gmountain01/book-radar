@@ -236,6 +236,14 @@ window.p23_setDateRange = function(range, btn) {
   filterAndRender();
 };
 
+// 비ISO 날짜 문자열 방어 파싱 → 'YYYY-MM-DD' 또는 '' 반환
+function _isoDate(s) {
+  if (!s) return '';
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0, 10);
+  var d = new Date(s);
+  return isNaN(d.getTime()) ? '' : d.toISOString().substring(0, 10);
+}
+
 function _getDateCutoff() {
   if (_dateRange === 'all') return null;
   var now = new Date();
@@ -252,7 +260,8 @@ function filterAndRender() {
   _mergedFeeds.forEach(function(feed) {
     if (_activeSource !== 'all' && feed.id !== _activeSource) return;
     feed.items.forEach(function(item) {
-      if (cutoff && (!item.date || item.date.substring(0, 10) < cutoff)) return;
+      var itemDs = _isoDate(item.date);
+      if (cutoff && (!itemDs || itemDs < cutoff)) return;
       if (_searchQuery && (item.title + ' ' + (item.summary||'')).toLowerCase().indexOf(_searchQuery) === -1) return;
       _filteredItems.push({ source: feed.name, icon: feed.icon, tags: feed.tags, title: item.title, link: item.link, date: item.date, summary: item.summary });
     });
@@ -266,10 +275,10 @@ function renderFeedList() {
   if (!_filteredItems.length) { $feedList.innerHTML = '<div class="p23-empty"><div class="p23-empty-text">검색 결과 없음</div></div>'; return; }
   var h = '', prevDate = '';
   _filteredItems.forEach(function(item) {
-    var ds = item.date ? item.date.substring(0,10) : '';
+    var ds = _isoDate(item.date);
     if (ds !== prevDate) {
       prevDate = ds;
-      var d = new Date(ds); var label = isNaN(d) ? ds : d.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+      var label = ds ? new Date(ds + 'T00:00:00').toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '날짜 미상';
       h += '<div class="p23-date-divider">' + label + '</div>';
     }
     var hasPub = hasPubSignal(item.title + ' ' + item.summary);
