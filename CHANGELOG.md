@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-07-07 — v2.6.6 (프롬프트 캐싱 3건)
+
+### shared/app.js + panels/panel8/panel8.js + panels/panel18/panel18.js (CACHE-1~3)
+
+- **[M] CACHE-1 callClaudeApi systemBlocks 배열 지원 + usage 로깅 + beta 헤더 제거:** `opts.systemBlocks` 배열이 주어지면 `body.system`으로 그대로 사용(호출부가 `cache_control` 직접 지정). 기존 `system` 문자열 / `PUBLISHING_PERSONA` 경로 유지(회귀 없음). `data.usage` 있으면 `[callClaudeApi] tokens: N cache_read: N cache_write: N` 로깅 추가. `anthropic-beta: prompt-caching-2024-07-31` 헤더 제거(GA 기능).
+- **[M] CACHE-2 panel8 callClaude SYS 프롬프트 캐싱:** `let _userRulesText = ''` 추가; `loadRulesFile`에서 원본 텍스트 저장. `callClaude`를 `systemBlocks` 방식으로 전환 — 사용자규칙 우선: `[사용자규칙(캐시), SYS(캐시), rulesCtx(비캐시)]`, 기본: `[SYS(캐시), rulesCtx(비캐시)]`, RAG 없음: `[SYS(캐시)]`. 300쪽 기준 60배치 × SYS 전체 과금 → 1회 write + 59회 read로 절감.
+- **[M] CACHE-3 panel18 p18_autoCategories BOOKSTORE_TAXONOMIES 캐싱:** `BOOKSTORE_TAXONOMIES`(~5K 토큰)를 user 프롬프트에서 제거하고 `systemBlocks = [{text: sysBase + taxonomyRef, cache_control:{type:'ephemeral'}}]`으로 이동. user 프롬프트에는 도서 정보·규칙만 남김. Haiku 4.5 최소 2048토큰 조건 충족, 2회째 호출부터 `cache_read > 0` 확인 가능.
+- **대상:** shared/app.js, panels/panel8/panel8.js, panels/panel18/panel18.js
+
+---
+
 ## 2026-07-06 — v2.6.5 (버그 수정 22건)
 
 ### panels/panel8/panel8.js + 교정규칙.md·js (FIX-17~22)
