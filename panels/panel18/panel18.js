@@ -634,12 +634,13 @@ function _parseDocxAndAdd(fname, buffer, cb) {
         // 2) 나머지 태그 제거
         .replace(/<[^>]+>/g, '')
         // 3) HTML 엔티티 복원 (태그 제거 이후에 수행)
-        .replace(/&amp;/g, '&')
+        // &amp; 는 반드시 맨 마지막 — 먼저 하면 &amp;lt; → &lt; → < 로 이중 디코딩됨
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
         .replace(/&quot;/g, '"')
         .replace(/&apos;/g, "'")
         .replace(/&#(\d+);/g, function(_, n) { return String.fromCharCode(parseInt(n, 10)); })
+        .replace(/&amp;/g, '&')
         // 4) 과도한 빈 줄 정리
         .replace(/\n{3,}/g, '\n\n')
         .trim();
