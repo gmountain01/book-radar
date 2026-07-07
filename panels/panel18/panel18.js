@@ -412,16 +412,19 @@ window.p18_genPromo = async function(type) {
 
   try {
     var raw = await callClaudeApi({ apiKey: apiKey, model: 'claude-haiku-4-5-20251001', prompt: prompt, system: '출판사 마케팅 담당자. 한국어.', maxTokens: 2000, noPersona: true });
+    var labels = { sns: 'SNS 홍보문구', oneliner: '서점 한줄평', press: '보도자료', email: '뉴스레터' };
     if (raw && raw.trim()) {
       data._promoResult = raw.trim();
       data._promoType = type;
       save();
-      var labels = { sns: 'SNS 홍보문구', oneliner: '서점 한줄평', press: '보도자료', email: '뉴스레터' };
       if (resultEl) {
         resultEl.innerHTML = '<div class="p18-promo-output"><div style="font-size:.72rem;color:var(--accent);font-weight:600;margin-bottom:6px;">' + (labels[type] || '') + '</div><pre style="white-space:pre-wrap;font-size:.82rem;line-height:1.6;margin:0;">' + _x(raw.trim()) + '</pre>' +
           '<div style="display:flex;gap:6px;margin-top:8px;"><button class="p18-btn" onclick="p18_copyPromo()">📋 복사</button><button class="p18-btn" onclick="p18_clearPromo()">지우기</button></div></div>';
       }
       showToast(labels[type] + ' 생성 완료', 'green');
+    } else {
+      if (resultEl) resultEl.innerHTML = '<div style="text-align:center;padding:2rem;color:#e53e3e;font-size:.82rem;">응답이 비어 있습니다. 다시 시도해주세요.</div>';
+      showToast('생성 실패: 빈 응답', 'red');
     }
   } catch (e) {
     console.error('[panel18] 홍보 카피 생성 실패:', e);
