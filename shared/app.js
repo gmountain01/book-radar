@@ -679,7 +679,7 @@ function _showGlobalError(msg) {
     + 'background:#1e1e2e;color:#f38ba8;border:1px solid #f38ba8;border-radius:8px;'
     + 'padding:10px 16px;font-size:13px;max-width:480px;box-shadow:0 4px 16px rgba(0,0,0,.4);'
     + 'display:flex;align-items:center;gap:10px;';
-  ban.innerHTML = '<span>⚠ 오류 발생: ' + short.replace(/</g,'&lt;') + '</span>'
+  ban.innerHTML = '<span>⚠ 오류 발생: ' + escHtml(short) + '</span>'
     + '<button onclick="this.parentNode.remove()" style="background:none;border:none;color:#f38ba8;cursor:pointer;font-size:16px;line-height:1;">✕</button>';
   (document.body || document.documentElement).appendChild(ban);
   setTimeout(function() { if (ban.parentNode) ban.parentNode.removeChild(ban); }, 6000);
