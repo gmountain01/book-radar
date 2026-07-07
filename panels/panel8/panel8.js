@@ -174,7 +174,7 @@ function p8_onClearThisCache() {
 const dropZone = document.getElementById('p8_dropZone');
 const fileInput = document.getElementById('p8_fileInput');
 
-const ALLOWED_EXTS = new Set(['pdf','docx','hwpx','hwp','doc']);
+const ALLOWED_EXTS = new Set(['pdf','docx','hwpx','hwp','doc','txt','md']);
 function isAllowedFile(f) {
   return f && ALLOWED_EXTS.has(f.name.split('.').pop().toLowerCase());
 }
@@ -190,7 +190,7 @@ if (dropZone && fileInput) {
     const f = e.dataTransfer.files[0];
     if (!f) return;
     if (isAllowedFile(f)) setFile(f);
-    else alert('지원하지 않는 파일 형식입니다.\nPDF / DOCX / HWPX / HWP / DOC 파일을 업로드해 주세요.');
+    else alert('지원하지 않는 파일 형식입니다.\nPDF / DOCX / HWPX / HWP / DOC / TXT / MD 파일을 업로드해 주세요.');
   });
   fileInput.addEventListener('change', () => {
     if (fileInput.files[0]) setFile(fileInput.files[0]);
