@@ -164,7 +164,10 @@ function _ytParallelLimit(tasks, limit) {
       while (active < limit && idx < tasks.length) {
         (function(i) {
           active++;
-          tasks[i]().then(function(val) { results[i] = val; }).catch(function() { results[i] = null; }).then(function() {
+          tasks[i]().then(function(val) { results[i] = val; }).catch(function(e) {
+            console.warn('[youtube] _ytParallelLimit 태스크 ' + i + ' 실패:', e && e.message);
+            results[i] = null;
+          }).then(function() {
             active--;
             if (idx >= tasks.length && active === 0) resolve(results);
             else next();
