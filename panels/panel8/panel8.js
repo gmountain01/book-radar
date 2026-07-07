@@ -45,6 +45,7 @@ let pvRendering = false; // 렌더링 중 플래그
 let rulesChunks = null;  // 교정 규칙 청크 (RAG)
 let _userRulesPriority = true; // 사용자 업로드 규칙 우선 (기본: 우선 적용)
 let _hasUserRules = false;
+let _userRulesText = ''; // 업로드된 규칙 파일의 전체 텍스트 (캐시용 고정 블록)
 // 해결됨 상태 — allIssues 인덱스 기준, 필터 변경 후에도 유지
 const resolvedIndices = new Set();
 
@@ -2098,6 +2099,7 @@ function loadRulesFile(file) {
     const reader = new FileReader();
     reader.onload = e => {
       const text = e.target.result;
+      _userRulesText = text; // 원본 저장 — callClaude 캐시 블록에 사용
       rulesChunks = parseRulesIntoChunks(text);
       resolve(rulesChunks.length);
     };
@@ -2405,14 +2407,27 @@ async function _callWithRetry(fn, maxRetries = 2) {
 }
 
 async function callClaude(apiKey, text, rulesContext = '') {
-  var systemPrompt;
+  // systemBlocks: 고정 텍스트(SYS·사용자규칙)에 cache_control 붙여 캐시,
+  // 배치마다 달라지는 rulesContext는 캐시 블록 뒤에 cache_control 없이 배치.
+  var systemBlocks;
   if (rulesContext && _hasUserRules && _userRulesPriority) {
-    // 사용자 규칙 우선: 규칙을 SYS 앞에 배치하여 AI가 먼저 참조
-    systemPrompt = '## 📋 사용자 교정 규칙 (최우선 적용)\n' + rulesContext + '\n\n---\n' + SYS;
+    // 사용자 규칙 우선: 규칙 블록(캐시) → SYS 블록(캐시) → 배치별 RAG 컨텍스트(비캐시)
+    systemBlocks = [
+      { type: 'text', text: '## 📋 사용자 교정 규칙 (최우선 적용)\n' + _userRulesText, cache_control: { type: 'ephemeral' } },
+      { type: 'text', text: SYS, cache_control: { type: 'ephemeral' } },
+      { type: 'text', text: '## 📋 교정 규칙 참고\n' + rulesContext }
+    ];
   } else if (rulesContext) {
-    systemPrompt = SYS + '\n\n---\n## 📋 교정 규칙 참고\n' + rulesContext;
+    // 기본: SYS 블록(캐시) → 배치별 RAG 컨텍스트(비캐시)
+    systemBlocks = [
+      { type: 'text', text: SYS, cache_control: { type: 'ephemeral' } },
+      { type: 'text', text: '## 📋 교정 규칙 참고\n' + rulesContext }
+    ];
   } else {
-    systemPrompt = SYS;
+    // RAG 없음: SYS만 캐시
+    systemBlocks = [
+      { type: 'text', text: SYS, cache_control: { type: 'ephemeral' } }
+    ];
   }
   // 교정은 항상 Sonnet — Haiku는 기술서 맥락 분석에 너무 얕음
   var model = 'claude-sonnet-4-6';
@@ -2420,7 +2435,7 @@ async function callClaude(apiKey, text, rulesContext = '') {
   return callClaudeApi({
     apiKey: apiKey,
     prompt: text,
-    system: systemPrompt,
+    systemBlocks: systemBlocks,
     model: model,
     maxTokens: 8192,
     temperature: 0,
