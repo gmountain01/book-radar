@@ -4,7 +4,29 @@
 
 ---
 
-## 2026-06-25 — v2.6.5
+## 2026-07-06 — v2.6.5 (버그 수정 11건)
+
+### shared/app.js
+
+- **[H] FIX-1 fileToB64 RangeError + onerror 누락:** 대용량 파일에서 `btoa(String.fromCharCode(...new Uint8Array()))` 스프레드 인자 한도 초과로 `RangeError` 발생 → 8192바이트 청크 루프로 교체. `fr.onerror` 핸들러 추가(기존: reject 경로 없어 실패 시 Promise 영구 pending). `handleBest / handleLecture / handlePlanned` 호출부에 `try/catch + showToast('❌ 파일 읽기 실패')` 추가.
+- **[H] FIX-2 parseCsvText 멀티라인 셀 붕괴:** `split(/\r?\n/)` 선행 분리 방식은 따옴표 안 줄바꿈(멀티라인 셀)이 있으면 행이 붕괴됨 → 문자 단위 상태 머신(inQuotes 추적, `""` 이스케이프, 따옴표 안 `\n` 셀 내용 유지)으로 전면 교체. BOM 제거 유지.
+- **[M] FIX-3 CATS '인공지능 입문' 중복 키워드 오분류:** `'컴퓨터 공학 지식'`, `'컴퓨터공학 복수전공'`이 `'인공지능 입문'`과 `'컴퓨터개론/SW공학'` 양쪽에 등록 → 순서 우선으로 항상 `'인공지능 입문'`으로 오분류됨. `'인공지능 입문'` 배열에서 두 키워드 삭제, `'컴퓨터개론/SW공학'`에만 유지.
+- **[M] FIX-4 CATS 오탐 키워드 2건:** `'MCP/AI에이전트'`의 단독 `'rag'`는 paragraph/storage/dragon 등에 오탐 → `' rag '`(양쪽 공백)로 교체. `cat()` 함수 초입에 `s = ' ' + t.toLowerCase() + ' '` 패딩 추가(문두/문미 매칭 보장). `'AI 영상/이미지생성'`의 단독 `'stable'`은 stablecoin 등에 오탐 → 삭제(`'stable diffusion'`은 별도 유지).
+- **[M] FIX-5 handleLectureData '전체 카테고리' 헤더 덮어쓰기:** `s.includes('카테고리')`는 `'전체 카테고리'`에도 참이라 헤더 순서에 따라 `cat2c`가 `cat1c`를 덮어씀 → `if(includes('전체 카테고리'))` 분기를 `else if`로 교체, `!s.includes('전체')` 조건 추가.
+- **[L] FIX-6 handlePlannedData 팀 select 쉼표 오염 + XSS:** `teams.map(...)`에 `.join('')` 누락으로 옵션 사이에 쉼표 텍스트가 낌. `${t}` → `${escHtml(t)}`로 이스케이프 추가.
+- **[M] FIX-7 generateProposalWithAI maxTokens 부족:** 제안서 JSON(목차 7개+why 4+hanbit 4+discuss 3) 생성에 `maxTokens: 2000`은 부족해 잘리면 JSON 파싱 실패 → `4000`으로 상향. `callClaudeApi`에 `stop_reason === 'max_tokens'` 감지 시 `console.warn` 추가. JSON 파싱 실패 오류 메시지에 `'(응답이 잘렸을 수 있음 — 재시도 권장)'` 힌트 추가.
+
+### panels/panel18/panel18.js
+
+- **[H] FIX-8 p18_handleFiles PDF — catch 미존재로 영구 pending:** `pdfjsLib.getDocument().promise` 체인에 `.catch` 없어 손상/암호화 PDF 업로드 시 pending이 안 줄고 파일 목록 영구 미갱신 → `getDocument` / `getPage` / `getTextContent` 각 체인에 `.catch` 추가(실패 시 `pending--; if(!pending) render();` + `showToast`). `reader.onerror` 추가. 페이지 단위 실패는 `texts[pn-1]=''`로 허용하고 계속 진행.
+- **[M] FIX-9 p18_downloadDocx 추천사 빈 섹션 배포 문서 포함:** 미리보기는 `hasRec` 조건부인데 docx는 '7. 추천사' 헤딩 무조건 추가 → `data.recommendations.some(r=>r.text&&r.text.trim())` 조건으로 헤딩+내용 전체를 감쌈. 이후 섹션 번호(8. 홍보 카피, 9. 상세 이미지) 재조정 없음.
+- **[M] FIX-10 _parseDocxAndAdd 엔티티 미복원 + 구조 태그 소실:** XML 태그만 제거해 `R&amp;D` 형태가 AI 입력에 남고, `<w:tab/>` · `<w:br/>`이 소실돼 표 셀이 붙음 → 처리 순서 재정렬: `<w:tab>→'\t'`, `<w:br>→'\n'`, `<w:p>→'\n'`, 나머지 태그 제거, 그 후 `&amp;` / `&lt;` / `&gt;` / `&quot;` / `&apos;` / `&#N;` 숫자 엔티티 복원, `\n{3,}→\n\n` 정리.
+- **[L] FIX-11 _fillFields SELECT 옵션 없는 값 조용히 실패:** SELECT 요소에 옵션에 없는 값(예: AI 반환 `'초·중급'`) 대입 시 조용히 실패하고 다음 `_collectFields`에서 `'초급'`으로 리셋됨 → SELECT 태그 검사 후 옵션 존재 확인. 없으면 입문/초급/중급·중상/고급·심화 패턴으로 근접 매핑(기본 `'초급'`) + `console.warn` 후 대입.
+- **대상:** shared/app.js, panels/panel18/panel18.js
+
+---
+
+## 2026-06-25 — v2.6.5 (초기)
 
 ### panel7 비슷한 채널 오류 수정 3건
 - **[H] type:channel + regionCode 조합 제거:** `apiSearchChannels()` 및 doSearch 채널 직접 검색에서 `regionCode: 'KR'` 제거 — YouTube API 스펙상 `type=channel`에서 `regionCode` 사용 불가 → "invalid filter parameter" 400 오류 발생
