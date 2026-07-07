@@ -2738,6 +2738,7 @@ async function p8_startProofread() {
   const useCache = !!cached;
   const apiProvided = apiKey.startsWith('sk-ant-');
   // 캐시 있지만 AI 미실행이고 지금 키 제공: AI만 실행
+  // aiOnlyRun: cached.aiWasRun이 true이면 항상 false → 조건 단순화 (아래 useCache && cached.aiWasRun 참조)
   const aiOnlyRun = useCache && !cached.aiWasRun && apiProvided;
 
   let extracted = null, surfaceIssues = [], structuralIssues = [];
@@ -2809,7 +2810,9 @@ async function p8_startProofread() {
   let aiSkipped = false;
 
   // 캐시에 AI 결과가 있으면 재사용, 없거나 키가 새로 제공된 경우만 API 호출
-  if (useCache && cached.aiWasRun && !(apiProvided && aiOnlyRun)) {
+  // cached.aiWasRun이 true이면 aiOnlyRun은 항상 false → !(apiProvided && aiOnlyRun) === true
+  // → 조건은 (useCache && cached.aiWasRun)으로 동일 (캐시 AI 결과는 캐시 삭제로만 갱신)
+  if (useCache && cached.aiWasRun) {
     // 캐시된 AI 결과 사용
     linguisticIssues = cached.linguisticIssues || [];
     stepDone(4, `캐시 ⚡ ${linguisticIssues.length}건`);
@@ -2820,7 +2823,8 @@ async function p8_startProofread() {
     // 토큰 추정 표시
     const aiPages = extracted.pages.filter(p => p.text.trim().length >= 20);
     const estTok = _estimateTokens(aiPages.map(p => p.text).join(''));
-    stepRun(4, aiOnlyRun
+    // useCache && !cached.aiWasRun → 이 분기에서 aiOnlyRun === useCache (cached.aiWasRun은 항상 false)
+    stepRun(4, useCache
       ? 'AI 검사 실행 (캐시 미포함 항목)…'
       : `Claude API 호출 준비 중… (~${Math.round(estTok/1000)}K 토큰)`);
     try {
@@ -2968,14 +2972,15 @@ async function p8_startProofread() {
   const pv = document.getElementById('p8_pageViewer');
   if (pv) pv.style.display = isPdf ? '' : 'none';
 
-  // 제한적 추출 경고 (HWP 바이너리 등)
-  if (extracted.limitedExtraction) {
+  // 도달 불가: extractHWP는 항상 throw하므로 extracted.limitedExtraction은 절대 true가 되지 않음
+  // (HWP는 extractFile에서 차단되어 p8_startProofread로 진입 불가)
+  /* if (extracted.limitedExtraction) {
     const notice = document.getElementById('p8_aiNotice');
     if (notice) {
       notice.style.display = 'block';
       notice.textContent = '⚠️ HWP 바이너리 파일은 텍스트 추출이 제한됩니다. 정확한 결과를 위해 한컴오피스에서 HWPX로 변환 후 재업로드하세요.';
     }
-  }
+  } */
 
   // 탭 이동 후 복원을 위해 세션 상태 저장
   try {
