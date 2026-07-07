@@ -603,7 +603,23 @@ function _parseDocxAndAdd(fname, buffer, cb) {
     var docXml = zip.file('word/document.xml');
     if (!docXml) { if (cb) cb(); return; }
     docXml.async('string').then(function(xml) {
-      var text = xml.replace(/<w:p[^>]*>/g, '\n').replace(/<[^>]+>/g, '').replace(/\n{3,}/g, '\n\n').trim();
+      // 1) 구조 태그를 공백 문자로 치환 (태그 제거 전에 수행)
+      var text = xml
+        .replace(/<w:tab[^>]*\/>/g, '\t')
+        .replace(/<w:br[^>]*\/>/g, '\n')
+        .replace(/<w:p[^>]*>/g, '\n')
+        // 2) 나머지 태그 제거
+        .replace(/<[^>]+>/g, '')
+        // 3) HTML 엔티티 복원 (태그 제거 이후에 수행)
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
+        .replace(/&#(\d+);/g, function(_, n) { return String.fromCharCode(parseInt(n, 10)); })
+        // 4) 과도한 빈 줄 정리
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
       _addFile(fname, text);
       if (cb) cb();
     }).catch(function() { if (cb) cb(); });
