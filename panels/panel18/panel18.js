@@ -620,14 +620,14 @@ window.p18_handleFiles = function(input) {
             }
           }).catch(function(err) {
             console.warn('[panel18] PDF 로드 실패:', fname, err);
-            showToast('❌ PDF 읽기 실패: ' + fname, 'red');
             pending--; if (!pending) render();
+            if (typeof showToast === 'function') showToast('❌ PDF 읽기 실패: ' + fname, 'red');
           });
         };
         reader.onerror = function() {
           console.warn('[panel18] PDF FileReader 오류:', fname);
-          showToast('❌ 파일 읽기 실패: ' + fname, 'red');
           pending--; if (!pending) render();
+          if (typeof showToast === 'function') showToast('❌ 파일 읽기 실패: ' + fname, 'red');
         };
         reader.readAsArrayBuffer(file);
       } else {
