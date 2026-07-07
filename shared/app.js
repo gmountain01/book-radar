@@ -210,18 +210,21 @@ async function callClaudeApi(opts) {
   };
   // 페르소나 시스템 프롬프트 적용 + Prompt Caching
   // system을 배열 형태로 전달하면 cache_control 블록 사용 가능
-  var sysText = '';
-  if (!opts.noPersona) {
-    sysText = opts.system ? (PUBLISHING_PERSONA + '\n---\n' + opts.system) : PUBLISHING_PERSONA;
-  } else if (opts.system) {
-    sysText = opts.system;
-  }
-  if (sysText) {
-    // Prompt Caching: system을 배열 형태 + cache_control로 전달
-    // 반복 호출 시 TTFT 감소 + 캐시된 토큰 비용 90% 절감
-    body.system = [
-      { type: 'text', text: sysText, cache_control: { type: 'ephemeral' } }
-    ];
+  if (opts.systemBlocks) {
+    // 호출부가 직접 구성한 콘텐츠 블록 배열 — cache_control을 세밀하게 지정할 때 사용
+    body.system = opts.systemBlocks;
+  } else {
+    var sysText = '';
+    if (!opts.noPersona) {
+      sysText = opts.system ? (PUBLISHING_PERSONA + '\n---\n' + opts.system) : PUBLISHING_PERSONA;
+    } else if (opts.system) {
+      sysText = opts.system;
+    }
+    if (sysText) {
+      body.system = [
+        { type: 'text', text: sysText, cache_control: { type: 'ephemeral' } }
+      ];
+    }
   }
   if (opts.temperature !== undefined) body.temperature = opts.temperature;
   var res;
@@ -232,7 +235,6 @@ async function callClaudeApi(opts) {
         'Content-Type': 'application/json',
         'x-api-key': key,
         'anthropic-version': '2023-06-01',
-        'anthropic-beta': 'prompt-caching-2024-07-31',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify(body)
@@ -256,6 +258,12 @@ async function callClaudeApi(opts) {
   }
   var data = await res.json();
   if (data.error) throw new Error(data.error.message || 'Claude API 오류');
+  if (data.usage) {
+    var u = data.usage;
+    console.log('[callClaudeApi] tokens:', u.input_tokens,
+      'cache_read:', u.cache_read_input_tokens || 0,
+      'cache_write:', u.cache_creation_input_tokens || 0);
+  }
   if (data.stop_reason === 'max_tokens') {
     console.warn('[callClaudeApi] 응답이 max_tokens 한도로 잘렸습니다. 재시도하거나 maxTokens를 높이세요.');
   }
