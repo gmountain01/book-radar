@@ -703,41 +703,6 @@ function _safeParseJson(raw) {
   return _extractFieldsManually(raw);
 }
 
-// 문자 단위로 JSON 문자열 내 리터럴 줄바꿈/탭을 이스케이프
-function _fixJsonStrings(json) {
-  var out = [];
-  var inStr = false;
-  for (var i = 0; i < json.length; i++) {
-    var ch = json[i];
-    if (inStr) {
-      if (ch === '\\') {
-        // 이스케이프 시퀀스 — 다음 문자와 함께 그대로 통과
-        out.push(ch);
-        i++;
-        if (i < json.length) out.push(json[i]);
-        continue;
-      }
-      if (ch === '"') {
-        inStr = false;
-        out.push(ch);
-        continue;
-      }
-      // 문자열 안의 리터럴 제어문자 → 이스케이프
-      if (ch === '\n') { out.push('\\n'); continue; }
-      if (ch === '\r') { out.push('\\r'); continue; }
-      if (ch === '\t') { out.push('\\t'); continue; }
-      var cc = ch.charCodeAt(0);
-      if (cc < 0x20) { out.push('\\u' + ('0000' + cc.toString(16)).slice(-4)); continue; }
-      out.push(ch);
-    } else {
-      if (ch === '"') inStr = true;
-      out.push(ch);
-    }
-  }
-  // trailing comma 제거
-  return out.join('').replace(/,\s*([}\]])/g, '$1');
-}
-
 // 키별로 값 추출 (최후 수단)
 function _extractFieldsManually(raw) {
   var keys = ['title','authors','keywords','tags','categories','catchphrase','description',
