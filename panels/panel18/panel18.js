@@ -631,10 +631,12 @@ window.p18_handleFiles = function(input) {
         };
         reader.readAsArrayBuffer(file);
       } else {
+        if (typeof showToast === 'function') showToast('❌ 처리할 수 없는 파일: ' + fname + ' (지원: docx/txt/pdf) — PDF.js 라이브러리 없음', 'red');
         pending--;
         if (!pending) render();
       }
     } else {
+      if (typeof showToast === 'function') showToast('❌ 처리할 수 없는 파일: ' + fname + ' (지원: docx/txt/pdf)', 'red');
       pending--;
       if (!pending) render();
     }
@@ -650,10 +652,16 @@ function _addFile(name, text) {
 }
 
 function _parseDocxAndAdd(fname, buffer, cb) {
-  if (typeof JSZip === 'undefined') { if (cb) cb(); return; }
+  if (typeof JSZip === 'undefined') {
+    if (typeof showToast === 'function') showToast('❌ 처리할 수 없는 파일: ' + fname + ' (지원: docx/txt/pdf)', 'red');
+    if (cb) cb(); return;
+  }
   JSZip.loadAsync(buffer).then(function(zip) {
     var docXml = zip.file('word/document.xml');
-    if (!docXml) { if (cb) cb(); return; }
+    if (!docXml) {
+      if (typeof showToast === 'function') showToast('❌ 처리할 수 없는 파일: ' + fname + ' (지원: docx/txt/pdf)', 'red');
+      if (cb) cb(); return;
+    }
     docXml.async('string').then(function(xml) {
       // 1) 구조 태그를 공백 문자로 치환 (태그 제거 전에 수행)
       var text = xml
