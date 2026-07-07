@@ -4,6 +4,22 @@
 
 ---
 
+## 2026-07-07 — v2.6.6 (버그 수정 8건 FIX-23~30)
+
+### panels/panel23/panel23.js + panels/panel25/panel25.js + shared/app.js + panels/panel8·18 (FIX-23~30)
+
+- **[M] FIX-23 hasPubSignal 'rag' 오탐:** `t = ' ' + t.toLowerCase() + ' '` 패딩 추가, `'rag'` → `' rag '`로 변경. `storage`/`paragraph`/`dragon` 등 substring 오탐 차단. `sdk`/`llm`/`mcp`는 유지.
+- **[M] FIX-24 renderSourceHeatmap ISO 주차 불일치:** `isoWeek(d)` 헬퍼 신설(Date.UTC 기반 ISO 8601 정확한 주차). 기존 `jan1.getDay()+1` 로컬 공식 교체 → `trends[].week` 라벨과 체계 일치, 히트맵 0 표시 수정.
+- **[M] FIX-25 parseMd 이스케이프 + 코드블록:** `inl()`에 `esc(t)` 선적용(`<` 포함 텍스트 렌더 깨짐 수정). 링크 href `^https?://` 또는 `^#`만 허용(`javascript:` XSS 차단). ` ``` ` 펜스 코드블록 상태 추가(# 주석이 헤딩으로 오염 수정, `flushFence()` + `<pre><code>` 출력).
+- **[M] FIX-26 renderSurgeCards 진행 중 주차 왜곡:** `isoWeek(new Date())`로 집계 미완 감지, 급상승 카드 제목에 "이번 주 진행 중 — 집계 미완" 주황 배지 표시. 하락 카드는 완결 주(len-2 vs len-3) 기준 재계산 + "직전 완결 주 기준" 부제 표시.
+- **[M] FIX-27 날짜 방어 파싱:** `_isoDate(s)` 헬퍼 추가(비ISO 날짜 → `YYYY-MM-DD` 변환, 무효면 `''`). `filterAndRender`·`renderFeedList` 전부 헬퍼 사용, 빈 값은 "날짜 미상" 디바이더 그룹.
+- **[L] FIX-28 detectRiskFlags 대소문자 버그:** `desc.indexOf(p)` → `desc.indexOf(p.toLowerCase())`. 소문자화된 `desc`에서 대문자 `'VIP'` 패턴이 항상 -1 반환하던 캐시카우 플래그 버그 수정.
+- **[M] FIX-29 p25_run 피드 실패 전체 중단:** `callClaudeApi(피드 요약)`을 개별 try/catch로 감싸 실패 시 `feedAnalysis = ''` + console.warn 후 Step 2 계속 진행. 진행 표시에 "피드 요약 건너뜀" 문구.
+- **[M] FIX-30 parseAiJson 공용 함수 통합:** `shared/app.js`에 `window.parseAiJson` 신설(panel8 로직: 마크다운 제거→{}추출→제어문자 제거→문자열 이스케이프→JSON.parse→후행쉼표 재시도→잘린 JSON 복구). panel8 `_parseClaudeJson`·panel18 `_safeParseJson`·panel25 `p25_run`/`_refineAndSend`·app.js `generateProposalWithAI` 모두 `parseAiJson`으로 교체. panel25 괄호 스택 방식(문자열 내 `{}` 계수 결함) 제거.
+- **대상:** panels/panel23/panel23.js, panels/panel25/panel25.js, shared/app.js, panels/panel8/panel8.js, panels/panel18/panel18.js
+
+---
+
 ## 2026-07-07 — v2.6.6 (신기능 2건 FEAT-1~2)
 
 ### panels/panel8/panel8.js + panels/panel8/test-fixtures.js + index.html (FEAT-1~2)
