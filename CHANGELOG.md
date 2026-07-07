@@ -4,6 +4,20 @@
 
 ---
 
+## 2026-07-07 — v2.6.6 (기능 개선 6건 + 프롬프트 캐싱 3건)
+
+### shared/app.js + index.html + panels/panel8·18/panel8·18.js (IMP-1~6)
+
+- **[M] IMP-1 renderRows 데이터 이스케이프:** `b.title`·`b.pub`·`l.title`·`l.service`·`l.cat2`·`p.title`·`p.team`·`p.month`·`d.cat`을 `innerHTML`에 삽입 전 `escHtml()` 적용. onclick 속성 내 카테고리명은 `catEsc = escHtml(d.cat).replace(/'/g,'&#39;')`으로 HTML 속성 안전 이스케이프 통일(기존 `replace(/'/g,"\\'")` 교체).
+- **[M] IMP-2 index.html 캐시 버스팅 통일:** 로컬 스크립트·CSS 중 `?v=` 누락 파일 전체 추가 및 기존 혼재 버전(230·231·232 등) → `?v=233`으로 일괄 통일. libs/ 서드파티 파일 제외. 상단에 "릴리스 시 ?v= 일괄 치환" 규칙 주석 추가. 타이틀 v2.6.6으로 갱신.
+- **[M] IMP-3 panel8 네이버 맞춤법 커버리지 표시 + 키 만료 UI:** `_checkNaverSpeller` 반환값을 `{issues, checkedWords, totalWords, keyExpired}` 구조체로 변경. Step 2 detail에 "네이버 N건 (표본 검사: 전체의 X%)" 커버리지 표시. `keyExpired` 시 "네이버 검사기 키 만료 — data/naver-speller-key.js 갱신 필요" 주황색 경고 표시(기존: console.warn만).
+- **[M] IMP-4 panel18 원고 스마트 샘플링:** `_buildManuscriptSample(combined)` 신설 — (1) 앞부분 8,000자, (2) 목차성 라인 추출(`제N장`·`CHAPTER N`·`N.N` 패턴), (3) 각 장 시작 위치에서 500자 샘플. `[--- 목차 ---]`·`[--- N장 도입부 ---]` 구분자 삽입, 총 20,000자 이내. 기존 단순 앞 절단 교체.
+- **[L] IMP-5 index.html 콘솔 복귀 엣지 케이스:** 콘솔(tab11) 닫기 시 `_prevEl` null 폴백에서 `switchTab(_prevIdx, restoreEl)` 인덱스·버튼 불일치 → `restoreIdx = _getIdx(restoreEl)`으로 restoreEl에서 직접 파싱해 불일치 제거.
+- **[M] IMP-6 API 키 XOR+base64 난독화 저장:** `_obfEncode`/`_obfDecode` 추가(XOR 고정 솔트 + base64, `obf:` 접두어로 인코딩 여부 구분). 저장 시 `_obfEncode(key)`, 로드 시 복호화. 기존 평문(`ub_claude_ak`) 1회 자동 마이그레이션. 완전한 보안이 아님(공용 PC 어깨너머 방지 수준) 주석 명시.
+- **대상:** shared/app.js, index.html, panels/panel8/panel8.js, panels/panel18/panel18.js
+
+---
+
 ## 2026-07-07 — v2.6.6 (프롬프트 캐싱 3건)
 
 ### shared/app.js + panels/panel8/panel8.js + panels/panel18/panel18.js (CACHE-1~3)
