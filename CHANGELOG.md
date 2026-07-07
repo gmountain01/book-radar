@@ -4,6 +4,20 @@
 
 ---
 
+## 2026-07-07 — v2.6.7 (CI 자동 검증 파이프라인 TEST-1~3 + 규칙 버그 FIX-38~39)
+
+### scripts/run_tests.js + .github/workflows/ci.yml + panels/panel8 (TEST-1~3, FIX-38~39)
+
+- **[M] TEST-1 p8_runTests 순수 계산부 분리:** 픽스처 채점 로직을 DOM 비의존 `p8_computeTestResults(fixtures)`로 분리 + window 노출. 브라우저 동작 동일.
+- **[H] TEST-2 픽스처 20자 스킵 버그(FEAT-1 후속):** checkSurface가 `text.length < 20` 페이지를 스킵해 픽스처 대부분이 검사를 건너뛰던 버그 — 40건 전부 20자 이상 문장으로 재작성. `그는은` 기대값 은는→는은 정정. 결과: 탐지 30/30, 오탐 0/10.
+- **[M] TEST-3 CI 파이프라인:** `scripts/run_tests.js` — DOM 스텁 샌드박스(vm)에서 shared/app.js·panel8 실제 로드(top-level 런타임 오류 검증) + parseAiJson 단위 11케이스 + 픽스처 40건 채점(기준선 탐지≥30, 오탐 0). `.github/workflows/ci.yml` — push/PR마다 `node --check` 전 JS 문법 검사(libs/·data/ 제외) + 스모크 테스트. FIX-19→FIX-31 유형의 반환 타입 회귀를 커밋 시점 자동 차단.
+- **[M] FIX-38 올바른 표기 노이즈 규칙 정리:** CI 테스트가 정상 문장 '오랫동안' 오탐으로 발견 — "이 표기가 맞음"이라며 올바른 표기(횟수/세계관/요새/왠지/어이없 등)를 맞춤법 이슈로 생성하던 규칙 16건 삭제, 의도 명확한 3건은 오표기 패턴 전환(윗부분→위부분, 아랫부분→아래부분, 오랫동안→오랜동안).
+- **[H] FIX-39 한글 뒤 \b 죽은 규칙 11건:** JS 정규식 `\b`는 ASCII 단어 경계라 한글 뒤에서 절대 매칭 안 됨 — 결론적으로/요약하자면/종합하면/더욱이/나아가/그리고는/함으로써/통해서/것이다/중에 있다 규칙이 도입 후 한 번도 발동하지 않았음. `(?![가-힣])`로 교체. `되요\b`는 기존 규칙과 중복이라 삭제.
+- **index.html ?v=234→235 일괄 상향.**
+- **대상:** scripts/run_tests.js (신설), .github/workflows/ci.yml (신설), panels/panel8/panel8.js, panels/panel8/test-fixtures.js, index.html
+
+---
+
 ## 2026-07-07 — v2.6.6 (전수 감사 버그 수정 7건 FIX-31~37)
 
 ### panels/panel8·18·23 + shared/app.js·youtube.js (FIX-31~37)
