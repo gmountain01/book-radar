@@ -609,7 +609,8 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 async function handleBest(file){
-  const b64=await fileToB64(file);
+  let b64;
+  try{ b64=await fileToB64(file); }catch(e){ showToast('❌ 파일 읽기 실패','red'); console.warn('[handleBest]',e); return; }
   saveToLS(LS_KEYS.best, b64, file.name);
   const data=readB64(b64);
   await handleBestData(data, file.name);
@@ -708,7 +709,8 @@ async function handleBestData(data, fname){
 
 // ── 강의 플랫폼 업로드 ──
 async function handleLecture(file){
-  const b64=await fileToB64(file);
+  let b64;
+  try{ b64=await fileToB64(file); }catch(e){ showToast('❌ 파일 읽기 실패','red'); console.warn('[handleLecture]',e); return; }
   saveToLS(LS_KEYS.lecture, b64, file.name);
   const data=readB64(b64);
   await handleLectureData(data, file.name);
@@ -754,7 +756,8 @@ const _fi2El = document.getElementById('fi2');
 if(_fi2El) _fi2El.addEventListener('change',e=>{if(e.target.files[0])handlePlanned(e.target.files[0]);});
 
 async function handlePlanned(file){
-  const b64=await fileToB64(file);
+  let b64;
+  try{ b64=await fileToB64(file); }catch(e){ showToast('❌ 파일 읽기 실패','red'); console.warn('[handlePlanned]',e); return; }
   saveToLS(LS_KEYS.planned, b64, file.name);
   const data=readB64(b64);
   await handlePlannedData(data, file.name);
@@ -857,9 +860,18 @@ function readB64(b64){
 }
 
 function fileToB64(file){
-  return new Promise(r=>{
+  return new Promise((resolve,reject)=>{
     const fr=new FileReader();
-    fr.onload=e=>r(btoa(String.fromCharCode(...new Uint8Array(e.target.result))));
+    fr.onload=e=>{
+      const bytes=new Uint8Array(e.target.result);
+      let bin='';
+      const CHUNK=8192;
+      for(let i=0;i<bytes.length;i+=CHUNK){
+        bin+=String.fromCharCode(...bytes.subarray(i,i+CHUNK));
+      }
+      resolve(btoa(bin));
+    };
+    fr.onerror=()=>reject(new Error('파일 읽기 실패: '+file.name));
     fr.readAsArrayBuffer(file);
   });
 }
