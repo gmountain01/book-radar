@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-07-07 — v2.6.6 (신기능 2건 FEAT-1~2)
+
+### panels/panel8/panel8.js + panels/panel8/test-fixtures.js + index.html (FEAT-1~2)
+
+- **[M] FEAT-1 교정 셀프 테스트 하네스:** `panels/panel8/test-fixtures.js` 신설 — `window.P8_TEST_FIXTURES` 40건(오류 30건: 조사인접오타×5·이중수동×7·외래어×4·중복군더더기×4·번역체/AI투×4·맞춤법띄어쓰기×6, 정상 10건). `p8_runTests()` 추가 — 픽스처를 `textToExtracted`+`checkSurface`에 통과시켜 탐지성공/탐지누락/오탐 집계. `_p8_showTestResults()` 모달 — 총 픽스처·탐지율·누락·오탐 카드 + 행별 결과 표. 업로드 패널 하단에 "🧪 규칙 테스트" 버튼 추가. `index.html`에 `test-fixtures.js?v=233` 스크립트 태그 추가.
+- **[M] FEAT-2 AI 검사 실패 배치 재검사:** `checkLinguistic`에 `pagesOverride` 파라미터 추가(재검사 시 특정 페이지 번호만 필터). `_lastFailedPages` 모듈 레벨 변수 — 검사 완료 시 실패 페이지 목록 보존. `p8_aiNotice` 부분 실패 배너에 "실패 배치 재검사" 버튼 추가(`p8_retryFailedBatches()` 호출). `p8_retryFailedBatches()` — `_lastFailedPages` 기준 해당 페이지만 AI 재검사, 결과를 `allIssues`에 병합(page+found 중복 제거), 캐시 갱신, 결과 패널 재렌더링. 재검사 후 잔여 실패가 없으면 배너 숨김, 있으면 버튼 유지.
+- **대상:** panels/panel8/panel8.js, panels/panel8/test-fixtures.js (신설), index.html
+
+---
+
 ## 2026-07-07 — v2.6.6 (기능 개선 6건 + 프롬프트 캐싱 3건)
 
 ### shared/app.js + index.html + panels/panel8·18/panel8·18.js (IMP-1~6)
