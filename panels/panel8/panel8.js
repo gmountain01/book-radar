@@ -3848,7 +3848,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let linguisticIssues = [];
     let hasError = '';
     try {
-      linguisticIssues = await checkLinguistic(
+      const _lResult = await checkLinguistic(
         extracted,
         apiKey,
         (batchIdx) => {
@@ -3856,6 +3856,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         (errMsg) => { hasError = errMsg; }
       );
+      linguisticIssues = _lResult.issues;
+      _lastFailedPages = (_lResult.failedPages || []).slice();
     } catch(e) {
       hasError = e.message || 'AI 검사 오류';
     }
