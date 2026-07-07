@@ -4,6 +4,22 @@
 
 ---
 
+## 2026-07-07 — v2.6.6 (전수 감사 버그 수정 7건 FIX-31~37)
+
+### panels/panel8·18·23 + shared/app.js·youtube.js (FIX-31~37)
+
+- **[H] FIX-31 p8_rerunAI checkLinguistic 구조체 회귀:** FIX-19에서 `checkLinguistic`이 `{issues, failedBatches, failedPages}` 구조체를 반환하도록 변경됐으나 `p8_rerunAI`는 반환값을 배열 변수에 직접 대입 → `.length` undefined + `for...of` TypeError로 "AI 재검사" 버튼 완전 고장. `_lResult.issues` 추출 + `_lastFailedPages` 갱신으로 수정.
+- **[H] FIX-32 p8_retryFailedBatches 표면 이슈 소실:** 이슈 객체에 `source` 필드가 존재하지 않아 `i.source === 'surface'`가 항상 false → 재검사 페이지의 표면·구조 이슈까지 전부 삭제. 캐시된 `linguisticIssues`의 `page|found` 키 집합으로 AI 이슈만 선별 제거하도록 교체.
+- **[M] FIX-33 panel23 _isoDate KST 하루 밀림:** 비ISO 날짜 입력 시 `toISOString()`이 UTC 기준으로 잘라 KST에서 하루 전으로 표기. 로컬 날짜 컴포넌트(`getFullYear/getMonth/getDate`)로 조립.
+- **[M] FIX-34 panel18 _fixJsonStrings 죽은 코드 삭제:** FIX-30 parseAiJson 통합으로 호출부가 사라진 33줄 함수 제거.
+- **[M] FIX-35 youtube.js _ytParallelLimit silent catch:** 병렬 태스크 실패 시 무경고 null 채움 → 실패 인덱스+메시지 console.warn 로깅 추가(null 폴백 유지).
+- **[M] FIX-36 parseAiJson 배열 루트 지원:** `{ }` 루트만 추출해 배열 루트 `[...]` 응답 시 null 반환하던 문제. 먼저 나타나는 괄호로 루트 판단, 잘린 JSON 복구는 객체 루트 한정 가드, `lastClose > start` 인덱스 기준 오류도 `> 0`으로 정정.
+- **[L] FIX-37 전역 에러 배너 불완전 이스케이프:** `<`만 치환하던 것을 `escHtml()` 전면 적용.
+- **대상:** panels/panel8/panel8.js, panels/panel18/panel18.js, panels/panel23/panel23.js, shared/app.js, shared/youtube.js
+- **감사 결과:** 4개 병렬 에이전트 전수 감사 — FIX-23~30 회귀 무결 확인, 나머지 12개 패널 유의미한 오류 없음.
+
+---
+
 ## 2026-07-07 — v2.6.6 (버그 수정 8건 FIX-23~30)
 
 ### panels/panel23/panel23.js + panels/panel25/panel25.js + shared/app.js + panels/panel8·18 (FIX-23~30)
