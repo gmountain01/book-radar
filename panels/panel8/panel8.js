@@ -46,6 +46,7 @@ let rulesChunks = null;  // 교정 규칙 청크 (RAG)
 let _userRulesPriority = true; // 사용자 업로드 규칙 우선 (기본: 우선 적용)
 let _hasUserRules = false;
 let _userRulesText = ''; // 업로드된 규칙 파일의 전체 텍스트 (캐시용 고정 블록)
+let _lastFailedPages = []; // FEAT-2: 마지막 AI 검사에서 실패한 페이지 번호 목록
 // 해결됨 상태 — allIssues 인덱스 기준, 필터 변경 후에도 유지
 const resolvedIndices = new Set();
 
@@ -2571,10 +2572,12 @@ function _escapeJsonStrings(text) {
   return result;
 }
 
-async function checkLinguistic(extracted, apiKey, onBatch, onError) {
+async function checkLinguistic(extracted, apiKey, onBatch, onError, pagesOverride) {
   const issues = [];
-  // 짧은 페이지도 포함 — 20자 이상이면 검사
-  let pages = extracted.pages.filter(p => p.text.trim().length >= 20);
+  // pagesOverride: 재검사 시 특정 페이지 번호만 검사
+  let pages = pagesOverride && pagesOverride.length
+    ? extracted.pages.filter(p => pagesOverride.includes(p.page) && p.text.trim().length >= 20)
+    : extracted.pages.filter(p => p.text.trim().length >= 20);
   if (!pages.length) {
     if (onError) onError('추출된 텍스트가 없거나 너무 짧습니다.');
     return { issues, failedBatches: 0, totalBatches: 0, failedPages: [] };
@@ -2880,6 +2883,7 @@ async function p8_startProofread() {
       const _failedBatches = _lResult.failedBatches;
       const _failedPages = _lResult.failedPages;
       const _totalBatches = _lResult.totalBatches;
+      _lastFailedPages = _failedPages.slice(); // FEAT-2: 모듈 레벨 저장 (재검사 버튼용)
 
       if (batchApiError && !linguisticIssues.length) {
         // 전체 배치 실패 — 에러 표시
@@ -2906,7 +2910,20 @@ async function p8_startProofread() {
         const notice = document.getElementById('p8_aiNotice');
         if (notice) {
           notice.style.display = 'block';
-          notice.textContent = `⚠️ AI 검사 부분 실패: 배치 ${_failedBatches}개(${_failedPages.length}페이지) 미검사. 재시도하거나 나중에 다시 실행하세요.`;
+          notice.innerHTML = `
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="font-weight:600;">⚠️ AI 검사 부분 실패</span>
+              <span style="font-size:.8rem;color:var(--muted)">배치 ${_failedBatches}/${_totalBatches}개 (${_failedPages.length}페이지) 미검사</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;">
+              <button id="p8_retryFailedBtn" onclick="p8_retryFailedBatches()"
+                      style="padding:5px 16px;background:#e67e22;color:#fff;border:none;
+                             border-radius:6px;cursor:pointer;font-size:.82rem;white-space:nowrap;
+                             font-weight:600;">
+                실패 배치 재검사
+              </button>
+              <span style="font-size:.78rem;color:var(--muted)">실패한 ${_failedPages.length}페이지만 재시도합니다</span>
+            </div>`;
         }
         aiUsed = true;
         console.warn(`[panel8] AI 검사 부분 실패: ${_failedBatches}/${_totalBatches}배치, 페이지:`, _failedPages);
@@ -3977,6 +3994,113 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ──────────────────────────────────────────────
+  // AI 실패 배치 재검사 (FEAT-2)
+  // ──────────────────────────────────────────────
+  async function p8_retryFailedBatches() {
+    if (!_lastFailedPages.length) {
+      alert('재검사할 실패 페이지가 없습니다.');
+      return;
+    }
+
+    // 1. API 키 확인
+    let apiKey = '';
+    try { apiKey = await loadApiKey(); } catch(e) { console.warn('[panel8] p8_retryFailedBatches: API 키 로드 실패', e); }
+    if (!apiKey) {
+      alert('API 키를 입력해 주세요.');
+      return;
+    }
+
+    // 2. 캐시에서 extracted 가져오기
+    const cacheKey = currentFileKey;
+    const cached = cacheKey ? getCache(cacheKey) : null;
+    const extracted = cached?.extracted || null;
+    if (!extracted || !extracted.pages || !extracted.pages.length) {
+      alert('원본 텍스트 데이터가 없습니다.\n파일을 다시 업로드하여 전체 검사를 실행해 주세요.');
+      return;
+    }
+
+    // 3. 버튼 로딩 상태
+    const btn = document.getElementById('p8_retryFailedBtn');
+    const origText = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = '재검사 중…'; btn.disabled = true; }
+
+    const pagesToRetry = _lastFailedPages.slice();
+
+    // 4. 실패 페이지만 AI 검사 실행
+    let retryIssues = [];
+    let hasError = '';
+    try {
+      const result = await checkLinguistic(
+        extracted,
+        apiKey,
+        (batchIdx, total) => {
+          if (btn) btn.textContent = `재검사 중… (${batchIdx}/${total})`;
+        },
+        (errMsg) => { hasError = errMsg; },
+        pagesToRetry
+      );
+      retryIssues = result.issues;
+      // 재검사에서도 실패한 페이지 갱신
+      _lastFailedPages = result.failedPages.slice();
+    } catch(e) {
+      hasError = e.message || '재검사 오류';
+    }
+
+    if (btn) { btn.textContent = origText; btn.disabled = false; }
+
+    if (hasError && !retryIssues.length) {
+      alert(`재검사 중 오류가 발생했습니다.\n\n${hasError}`);
+      return;
+    }
+
+    // 5. 기존 allIssues에서 해당 페이지 이슈 제거 후 재검사 결과 병합 (page+found 기준 중복 제거)
+    const retryPageSet = new Set(pagesToRetry);
+    const kept = allIssues.filter(i => !retryPageSet.has(i.page) || i.source === 'surface');
+    const existingKeys = new Set(kept.map(i => `${i.page}|${i.found}`));
+    for (const iss of retryIssues) {
+      const key = `${iss.page}|${iss.found}`;
+      if (!existingKeys.has(key)) { kept.push(iss); existingKeys.add(key); }
+    }
+    allIssues = kept;
+
+    // 6. 캐시 갱신
+    if (cacheKey && cached) {
+      const existingCached = cached.linguisticIssues || [];
+      const updatedLing = existingCached.filter(i => !retryPageSet.has(i.page));
+      for (const iss of retryIssues) updatedLing.push(iss);
+      setCache(cacheKey, { ...cached, linguisticIssues: updatedLing });
+    }
+
+    // 7. 결과 재렌더링
+    renderResults(extracted, true, false);
+    show('resultPanel');
+
+    // 8. 성공 시 notice 갱신
+    const notice = document.getElementById('p8_aiNotice');
+    if (notice) {
+      if (_lastFailedPages.length === 0) {
+        notice.style.display = 'none';
+      } else {
+        const stillFailed = _lastFailedPages.length;
+        notice.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-weight:600;">⚠️ 일부 배치 여전히 실패</span>
+            <span style="font-size:.8rem;color:var(--muted)">${stillFailed}페이지 미검사</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;">
+            <button id="p8_retryFailedBtn" onclick="p8_retryFailedBatches()"
+                    style="padding:5px 16px;background:#e67e22;color:#fff;border:none;
+                           border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600;">
+              다시 재검사
+            </button>
+          </div>`;
+      }
+    }
+
+    console.log(`[panel8] 재검사 완료: ${retryIssues.length}건 추가, 잔여 실패 ${_lastFailedPages.length}페이지`);
+  }
+
+  // ──────────────────────────────────────────────
   // 교정 셀프 테스트 하네스 (FEAT-1)
   // ──────────────────────────────────────────────
   function p8_runTests() {
@@ -4125,6 +4249,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.p8_copyChip = p8_copyChip;
   window.p8_onClearThisCache = p8_onClearThisCache;
   window.p8_rerunAI = p8_rerunAI;
+  window.p8_retryFailedBatches = p8_retryFailedBatches;
   window.p8_runTests = p8_runTests;
   window.p8_downloadCorrected = p8_downloadCorrected;
 })();
