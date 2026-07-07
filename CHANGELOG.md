@@ -4,6 +4,19 @@
 
 ---
 
+## 2026-07-06 — v2.6.5 (버그 수정 16건)
+
+### panels/panel18/panel18.js (FIX-12~16)
+
+- **[M] FIX-12 _parseDocxAndAdd 이중 디코딩:** `&amp;`를 가장 먼저 복원하면 `&amp;lt;` → `&lt;` → `<` 이중 디코딩 발생 → 복원 순서를 `&lt; → &gt; → &quot; → &apos; → &#N; → &amp;`(맨 마지막)으로 재배열.
+- **[M] FIX-13 p18_genPromo 빈 응답 스피너 영구 잔류:** `if (raw && raw.trim())` 에 `else` 없어 AI 빈 응답 시 "홍보 카피 생성 중…" 스피너가 영구 잔류 → `else` 분기 추가, "응답이 비어 있습니다. 다시 시도해주세요." 안내 + `showToast('생성 실패: 빈 응답', 'red')`.
+- **[M] FIX-14 p18_copyPromo 클립보드 실패 무처리:** `navigator.clipboard`가 `undefined`이거나 promise reject 시 아무 피드백 없이 실패 → `navigator.clipboard` 존재 확인 후 `.writeText().catch()` 로 `_fallbackCopy()` 호출. 폴백은 `textarea + execCommand('copy')`, 그것도 실패하면 "복사 실패 — 직접 선택해서 복사해주세요" 토스트. `file://` 환경 대응.
+- **[M] FIX-15 p18_handleFiles 미지원 확장자/라이브러리 부재 무피드백:** 미지원 확장자(`.hwp` 등), `pdfjsLib` 부재, `JSZip` 부재, `document.xml` 부재 4개 경로에서 `pending--`만 하고 사용자 알림 없음 → 각 분기에 `showToast('❌ 처리할 수 없는 파일: fname (지원: docx/txt/pdf)', 'red')` 추가. 모두 `typeof showToast === 'function'` 가드 포함.
+- **[L] FIX-16 PDF catch showToast 가드 누락 (FIX-8 후속):** FIX-8에서 추가된 PDF catch 블록이 `showToast`를 가드 없이 호출 → `showToast`가 `undefined`이면 `ReferenceError`로 `pending--`가 실행되지 않아 무한 대기 재발 → `pending--; if(!pending) render();`를 `showToast` 호출 앞으로 이동하고 `typeof showToast === 'function'` 가드 추가.
+- **대상:** panels/panel18/panel18.js
+
+---
+
 ## 2026-07-06 — v2.6.5 (버그 수정 11건)
 
 ### shared/app.js
