@@ -1764,18 +1764,22 @@ async function _checkNaverSpeller(extracted) {
   var speller = window._NAVER_SPELLER;
   if (!speller || !speller.passportKey) {
     console.warn('[panel8] 네이버 맞춤법: passportKey 없음 (data/naver-speller-key.js 확인)');
-    return issues;
+    return { issues, checkedWords: 0, totalWords: 0, keyExpired: false };
   }
   var passportKey = speller.passportKey;
 
   // 페이지 균등 샘플링: 문서 전체에서 고르게 페이지를 뽑아 검사
-  // (앞부분만 검사하던 문제 해결 — 앞/중/뒤 균등 커버)
   var validPages = [];
   for (var pi = 0; pi < extracted.pages.length; pi++) {
     var text = extracted.pages[pi].text.trim();
     if (text.length >= 30) validPages.push(extracted.pages[pi]);
   }
-  // 균등 간격으로 페이지 선택 (8청크를 채울 수 있도록)
+  // 전체 단어 수 (커버리지 분모)
+  var totalWords = validPages.reduce(function(s, pg) {
+    return s + pg.text.trim().split(/\s+/).filter(Boolean).length;
+  }, 0);
+
+  // 균등 간격으로 페이지 선택
   var step = Math.max(1, Math.floor(validPages.length / _NAVER_MAX_CHUNKS));
   var sampledPages = [];
   for (var si = 0; si < validPages.length && sampledPages.length < _NAVER_MAX_CHUNKS; si += step) {
@@ -1786,22 +1790,26 @@ async function _checkNaverSpeller(extracted) {
   for (var spi = 0; spi < sampledPages.length && chunks.length < _NAVER_MAX_CHUNKS; spi++) {
     var p = sampledPages[spi];
     var parts = _splitByWords(p.text.trim(), _NAVER_MAX_WORDS);
-    // 각 페이지에서 첫 번째 청크만 (균등 커버리지 우선)
-    if (parts.length > 0) {
-      chunks.push({ page: p.page, text: parts[0] });
-    }
+    if (parts.length > 0) chunks.push({ page: p.page, text: parts[0] });
   }
-  if (!chunks.length) return issues;
+  // 실제 검사 단어 수 (커버리지 분자)
+  var checkedWords = chunks.reduce(function(s, c) {
+    return s + c.text.trim().split(/\s+/).filter(Boolean).length;
+  }, 0);
 
-  console.log('[panel8] 네이버 맞춤법: ' + chunks.length + '청크 검사');
+  if (!chunks.length) return { issues, checkedWords: 0, totalWords, keyExpired: false };
 
+  console.log('[panel8] 네이버 맞춤법: ' + chunks.length + '청크, ' + checkedWords + '/' + totalWords + '단어 검사');
+
+  var keyExpired = false;
   for (var i = 0; i < chunks.length; i++) {
     try {
       var data = await _naverJsonp(chunks[i].text, passportKey);
       var result = data && data.message && data.message.result;
       if (data && data.message && data.message.error) {
         console.warn('[panel8] 네이버 맞춤법 키 만료:', data.message.error);
-        break; // 키 만료 시 나머지 청크 스킵
+        keyExpired = true;
+        break;
       }
       if (result) {
         var typos = _parseNaverResult(result);
@@ -1815,7 +1823,6 @@ async function _checkNaverSpeller(extracted) {
           });
         }
       }
-      // rate limit 보호
       if (i < chunks.length - 1) {
         await new Promise(function(r) { setTimeout(r, _NAVER_DELAY); });
       }
@@ -1825,7 +1832,7 @@ async function _checkNaverSpeller(extracted) {
     }
   }
   console.log('[panel8] 네이버 맞춤법 결과: ' + issues.length + '건');
-  return issues;
+  return { issues, checkedWords, totalWords, keyExpired };
 }
 
 // ──────────────────────────────────────────────
@@ -2807,11 +2814,26 @@ async function p8_startProofread() {
 
     // ── Step 2.5: 네이버 맞춤법 검사기 (JSONP) ──
     try {
-      var naverIssues = await _checkNaverSpeller(extracted);
-      if (naverIssues.length) {
+      var _nResult = await _checkNaverSpeller(extracted);
+      var naverIssues = _nResult.issues;
+      var _step2El = document.getElementById('p8_step2-detail');
+      if (_nResult.keyExpired) {
+        // 키 만료 — 주황색 경고
+        if (_step2El) {
+          _step2El.textContent = '네이버 검사기 키 만료 — data/naver-speller-key.js 갱신 필요';
+          _step2El.style.color = '#c07a00';
+        }
+      } else if (naverIssues.length || _nResult.checkedWords > 0) {
         surfaceIssues = surfaceIssues.concat(naverIssues);
-        document.getElementById('p8_step2-detail').textContent =
-          `${surfaceIssues.length}건 발견 (네이버 ${naverIssues.length}건 포함)`;
+        var _pct = _nResult.totalWords > 0
+          ? Math.round(_nResult.checkedWords / _nResult.totalWords * 100) : 0;
+        var _coverTxt = _nResult.totalWords > 0
+          ? ' (표본 검사: 전체의 ' + _pct + '%)' : '';
+        if (_step2El) {
+          _step2El.textContent =
+            surfaceIssues.length + '건 발견 (네이버 ' + naverIssues.length + '건' + _coverTxt + ')';
+          _step2El.style.color = '';
+        }
       }
     } catch(e) { console.warn('[panel8] 네이버 맞춤법 스킵:', e.message); }
     setBar(50);
