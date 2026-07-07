@@ -446,11 +446,16 @@ window.p25_run = async function() {
       data.feed.forEach(function(f) {
         feedPrompt += '- [' + f.date + '] ' + f.title + (f.source ? ' (' + f.source + ')' : '') + '\n';
       });
-      feedAnalysis = await callClaudeApi({ apiKey:apiKey, model:'claude-haiku-4-5-20251001', system:'IT 출판 편집자. 한국어. 간결체.', prompt:feedPrompt, maxTokens:500 }) || '';
+      try {
+        feedAnalysis = await callClaudeApi({ apiKey:apiKey, model:'claude-haiku-4-5-20251001', system:'IT 출판 편집자. 한국어. 간결체.', prompt:feedPrompt, maxTokens:500 }) || '';
+      } catch(eFeed) {
+        console.warn('[panel25] Step 1 피드 요약 실패 (건너뜀):', eFeed.message);
+        feedAnalysis = '';
+      }
     }
 
     // Step 2: 종합 의견 생성
-    _setProgress(progress, 2, 3, '전체 데이터 종합 판단 중…');
+    _setProgress(progress, 2, 3, feedAnalysis ? '전체 데이터 종합 판단 중…' : '전체 데이터 종합 판단 중… (피드 요약 건너뜀)');
 
     // 시스템 프롬프트 (명세 4-2)
     var sysPrompt = '너는 한국 IT 출판사(한빛미디어)의 베테랑 기획 편집자다.\n';
