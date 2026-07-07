@@ -4,6 +4,20 @@
 
 ---
 
+## 2026-07-06 — v2.6.5 (버그 수정 22건)
+
+### panels/panel8/panel8.js + 교정규칙.md·js (FIX-17~22)
+
+- **[M] FIX-17 findRelevantChunks 섹션명 매칭 실패:** 교정규칙.md 헤딩에 `·`(가운뎃점)·공백이 혼재해 `heading.includes(section)` 직접 비교 실패 → `_norm = s => s.replace(/[·\s]/g,'')` 헬퍼 추가, 두 매칭 패스 모두 `_norm(p).includes(_norm(section))`으로 교체. `CHUNK_KEYWORDS` 키 `'통일안 핵심'` → `'통일안'`으로 단순화.
+- **[M] FIX-18 교정 파일 업로드 TXT·MD 차단:** `ALLOWED_EXTS`에 `'txt'`, `'md'` 미포함 → 배열에 추가. 알림 메시지에 `.txt`, `.md` 안내 추가.
+- **[M] FIX-19 AI 배치 일부 실패 시 무음 처리:** `checkLinguistic`이 단순 배열 반환 → `{ issues, failedBatches, totalBatches, failedPages }` 객체 반환으로 변경. 호출부에서 `failedBatches > 0`이면 Step 4 상태 표시를 경고색으로 변경 + `p8_aiNotice`에 "⚠️ N개 배치 실패" 경고 표시.
+- **[M] FIX-20 Claude API 429/529 재시도 없음:** 일시적 과부하 오류 시 배치 전체 실패 → `_callWithRetry(fn, maxRetries=2)` 래퍼 추가(429/529/overloaded/rate.?limit/too.?many 감지, 2s→8s 지수 백오프). 배치 간 300ms 지연 추가.
+- **[L] FIX-21 죽은 코드 정리:** `aiOnlyRun` 선언 주석 보강. `if (useCache && cached.aiWasRun && !(apiProvided && aiOnlyRun))` → `if (useCache && cached.aiWasRun)` 단순화(cached.aiWasRun=true이면 aiOnlyRun 항상 false). `stepRun(4, aiOnlyRun ? …)` → `stepRun(4, useCache ? …)`. `extracted.limitedExtraction` 블록 도달 불가 주석 처리(extractHWP는 항상 throw).
+- **[M] FIX-22 교정규칙.md §19 신설·TOC 보완·부록 2행:** TOC에 §11~13·§18·§19 항목 추가(기존 누락). `### 10-4. 통일안 O/X 핵심 규칙`(§13 내부에 잘못 위치)을 `## 19. 통일안 O/X 핵심 규칙 (한빛미디어 편집 통일안)`으로 승격·이동(§18 다음). 소제목 `**굵게**` → `### 19-1/19-2/19-3` 으로 변환. 부록 충돌표에 '줄임표 표기'·'줄표 앞뒤 띄어쓰기' 2행 추가. `교정규칙.js` 재생성(43,207자).
+- **대상:** panels/panel8/panel8.js, panels/panel8/교정규칙.md, panels/panel8/교정규칙.js, scripts/build_교정규칙.js
+
+---
+
 ## 2026-07-06 — v2.6.5 (버그 수정 16건)
 
 ### panels/panel18/panel18.js (FIX-12~16)
