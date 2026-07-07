@@ -3980,9 +3980,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // 5. 기존 allIssues에서 해당 페이지 이슈 제거 후 재검사 결과 병합 (page+found 기준 중복 제거)
+    // 5. 기존 allIssues에서 해당 페이지의 AI(언어) 이슈만 제거 후 재검사 결과 병합 (page+found 기준 중복 제거)
+    // 이슈 객체에 source 필드가 없으므로 캐시된 linguisticIssues의 page|found 키로 AI 이슈 여부 판별
     const retryPageSet = new Set(pagesToRetry);
-    const kept = allIssues.filter(i => !retryPageSet.has(i.page) || i.source === 'surface');
+    const _lingKeys = new Set((cached?.linguisticIssues || []).map(i => `${i.page}|${i.found}`));
+    const kept = allIssues.filter(i => !retryPageSet.has(i.page) || !_lingKeys.has(`${i.page}|${i.found}`));
     const existingKeys = new Set(kept.map(i => `${i.page}|${i.found}`));
     for (const iss of retryIssues) {
       const key = `${iss.page}|${iss.found}`;
