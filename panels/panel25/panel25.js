@@ -56,7 +56,7 @@ function detectRiskFlags(description) {
   var flags = [];
   RISK_PATTERNS.forEach(function(r) {
     r.patterns.forEach(function(p) {
-      if (desc.indexOf(p) >= 0 && !flags.some(function(f){ return f.flag === r.flag; })) {
+      if (desc.indexOf(p.toLowerCase()) >= 0 && !flags.some(function(f){ return f.flag === r.flag; })) {
         flags.push({ flag: r.flag, meaning: r.meaning });
       }
     });
