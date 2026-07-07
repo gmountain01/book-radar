@@ -365,28 +365,42 @@ function renderTrend() {
 // ── 1. 급상승 / 하락 카드 ──
 function renderSurgeCards(trends) {
   if (trends.length < 2) return '';
-  var curr = trends[trends.length - 1].keywords;
-  var prev = trends.length >= 2 ? trends[trends.length - 2].keywords : {};
+  var len = trends.length;
+
+  // 진행 중 주 감지 — 최신 week가 오늘이 속한 ISO 주와 같으면 아직 집계 미완
+  var isInProgress = (trends[len - 1].week === isoWeek(new Date()));
+
+  var curr = trends[len - 1].keywords;
+  var prev = trends[len - 2].keywords;
+
+  // 하락 카드: 진행 중 주는 집계 미완이므로 직전 완결 주 기준 (len-2 vs len-3)
+  var fallCurr = (isInProgress && len >= 3) ? trends[len - 2].keywords : curr;
+  var fallPrev = (isInProgress && len >= 3) ? trends[len - 3].keywords : prev;
+
   var surging = [], falling = [];
 
-  // 현재 주 키워드
+  // 급상승: 진행 중 주 기준 유지 (신규 감지가 목적)
   for (var kw in curr) {
     var c = curr[kw] || 0, p = prev[kw] || 0;
     if (p === 0 && c >= 2) surging.push({ kw: kw, c: c, p: p, tag: '신규' });
     else if (p > 0 && c >= p * 2) surging.push({ kw: kw, c: c, p: p, tag: '+' + Math.round((c/p-1)*100) + '%' });
   }
-  // 이전 주에 있었으나 50% 이상 감소
-  for (var kw2 in prev) {
-    var c2 = curr[kw2] || 0, p2 = prev[kw2] || 0;
+  // 하락: 완결된 주 기준
+  for (var kw2 in fallPrev) {
+    var c2 = fallCurr[kw2] || 0, p2 = fallPrev[kw2] || 0;
     if (p2 >= 2 && c2 < p2 * 0.5) falling.push({ kw: kw2, c: c2, p: p2, tag: Math.round((c2/p2-1)*100) + '%' });
   }
   surging.sort(function(a,b){ return b.c - a.c; });
   falling.sort(function(a,b){ return a.c/a.p - b.c/b.p; });
 
+  var progressBadge = isInProgress
+    ? '<span style="font-size:.7rem;font-weight:400;background:#f59e0b;color:#fff;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;">이번 주 진행 중 — 집계 미완</span>'
+    : '';
+
   var h = '<div class="p23-surge-row">';
   // 급상승
   h += '<div class="p23-surge-card p23-surge-up">';
-  h += '<div class="p23-surge-title">🔥 급상승 키워드</div>';
+  h += '<div class="p23-surge-title">🔥 급상승 키워드' + progressBadge + '</div>';
   if (!surging.length) { h += '<div class="p23-surge-empty">이번 주 급상승 키워드 없음</div>'; }
   else { surging.slice(0,6).forEach(function(s) {
     h += '<div class="p23-surge-item"><span class="p23-surge-kw">' + esc(s.kw) + '</span><span class="p23-surge-badge p23-badge-up">' + s.tag + '</span><span class="p23-surge-cnt">' + s.c + '건</span></div>';
@@ -394,8 +408,8 @@ function renderSurgeCards(trends) {
   h += '</div>';
   // 하락
   h += '<div class="p23-surge-card p23-surge-down">';
-  h += '<div class="p23-surge-title">📉 하락 키워드</div>';
-  if (!falling.length) { h += '<div class="p23-surge-empty">이번 주 급하락 키워드 없음</div>'; }
+  h += '<div class="p23-surge-title">📉 하락 키워드' + (isInProgress && len >= 3 ? '<span style="font-size:.7rem;font-weight:400;color:var(--muted);margin-left:6px;">직전 완결 주 기준</span>' : '') + '</div>';
+  if (!falling.length) { h += '<div class="p23-surge-empty">급하락 키워드 없음</div>'; }
   else { falling.slice(0,6).forEach(function(s) {
     h += '<div class="p23-surge-item"><span class="p23-surge-kw">' + esc(s.kw) + '</span><span class="p23-surge-badge p23-badge-down">' + s.tag + '</span><span class="p23-surge-cnt">' + s.c + '건</span></div>';
   }); }
