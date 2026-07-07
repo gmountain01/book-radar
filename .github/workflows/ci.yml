@@ -10,10 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # check_version.py가 전체 히스토리 필요
 
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      # 0) 캐시 버스팅 버전 상향 누락 검사
+      #    shared/·panels/ JS·CSS 변경 후 index.html ?v= 미상향이면 실패
+      - name: 캐시 버전 검사
+        run: python3 scripts/check_version.py
 
       # 1) 전체 JS 문법 검사 (libs/ 서드파티, data/ 자동 생성 파일 제외)
       - name: 문법 검사 (node --check)
