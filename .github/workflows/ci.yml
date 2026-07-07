@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 1) 전체 JS 문법 검사 (libs/ 서드파티, data/ 자동 생성 파일 제외)
+      - name: 문법 검사 (node --check)
+        run: |
+          set -e
+          find shared panels scripts -name '*.js' -not -path '*/libs/*' -print0 \
+            | while IFS= read -r -d '' f; do
+                node --check "$f" || { echo "문법 오류: $f"; exit 1; }
+              done
+          echo "문법 검사 통과"
+
+      # 2) 스모크 테스트: parseAiJson 단위 + panel8 교정 픽스처 40건
+      - name: 스모크 테스트
+        run: node scripts/run_tests.js
