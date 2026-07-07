@@ -790,7 +790,7 @@ async function handlePlannedData(data, fname){
   }
   const teams=[...new Set(plannedRows.map(r=>r.team).filter(Boolean))].sort();
   const tf=document.getElementById('teamSel');
-  tf.innerHTML=teams.length?teams.map(t=>`<option value="${t}">${t}</option>`):'<option>팀 정보 없음</option>';
+  tf.innerHTML=teams.length?teams.map(t=>`<option value="${escHtml(t)}">${escHtml(t)}</option>`).join(''):'<option>팀 정보 없음</option>';
   showStatus('2',fname,`${plannedRows.length}권 · 팀 ${teams.length}개`);
   checkRun();
 }
