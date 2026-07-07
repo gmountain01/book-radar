@@ -4032,13 +4032,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // ──────────────────────────────────────────────
   // 교정 셀프 테스트 하네스 (FEAT-1)
   // ──────────────────────────────────────────────
-  function p8_runTests() {
-    const fixtures = window.P8_TEST_FIXTURES;
-    if (!fixtures || !fixtures.length) {
-      alert('test-fixtures.js가 로드되지 않았습니다.\nindex.html에 스크립트 태그가 있는지 확인하세요.');
-      return;
-    }
-
+  // 순수 계산부 — DOM 비의존 (Node CI 스모크 테스트에서 재사용)
+  function p8_computeTestResults(fixtures) {
     const results = [];
     let detected = 0, missed = 0, fp = 0;
 
@@ -4079,10 +4074,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    _p8_showTestResults({ results, detected, missed, fp,
+    return { results, detected, missed, fp,
       total: fixtures.length,
       errTotal: fixtures.filter(f => f.expectType !== null).length,
-      normTotal: fixtures.filter(f => f.expectType === null).length });
+      normTotal: fixtures.filter(f => f.expectType === null).length };
+  }
+
+  function p8_runTests() {
+    const fixtures = window.P8_TEST_FIXTURES;
+    if (!fixtures || !fixtures.length) {
+      alert('test-fixtures.js가 로드되지 않았습니다.\nindex.html에 스크립트 태그가 있는지 확인하세요.');
+      return;
+    }
+    _p8_showTestResults(p8_computeTestResults(fixtures));
   }
 
   function _p8_showTestResults({ results, detected, missed, fp, total, errTotal, normTotal }) {
@@ -4180,5 +4184,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.p8_rerunAI = p8_rerunAI;
   window.p8_retryFailedBatches = p8_retryFailedBatches;
   window.p8_runTests = p8_runTests;
+  window.p8_computeTestResults = p8_computeTestResults;
   window.p8_downloadCorrected = p8_downloadCorrected;
 })();
