@@ -2382,6 +2382,28 @@ HALLUCINATION PREVENTION (CRITICAL):
 - Every "found" value must pass this test: it appears verbatim in the input text you received.`;
 
 // callClaude — callClaudeApi(shared/app.js) 래핑
+/**
+ * 429/529/overloaded/rate 에러에 대해 지수 백오프 재시도
+ * 최대 2회 재시도: 2초 → 8초. 그 외 에러는 즉시 실패.
+ */
+async function _callWithRetry(fn, maxRetries = 2) {
+  const isRetryable = msg => /429|529|overloaded|rate.?limit|too.?many/i.test(msg);
+  let delay = 2000;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      if (attempt < maxRetries && isRetryable(e.message)) {
+        console.warn(`[panel8] 재시도 ${attempt + 1}/${maxRetries} (${delay}ms 후):`, e.message);
+        await new Promise(r => setTimeout(r, delay));
+        delay *= 4; // 2s → 8s
+      } else {
+        throw e;
+      }
+    }
+  }
+}
+
 async function callClaude(apiKey, text, rulesContext = '') {
   var systemPrompt;
   if (rulesContext && _hasUserRules && _userRulesPriority) {
@@ -2563,6 +2585,8 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
     const txt = contextPrefix + batch.map(p => `\n[p.${p.page}]\n${_compressForTokens(p.text)}\n`).join('');
     const relevant = rulesChunks ? findRelevantChunks(rulesChunks, txt) : [];
     const rulesCtx = relevant.length > 0 ? relevant.map(c => c.text).join('\n') : '';
+    // 배치 간 300ms 지연 — rate limit 예방
+    if (i > 0) await new Promise(r => setTimeout(r, 300));
     try {
       const raw = await _callWithRetry(() => callClaude(apiKey, '교정:\n' + txt, rulesCtx));
       const parsed = _parseClaudeJson(raw);
