@@ -891,35 +891,46 @@ function parseGoogleSheetsId(url) {
   return { id: m[1], gid: gidM ? gidM[1] : '0', published: false };
 }
 
-// CSV 텍스트 직접 파싱 — SheetJS type:'string'은 한글 깨짐 발생
+// CSV 텍스트 직접 파싱 — 문자 단위 상태 머신 (멀티라인 셀·"" 이스케이프 완전 지원)
+// SheetJS type:'string'은 한글 깨짐 발생하므로 직접 파싱
 function parseCsvText(text) {
   const rows = [];
-  const clean = text.replace(/^\uFEFF/, ''); // BOM 제거
-  const lines = clean.split(/\r?\n/);
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    const cells = [];
-    let i = 0;
-    while (i < line.length) {
-      if (line[i] === '"') {
-        let val = '', j = i + 1;
-        while (j < line.length) {
-          if (line[j] === '"' && line[j+1] === '"') { val += '"'; j += 2; }
-          else if (line[j] === '"') { j++; break; }
-          else val += line[j++];
-        }
-        cells.push(val);
-        i = j;
-        if (i < line.length && line[i] === ',') i++;
+  const s = text.replace(/^\uFEFF/, ''); // BOM 제거
+  let inQuotes = false;
+  let cell = '';
+  let row = [];
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (s[i+1] === '"') { cell += '"'; i++; } // "" 이스케이프
+        else inQuotes = false;
       } else {
-        const end = line.indexOf(',', i);
-        if (end === -1) { cells.push(line.slice(i)); break; }
-        cells.push(line.slice(i, end));
-        i = end + 1;
+        cell += ch; // 따옴표 안 \n·\r도 셀 내용
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ',') {
+        row.push(cell); cell = '';
+      } else if (ch === '\r') {
+        // \r\n 또는 단독 \r 처리
+        if (s[i+1] === '\n') i++;
+        row.push(cell); cell = '';
+        if (row.some(c => c !== '')) rows.push(row);
+        row = [];
+      } else if (ch === '\n') {
+        row.push(cell); cell = '';
+        if (row.some(c => c !== '')) rows.push(row);
+        row = [];
+      } else {
+        cell += ch;
       }
     }
-    rows.push(cells);
   }
+  // 마지막 행 처리
+  row.push(cell);
+  if (row.some(c => c !== '')) rows.push(row);
   return rows;
 }
 
