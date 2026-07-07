@@ -2015,13 +2015,16 @@ const CHUNK_KEYWORDS = {
   '한글 맞춤법 규정': ['두음법칙', '불규칙', '활용', '준말', '로서', '로써', '이히', '깨끗이', '깨끗히', '노란', '걸어', '지어', '가까워', '돼', '어떡해', '비율', '출석률'],
   '문장 부호 상세': ['마침표', '물음표', '느낌표', '쉼표', '가운뎃점', '줄표', '붙임표', '물결표', '줄임표', '겹낫표', '홑낫표', '큰따옴표', '작은따옴표', '소괄호', '대괄호', '인용', '제목'],
   '표준어 규정': ['표준어', '비표준어', '복수 표준어', '강낭콩', '냄비', '빌리다', '우레', '나무꾼', '짜깁기', '거름', '걸음', '부치다', '붙이다', '조리다', '졸이다', '바치다', '받치다', '안치다', '앉히다', '마치다', '목거리', '목걸이', '이따가'],
-  '통일안 핵심': ['통일안', '초점', '촛점', '따라하기', '궁금해하다', '그중', '점심시간', '할수록', '필요시', '문제없다', '오래전', '밤하늘', '양옆', '우리말', '우선순위', '방식밖에', '뒤표지', '얼마예요'],
+  '통일안': ['통일안', '초점', '촛점', '따라하기', '궁금해하다', '그중', '점심시간', '할수록', '필요시', '문제없다', '오래전', '밤하늘', '양옆', '우리말', '우선순위', '방식밖에', '뒤표지', '얼마예요'],
   'AI투 표현': ['AI투', '상투어', '수식 과잉', '단정 회피', '완곡', '주목할', '시사하는', '맥락에서', '다양한 측면', '결론적으로', '그야말로', '실로', '더욱더', '할 수 있다고'],
   '번역체': ['번역체', '이중피동', '피동', '쓰여지다', '보여지다', '되어지다', '잊혀지다', '에 의해', '가지고 있다', '에 대하여', '에 있어서', '인 것이다', '보다 한', '필요로 한다'],
   '중복 군더더기': ['중복', '군더더기', '의미 중복', '역전 앞', '미리 예약', '접속사 중복', '단어 반복', '라고 하는 것이다', '인 것 같다고', '이러한', '그러한'],
   '윤문 대상': ['윤문', '중의적', '주술 호응', '길이 과잉', '80자', '반복 구조', '어순', '문체', '인용문'],
   '시제 인칭 종결어미': ['시제', '인칭', '종결어미', '합니다', '한다', '해요', '필자', '독자', '여러분', '과거형', '현재형', '문체불일치', '체계'],
 };
+
+// 헤딩 정규화 — 가운뎃점·공백 제거 후 비교 (§16 '중복·군더더기', §18 '시제·인칭·종결어미' 등 매칭 보장)
+const _norm = s => s.replace(/[·\s]/g, '');
 
 function findRelevantChunks(chunks, batchText) {
   const result = [];
@@ -2034,10 +2037,11 @@ function findRelevantChunks(chunks, batchText) {
       continue;
     }
     // 1단계: 헤딩 키워드 매칭 (부모 > 자식 형태도 부모 섹션 매칭)
+    // 양쪽 정규화(_norm)로 가운뎃점·공백 차이 무시
     let matched = false;
     const hParts = h.split(' > ');
     for (const [section, kws] of Object.entries(CHUNK_KEYWORDS)) {
-      if (!hParts.some(p => p.includes(section))) continue;
+      if (!hParts.some(p => _norm(p).includes(_norm(section)))) continue;
       if (kws.length === 0 || kws.some(kw => textLower.includes(kw.toLowerCase()))) {
         matched = true;
         break;
@@ -2064,7 +2068,7 @@ function findRelevantChunks(chunks, batchText) {
       // 관련성 점수 계산: 키워드 매칭 수 + 표 셀 매칭 수
       var score = 0;
       for (const [section, kws] of Object.entries(CHUNK_KEYWORDS)) {
-        if (!chunk.heading.includes(section)) continue;
+        if (!_norm(chunk.heading).includes(_norm(section))) continue;
         kws.forEach(kw => { if (textLower.includes(kw.toLowerCase())) score++; });
       }
       if (chunk.text) {
