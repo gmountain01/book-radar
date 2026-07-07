@@ -1261,6 +1261,54 @@ window.p18_autoCategories = async function() {
   }
 };
 
+// ── 원고 스마트 샘플링 ──
+// 단순 앞 절단 대신 앞부분 + 목차 + 각 장 도입부를 추출해 AI가 책 전체 구조를 파악하게 한다.
+function _buildManuscriptSample(combined) {
+  var MAX = 20000;
+  if (combined.length <= MAX) return combined;
+
+  var parts = [];
+  var used = 0;
+
+  // (1) 앞부분 8,000자
+  var front = combined.slice(0, 8000);
+  parts.push(front);
+  used += front.length;
+
+  // (2) 목차성 라인 추출 (장/부/편 헤딩 패턴)
+  var tocRe = /^(제?\s*\d+\s*[장부편]|CHAPTER\s*\d+|Chapter\s*\d+|\d+\.\d+\s)/;
+  var tocLines = combined.split('\n').filter(function(line) {
+    return tocRe.test(line.trim()) && line.trim().length > 2;
+  }).slice(0, 50);
+
+  if (tocLines.length > 0 && used < MAX) {
+    var tocBlock = '[--- 목차 ---]\n' + tocLines.join('\n');
+    var tocSlice = tocBlock.slice(0, MAX - used);
+    parts.push(tocSlice);
+    used += tocSlice.length;
+  }
+
+  // (3) 각 장 시작 위치에서 500자 샘플
+  var chapRe = /\n(제?\s*\d+\s*[장부편][^\n]*|CHAPTER\s+\d+[^\n]*|Chapter\s+\d+[^\n]*)/g;
+  var chapMatch;
+  var chapIdx = 0;
+  while ((chapMatch = chapRe.exec(combined)) !== null && used < MAX - 200) {
+    var pos = chapMatch.index + 1; // \n 다음부터
+    if (pos < 7500) continue;      // 앞부분과 중복 방지
+    chapIdx++;
+    var snippet = combined.slice(pos, pos + 500);
+    var block = '[--- ' + chapIdx + '장 도입부 ---]\n' + snippet;
+    var remaining = MAX - used;
+    if (remaining < 100) break;
+    parts.push(block.slice(0, remaining));
+    used += Math.min(block.length, remaining);
+  }
+
+  var sample = parts.join('\n\n');
+  console.log('[panel18] 원고 샘플링: 원본', combined.length, '자 →', sample.length, '자, 장 도입부', chapIdx, '개');
+  return sample;
+}
+
 // ── AI 생성 ──
 var _aiGenerating = false;
 
@@ -1283,7 +1331,7 @@ window.p18_aiGenerate = async function() {
 
   // 여러 파일 합치기
   var combined = aiFiles.map(function(f) { return '=== ' + f.name + ' ===\n' + f.text; }).join('\n\n');
-  var truncated = combined.length > 20000 ? combined.slice(0, 20000) + '\n...(이하 생략)' : combined;
+  var truncated = _buildManuscriptSample(combined);
 
   var prompt = '다음은 출판할 도서의 원고 또는 관련 자료입니다. 이 내용을 분석하여 서점에 배포할 "신간 안내" 문서의 각 섹션을 작성해주세요.\n\n' +
     '[중요 규칙]\n' +
