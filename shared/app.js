@@ -725,7 +725,7 @@ async function handleLectureData(data, fname){
   hdr.forEach((h,i)=>{const s=String(h||'').toLowerCase().trim();
     if(s.includes('서비스'))svc=i;
     if(s.includes('전체 카테고리')||s==='cat1')cat1c=i;
-    if(s==='카테고리'||s==='cat2'||s.includes('카테고리'))cat2c=i;
+    else if(s==='카테고리'||s==='cat2'||(s.includes('카테고리')&&!s.includes('전체')))cat2c=i;
     if(s.includes('강의명')||s.includes('제목')||s.includes('강의'))tc=i;
     if(s.includes('인기도')||s.includes('수강생')||s.includes('인기'))pc=i;
   });
