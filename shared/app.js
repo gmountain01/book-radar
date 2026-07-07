@@ -256,6 +256,9 @@ async function callClaudeApi(opts) {
   }
   var data = await res.json();
   if (data.error) throw new Error(data.error.message || 'Claude API 오류');
+  if (data.stop_reason === 'max_tokens') {
+    console.warn('[callClaudeApi] 응답이 max_tokens 한도로 잘렸습니다. 재시도하거나 maxTokens를 높이세요.');
+  }
   return data.content[0].text;
 }
 
@@ -2362,9 +2365,9 @@ ${ctx}
 }`;
 
   try{
-    const text=await callClaudeApi({apiKey,prompt,model:'claude-haiku-4-5-20251001',maxTokens:2000});
+    const text=await callClaudeApi({apiKey,prompt,model:'claude-haiku-4-5-20251001',maxTokens:4000});
     const m=text.match(/\{[\s\S]*\}/);
-    if(!m)throw new Error('JSON 형식 응답을 받지 못했습니다.');
+    if(!m)throw new Error('JSON 형식 응답을 받지 못했습니다. (응답이 잘렸을 수 있음 — 재시도 권장)');
     const r=JSON.parse(m[0]);
 
     const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
