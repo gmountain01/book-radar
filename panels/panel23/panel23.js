@@ -835,13 +835,31 @@ function loadFile(file) {
 function parseMd(md) {
   var lines = md.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
   var html=[], inTbl=false, tblRows=[], inLst=false, lstType='', lstItems=[], inBq=false, bqLines=[], headings=[];
+  var inFence=false, fenceLines=[];
   function flushTbl() { if(!inTbl) return; inTbl=false; if(!tblRows.length) return; var o='<table><thead><tr>'; tblRows[0].forEach(function(c){o+='<th>'+inl(c.trim())+'</th>';}); o+='</tr></thead><tbody>'; for(var r=2;r<tblRows.length;r++){o+='<tr>';tblRows[r].forEach(function(c){o+='<td>'+inl(c.trim())+'</td>';});o+='</tr>';} o+='</tbody></table>'; html.push(o); tblRows=[]; }
   function flushLst() { if(!inLst) return; inLst=false; var t=lstType==='ol'?'ol':'ul'; html.push('<'+t+'>'+lstItems.map(function(li){return '<li>'+inl(li)+'</li>';}).join('')+'</'+t+'>'); lstItems=[]; }
   function flushBq() { if(!inBq) return; inBq=false; html.push('<blockquote>'+bqLines.map(function(l){return inl(l);}).join('<br>')+'</blockquote>'); bqLines=[]; }
+  function flushFence() { if(!inFence) return; inFence=false; html.push('<pre><code>'+fenceLines.join('\n')+'</code></pre>'); fenceLines=[]; }
   function mkId(t) { return 'p23_'+t.replace(/[^a-zA-Z0-9가-힣]/g,'_').replace(/_+/g,'_').substring(0,60); }
-  function inl(t) { t=t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>'); t=t.replace(/`(.+?)`/g,'<code>$1</code>'); t=t.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>'); return t; }
+  // inl: esc() 먼저 적용 후 볼드/코드/링크 변환. 링크 href는 https?:// 또는 # 허용, 나머지는 텍스트만 출력.
+  function inl(t) {
+    t = esc(t);
+    t = t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    t = t.replace(/`(.+?)`/g,'<code>$1</code>');
+    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_,txt,url) {
+      return /^https?:\/\/|^#/.test(url) ? '<a href="'+url+'" target="_blank">'+txt+'</a>' : txt;
+    });
+    return t;
+  }
   for(var i=0;i<lines.length;i++){
-    var tr=lines[i].trim();
+    var line=lines[i], tr=line.trim();
+    // 펜스 코드블록 (```) — 내부는 esc()만 적용해 <pre><code>로 묶음
+    if(tr.startsWith('```')){
+      if(!inFence){flushTbl();flushLst();flushBq();inFence=true;fenceLines=[];}
+      else{flushFence();}
+      continue;
+    }
+    if(inFence){fenceLines.push(esc(line));continue;}
     if(tr.match(/^\|.+\|$/)){flushLst();flushBq();if(!inTbl){inTbl=true;tblRows=[];}tblRows.push(tr.split('|').slice(1,-1));continue;}else{flushTbl();}
     if(tr.match(/^>\s/)){flushLst();flushTbl();inBq=true;bqLines.push(tr.replace(/^>\s?/,''));continue;}else{flushBq();}
     var hm=tr.match(/^(#{1,4})\s+(.+)$/); if(hm){flushLst();var lv=hm[1].length,tx=hm[2],id=mkId(tx);headings.push({level:lv,text:tx,id:id});html.push('<h'+lv+' id="'+id+'">'+inl(tx)+'</h'+lv+'>');continue;}
@@ -851,7 +869,7 @@ function parseMd(md) {
     if(tr===''){flushLst();continue;}
     html.push('<p>'+inl(tr)+'</p>');
   }
-  flushTbl();flushLst();flushBq();
+  flushTbl();flushLst();flushBq();flushFence();
   return {html:html.join('\n'),headings:headings};
 }
 
