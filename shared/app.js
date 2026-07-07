@@ -1469,6 +1469,8 @@ function renderRows(sorted,q){
 
   document.getElementById('results').innerHTML=sorted.length?sorted.map((d,i)=>{
     const[bc,bl]=bm[d.status]||['badge-nodata','—'];
+    // onclick 속성 안 JS 문자열용: HTML 이스케이프 + 작은따옴표 → &#39;
+    const catEsc=escHtml(d.cat).replace(/'/g,'&#39;');
 
     // 경쟁사 열 (노후도 뱃지 포함)
     const _curY=new Date().getFullYear();
@@ -1482,8 +1484,8 @@ function renderRows(sorted,q){
           return`<div class="book-item">
             <span class="book-rank${b.rank<=50?' top':''}">${b.rank}위</span>
             <div class="book-info">
-              <div class="book-title">${highlightQ(b.title,q)}${ageBadge}</div>
-              <div class="book-pub">${b.pub}${b.sp?` · SP ${b.sp.toLocaleString()}`:''}</div>
+              <div class="book-title">${highlightQ(escHtml(b.title),q)}${ageBadge}</div>
+              <div class="book-pub">${escHtml(b.pub)}${b.sp?` · SP ${b.sp.toLocaleString()}`:''}</div>
             </div>
           </div>`;
         }).join('')+(d.comp.length>5?`<div style="font-size:.7rem;color:var(--muted);padding:.3rem 0;">외 ${d.comp.length-5}권</div>`:'')
@@ -1495,7 +1497,7 @@ function renderRows(sorted,q){
           <div class="book-item">
             <span class="book-rank${b.rank<=50?' top':''}">${b.rank}위</span>
             <div class="book-info">
-              <div class="book-title">${highlightQ(b.title,q)}</div>
+              <div class="book-title">${highlightQ(escHtml(b.title),q)}</div>
             </div>
           </div>`).join('')+(d.mine.length>5?`<div style="font-size:.7rem;color:var(--muted);padding:.3rem 0;">외 ${d.mine.length-5}권</div>`:'')
       : `<div class="empty-col gap">우리 도서 없음</div>`;
@@ -1506,8 +1508,8 @@ function renderRows(sorted,q){
           <div class="book-item">
             <span class="book-rank" style="color:var(--yellow);">${l.pop?l.pop+'명':'-'}</span>
             <div class="book-info">
-              <div class="book-title">${l.title}</div>
-              <div class="book-pub" style="color:var(--yellow);">${l.service}${l.cat2?' · '+l.cat2:''}</div>
+              <div class="book-title">${escHtml(l.title)}</div>
+              <div class="book-pub" style="color:var(--yellow);">${escHtml(l.service)}${l.cat2?' · '+escHtml(l.cat2):''}</div>
             </div>
           </div>`).join('')+(d.lecture.length>5?`<div style="font-size:.7rem;color:var(--muted);padding:.3rem 0;">외 ${d.lecture.length-5}개</div>`:'')
       : `<div class="empty-col">강의 없음</div>`;
@@ -1521,8 +1523,8 @@ function renderRows(sorted,q){
           return `<div class="book-item">
             <span class="book-rank" style="color:${sc};background:${sc}18;border-radius:3px;padding:1px 4px;font-size:.65rem;">${sl}</span>
             <div class="book-info">
-              <div class="book-title">${highlightQ(p.title,q)}</div>
-              <div class="book-pub">${[p.team,p.month].filter(Boolean).join(' · ')}</div>
+              <div class="book-title">${highlightQ(escHtml(p.title),q)}</div>
+              <div class="book-pub">${[p.team,p.month].filter(Boolean).map(escHtml).join(' · ')}</div>
             </div>
           </div>`;
         }).join('')
@@ -1531,16 +1533,16 @@ function renderRows(sorted,q){
     return`<div class="cat-block${i<5?' open':''}" id="cb${i}">
       <div class="cat-hdr" onclick="tog('cb${i}')">
         <span class="badge ${bc}">${bl}</span>
-        <span class="cat-name">${highlightQ(d.cat,q)}</span>
+        <span class="cat-name">${highlightQ(escHtml(d.cat),q)}</span>
         <span style="font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-right:.3rem;flex:1;">
           경쟁 ${d.comp.length}권${d.comp.length?` · ${d.compBest}위~`:''}
           &nbsp;/&nbsp; 우리 ${d.mine.length}권${d.mine.length?` · ${d.mineBest}위~`:''}
           &nbsp;/&nbsp; 준비 ${d.planned.length}건
           &nbsp;/&nbsp; 강의 ${d.lecture.length}개${(()=>{const tot=d.lecture.reduce((s,l)=>s+(l.pop||0),0);return tot>0?` (${tot.toLocaleString()}명)`:'';})()}
         </span>
-        <button class="cat-action-btn" onclick="event.stopPropagation();showCatAuthors('${d.cat.replace(/'/g,"\\'")}','cb${i}')">👤 저자</button>
-        <button class="cat-action-btn proposal" onclick="event.stopPropagation();openProposalFromCat('${d.cat.replace(/'/g,"\\'")}')">📝 저자 제안서</button>
-        <button class="cat-action-btn ai" onclick="event.stopPropagation();openAIProposalWizard('${d.cat.replace(/'/g,"\\'")}',false)">✨ AI</button>
+        <button class="cat-action-btn" onclick="event.stopPropagation();showCatAuthors('${catEsc}','cb${i}')">👤 저자</button>
+        <button class="cat-action-btn proposal" onclick="event.stopPropagation();openProposalFromCat('${catEsc}')">📝 저자 제안서</button>
+        <button class="cat-action-btn ai" onclick="event.stopPropagation();openAIProposalWizard('${catEsc}',false)">✨ AI</button>
         <span class="chevron" style="margin-left:.3rem;">▾</span>
       </div>
       <div class="cat-body">
