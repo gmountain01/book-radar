@@ -543,20 +543,39 @@ window.p18_handleFiles = function(input) {
         reader.onload = function(e) {
           var arr = new Uint8Array(e.target.result);
           pdfjsLib.getDocument({ data: arr }).promise.then(function(pdf) {
-            var texts = [];
+            var texts = new Array(pdf.numPages).fill('');
             var done = 0;
-            for (var p = 1; p <= pdf.numPages; p++) {
+            var total = pdf.numPages;
+            function finishPage() {
+              done++;
+              if (done === total) { _addFile(fname, texts.join('\n\n')); pending--; if (!pending) render(); }
+            }
+            for (var p = 1; p <= total; p++) {
               (function(pn) {
                 pdf.getPage(pn).then(function(page) {
                   page.getTextContent().then(function(tc) {
                     texts[pn-1] = tc.items.map(function(it) { return it.str; }).join(' ');
-                    done++;
-                    if (done === pdf.numPages) { _addFile(fname, texts.join('\n\n')); pending--; if (!pending) render(); }
+                    finishPage();
+                  }).catch(function() {
+                    texts[pn-1] = '';
+                    finishPage();
                   });
+                }).catch(function() {
+                  texts[pn-1] = '';
+                  finishPage();
                 });
               })(p);
             }
+          }).catch(function(err) {
+            console.warn('[panel18] PDF 로드 실패:', fname, err);
+            showToast('❌ PDF 읽기 실패: ' + fname, 'red');
+            pending--; if (!pending) render();
           });
+        };
+        reader.onerror = function() {
+          console.warn('[panel18] PDF FileReader 오류:', fname);
+          showToast('❌ 파일 읽기 실패: ' + fname, 'red');
+          pending--; if (!pending) render();
         };
         reader.readAsArrayBuffer(file);
       } else {
