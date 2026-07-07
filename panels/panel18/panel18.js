@@ -1206,9 +1206,14 @@ window.p18_autoCategories = async function() {
   if (description) bookInfo += '\n책 소개: ' + description.slice(0, 500);
   if (toc) bookInfo += '\n목차 일부: ' + toc.slice(0, 800);
 
+  // BOOKSTORE_TAXONOMIES(고정)를 system 블록에 캐시 — user 프롬프트에서 제거
+  var sysBase = '당신은 한국 서점(교보문고, 예스24, 알라딘, 영풍문고, 쿠팡)의 도서 카테고리 분류 전문가입니다. 도서의 제목, 키워드, 내용을 분석하여 각 서점의 실제 카테고리 체계에 맞는 서가 위치를 정확하게 매칭합니다. 서점마다 카테고리 명칭과 깊이가 다르므로 각 서점의 고유한 체계를 따릅니다.';
+  var systemBlocks = [
+    { type: 'text', text: sysBase + '\n\n--- 서점별 카테고리 참조 ---\n' + taxonomyRef, cache_control: { type: 'ephemeral' } }
+  ];
+
   var prompt = '다음 도서 정보를 분석하여 한국 주요 서점 5곳의 서가 위치(카테고리)를 작성하세요.\n\n' +
     '--- 도서 정보 ---\n' + bookInfo + '\n\n' +
-    '--- 서점별 카테고리 참조 ---\n' + taxonomyRef + '\n' +
     '[규칙]\n' +
     '1. 각 서점마다 도서의 주제에 가장 적합한 카테고리를 선택하세요.\n' +
     '2. 교보문고: 1~3개, 예스24: 2~14개(많이 가능), 알라딘: 2~5개, 영풍문고: 2~4개, 쿠팡: 1~2개 선택.\n' +
@@ -1227,7 +1232,7 @@ window.p18_autoCategories = async function() {
       model: 'claude-haiku-4-5-20251001',
       maxTokens: 2000,
       prompt: prompt,
-      system: '당신은 한국 서점(교보문고, 예스24, 알라딘, 영풍문고, 쿠팡)의 도서 카테고리 분류 전문가입니다. 도서의 제목, 키워드, 내용을 분석하여 각 서점의 실제 카테고리 체계에 맞는 서가 위치를 정확하게 매칭합니다. 서점마다 카테고리 명칭과 깊이가 다르므로 각 서점의 고유한 체계를 따릅니다.',
+      systemBlocks: systemBlocks,
       noPersona: true,
       temperature: 0.2
     });
