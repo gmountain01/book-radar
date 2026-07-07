@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-07-07 — v2.6.7 (캐시 버스팅 자동화 AUTO-1~2)
+
+### scripts/bump_version.py + scripts/check_version.py + .github/workflows/ci.yml (AUTO-1~2)
+
+- **[M] AUTO-1 버전 일괄 상향 스크립트:** `python scripts/bump_version.py [버전]` — index.html의 src/href 속성 내 `?v=숫자` 56곳 일괄 치환. 유튜브 `watch?v=` 등 데이터 URL 미접촉(속성 한정 정규식), 바이너리 입출력 CRLF 보존, 2행 안내 주석 동기화, 하위 버전 지정 차단.
+- **[M] AUTO-2 CI 버전 상향 누락 감지:** `scripts/check_version.py` — 마지막 `?v=` 범프 커밋(`git log -G`) 이후 shared/·panels/의 .js/.css 변경이 있으면 CI 실패 + 변경 파일 목록·해결법 안내. ci.yml에 `fetch-depth: 0` + 검사 단계 추가. JS 수정 후 버전 미상향으로 구버전 캐시가 배포되는 사고 원천 차단.
+- **대상:** scripts/bump_version.py (신설), scripts/check_version.py (신설), .github/workflows/ci.yml
+
+---
+
 ## 2026-07-07 — v2.6.7 (CI 자동 검증 파이프라인 TEST-1~3 + 규칙 버그 FIX-38~39)
 
 ### scripts/run_tests.js + .github/workflows/ci.yml + panels/panel8 (TEST-1~3, FIX-38~39)
