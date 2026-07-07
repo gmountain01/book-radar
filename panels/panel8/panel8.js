@@ -2491,86 +2491,11 @@ function _isSameSuggestion(found, suggestion) {
   return (1 - dist / longer.length) >= 0.9;
 }
 
+// shared/app.js parseAiJson으로 위임 (FIX-30). window.parseAiJson 폴백 방어.
 function _parseClaudeJson(raw) {
-  if (!raw) return null;
-
-  // 1) 마크다운 코드블록 제거
-  let text = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-
-  // 2) 가장 바깥 { } 블록 추출
-  const start = text.indexOf('{');
-  const end   = text.lastIndexOf('}');
-  if (start === -1 || end === -1 || end <= start) return null;
-  text = text.slice(start, end + 1);
-
-  // 3) 제어 문자 제거 (줄바꿈·탭 제외)
-  text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
-
-  // 4) JSON 문자열 값 안의 리터럴 개행·탭 → 이스케이프
-  //    "key":"value\nwith newline" → "key":"value\\nwith newline"
-  text = _escapeJsonStrings(text);
-
-  // 5) JSON.parse 시도
-  try {
-    return JSON.parse(text);
-  } catch (e1) {
-    // 6) 후행 쉼표 제거 후 재시도
-    try {
-      const fixed = text.replace(/,\s*([}\]])/g, '$1');
-      return JSON.parse(fixed);
-    } catch (e2) {
-      // 7) 응답 잘림 복구: 마지막 완전한 issue 객체 찾기
-      // },{  또는  }] 기준으로 끝을 잘라내고 닫아줌
-      const lastClose = text.lastIndexOf('"}');
-      if (lastClose > start) {
-        const truncFixed = text.slice(0, lastClose + 2).replace(/,\s*$/, '') + ']}';
-        try {
-          const r = JSON.parse(truncFixed);
-          console.info(`JSON 잘림 복구 성공 — ${(r.issues||[]).length}건 구출`);
-          return r;
-        } catch (e3) { console.warn('[panel8] parseAiResponse: 잘린 JSON 스택 복구 실패, null 반환', e3); }
-      }
-      console.warn('JSON 파싱 실패:', e2.message, '\n원본 응답:', raw.slice(0, 300));
-      return null;
-    }
-  }
+  return (typeof parseAiJson === 'function' ? parseAiJson : window.parseAiJson)(raw);
 }
 
-/**
- * JSON 문자열 값 안에 있는 리터럴 개행·탭 문자를 이스케이프 시퀀스로 교체
- * 이미 이스케이프된 \\n 은 건드리지 않음
- */
-function _escapeJsonStrings(text) {
-  // 상태 머신: 따옴표 내부 여부를 추적하면서 개행을 치환
-  let result = '';
-  let inString = false;
-  let escaped = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (escaped) {
-      result += ch;
-      escaped = false;
-      continue;
-    }
-    if (ch === '\\') {
-      result += ch;
-      escaped = true;
-      continue;
-    }
-    if (ch === '"') {
-      inString = !inString;
-      result += ch;
-      continue;
-    }
-    if (inString) {
-      if (ch === '\n') { result += '\\n'; continue; }
-      if (ch === '\r') { result += '\\r'; continue; }
-      if (ch === '\t') { result += '\\t'; continue; }
-    }
-    result += ch;
-  }
-  return result;
-}
 
 async function checkLinguistic(extracted, apiKey, onBatch, onError, pagesOverride) {
   const issues = [];

@@ -610,28 +610,10 @@ window.p25_run = async function() {
       throw new Error('AI로부터 빈 응답을 받았습니다. API 키와 네트워크 상태를 확인해주세요.');
     }
 
-    // JSON 파싱
-    var jsonStr = text.replace(/```json?\s*/g,'').replace(/```/g,'').trim();
-    var m = jsonStr.match(/\{[\s\S]*\}/);
-    if (m) jsonStr = m[0];
-    jsonStr = jsonStr.replace(/,\s*([}\]])/g, '$1');
-    // 잘린 JSON 복구 — 스택 기반으로 올바른 순서 보장
-    var bracketStack = [];
-    for (var bi = 0; bi < jsonStr.length; bi++) {
-      var bc = jsonStr[bi];
-      if (bc === '{' || bc === '[') bracketStack.push(bc);
-      else if (bc === '}' || bc === ']') bracketStack.pop();
-    }
-    // 스택에 남은 열린 괄호를 역순으로 닫기
-    while (bracketStack.length > 0) {
-      var open = bracketStack.pop();
-      jsonStr += open === '[' ? ']' : '}';
-    }
-
-    try {
-      _result = JSON.parse(jsonStr);
-    } catch(e2) {
-      console.warn('[panel25] JSON 파싱 실패:', jsonStr.substring(0, 300));
+    // JSON 파싱 — shared parseAiJson 사용 (FIX-30)
+    _result = parseAiJson(text);
+    if (!_result) {
+      console.warn('[panel25] JSON 파싱 실패:', (text||'').substring(0, 300));
       throw new Error('AI 응답을 파싱할 수 없습니다. 다시 시도해주세요.');
     }
 
@@ -783,10 +765,8 @@ async function _refineAndSend(idx, target) {
 
   try {
     var text = await callClaudeApi({ apiKey: apiKey, model: 'claude-sonnet-4-6', system: SYS, prompt: prompt, maxTokens: 4000, noPersona: true });
-    var jsonStr = (text || '').replace(/```json?\s*/g, '').replace(/```/g, '').trim();
-    var m = jsonStr.match(/\{[\s\S]*\}/);
-    if (m) jsonStr = m[0];
-    var refined = JSON.parse(jsonStr);
+    var refined = parseAiJson(text);
+    if (!refined) throw new Error('AI 응답을 파싱할 수 없습니다.');
     window._p25_exportData = {
       summary: _result.summary,
       recommendedItems: [item],

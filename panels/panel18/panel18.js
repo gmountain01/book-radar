@@ -693,36 +693,13 @@ window.p18_removeFile = function(i) {
 };
 
 // ── JSON 수리 파서 (다단계) ──
+// shared/app.js parseAiJson으로 위임 (FIX-30). 최후 수단으로 키별 추출 폴백 유지.
 function _safeParseJson(raw) {
   console.log('[p18] AI 원본 응답 길이:', raw.length, '앞 200자:', raw.slice(0, 200));
-
-  // 1단계: 직접 파싱 시도
-  try { return JSON.parse(raw); } catch(e) { console.warn('[panel18] _safeParseJson: 1단계 직접 파싱 실패', e); }
-
-  // 2단계: 마크다운 코드블록 제거 후 시도
-  var text = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-  try { return JSON.parse(text); } catch(e) { console.warn('[panel18] _safeParseJson: 2단계 마크다운 제거 후 파싱 실패', e); }
-
-  // 3단계: 최외곽 { } 추출
-  var start = text.indexOf('{');
-  var end = text.lastIndexOf('}');
-  if (start < 0 || end <= start) {
-    console.error('[p18] JSON 브래킷 미발견');
-    return null;
-  }
-  var json = text.slice(start, end + 1);
-  try { return JSON.parse(json); } catch(e) {
-    console.log('[p18] 3단계 실패:', e.message);
-  }
-
-  // 4단계: 문자열 값 안의 리터럴 줄바꿈/제어문자 이스케이프 (문자 단위 스캔)
-  var fixed = _fixJsonStrings(json);
-  try { return JSON.parse(fixed); } catch(e) {
-    console.log('[p18] 4단계 실패:', e.message, '위치 근처:', fixed.slice(Math.max(0, (e.message.match(/position (\d+)/) || [])[1] - 50 || 0), ((e.message.match(/position (\d+)/) || [])[1] || 100) * 1 + 50));
-  }
-
-  // 5단계: 키별 개별 추출 (정규식 매칭)
-  console.log('[p18] 5단계: 키별 개별 추출 시도');
+  var result = (typeof parseAiJson === 'function' ? parseAiJson : window.parseAiJson)(raw);
+  if (result) return result;
+  // 최후 수단: 키별 개별 추출 (parseAiJson이 실패한 경우)
+  console.log('[p18] parseAiJson 실패 → 키별 개별 추출 시도');
   return _extractFieldsManually(raw);
 }
 

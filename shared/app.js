@@ -36,6 +36,58 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
+// ━━━ 공용 AI JSON 파서 (panel8 _parseClaudeJson 로직 공유) ━━━
+// JSON 문자열 값 안의 리터럴 개행·탭을 이스케이프 시퀀스로 교체 (상태 머신)
+function _pajEscapeJsonStrings(text) {
+  let result = '', inString = false, escaped = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (escaped) { result += ch; escaped = false; continue; }
+    if (ch === '\\') { result += ch; escaped = true; continue; }
+    if (ch === '"') { inString = !inString; result += ch; continue; }
+    if (inString) {
+      if (ch === '\n') { result += '\\n'; continue; }
+      if (ch === '\r') { result += '\\r'; continue; }
+      if (ch === '\t') { result += '\\t'; continue; }
+    }
+    result += ch;
+  }
+  return result;
+}
+
+/**
+ * AI 응답(raw 문자열)에서 JSON 객체를 추출·복구해 반환.
+ * 마크다운 코드블록 제거 → { } 추출 → 제어문자 제거 → 문자열 이스케이프 →
+ * JSON.parse → 후행쉼표 제거 재시도 → 잘린 JSON 복구 순으로 시도.
+ * @param {string} raw
+ * @returns {object|null}
+ */
+function parseAiJson(raw) {
+  if (!raw) return null;
+  let text = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  const start = text.indexOf('{');
+  const end   = text.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) return null;
+  text = text.slice(start, end + 1);
+  text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  text = _pajEscapeJsonStrings(text);
+  try { return JSON.parse(text); } catch (e1) {}
+  try { return JSON.parse(text.replace(/,\s*([}\]])/g, '$1')); } catch (e2) {}
+  // 잘린 JSON 복구: 마지막 완전한 issue 객체 찾기
+  const lastClose = text.lastIndexOf('"}');
+  if (lastClose > start) {
+    const truncFixed = text.slice(0, lastClose + 2).replace(/,\s*$/, '') + ']}';
+    try {
+      const r = JSON.parse(truncFixed);
+      console.info('[parseAiJson] 잘린 JSON 복구 성공 —', (r.issues||[]).length, '건 구출');
+      return r;
+    } catch (e3) { console.warn('[parseAiJson] 잘린 JSON 복구 실패', e3); }
+  }
+  console.warn('[parseAiJson] 파싱 실패:', raw.slice(0, 200));
+  return null;
+}
+window.parseAiJson = parseAiJson;
+
 // ━━━ 기획 보드 공통 ━━━
 function addToPlanningBoard(item) {
   if (isInBoard(item.type, item.title)) {
@@ -2408,9 +2460,8 @@ ${ctx}
 
   try{
     const text=await callClaudeApi({apiKey,prompt,model:'claude-haiku-4-5-20251001',maxTokens:4000});
-    const m=text.match(/\{[\s\S]*\}/);
-    if(!m)throw new Error('JSON 형식 응답을 받지 못했습니다. (응답이 잘렸을 수 있음 — 재시도 권장)');
-    const r=JSON.parse(m[0]);
+    const r=parseAiJson(text);
+    if(!r)throw new Error('JSON 형식 응답을 받지 못했습니다. (응답이 잘렸을 수 있음 — 재시도 권장)');
 
     const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
     sv('pf-title1',r.title1);sv('pf-title2',r.title2);
