@@ -3976,6 +3976,134 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+  // ──────────────────────────────────────────────
+  // 교정 셀프 테스트 하네스 (FEAT-1)
+  // ──────────────────────────────────────────────
+  function p8_runTests() {
+    const fixtures = window.P8_TEST_FIXTURES;
+    if (!fixtures || !fixtures.length) {
+      alert('test-fixtures.js가 로드되지 않았습니다.\nindex.html에 스크립트 태그가 있는지 확인하세요.');
+      return;
+    }
+
+    const results = [];
+    let detected = 0, missed = 0, fp = 0;
+
+    for (const fix of fixtures) {
+      let extracted;
+      try { extracted = textToExtracted('테스트.txt', fix.text); }
+      catch(e) { results.push({ ok: false, label: '오류', text: fix.text, note: e.message }); continue; }
+
+      const issues = checkSurface(extracted);
+
+      if (fix.expectType === null) {
+        // 정상 문장 — 이슈 없어야 함
+        if (issues.length > 0) {
+          fp++;
+          results.push({ ok: false, label: '오탐', text: fix.text,
+            note: issues.map(i => `[${i.type}] ${i.found}`).join(' / ') });
+        } else {
+          results.push({ ok: true, label: '정상확인', text: fix.text, note: '' });
+        }
+      } else {
+        // 오류 문장 — 기대 type + found 포함 이슈 있어야 함
+        const hit = issues.find(i =>
+          i.type === fix.expectType &&
+          typeof i.found === 'string' &&
+          i.found.includes(fix.expectFound)
+        );
+        if (hit) {
+          detected++;
+          results.push({ ok: true, label: '탐지성공', text: fix.text,
+            note: `[${hit.type}] "${hit.found}"` });
+        } else {
+          missed++;
+          const got = issues.length
+            ? issues.map(i => `[${i.type}]`).join(' ') : '(없음)';
+          results.push({ ok: false, label: '탐지누락', text: fix.text,
+            note: `기대: [${fix.expectType}] "${fix.expectFound}" | 실제: ${got}` });
+        }
+      }
+    }
+
+    _p8_showTestResults({ results, detected, missed, fp,
+      total: fixtures.length,
+      errTotal: fixtures.filter(f => f.expectType !== null).length,
+      normTotal: fixtures.filter(f => f.expectType === null).length });
+  }
+
+  function _p8_showTestResults({ results, detected, missed, fp, total, errTotal, normTotal }) {
+    // 기존 모달 제거
+    const old = document.getElementById('p8_testModal');
+    if (old) old.remove();
+
+    const rows = results.map((r, i) => {
+      const bg  = r.ok ? '#d1fae5' : '#fee2e2';
+      const fg  = r.ok ? '#065f46' : '#991b1b';
+      const lbl = r.ok
+        ? `<span style="color:#065f46;font-weight:700;">${r.label}</span>`
+        : `<span style="color:#991b1b;font-weight:700;">${r.label}</span>`;
+      const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return `<tr style="background:${bg};">
+        <td style="padding:4px 8px;color:${fg};text-align:center;">${i+1}</td>
+        <td style="padding:4px 8px;text-align:center;">${lbl}</td>
+        <td style="padding:4px 8px;font-size:.82rem;">${esc(r.text)}</td>
+        <td style="padding:4px 8px;font-size:.78rem;color:#374151;">${esc(r.note || '')}</td>
+      </tr>`;
+    }).join('');
+
+    const passRate = Math.round((detected / errTotal) * 100);
+    const modal = document.createElement('div');
+    modal.id = 'p8_testModal';
+    modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;
+      display:flex;align-items:center;justify-content:center;padding:16px;`;
+    modal.innerHTML = `
+      <div style="background:#fff;border-radius:12px;max-width:860px;width:100%;
+                  max-height:90vh;overflow:auto;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2 style="margin:0;font-size:1.1rem;">🧪 교정 규칙 테스트 결과</h2>
+          <button onclick="document.getElementById('p8_testModal').remove()"
+                  style="background:none;border:none;font-size:1.4rem;cursor:pointer;line-height:1;">×</button>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+          <div style="background:#dbeafe;border-radius:8px;padding:8px 16px;text-align:center;">
+            <div style="font-size:1.4rem;font-weight:700;">${total}</div>
+            <div style="font-size:.75rem;color:#1e40af;">총 픽스처</div>
+          </div>
+          <div style="background:#d1fae5;border-radius:8px;padding:8px 16px;text-align:center;">
+            <div style="font-size:1.4rem;font-weight:700;">${detected}<span style="font-size:.9rem;">/${errTotal}</span></div>
+            <div style="font-size:.75rem;color:#065f46;">탐지 성공</div>
+          </div>
+          <div style="background:#fee2e2;border-radius:8px;padding:8px 16px;text-align:center;">
+            <div style="font-size:1.4rem;font-weight:700;">${missed}</div>
+            <div style="font-size:.75rem;color:#991b1b;">탐지 누락</div>
+          </div>
+          <div style="background:#fef3c7;border-radius:8px;padding:8px 16px;text-align:center;">
+            <div style="font-size:1.4rem;font-weight:700;">${fp}</div>
+            <div style="font-size:.75rem;color:#92400e;">오탐</div>
+          </div>
+          <div style="background:#ede9fe;border-radius:8px;padding:8px 16px;text-align:center;">
+            <div style="font-size:1.4rem;font-weight:700;">${passRate}%</div>
+            <div style="font-size:.75rem;color:#5b21b6;">탐지율</div>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:.85rem;">
+          <thead>
+            <tr style="background:#f3f4f6;">
+              <th style="padding:6px 8px;text-align:center;width:36px;">#</th>
+              <th style="padding:6px 8px;text-align:center;width:80px;">결과</th>
+              <th style="padding:6px 8px;text-align:left;">픽스처 문장</th>
+              <th style="padding:6px 8px;text-align:left;">상세</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    // 배경 클릭 시 닫기
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    document.body.appendChild(modal);
+  }
+
   window.p8_handleRulesDrop = p8_handleRulesDrop;
   window.p8_handleRulesFile = p8_handleRulesFile;
   window.p8_toggleRulesPriority = p8_toggleRulesPriority;
@@ -3997,5 +4125,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.p8_copyChip = p8_copyChip;
   window.p8_onClearThisCache = p8_onClearThisCache;
   window.p8_rerunAI = p8_rerunAI;
+  window.p8_runTests = p8_runTests;
   window.p8_downloadCorrected = p8_downloadCorrected;
 })();

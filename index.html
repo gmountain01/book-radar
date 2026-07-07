@@ -925,6 +925,13 @@
     <button class="btn-start" id="p8_btnStart" disabled onclick="p8_startProofread()">
       교정 시작
     </button>
+    <button onclick="p8_runTests()"
+            style="display:block;width:100%;margin-top:8px;padding:8px;
+                   background:none;border:1px solid var(--border2);border-radius:8px;
+                   color:var(--muted);font-size:.82rem;cursor:pointer;"
+            title="정규식 교정 규칙이 픽스처 문장들을 올바르게 탐지하는지 검증합니다">
+      🧪 규칙 테스트
+    </button>
   </div>
 </div>
 
@@ -1511,6 +1518,7 @@
 <script defer src="panels/panel7/panel7.js?v=233"></script>
 <script defer src="panels/panel8/교정규칙.js?v=233"></script>
 <script defer src="panels/panel8/loanword-data.js?v=233"></script>
+<script defer src="panels/panel8/test-fixtures.js?v=233"></script>
 <script defer src="data/naver-speller-key.js?v=233"></script>
 <script defer src="panels/panel8/panel8.js?v=233"></script>
 <script defer src="panels/panel9/panel9.js?v=233"></script>
