@@ -241,7 +241,10 @@ function _isoDate(s) {
   if (!s) return '';
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0, 10);
   var d = new Date(s);
-  return isNaN(d.getTime()) ? '' : d.toISOString().substring(0, 10);
+  if (isNaN(d.getTime())) return '';
+  // toISOString()은 UTC 변환으로 KST에서 하루 밀릴 수 있어 로컬 컴포넌트 사용
+  var m = d.getMonth() + 1, day = d.getDate();
+  return d.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + (day < 10 ? '0' + day : day);
 }
 
 function _getDateCutoff() {
