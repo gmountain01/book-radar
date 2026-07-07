@@ -65,17 +65,24 @@ function _pajEscapeJsonStrings(text) {
 function parseAiJson(raw) {
   if (!raw) return null;
   let text = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-  const start = text.indexOf('{');
-  const end   = text.lastIndexOf('}');
+  // 객체({}) 또는 배열([]) 루트 모두 지원 — 먼저 나타나는 쪽을 루트로 판단
+  const objStart = text.indexOf('{');
+  const arrStart = text.indexOf('[');
+  let start, end;
+  if (arrStart !== -1 && (objStart === -1 || arrStart < objStart)) {
+    start = arrStart; end = text.lastIndexOf(']');
+  } else {
+    start = objStart; end = text.lastIndexOf('}');
+  }
   if (start === -1 || end === -1 || end <= start) return null;
   text = text.slice(start, end + 1);
   text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
   text = _pajEscapeJsonStrings(text);
   try { return JSON.parse(text); } catch (e1) {}
   try { return JSON.parse(text.replace(/,\s*([}\]])/g, '$1')); } catch (e2) {}
-  // 잘린 JSON 복구: 마지막 완전한 issue 객체 찾기
-  const lastClose = text.lastIndexOf('"}');
-  if (lastClose > start) {
+  // 잘린 JSON 복구: 마지막 완전한 issue 객체 찾기 (객체 루트만 해당)
+  const lastClose = text[0] === '{' ? text.lastIndexOf('"}') : -1;
+  if (lastClose > 0) {
     const truncFixed = text.slice(0, lastClose + 2).replace(/,\s*$/, '') + ']}';
     try {
       const r = JSON.parse(truncFixed);
