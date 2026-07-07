@@ -1442,16 +1442,19 @@ window.p18_downloadDocx = function() {
   body += _wp('Heading1', '6. 관련 서적(제목 + ISBN)');
   data.relatedBooks.split('\n').forEach(function(l) { body += _wp('Normal', l); });
 
-  body += _wp('Heading1', '7. 추천사');
-  data.recommendations.forEach(function(r) {
-    if (!r.text || !r.text.trim()) return;
-    r.text.split('\n').forEach(function(l) { body += _wp('Normal', l); });
-    var sig = '_';
-    if (r.affiliation) sig += r.affiliation + ' ';
-    sig += r.name;
-    body += _wp('Normal', sig);
-    body += _wp('Normal', '');
-  });
+  var hasRec = data.recommendations.some(function(r) { return r.text && r.text.trim(); });
+  if (hasRec) {
+    body += _wp('Heading1', '7. 추천사');
+    data.recommendations.forEach(function(r) {
+      if (!r.text || !r.text.trim()) return;
+      r.text.split('\n').forEach(function(l) { body += _wp('Normal', l); });
+      var sig = '_';
+      if (r.affiliation) sig += r.affiliation + ' ';
+      sig += r.name;
+      body += _wp('Normal', sig);
+      body += _wp('Normal', '');
+    });
+  }
 
   if (data._promoResult) {
     body += _wp('Heading1', '8. 홍보 카피');
