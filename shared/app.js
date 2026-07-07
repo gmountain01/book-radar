@@ -333,9 +333,9 @@ const CATS=[
   ['클로드/Claude',['클로드 코드','claude code','클로드 mcp','이게 되네? 클로드','클로드 ai','cowork부터 code']],
   ['바이브코딩',['바이브 코딩','바이브코딩','vibe cod']],
   ['커서/코덱스/코파일럿/안티그래비티',['커서 ai','cursor ai','커서로','코덱스 cli','codex cli','코파일럿','copilot','cursor.ai','안티그래비티','안티그래피티','antigravity']],
-  ['MCP/AI에이전트',['mcp','ai 에이전트','ai agent','langchain','langgraph','a2a×','rag adk','멀티 에이전트','agentops','agentic','graphrag','graph rag','multi-agent','온톨로지 기반','rag','에이전트 개발','에이전트 구현','에이전트 시스템','에이전트 군단']],
+  ['MCP/AI에이전트',['mcp','ai 에이전트','ai agent','langchain','langgraph','a2a×','rag adk','멀티 에이전트','agentops','agentic','graphrag','graph rag','multi-agent','온톨로지 기반',' rag ','에이전트 개발','에이전트 구현','에이전트 시스템','에이전트 군단']],
   ['LLM/프롬프트엔지니어링',['llm','프롬프트 엔지니어링','프롬프트 텔링','프롬프트를 만드는','프롬프트 엔지니어의','파인튜닝','fine-tuning','slm','벡터 임베딩','컨텍스트 엔지니어링','context engineering','멀티모달']],
-  ['AI 영상/이미지생성',['미드저니','midjourney','comfyui','나노바나나','나노 바나나','ai 영상 제작','ai 쇼츠','수노로 시작','소라 2 ai','런웨이','vrew','브루','ai 작곡','ai 사진','ai 이미지 만들기','ai bx','ai 비주얼 영상','ai 영상 마스터','ai 영상으로','영상 제작 입문','ai 영상 아카데미','stable diffusion','stable','이미지 생성','영상 생성','elevenlabs','음성 ai']],
+  ['AI 영상/이미지생성',['미드저니','midjourney','comfyui','나노바나나','나노 바나나','ai 영상 제작','ai 쇼츠','수노로 시작','소라 2 ai','런웨이','vrew','브루','ai 작곡','ai 사진','ai 이미지 만들기','ai bx','ai 비주얼 영상','ai 영상 마스터','ai 영상으로','영상 제작 입문','ai 영상 아카데미','stable diffusion','이미지 생성','영상 생성','elevenlabs','음성 ai']],
   ['AI 일반/트렌드',['ai 강의','ai 2026','ai 2041','agi의 시대','특이점이 시작','ai 전쟁','ai 다음 물결','피지컬 ai','ai 워커스','ai력','ai는 인간을','ai 이후의 세계','기계는 왜 학습','나의 다정한 ai','ai는 세상을','도덕적인 ai']],
   ['AI 통합 활용서',['챗gpt·퍼플렉시티','챗gpt와 ai','gpt, 제미나이','gpt·제미나이','gpt·클로드','클로드·코파일럿','퍼플렉시티·클로드','챗gpt·코파일럿','챗gpt+소라','클로드 코드·코덱스','with gpt, 제미나이','7가지 생성 ai','생성형 ai 활용 백과','ai 팀원이 다 해줌','오픈클로 with','다 잘함','perplexity','ai 생산성','ai 실무','업무 자동화 ai','ai 문서 작성','ai 대필','ai 아웃소싱','ai 서비스 기획','ai 기반 신제품','카드뉴스 이미지+텍스트','생산성 200%','ai로 완성하는','ai로 정복','ai로 코딩','ai로 찾는','ai 취업','ai 스타트업']],
   ['AI 활용/비즈니스',['비전공자도 이해할 수 있는 ai','ai 엔지니어링','ai 프로덕트','ai 프로젝트 100%','ai로 7일 만에','ai 비즈니스 트렌드','ai 리터러시','ai 게임 개발','요즘 당근 ai','요즘 우아한 ai','생성형 ai 첫걸음','생성형 ai 활용과 실습','생성형 ai를 활용한','생성형 ai 프롬프트 디자인','슬기로운 ai 생활','aeo','geo 생존']],
@@ -467,7 +467,7 @@ const AI_TOOL_KW=['챗gpt','chatgpt','제미나이','gemini','클로드','claude
 
 function cat(t){
   if(!t)return '기타';
-  const s=t.toLowerCase();
+  const s=' '+t.toLowerCase()+' '; // 문두/문미 매칭 보장 (예: ' rag ' 키워드)
   // 바이브코딩 제목에 다른 도구 키워드가 함께 있으면 도구 카테고리 우선
   if(VIBE_KW.some(k=>s.includes(k))){
     for(const[kws,c]of VIBE_TOOL_MAP)if(kws.some(k=>s.includes(k)))return c;
