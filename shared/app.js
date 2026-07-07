@@ -278,6 +278,27 @@ const _SESSION_AK = 'ub_claude_ak';
 const _AK_STORE = 'ub_ak_enc';
 const _AK_SALT_STORE = 'ub_ak_salt';
 
+// ── XOR+base64 최소 난독화 ──
+// 완전한 보안이 아님 — 공용 PC 어깨너머 방지 수준. JS 소스를 보면 솔트가 노출됨.
+// obf: 접두어로 인코딩 여부를 구분해 평문 마이그레이션을 자동 처리한다.
+const _OBF_SALT = 'UB_LIRI_SALT_2026';
+const _OBF_PREFIX = 'obf:';
+function _obfEncode(str) {
+  var salt = _OBF_SALT, xored = '';
+  for (var i = 0; i < str.length; i++)
+    xored += String.fromCharCode(str.charCodeAt(i) ^ salt.charCodeAt(i % salt.length));
+  return _OBF_PREFIX + btoa(xored);
+}
+function _obfDecode(encoded) {
+  if (!encoded || !encoded.startsWith(_OBF_PREFIX)) return null; // 평문 신호
+  try {
+    var xored = atob(encoded.slice(_OBF_PREFIX.length)), salt = _OBF_SALT, result = '';
+    for (var i = 0; i < xored.length; i++)
+      result += String.fromCharCode(xored.charCodeAt(i) ^ salt.charCodeAt(i % salt.length));
+    return result;
+  } catch(e) { return null; }
+}
+
 async function saveApiKey(rawKey) {
   if (!rawKey || !rawKey.trim()) {
     _cachedApiKey = null;
@@ -287,7 +308,7 @@ async function saveApiKey(rawKey) {
   }
   var key = rawKey.trim();
   _cachedApiKey = key;
-  safeLSSet(_SESSION_AK, key);
+  safeLSSet(_SESSION_AK, _obfEncode(key)); // 난독화 저장
   // 이전 잔재 정리
   try {
     sessionStorage.removeItem('ub_session_ak');
@@ -323,9 +344,20 @@ async function loadApiKey() {
   // 메모리 캐시 우선 (localStorage 접근 최소화)
   if (_cachedApiKey) return _cachedApiKey;
   if (CLAUDE_API_KEY) { _cachedApiKey = CLAUDE_API_KEY; if (document.readyState !== 'loading') _syncApiKeyInputs(CLAUDE_API_KEY); return CLAUDE_API_KEY; }
-  // localStorage 우선
+  // localStorage 우선 — obf: 접두어 확인 후 복호화 또는 평문 1회 마이그레이션
   const saved = localStorage.getItem(_SESSION_AK);
-  if (saved) { _cachedApiKey = saved; if (document.readyState !== 'loading') _syncApiKeyInputs(saved); return saved; }
+  if (saved) {
+    var decoded = _obfDecode(saved);
+    if (decoded) {
+      _cachedApiKey = decoded;
+      if (document.readyState !== 'loading') _syncApiKeyInputs(decoded);
+      return decoded;
+    }
+    // 평문 잔재 — 난독화로 덮어쓰기
+    _cachedApiKey = saved;
+    await saveApiKey(saved);
+    return saved;
+  }
   // 이전 sessionStorage 마이그레이션
   const session = sessionStorage.getItem('ub_session_ak');
   if (session) { await saveApiKey(session); return session; }
