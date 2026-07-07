@@ -2533,24 +2533,26 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
   let pages = extracted.pages.filter(p => p.text.trim().length >= 20);
   if (!pages.length) {
     if (onError) onError('추출된 텍스트가 없거나 너무 짧습니다.');
-    return issues;
+    return { issues, failedBatches: 0, totalBatches: 0, failedPages: [] };
   }
   // 반복 머리글/바닥글 제거 (토큰 절감)
   pages = _removeRepeatingHeaders(pages);
   // 배치 크기 5 — SYS 프롬프트 반복 횟수 40% 감소 (3→5)
   const batchSize = 5;
-  const total = Math.ceil(pages.length / batchSize);
+  const totalBatches = Math.ceil(pages.length / batchSize);
   let firstError = '';
   let successCount = 0;
+  let failedBatches = 0;
+  const failedPages = [];
 
   // 토큰 추정 로그
   const totalChars = pages.reduce((s, p) => s + p.text.length, 0);
   const estTokens = _estimateTokens(pages.map(p => p.text).join(''));
-  console.log(`[panel8] AI 검사: ${pages.length}페이지, ~${totalChars.toLocaleString()}자, ~${estTokens.toLocaleString()}토큰 (${total}배치)`);
+  console.log(`[panel8] AI 검사: ${pages.length}페이지, ~${totalChars.toLocaleString()}자, ~${estTokens.toLocaleString()}토큰 (${totalBatches}배치)`);
 
   for (let i = 0; i < pages.length; i += batchSize) {
     const batchIdx = Math.floor(i / batchSize) + 1;
-    if (onBatch) onBatch(batchIdx, total);
+    if (onBatch) onBatch(batchIdx, totalBatches);
     const batch = pages.slice(i, i + batchSize);
     // 이전 배치 마지막 페이지를 문맥으로 전달 (배치 경계 오류 누락 방지)
     const prevPage = i > 0 ? pages[i - 1] : null;
@@ -2562,7 +2564,7 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
     const relevant = rulesChunks ? findRelevantChunks(rulesChunks, txt) : [];
     const rulesCtx = relevant.length > 0 ? relevant.map(c => c.text).join('\n') : '';
     try {
-      const raw = await callClaude(apiKey, '교정:\n' + txt, rulesCtx);
+      const raw = await _callWithRetry(() => callClaude(apiKey, '교정:\n' + txt, rulesCtx));
       const parsed = _parseClaudeJson(raw);
       if (parsed) {
         const batchText = batch.map(p => p.text).join('\n');
@@ -2586,7 +2588,9 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
       }
       successCount++;
     } catch(e) {
-      console.warn('Batch error:', e.message);
+      console.warn(`[panel8] 배치 ${batchIdx}/${totalBatches} 실패 (p.${batch[0].page}~${batch[batch.length-1].page}):`, e.message);
+      failedBatches++;
+      batch.forEach(p => failedPages.push(p.page));
       if (!firstError) firstError = e.message;
     }
   }
@@ -2595,7 +2599,7 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError) {
   if (successCount === 0 && firstError) {
     if (onError) onError(firstError);
   }
-  return issues;
+  return { issues, failedBatches, totalBatches, failedPages };
 }
 
 // ──────────────────────────────────────────────
@@ -2798,7 +2802,7 @@ async function p8_startProofread() {
     try {
       const totalBatches = Math.ceil(aiPages.length / 5);
       let batchApiError = '';
-      linguisticIssues = await checkLinguistic(extracted, apiKey,
+      const _lResult = await checkLinguistic(extracted, apiKey,
         (batchIdx) => {
           const pct = 60 + Math.round((batchIdx / Math.max(totalBatches, 1)) * 30);
           setBar(pct);
@@ -2807,6 +2811,10 @@ async function p8_startProofread() {
         },
         (errMsg) => { batchApiError = errMsg; }
       );
+      linguisticIssues = _lResult.issues;
+      const _failedBatches = _lResult.failedBatches;
+      const _failedPages = _lResult.failedPages;
+      const _totalBatches = _lResult.totalBatches;
 
       if (batchApiError && !linguisticIssues.length) {
         // 전체 배치 실패 — 에러 표시
@@ -2822,6 +2830,21 @@ async function p8_startProofread() {
           aiUsed = true;
           document.getElementById('p8_step4-detail').textContent = '오류 — 캐시 결과 사용';
         }
+      } else if (_failedBatches > 0) {
+        // 부분 실패 — 경고 스타일
+        const failedRange = _failedPages.length
+          ? ` — p.${Math.min(..._failedPages)}~${Math.max(..._failedPages)} 미검사`
+          : '';
+        const warnMsg = `${linguisticIssues.length}건 발견 · 배치 ${_failedBatches}/${_totalBatches}개 실패${failedRange}`;
+        stepError(4, warnMsg);
+        document.getElementById('p8_step4-detail').textContent = warnMsg;
+        const notice = document.getElementById('p8_aiNotice');
+        if (notice) {
+          notice.style.display = 'block';
+          notice.textContent = `⚠️ AI 검사 부분 실패: 배치 ${_failedBatches}개(${_failedPages.length}페이지) 미검사. 재시도하거나 나중에 다시 실행하세요.`;
+        }
+        aiUsed = true;
+        console.warn(`[panel8] AI 검사 부분 실패: ${_failedBatches}/${_totalBatches}배치, 페이지:`, _failedPages);
       } else {
         stepDone(4, `${linguisticIssues.length}건`);
         document.getElementById('p8_step4-detail').textContent =
