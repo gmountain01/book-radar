@@ -1,6 +1,34 @@
 {
   "articles": [
     {
+      "id": "4fb09e85c1b8",
+      "source": "nvidia_ai",
+      "source_name": "NVIDIA AI",
+      "icon": "💚",
+      "title": "NVIDIA Harnesses Vera CPU to Speed Up Design of Next-Generation CPUs and GPUs",
+      "link": "https://blogs.nvidia.com/blog/vera-cpu-eda/",
+      "date": "2026-07-27",
+      "summary": "The complexity of modern chip design continues to grow as engineering teams work to develop increasingly sophisticated CPUs, GPUs and AI systems. To help meet that challenge, NVIDIA is collaborating with industry leaders Cadence and Synopsys to optimize critical electronic design automation (EDA) ap",
+      "keywords": [
+        "Automation"
+      ],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "5d2ba47b7c6e",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Are brain waves the next unlock for physical AI?",
+      "link": "https://techcrunch.com/2026/07/26/are-brain-waves-the-next-unlock-for-physical-ai/",
+      "date": "2026-07-27",
+      "summary": "Forget YouTube videos—frontier physical AI models need multiple camera angles, dense annotation, and soon, brain wave readings.",
+      "keywords": [
+        "Video AI"
+      ],
+      "first_seen": "2026-07-27"
+    },
+    {
       "id": "cb61b6a2a5da",
       "source": "techcrunch",
       "source_name": "TechCrunch",
@@ -98,6 +126,189 @@
       "summary": "과학기술정보통신부가 AI 데이터센터, 피지컬 AI, K-AI 반도체를 골자로 한 '3대 메가프로젝트'를 가동했다. 여기에 글로벌 프론티어급 독자 AI 모델 개발과 전 국민 무료 AI 서비스인 '모두의 AI'를 결합해 글로벌 AI 2위 도약이라는 출사표를 던졌다.다만 현장에서는 '시간과 자본력 싸움'에서 이길 실무적인 돌파구가 시급하다는 목소리가 나온다.이에 제조, 금융 등 산업 AX를 이끄는 기업이자 국가AI전략위원회, 국가AI대전환 TF 전문위원으로 활동한 김동환 포티투마루 대표를 만나 한국의 생존 전략을 들었다.■ 정부 5년치",
       "keywords": [],
       "first_seen": "2026-07-26"
+    },
+    {
+      "id": "7d96daf2c192",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Can Apple make smart glasses that aren’t a constant privacy threat?",
+      "link": "https://techcrunch.com/2026/07/26/can-apple-make-smart-glasses-that-arent-a-constant-privacy-threat/",
+      "date": "2026-07-26",
+      "summary": "As Apple prepares to launch its first smart glasses, the company may also be wrestling with how to address consumer privacy concerns.",
+      "keywords": [
+        "Automation",
+        "Security"
+      ],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "216b0412425a",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Making sense of the panic over Chinese AI",
+      "link": "https://techcrunch.com/2026/07/26/making-sense-of-the-panic-over-chinese-ai/",
+      "date": "2026-07-26",
+      "summary": "On the latest episode of Equity, we discussed why Moonshot AI's Kimi seemed to panic Silicon Valley and Wall Street.",
+      "keywords": [],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "7fb8a23f82f9",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Inside one London founder house rewriting the founder-house rules",
+      "link": "https://techcrunch.com/2026/07/26/inside-one-london-founder-house-rewriting-the-founder-house-rules/",
+      "date": "2026-07-26",
+      "summary": "How one founder house is betting work-life balance can beat burnout .",
+      "keywords": [],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "355626f29c21",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "Hugging Face CEO calls for ‘radical transparency’ after ‘unprecedented’ OpenAI hack",
+      "link": "https://techcrunch.com/2026/07/26/hugging-face-ceo-calls-for-radical-transparency-after-unprecedented-openai-hack/",
+      "date": "2026-07-26",
+      "summary": "\"The first autonomous agent cyberattack is an unprecedented event. It deserves an unprecedented response!\"",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "307c03d7676c",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "icon": "🟩",
+      "title": "TechCrunch Mobility: Uber bets on its former CEO",
+      "link": "https://techcrunch.com/2026/07/26/techcrunch-mobility-uber-bets-on-its-former-ceo/",
+      "date": "2026-07-26",
+      "summary": "Welcome back to TechCrunch Mobility, your hub for the future of transportation and now, more than ever, the role AI is playing in it.",
+      "keywords": [],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "22bd93979c3c",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "안두릴, 146조 몸값으로 투자 추진…방산 공룡 '록히드 마틴' 턱밑 추격",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213188",
+      "date": "2026-07-26",
+      "summary": "안두릴 인더스트리가 기업 가치 1000억달러(약 146조원)를 목표로 새로운 자금 조달을 추진 중인 것으로 알려졌다. 이는 불과 1년 전 평가액의 3배가 넘는 수준으로, 지난 5월 610억달러 가치로 자금을 조달한 지 두 달 만에 추진되는 파격적인 행보다.로이터는 24일(현지시간) 소식통을 인용, 안두릴이 현재 투자자들과 신규 자금 조달을 위한 초기 협상을 진행 중이라고 보도했다.이번 투자 라운드는 안두릴이 특정 재무적 성과 지표를 달성하는 조건에 따라 투자자들이 1년 이내에 더 높은 가치로 추가 참여하는 2단계 프로세스 구조로 논",
+      "keywords": [],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "76f6156dcbff",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "클로드 5 ‘컨텍스트 엔지니어링’ 공개...“규칙 줄여야 성능 올라간다”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213178",
+      "date": "2026-07-26",
+      "summary": "AI의 성능을 높이는 핵심이 '프롬프트를 얼마나 정교하게 작성하느냐'에서 '모델이 필요한 정보를 적절한 시점에 활용할 수 있도록 컨텍스트를 설계하느냐'로 이동하고 있다. 앤트로픽도 최신 '클로드 5' 계열 모델이 과도한 규칙보다 자율적인 판단을 더 효과적으로 활용한다고 밝히며 AI 활용 전략에 새로운 변화를 예고했다.앤트로픽은 24일(현지시간) 클로드 5 계열 모델을 위한 새로운 컨텍스트 엔지니어링 원칙을 공개했다. 핵심은 과거처럼 세부 규칙을 촘촘히 나열하기보다 모델의 자체 판단 능력을 적극 활용하는 것이다. 실제로 클로드 코드의",
+      "keywords": [
+        "Claude",
+        "Prompt"
+      ],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "7f64fa6ac90c",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "딥시크, 2차 투자 유치 돌연 중단...\"IPO 준비하며 AI 연구 집중\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213180",
+      "date": "2026-07-26",
+      "summary": "딥시크가 수조원 규모의 2차 투자 유치 절차를 돌연 중단했다. 량원펑 창립자의 미·중 AI 경쟁 관련 발언이 온라인에서 퍼진 직후 내려진 결정으로, 딥시크는 당분간 투자 계약 체결을 보류하는 한편 기업공개(IPO) 준비를 병행하며 장기적인 AI 연구 개발에 집중할 것으로 알려졌다.블룸버그는 25일(현지시간) 복수의 소식통을 인용, 중국의 대표 AI 기업 딥시크가 진행 중이던 두 번째 투자 유치 라운드를 일시 중단했다고 보도했다.딥시크는 일부 투자자들에게 당초 예정됐던 투자 계약이 당분간 체결되지 않을 것이라고 구두로 통보했으며, 앞",
+      "keywords": [],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "6fbc128cba0e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "KAIST-엔비디아, 피지컬 AI 테크놀로지센터 설립…파운데이션 모델 공동 연구",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213187",
+      "date": "2026-07-26",
+      "summary": "한국과학기술원(KAIST, 총장 배충식)은 엔비디아와 피지컬 AI 공동연구 추진을 위해 ‘엔비디아 AI 테크놀로지 센터(NVAITC)’를 설립한다고 26일 밝혔다.KAIST가 축적해 온 인간 중심 로봇 기술과 실제 동작 데이터에, 엔비디아의 AI 기술과 글로벌 연구 네트워크를 결합해 차세대 피지컬 AI 원천기술을 확보하기 위한 것이다.‘인간물리지능 테크놀로지 센터’에서 공동연구를 추진하게 된다. KAIST 기계공학과 인간물리지능연구센터가 공동 연구 핵심 거점 역할을 맡는다. 기계공학과 인간물리지능연구센터는 웨어러블 로봇 분야를 전문",
+      "keywords": [],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "37f40add223b",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "엔비디아, LLM 배포 가속 '모델익스프레스' 발표...\"서버 대기 8분에서 1분대로 단축\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213179",
+      "date": "2026-07-26",
+      "summary": "대형언어모델(LLM)의 규모가 테라바이트(TB)에 이르면서 모델 가중치를 이동하는 시간이 AI 서비스의 새로운 병목으로 떠오르고 있다. 엔비디아가 이러한 문제를 해결하기 위해 GPU 간 직접 전송 기술을 활용한 새로운 모델 배포 인프라를 공개했다. 엔비디아는 24일(현지시간) LLM의 배포와 확장, 강화학습(RL) 사후학습 과정에서 발생하는 모델 가중치 이동을 최적화하는 소프트웨어 인프라 ‘모델익스프레스(ModelExPress)’를 발표했다.AI 모델의 규모가 테라바이트(TB) 수준으로 커지면서, 새로운 AI 서버를 켤 때마다 모델",
+      "keywords": [
+        "LLM"
+      ],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "866396e6812c",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "SKT, 스타트업 3곳에 독자 AI 모델 'A.X K1' API 지원",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213185",
+      "date": "2026-07-26",
+      "summary": "SK텔레콤(대표 정재헌)은 국내 스타트업을 대상으로 독자 파운데이션 모델 '에이닷엑스 케이원(A.X K1)'의 API를 지원한다고 26일 밝혔다.SKT는 중소벤처기업부 주관 '2026년 모두의 챌린지 AX-LLM'의 일환으로 개발한 자체 모델이 스타트업·개발자 생태계에서 폭넓게 활용될 수 있도록 지원하고 있다.이 사업에는 SKT를 포함해 업스테이지, LG AI연구원, NC AI, KT, 네이버클라우드, 오라클 등 7개사가 참여 중이다. SKT는 심사를 거쳐 팀리미티드, 퍼셀리, 데브올컴퍼니 3개사를 선정했다.팀리미티드는 영수증 플랫",
+      "keywords": [
+        "LLM",
+        "SDK/API"
+      ],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "81b18468de2d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "트럼프, 애플-마이크론 '중국산 메모리' 갈등에 샌드위치 신세",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213182",
+      "date": "2026-07-26",
+      "summary": "미국의 메모리 반도체 공급난이 심화되면서 애플과 마이크론이 중국산 메모리 반도체 사용 여부를 놓고 정면으로 충돌하고 있다. 애플은 제품 가격 안정을 위해 중국 메모리 업체의 반도체 사용을 허용해 달라고 요구하지만, 마이크론은 미국 반도체 산업과 국가 안보를 위협할 수 있다며 강하게 반대하고 있다.월스트리트저널(WSJ)은 24일(현지시간) 도널드 트럼프 행정부는 소비자 물가 안정과 반도체 제조업 육성이라는 두 핵심 정책 사이에서 어려운 선택을 강요받는 상황에 놓였다고 보도했다.애플은 중국 메모리 반도체 업체 창신메모리(CXMT)와 양",
+      "keywords": [],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "47ba31396052",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "스페이스X, 스타십 13차 시험비행 성공…차세대 V3 위성 성능 첫 검증",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213184",
+      "date": "2026-07-26",
+      "summary": "스페이스X가 기업공개(IPO)를 실시한 이후 처음이자 통산 13번째 스타십 시험비행을 성공적으로 수행했다. 이번 시험비행은 기상 악화와 기술적 문제로 일정이 지연된 끝에 미국 텍사스주 스타베이스 발사장에서 24일(현지시간) 진행됐다.발사 후 약 2분 만에 스타십 우주선과 분리된 슈퍼 헤비 부스터는 착륙 연소를 시도하며 멕시코만에 착수했다. 스페이스X는 부스터 착륙 과정에서 일부 엔진만 점화돼 강한 해상 착수가 이뤄졌으나, 우주선 상단부는 인도양에 온전한 상태로 소프트 스플래시 다운을 완료했다고 밝혔다. 이번 비행을 통해 대기권 재진",
+      "keywords": [],
+      "first_seen": "2026-07-27"
+    },
+    {
+      "id": "5b12fe7b0129",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "icon": "🇰🇷",
+      "title": "머스크 \"첨단 AI, 배포 전 경쟁사가 2주간 '동료 평가' 해야\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213183",
+      "date": "2026-07-26",
+      "summary": "일론 머스크 CEO가 첨단 AI 모델의 안전성과 보안 위험을 효율적으로 관리하기 위해 주요 AI 개발사 간 '동료 평가' 방식을 제안했다. 최첨단 기술의 위험 요소를 감지하고 검증하는 데는 기술 이해도가 부족한 정부 당국보다 현장 기업이 적임자라는 취지다.머스크 CEO는 23일(현지시간) 이코노미스트와의 인터뷰를 통해 최첨단 AI 시스템이 출시되기 전 경쟁업체들이 모델을 1~2주간 사전 검토할 수 있는 체계를 갖춰야 한다고 밝혔다.그는 \"경쟁업체들이 신제품을 검토할 시간을 1~2주일 정도 갖는다면 문제점을 지적할 수 있을 거라고 생",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-07-27"
     },
     {
       "id": "0c2e3422c702",
@@ -42637,30 +42848,15 @@
       "date": "2026-07-26",
       "added": 26,
       "total": 3171
+    },
+    {
+      "date": "2026-07-27",
+      "added": 16,
+      "total": 3187
     }
   ],
   "sources": {},
   "weekly_trends": [
-    {
-      "week": "2026-W23",
-      "keywords": {
-        "AI Agent": 53,
-        "Automation": 24,
-        "Security": 19,
-        "Coding": 13,
-        "GPT": 9,
-        "Open Source": 9,
-        "Deployment": 9,
-        "Robotics": 8,
-        "LLM": 8,
-        "Claude": 8,
-        "SDK/API": 7,
-        "Enterprise AI": 7,
-        "Chatbot": 6,
-        "Fine-tuning": 5,
-        "Optimization": 5
-      }
-    },
     {
       "week": "2026-W24",
       "keywords": {
@@ -42784,15 +42980,15 @@
     {
       "week": "2026-W30",
       "keywords": {
-        "AI Agent": 46,
-        "Automation": 22,
+        "AI Agent": 47,
+        "Automation": 23,
+        "Security": 21,
         "GPT": 21,
         "Open Source": 19,
-        "Security": 19,
+        "LLM": 15,
         "Coding": 13,
-        "LLM": 13,
-        "SDK/API": 11,
-        "Claude": 10,
+        "SDK/API": 12,
+        "Claude": 11,
         "Gemini": 10,
         "Robotics": 8,
         "Generative AI": 7,
@@ -42800,18 +42996,25 @@
         "Optimization": 6,
         "Video AI": 5
       }
+    },
+    {
+      "week": "2026-W31",
+      "keywords": {
+        "Automation": 1,
+        "Video AI": 1
+      }
     }
   ],
   "source_stats": {
     "techcrunch": {
-      "total": 845,
+      "total": 851,
       "recent_7d": 116,
-      "recent_30d": 379
+      "recent_30d": 385
     },
     "aitimes": {
-      "total": 1479,
-      "recent_7d": 199,
-      "recent_30d": 669
+      "total": 1488,
+      "recent_7d": 187,
+      "recent_30d": 678
     },
     "anthropic": {
       "total": 41,
@@ -42824,9 +43027,9 @@
       "recent_30d": 81
     },
     "nvidia_ai": {
-      "total": 93,
-      "recent_7d": 9,
-      "recent_30d": 28
+      "total": 94,
+      "recent_7d": 10,
+      "recent_30d": 29
     },
     "openai": {
       "total": 121,
@@ -42879,6 +43082,6 @@
       "recent_30d": 20
     }
   },
-  "last_updated": "2026-07-26",
-  "total_articles": 3171
+  "last_updated": "2026-07-27",
+  "total_articles": 3187
 }
