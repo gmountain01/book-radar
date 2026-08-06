@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-08-06 — v2.7.2 (RSS 수집 개선 RSS-1~3: 소스 수리+수요 신호+쏠림 완화)
+
+### scripts/fetch_rss.py + data/rss/
+
+- **[M] RSS-1 죽은 소스 3개 수리:** 요즘IT(405)·우아한형제들(403) — 원인은 `RSS-Fetcher/2.0` 봇 UA 차단. `fetch_xml` 헤더를 브라우저급(UA+Accept+Accept-Language)으로 교체해 복구. Microsoft AI(410 Gone) — `news.microsoft.com/source/topics/ai/feed/`로 교체(id `ms_ai` 유지, 아카이브 연속성 보존).
+- **[M] RSS-2 수요 신호 소스 5개 추가 (전부 실측 검증 후 등록):** 긱뉴스(RSS)·Hacker News 프론트페이지(hnrss)·GitHub Trending(HTML 스크래핑 신규 파서, since=daily)·카카오테크·당근. 벤더 블로그 편중 해소 — 총 20개 소스, 첫 수집 +136건(누적 3,829건).
+- **[M] RSS-3 소스 가중치 + 쏠림 완화:** FEEDS에 `weight`(community 2.0/corp 1.5/media 1.0/vendor 0.5)·`source_type` 부여, `compute_weekly_trends` 가중 집계 + (주,키워드)별 단일 소스 기여 50% 상한 캡(1-pass). 실측 387개 (주,키워드) 쌍에서 캡 작동 — AI타임스 물량 독점 차단.
+- **스키마:** articles[] `source_type` 추가(과거분 소급, 누락 0)·feeds.js `weight`/`source_type` 추가. 기존 필드·weekly_trends 스키마 불변 → panel23 수정 불필요.
+
+---
+
 ## 2026-08-06 — v2.7.1 (새 리포트 뱃지 + 홈 브리핑 FUNNEL-4)
 
 ### shared/app.js + index.html + panels/panel23 + shared/styles.css

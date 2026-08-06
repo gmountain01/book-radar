@@ -16,32 +16,58 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 
+# source_type / weight 정책 (트렌드 쏠림 완화용):
+#   community(커뮤니티·큐레이션) 2.0  — 수요 신호가 가장 직접적 (독자/개발자 관심의 집계)
+#   corp(기업 기술블로그)       1.5  — 실무 도입 신호
+#   media(언론)                 1.0  — 기준선
+#   vendor(벤더 자사 블로그)     0.5  — 자사 홍보 편중 → 가중치 하향
 FEEDS = [
-    # ── 글로벌 빅테크 ──
-    {"id": "anthropic",  "name": "Anthropic",          "url": "https://www.anthropic.com/news",                       "icon": "🟤", "tags": ["AI", "LLM", "Claude"], "type": "scrape"},
-    {"id": "openai",     "name": "OpenAI",            "url": "https://openai.com/blog/rss.xml",                      "icon": "🟢", "tags": ["AI", "LLM", "GPT"]},
-    {"id": "google_ai",  "name": "Google AI",          "url": "https://blog.google/technology/ai/rss/",              "icon": "🔵", "tags": ["AI", "Gemini", "Search"]},
-    {"id": "deepmind",   "name": "DeepMind",           "url": "https://deepmind.google/blog/rss.xml",               "icon": "🧠", "tags": ["AI", "Research", "Science"]},
-    {"id": "meta_eng",   "name": "Meta Engineering",   "url": "https://engineering.fb.com/feed/",                    "icon": "🔷", "tags": ["Infra", "ML", "Scale"]},
-    {"id": "huggingface","name": "Hugging Face",        "url": "https://huggingface.co/blog/feed.xml",               "icon": "🤗", "tags": ["AI", "OpenSource", "Models"]},
-    {"id": "aws_ml",     "name": "AWS ML",              "url": "https://aws.amazon.com/blogs/machine-learning/feed/","icon": "🟠", "tags": ["Cloud", "ML", "DevOps"]},
-    {"id": "ms_ai",      "name": "Microsoft AI",        "url": "https://blogs.microsoft.com/ai/feed/",              "icon": "🟦", "tags": ["AI", "Azure", "Copilot"]},
-    {"id": "nvidia_ai",  "name": "NVIDIA AI",           "url": "https://blogs.nvidia.com/feed/",                     "icon": "💚", "tags": ["GPU", "AI", "Hardware"]},
-    {"id": "techcrunch", "name": "TechCrunch",          "url": "https://techcrunch.com/feed/",                       "icon": "🟩", "tags": ["Startup", "AI", "Global"]},
+    # ── 글로벌 빅테크 (vendor: 자사 홍보 블로그 → weight 0.5) ──
+    {"id": "anthropic",  "name": "Anthropic",          "url": "https://www.anthropic.com/news",                       "icon": "🟤", "tags": ["AI", "LLM", "Claude"], "type": "scrape", "source_type": "vendor", "weight": 0.5},
+    {"id": "openai",     "name": "OpenAI",            "url": "https://openai.com/blog/rss.xml",                      "icon": "🟢", "tags": ["AI", "LLM", "GPT"], "source_type": "vendor", "weight": 0.5},
+    {"id": "google_ai",  "name": "Google AI",          "url": "https://blog.google/technology/ai/rss/",              "icon": "🔵", "tags": ["AI", "Gemini", "Search"], "source_type": "vendor", "weight": 0.5},
+    {"id": "deepmind",   "name": "DeepMind",           "url": "https://deepmind.google/blog/rss.xml",               "icon": "🧠", "tags": ["AI", "Research", "Science"], "source_type": "vendor", "weight": 0.5},
+    {"id": "meta_eng",   "name": "Meta Engineering",   "url": "https://engineering.fb.com/feed/",                    "icon": "🔷", "tags": ["Infra", "ML", "Scale"], "source_type": "vendor", "weight": 0.5},
+    {"id": "huggingface","name": "Hugging Face",        "url": "https://huggingface.co/blog/feed.xml",               "icon": "🤗", "tags": ["AI", "OpenSource", "Models"], "source_type": "vendor", "weight": 0.5},
+    {"id": "aws_ml",     "name": "AWS ML",              "url": "https://aws.amazon.com/blogs/machine-learning/feed/","icon": "🟠", "tags": ["Cloud", "ML", "DevOps"], "source_type": "vendor", "weight": 0.5},
+    {"id": "ms_ai",      "name": "Microsoft AI",        "url": "https://news.microsoft.com/source/topics/ai/feed/",  "icon": "🟦", "tags": ["AI", "Azure", "Copilot"], "source_type": "vendor", "weight": 0.5},
+    {"id": "nvidia_ai",  "name": "NVIDIA AI",           "url": "https://blogs.nvidia.com/feed/",                     "icon": "💚", "tags": ["GPU", "AI", "Hardware"], "source_type": "vendor", "weight": 0.5},
+    # ── 언론 (media → weight 1.0) ──
+    {"id": "techcrunch", "name": "TechCrunch",          "url": "https://techcrunch.com/feed/",                       "icon": "🟩", "tags": ["Startup", "AI", "Global"], "source_type": "media", "weight": 1.0},
+    # ── 커뮤니티·큐레이션 (community → weight 2.0, 수요 신호) ──
+    {"id": "geeknews",   "name": "긱뉴스",              "url": "https://news.hada.io/rss/news",                       "icon": "🟧", "tags": ["개발", "큐레이션", "트렌드"], "source_type": "community", "weight": 2.0},
+    {"id": "hackernews", "name": "Hacker News",         "url": "https://hnrss.org/frontpage",                         "icon": "🟠", "tags": ["개발", "큐레이션", "Global"], "source_type": "community", "weight": 2.0},
+    {"id": "github_trending", "name": "GitHub Trending", "url": "https://github.com/trending?since=daily",            "icon": "🐙", "tags": ["OpenSource", "개발", "트렌드"], "type": "scrape_github", "source_type": "community", "weight": 2.0},
     # ── 한국 ──
-    {"id": "aitimes",    "name": "AI타임스",            "url": "https://www.aitimes.com/rss/allArticle.xml",          "icon": "🇰🇷", "tags": ["AI", "한국", "뉴스"]},
-    {"id": "yozm",       "name": "요즘IT",              "url": "https://yozm.wishket.com/magazine/feed/",             "icon": "📱", "tags": ["개발", "한국", "트렌드"]},
-    {"id": "woowahan",   "name": "우아한형제들",         "url": "https://techblog.woowahan.com/feed/",                "icon": "🍔", "tags": ["개발", "한국", "실전"]},
-    {"id": "toss",       "name": "토스",                "url": "https://toss.tech/rss.xml",                           "icon": "💙", "tags": ["핀테크", "한국", "실전"]},
-    {"id": "lycorp",     "name": "LY Corp (라인)",      "url": "https://techblog.lycorp.co.jp/ko/feed/index.xml",     "icon": "💬", "tags": ["개발", "한국", "AI"]},
+    {"id": "aitimes",    "name": "AI타임스",            "url": "https://www.aitimes.com/rss/allArticle.xml",          "icon": "🇰🇷", "tags": ["AI", "한국", "뉴스"], "source_type": "media", "weight": 1.0},
+    {"id": "yozm",       "name": "요즘IT",              "url": "https://yozm.wishket.com/magazine/feed/",             "icon": "📱", "tags": ["개발", "한국", "트렌드"], "source_type": "community", "weight": 2.0},
+    {"id": "woowahan",   "name": "우아한형제들",         "url": "https://techblog.woowahan.com/feed/",                "icon": "🍔", "tags": ["개발", "한국", "실전"], "source_type": "corp", "weight": 1.5},
+    {"id": "toss",       "name": "토스",                "url": "https://toss.tech/rss.xml",                           "icon": "💙", "tags": ["핀테크", "한국", "실전"], "source_type": "corp", "weight": 1.5},
+    {"id": "kakao",      "name": "카카오테크",          "url": "https://tech.kakao.com/feed/",                        "icon": "💛", "tags": ["개발", "한국", "실전"], "source_type": "corp", "weight": 1.5},
+    {"id": "daangn",     "name": "당근",                "url": "https://medium.com/feed/daangn",                      "icon": "🥕", "tags": ["개발", "한국", "실전"], "source_type": "corp", "weight": 1.5},
+    {"id": "lycorp",     "name": "LY Corp (라인)",      "url": "https://techblog.lycorp.co.jp/ko/feed/index.xml",     "icon": "💬", "tags": ["개발", "한국", "AI"], "source_type": "corp", "weight": 1.5},
 ]
+
+# 소스 id → weight / source_type 조회 (과거 아카이브 항목 소급 적용용)
+SOURCE_WEIGHT = {f["id"]: f.get("weight", 1.0) for f in FEEDS}
+SOURCE_TYPE = {f["id"]: f.get("source_type", "media") for f in FEEDS}
 
 MAX_ITEMS_PER_FEED = 30
 TODAY = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
+# 일부 소스(요즘IT 405·우아한형제들 403)는 봇 UA를 차단하므로 브라우저급 헤더로 요청한다.
+BROWSER_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
+              "application/rss+xml,application/atom+xml,*/*;q=0.8",
+    "Accept-Language": "ko,en-US;q=0.9,en;q=0.8",
+}
+
+
 def fetch_xml(url: str, timeout: int = 30) -> str | None:
-    req = urllib.request.Request(url, headers={"User-Agent": "RSS-Fetcher/2.0"})
+    req = urllib.request.Request(url, headers=BROWSER_HEADERS)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return resp.read().decode("utf-8", errors="replace")
@@ -178,6 +204,35 @@ def scrape_anthropic_news(html: str) -> list[dict]:
     return items[:MAX_ITEMS_PER_FEED]
 
 
+def scrape_github_trending(html: str) -> list[dict]:
+    """GitHub Trending(daily) 페이지를 파싱한다. RSS가 없어 HTML 파싱으로 대체.
+    제목은 "repo명 — 설명" 형태, 링크는 repo URL. 파싱 실패 시 조용히 빈 목록."""
+    items = []
+    arts = re.findall(r'<article class="Box-row">(.*?)</article>', html, re.DOTALL)
+    for a in arts:
+        h2 = re.search(r"<h2\b.*?</h2>", a, re.DOTALL)
+        if not h2:
+            continue
+        mrepo = re.search(r'href="/([^"]+)"', h2.group(0))
+        if not mrepo:
+            continue
+        repo = mrepo.group(1).strip()
+        desc = ""
+        md = re.search(r'<p class="col-9[^"]*"[^>]*>(.*?)</p>', a, re.DOTALL)
+        if md:
+            desc = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", md.group(1))).strip()
+        lang = ""
+        ml = re.search(r'itemprop="programmingLanguage">([^<]+)<', a)
+        if ml:
+            lang = ml.group(1).strip()
+        title = repo + (" — " + desc if desc else "")
+        link = "https://github.com/" + repo
+        # date 없음 → 수집일(TODAY)로 기록 (당일 트렌드로 집계). 언어를 summary에 포함해 키워드 추출 강화.
+        summary = (desc + " " + lang).strip()[:300]
+        items.append({"title": title, "link": link, "date": TODAY, "summary": summary})
+    return items[:MAX_ITEMS_PER_FEED]
+
+
 def parse_feed(xml_text: str) -> list[dict]:
     items = []
     try:
@@ -245,6 +300,7 @@ def merge_into_archive(archive: dict, feed_conf: dict, items: list[dict]) -> int
             "id": aid,
             "source": feed_conf["id"],
             "source_name": feed_conf["name"],
+            "source_type": feed_conf.get("source_type", "media"),  # community/media/vendor/corp
             "icon": feed_conf["icon"],
             "title": item["title"],
             "link": item["link"],
@@ -260,29 +316,45 @@ def merge_into_archive(archive: dict, feed_conf: dict, items: list[dict]) -> int
 
 
 def compute_weekly_trends(archive: dict) -> list[dict]:
-    """주간 키워드 빈도를 계산한다."""
+    """주간 키워드 빈도를 소스 가중치와 쏠림 캡을 적용해 계산한다.
+
+    - 가중치: 기사 1건당 +1 대신 소스 weight(community 2.0 / corp 1.5 /
+      media 1.0 / vendor 0.5)만큼 기여 → 벤더 자사블로그 편중을 낮춘다.
+    - 쏠림 캡: (주, 키워드)별로 단일 소스의 기여를 그 키워드 원(raw) 총합의
+      50%로 상한한다. AI타임스 물량이 한 키워드를 독점하지 못하게 하는 단순 1-pass
+      방식(반복 재계산 없음). 최종값은 정수 반올림 후 0 초과만 유지.
+    스키마는 기존과 동일: {"week": "YYYY-Wnn", "keywords": {kw: int}}."""
     from collections import defaultdict
 
-    # 주차별 키워드 카운트
-    week_kw = defaultdict(lambda: defaultdict(int))
+    SINGLE_SOURCE_CAP = 0.5  # 한 소스가 한 키워드 주간 총합에서 차지할 수 있는 최대 비율
+
+    # 주차별·키워드별·소스별 가중 기여
+    week_kw_src = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
     for a in archive["articles"]:
         if not a.get("date"):
             continue
-        # ISO week: YYYY-Wnn
         try:
             dt = datetime.strptime(a["date"][:10], "%Y-%m-%d")
             week = dt.strftime("%Y-W%V")
         except ValueError:
             continue
+        w = SOURCE_WEIGHT.get(a.get("source", ""), 1.0)
         for kw in a.get("keywords", []):
-            week_kw[week][kw] += 1
+            week_kw_src[week][kw][a.get("source", "")] += w
 
-    # 최근 8주만
-    weeks = sorted(week_kw.keys())[-8:]
+    weeks = sorted(week_kw_src.keys())[-8:]
     trends = []
-    for w in weeks:
-        top = sorted(week_kw[w].items(), key=lambda x: -x[1])[:15]
-        trends.append({"week": w, "keywords": {k: v for k, v in top}})
+    for wk in weeks:
+        kw_final = {}
+        for kw, src_contrib in week_kw_src[wk].items():
+            raw_total = sum(src_contrib.values())
+            cap = raw_total * SINGLE_SOURCE_CAP
+            capped_total = sum(min(v, cap) for v in src_contrib.values())
+            val = int(round(capped_total))
+            if val > 0:
+                kw_final[kw] = val
+        top = sorted(kw_final.items(), key=lambda x: -x[1])[:15]
+        trends.append({"week": wk, "keywords": {k: v for k, v in top}})
     return trends
 
 
@@ -324,14 +396,22 @@ def main():
             latest_feeds.append({**feed_conf, "items": []})
             continue
 
-        if feed_conf.get("type") == "scrape":
+        ftype = feed_conf.get("type")
+        if ftype == "scrape":
             items = scrape_anthropic_news(raw)
+        elif ftype == "scrape_github":
+            items = scrape_github_trending(raw)
         else:
             items = parse_feed(raw)
         added = merge_into_archive(archive, feed_conf, items)
         total_added += added
         print(f"{len(items)}건 (신규 {added}건)")
         latest_feeds.append({**feed_conf, "items": items})
+
+    # ── 과거 아카이브 항목에 source_type 소급 부여 (신규 필드 일관성 유지) ──
+    for a in archive["articles"]:
+        if "source_type" not in a:
+            a["source_type"] = SOURCE_TYPE.get(a.get("source", ""), "media")
 
     # ── 통계 계산 ──
     archive["weekly_trends"] = compute_weekly_trends(archive)
