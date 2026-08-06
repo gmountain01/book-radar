@@ -34,9 +34,9 @@ function pInitFields(){
   // 기본 정보
   const _pDef={
     'pf-author':'권바이브',
-    'pf-editor':'조아리',
+    'pf-editor':'',
     'pf-email':'',
-    'pf-team':'콘텐츠 1팀',
+    'pf-team':'',
     'pf-year':'2026',
     // 헤더 타이틀
     'pf-title1':'저자님의 자동화 노하우,',
@@ -114,7 +114,7 @@ function pRender(){
   const author=pg('pf-author')||'저자님';
   const editor=pg('pf-editor')||'담당 편집자';
   const email=pg('pf-email')||'';
-  const team=pg('pf-team')||'콘텐츠 1팀';
+  const team=pg('pf-team')||'';
   const year=pg('pf-year')||'2026';
   const t1=pg('pf-title1')||'저자님의 경험,';
   const t2=pg('pf-title2')||'독자의 시작점이 될 수 있습니다.';
@@ -207,7 +207,7 @@ function pRender(){
         </div>
         <div class="pd-cta-contact">
           <div class="pd-cta-name">${editor}</div>
-          <div class="pd-cta-role">${team} 편집자</div>
+          <div class="pd-cta-role">${team?`${team} 편집자`:'편집자'}</div>
           ${email?`<div class="pd-cta-email" style="background:${ac};">${email}</div>`:''}
         </div>
       </div>

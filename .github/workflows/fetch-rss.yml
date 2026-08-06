@@ -24,6 +24,8 @@ jobs:
       - name: Generate YES24 report (새 파일만 수집)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # 자사 분석 대상 출판사. 저장소 Variables에 MY_PUBLISHER 지정 시 자사 섹션 생성, 미설정이면 빈 값→섹션 생략.
+          MY_PUBLISHER: ${{ vars.MY_PUBLISHER }}
         run: python scripts/generate_report.py
 
       - name: Build author list (archive.json 기반)

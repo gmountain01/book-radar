@@ -20,6 +20,9 @@ from datetime import datetime, timezone
 # ── 설정 ──
 DRIVE_FOLDER_ID = "1hGsZv7zT6MmFdq2Ouiwrq4Ee72zg1o4O"
 
+# 자사 분석 대상 출판사 — 환경변수로 설정(부분 일치 문자열). 빈 값이면 자사 분석 섹션 생략.
+MY_PUBLISHER = os.environ.get("MY_PUBLISHER", "").strip()
+
 # Windows cp949 인코딩 에러 방지
 if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -383,20 +386,21 @@ def compute_stats(archive: dict) -> str:
                 new_trend.append((title_first[t], best_rank, nd, t, title_info[t].get("publisher", "")))
     new_trend.sort(key=lambda x: (x[1], -x[2]))
 
-    # ── 한빛미디어 분석 ──
-    hanbit_titles = [t for t in unique_titles if "한빛" in title_info[t].get("publisher", "")]
-    hanbit_topic = defaultdict(int)
-    for t in hanbit_titles:
-        for topic in _classify_topics_multi(t):
-            hanbit_topic[topic] += 1
-
-    hanbit_books = []
-    for t in hanbit_titles:
-        avg = sum(title_ranks[t]) / len(title_ranks[t]) if title_ranks[t] else 999
-        nd = len(title_days[t])
-        topics = ", ".join(_classify_topics_multi(t))
-        hanbit_books.append((avg, nd, t, topics))
-    hanbit_books.sort(key=lambda x: x[0])
+    # ── 자사 분석 (MY_PUBLISHER 설정 시에만) ──
+    my_titles = []
+    my_topic = defaultdict(int)
+    my_books = []
+    if MY_PUBLISHER:
+        my_titles = [t for t in unique_titles if MY_PUBLISHER in title_info[t].get("publisher", "")]
+        for t in my_titles:
+            for topic in _classify_topics_multi(t):
+                my_topic[topic] += 1
+        for t in my_titles:
+            avg = sum(title_ranks[t]) / len(title_ranks[t]) if title_ranks[t] else 999
+            nd = len(title_days[t])
+            topics = ", ".join(_classify_topics_multi(t))
+            my_books.append((avg, nd, t, topics))
+        my_books.sort(key=lambda x: x[0])
 
     # ── 리포트 조합 ──
     L = []
@@ -464,38 +468,43 @@ def compute_stats(archive: dict) -> str:
         for first, best, nd, t, pub in new_trend[:20]:
             L.append(f"| {first} | {best}위 | {nd}일 | {t} | {pub} |")
 
-    # ── 4. 한빛미디어 분석 ──
-    L.append(f"\n## 4. 한빛미디어 분석\n")
-    L.append(f"한빛 계열(한빛미디어, 한빛아카데미) 베스트셀러 진입 도서: **{len(hanbit_titles)}권**\n")
+    # ── 4. 자사 분석 (MY_PUBLISHER 설정 시에만 생성) ──
+    # 자사 섹션 유무에 따라 이후 섹션 번호가 어긋나지 않도록 동적으로 계산한다.
+    sec_no = 4
+    if MY_PUBLISHER:
+        L.append(f"\n## {sec_no}. {MY_PUBLISHER} 분석\n")
+        L.append(f"{MY_PUBLISHER} 베스트셀러 진입 도서: **{len(my_titles)}권**\n")
 
-    L.append(f"### 한빛미디어 베스트셀러 도서\n")
-    L.append(f"| 평균순위 | 등장일 | 도서명 | 주제 |")
-    L.append(f"|-------:|------:|--------|------|")
-    for avg, nd, t, topic in hanbit_books[:25]:
-        L.append(f"| {avg:.0f}위 | {nd}일 | {t} | {topic} |")
+        L.append(f"### {MY_PUBLISHER} 베스트셀러 도서\n")
+        L.append(f"| 평균순위 | 등장일 | 도서명 | 주제 |")
+        L.append(f"|-------:|------:|--------|------|")
+        for avg, nd, t, topic in my_books[:25]:
+            L.append(f"| {avg:.0f}위 | {nd}일 | {t} | {topic} |")
 
-    L.append(f"\n### 한빛 주제 분포\n")
-    L.append(f"| 주제 | 한빛 도서 수 | 전체 시장 | 점유율 |")
-    L.append(f"|------|----------:|--------:|------:|")
-    for topic in sorted(topic_titles.keys()):
-        hcnt = hanbit_topic.get(topic, 0)
-        tcnt = len(topic_titles[topic])
-        share = hcnt / tcnt * 100 if tcnt else 0
-        L.append(f"| {topic} | {hcnt}권 | {tcnt}권 | {share:.0f}% |")
+        L.append(f"\n### {MY_PUBLISHER} 주제 분포\n")
+        L.append(f"| 주제 | 자사 도서 수 | 전체 시장 | 점유율 |")
+        L.append(f"|------|----------:|--------:|------:|")
+        for topic in sorted(topic_titles.keys()):
+            hcnt = my_topic.get(topic, 0)
+            tcnt = len(topic_titles[topic])
+            share = hcnt / tcnt * 100 if tcnt else 0
+            L.append(f"| {topic} | {hcnt}권 | {tcnt}권 | {share:.0f}% |")
 
-    # 한빛 공백
-    weak = [(topic, len(topic_titles[topic]), hanbit_topic.get(topic, 0))
-            for topic in topic_titles if hanbit_topic.get(topic, 0) <= 1 and len(topic_titles[topic]) >= 5]
-    if weak:
-        L.append(f"\n### 한빛이 약한 영역 (공백)\n")
-        L.append(f"| 주제 | 전체 도서 | 한빛 도서 | 주요 경쟁사 |")
-        L.append(f"|------|--------:|--------:|------------|")
-        for topic, total, hcnt in sorted(weak, key=lambda x: -x[1]):
-            competitors = ", ".join(p for p, _ in topic_pubs.get(topic, [])[:3])
-            L.append(f"| {topic} | {total}권 | {hcnt}권 | {competitors} |")
+        # 자사 공백
+        weak = [(topic, len(topic_titles[topic]), my_topic.get(topic, 0))
+                for topic in topic_titles if my_topic.get(topic, 0) <= 1 and len(topic_titles[topic]) >= 5]
+        if weak:
+            L.append(f"\n### {MY_PUBLISHER}가 약한 영역 (공백)\n")
+            L.append(f"| 주제 | 전체 도서 | 자사 도서 | 주요 경쟁사 |")
+            L.append(f"|------|--------:|--------:|------------|")
+            for topic, total, hcnt in sorted(weak, key=lambda x: -x[1]):
+                competitors = ", ".join(p for p, _ in topic_pubs.get(topic, [])[:3])
+                L.append(f"| {topic} | {total}권 | {hcnt}권 | {competitors} |")
 
-    # ── 5. 주제별 경쟁서 상세 (기타 제외, 전체 주제) ──
-    L.append(f"\n## 5. 주제별 경쟁서 상세\n")
+        sec_no += 1
+
+    # ── 주제별 경쟁서 상세 (기타 제외, 전체 주제) ──
+    L.append(f"\n## {sec_no}. 주제별 경쟁서 상세\n")
     top_topics = sorted(((t, ts) for t, ts in topic_titles.items() if t != "기타"), key=lambda x: -len(x[1]))
     for topic, titles in top_topics:
         books = []
@@ -659,6 +668,10 @@ def call_claude(stats: str, dates: list[str]) -> str:
         print("  ⚠ ANTHROPIC_API_KEY 미설정 — 통계만 생성", file=sys.stderr)
         return ""
 
+    # 자사(## 4) 섹션 유무에 따라 이후 섹션 번호가 달라진다.
+    sec_planning = 6 if MY_PUBLISHER else 5
+    sec_action = 7 if MY_PUBLISHER else 6
+
     date_range = f"{dates[0]} ~ {dates[-1]}"
     prompt = f"""아래는 YES24 IT 베스트셀러의 일별 스냅샷 누적 데이터(Python 자동 생성 통계)입니다.
 매일 200위까지의 베스트셀러를 수집하여 {len(dates)}일간 누적한 결과입니다.
@@ -679,7 +692,7 @@ def call_claude(stats: str, dates: list[str]) -> str:
 4. ...
 5. ...
 
-## 6. 출판 기획 아이템
+## {sec_planning}. 출판 기획 아이템
 
 ### 기획 1: [제목]
 [왜 기회인지, 어떤 도서를 만들면 좋을지, 타겟 독자, 예상 경쟁 상황. 3~5문장.]
@@ -689,9 +702,9 @@ def call_claude(stats: str, dates: list[str]) -> str:
 
 (5~8개 기획 아이템)
 
-## 7. 추천 다음 액션
+## {sec_action}. 추천 다음 액션
 
-- [한빛미디어 편집자가 당장 해야 할 구체적 행동 1]
+- [IT 출판 기획 편집자가 당장 해야 할 구체적 행동 1]
 - [구체적 행동 2]
 - ...
 
@@ -729,6 +742,61 @@ def call_claude(stats: str, dates: list[str]) -> str:
 # ══════════════════════════════════════════════════════
 # 6. 메인
 # ══════════════════════════════════════════════════════
+
+def build_report(archive: dict):
+    """archive 데이터로 통계 + AI 섹션을 결합해 리포트를 재작성한다."""
+    all_dates = sorted(archive["snapshots"].keys())
+
+    # 통계 + 리포트
+    stats = compute_stats(archive)
+    ai_sections = call_claude(stats, all_dates)
+
+    # 리포트 조합: 헤더 + 핵심인사이트(AI) + 통계(Python) + 기획아이템(AI)
+    header = f"# YES24 IT 베스트셀러 {archive['total_days']}일 분석 리포트\n\n"
+    header += f"> 분석 기간: {all_dates[0]} ~ {all_dates[-1]} ({len(all_dates)}일)\n"
+    header += f"> 생성일: {TODAY}\n"
+    header += f"> 데이터: YES24 IT/모바일 일별 베스트셀러\n\n"
+
+    if ai_sections:
+        # AI 결과에서 "핵심 인사이트" 부분과 "출판 기획/추천 액션" 이후 부분을 분리
+        insight_part = ""
+        planning_part = ""
+        lines = ai_sections.split("\n")
+        section = ""
+        for line in lines:
+            if line.startswith("## 핵심 인사이트") or line.startswith("## 핵심"):
+                section = "insight"
+            elif re.match(r"^## \d+\.\s*(출판 기획 아이템|추천 다음 액션)", line):
+                section = "planning"
+            if section == "insight":
+                insight_part += line + "\n"
+            elif section == "planning":
+                planning_part += line + "\n"
+
+        report = header + insight_part + "\n" + stats + "\n\n" + planning_part
+    else:
+        # Claude 미사용 시 통계 기반 폴백 인사이트 삽입
+        fallback = generate_fallback_insights(archive)
+        print("  ℹ 폴백 인사이트 생성 (Claude 미사용)")
+        report = header + fallback + "\n" + stats + "\n"
+
+    with open(REPORT_PATH, "w", encoding="utf-8") as f:
+        f.write(report)
+
+    print(f"✅ 리포트 생성: {REPORT_PATH}")
+
+
+def rebuild():
+    """Drive 스캔 없이 기존 archive.json으로 리포트만 재생성한다."""
+    os.makedirs(REPORTS_DIR, exist_ok=True)
+    archive = load_archive()
+    if not archive.get("snapshots"):
+        print("❌ archive.json에 데이터 없음 — 재생성 불가")
+        return
+    all_dates = sorted(archive["snapshots"].keys())
+    print(f"♻ 리포트 재생성 모드 — 기존 아카이브 {len(all_dates)}일 사용 ({all_dates[0]} ~ {all_dates[-1]})")
+    build_report(archive)
+
 
 def main():
     os.makedirs(YES24_DIR, exist_ok=True)
@@ -781,43 +849,11 @@ def main():
     print(f"💾 아카이브 저장: {archive['total_days']}일, {sum(len(v) for v in archive['snapshots'].values())}건")
 
     # 4. 통계 + 리포트
-    stats = compute_stats(archive)
-    ai_sections = call_claude(stats, all_dates)
-
-    # 리포트 조합: 헤더 + 핵심인사이트(AI) + 통계(Python) + 기획아이템(AI)
-    header = f"# YES24 IT 베스트셀러 {archive['total_days']}일 분석 리포트\n\n"
-    header += f"> 분석 기간: {all_dates[0]} ~ {all_dates[-1]} ({len(all_dates)}일)\n"
-    header += f"> 생성일: {TODAY}\n"
-    header += f"> 데이터: YES24 IT/모바일 일별 베스트셀러\n\n"
-
-    if ai_sections:
-        # AI 결과에서 "핵심 인사이트" 부분과 "6. 출판 기획" 이후 부분을 분리
-        insight_part = ""
-        planning_part = ""
-        lines = ai_sections.split("\n")
-        section = ""
-        for line in lines:
-            if line.startswith("## 핵심 인사이트") or line.startswith("## 핵심"):
-                section = "insight"
-            elif line.startswith("## 6.") or line.startswith("## 7."):
-                section = "planning"
-            if section == "insight":
-                insight_part += line + "\n"
-            elif section == "planning":
-                planning_part += line + "\n"
-
-        report = header + insight_part + "\n" + stats + "\n\n" + planning_part
-    else:
-        # Claude 미사용 시 통계 기반 폴백 인사이트 삽입
-        fallback = generate_fallback_insights(archive)
-        print("  ℹ 폴백 인사이트 생성 (Claude 미사용)")
-        report = header + fallback + "\n" + stats + "\n"
-
-    with open(REPORT_PATH, "w", encoding="utf-8") as f:
-        f.write(report)
-
-    print(f"✅ 리포트 생성: {REPORT_PATH}")
+    build_report(archive)
 
 
 if __name__ == "__main__":
-    main()
+    if "--rebuild" in sys.argv[1:]:
+        rebuild()
+    else:
+        main()
