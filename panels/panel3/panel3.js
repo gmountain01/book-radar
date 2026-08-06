@@ -6,8 +6,8 @@ const P_WHY_DEF=[
 ];
 const P_HB_DEF=[
   {num:'DISTRIBUTION',title:'온·오프라인 전 채널 유통',body:'교보·yes24·알라딘 등 주요 서점 MD와의 직접 협업으로 신간 노출 및 기획전 입점을 함께 설계합니다.'},
-  {num:'MARKETING',title:'채널H 콘텐츠 마케팅',body:'한빛미디어 자체 콘텐츠 채널을 통해 출간 전후 독자 유입을 지속적으로 만들어 갑니다.'},
-  {num:'TRUST',title:'IT 독자층과의 접점',body:'한빛미디어를 통해 출간된 책은 IT 독자들에게 이미 익숙한 채널로 유통됩니다.'},
+  {num:'MARKETING',title:'자체 콘텐츠 마케팅',body:'자체 콘텐츠 채널을 통해 출간 전후 독자 유입을 지속적으로 만들어 갑니다.'},
+  {num:'TRUST',title:'IT 독자층과의 접점',body:'우리 출판사를 통해 출간된 책은 IT 독자들에게 이미 익숙한 채널로 유통됩니다.'},
   {num:'PRODUCTION',title:'전담 편집팀 원고 지원',body:'기획부터 교정·교열·디자인까지 전담 편집팀이 함께합니다.'},
 ];
 const P_TOC_DEF=[
@@ -35,7 +35,7 @@ function pInitFields(){
   const _pDef={
     'pf-author':'권바이브',
     'pf-editor':'조아리',
-    'pf-email':'aricho@hanbit.co.kr',
+    'pf-email':'',
     'pf-team':'콘텐츠 1팀',
     'pf-year':'2026',
     // 헤더 타이틀
@@ -46,7 +46,7 @@ function pInitFields(){
     'pf-hero-desc':'강의는 따라 만드는 경험을 줍니다. 책은 그 경험을 반복해서 꺼내볼 수 있는 레퍼런스가 됩니다.\n저자님이 강의에서 보여주신 n8n과 Claude Code의 조합은 지금 가장 실용적인 AI 자동화 스택입니다.\n이걸 책으로 정리하면, 강의를 듣지 않은 독자까지 만날 수 있습니다.',
     // 미팅 제안
     'pf-cta-head':'부담 없이 한 번 뵙고 싶습니다.',
-    'pf-cta-desc':'온라인·오프라인 모두 좋습니다.\n저자님이 생각하시는 방향을 먼저 듣고,\n한빛미디어가 함께할 수 있는 부분을 말씀드리겠습니다.'
+    'pf-cta-desc':'온라인·오프라인 모두 좋습니다.\n저자님이 생각하시는 방향을 먼저 듣고,\n저희 출판사가 함께할 수 있는 부분을 말씀드리겠습니다.'
   };
   for(const[id,v]of Object.entries(_pDef)){
     const el=document.getElementById(id);
@@ -113,7 +113,7 @@ function pRender(){
   const ac=document.querySelector('input[name=pcolor]:checked')?.value||'#E8401C';
   const author=pg('pf-author')||'저자님';
   const editor=pg('pf-editor')||'담당 편집자';
-  const email=pg('pf-email')||'editor@hanbit.co.kr';
+  const email=pg('pf-email')||'';
   const team=pg('pf-team')||'콘텐츠 1팀';
   const year=pg('pf-year')||'2026';
   const t1=pg('pf-title1')||'저자님의 경험,';
@@ -176,7 +176,6 @@ function pRender(){
       <h1>${t1}<br><span style="color:${ac};">${t2}</span></h1>
     </div>
     <div class="pd-header-right">
-      <div class="pd-logo">한빛<span>미디어</span></div>
       <div class="pd-logo-sub">${team} · ${year}</div>
     </div>
   </div>
@@ -195,7 +194,7 @@ function pRender(){
       <ul class="pd-toc-list">${tocH}</ul>
     </div>
     <div class="pd-section">
-      <div class="pd-section-label" style="color:${ac};">한빛미디어와 함께하면 달라지는 것들</div>
+      <div class="pd-section-label" style="color:${ac};">함께하면 달라지는 것들</div>
       <div class="pd-why-grid">${hbH}</div>
     </div>
     ${discussSection}
@@ -208,15 +207,15 @@ function pRender(){
         </div>
         <div class="pd-cta-contact">
           <div class="pd-cta-name">${editor}</div>
-          <div class="pd-cta-role">한빛미디어 ${team} 편집자</div>
-          <div class="pd-cta-email" style="background:${ac};">${email}</div>
+          <div class="pd-cta-role">${team} 편집자</div>
+          ${email?`<div class="pd-cta-email" style="background:${ac};">${email}</div>`:''}
         </div>
       </div>
     </div>
   </div>
   <div class="pd-footer">
     <div class="pd-footer-l">본 제안서의 모든 내용은 저자님과의 협의를 통해 자유롭게 조정될 수 있습니다.</div>
-    <div class="pd-footer-r">한빛미디어 × ${author}<br><span style="color:${ac};">www.hanbit.co.kr</span></div>
+    <div class="pd-footer-r">${author}</div>
   </div>`;
 }
 

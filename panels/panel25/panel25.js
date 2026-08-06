@@ -769,14 +769,14 @@ window.p25_run = async function() {
     _setProgress(progress, 2, 3, feedAnalysis ? '전체 데이터 종합 판단 중…' : '전체 데이터 종합 판단 중… (피드 요약 건너뜀)');
 
     // 시스템 프롬프트 (명세 4-2)
-    var sysPrompt = '너는 한국 IT 출판사(한빛미디어)의 베테랑 기획 편집자다.\n';
+    var sysPrompt = '너는 한국 IT 출판사의 베테랑 기획 편집자다.\n';
     sysPrompt += '아래 시장/키워드/유튜버 데이터를 종합해 출판 기획 판단을 내려라.\n\n';
     sysPrompt += '[반드시 적용할 5가지 판단 필터]\n';
     sysPrompt += '1. 한국 시장·한국 독자 우선\n';
     sysPrompt += '2. 주제 중복 회피 (외부 경쟁서 + 사내 타 팀 진행작 모두)\n';
     sysPrompt += '3. 무명 저자로도 가능해야 함 (유명 강사는 강의·전자책이 더 돈이 되어 집필 기피, 실력자는 경쟁사에 묶임)\n';
     sysPrompt += '4. 즉시 활용 가능해야 함 (따라 하면 결과 나오는 핸즈온 + 업무를 끝내주는 실무형). 경험담·에세이형 지양\n';
-    sysPrompt += '5. 버전 추적 함정 회피 (도구·방법론이 6주마다 바뀜 + 한빛 신간 3~4주 지연). 원리·워크플로우 중심 선호\n\n';
+    sysPrompt += '5. 버전 추적 함정 회피 (도구·방법론이 6주마다 바뀜 + 신간 3~4주 지연). 원리·워크플로우 중심 선호\n\n';
     sysPrompt += '[판단 시 유의]\n';
     sysPrompt += '- 출판 적합도 점수만 높다고 추천하지 마라. "이 아이템에 이 채널이 맞는가"(주제 정합성)를 먼저 본다.\n';
     sysPrompt += '- 리스크 플래그(저서 보유/캐시카우/집필 고사)를 반드시 반영.\n';
@@ -1159,14 +1159,14 @@ window.p25_draftOutreach = async function(idx) {
     if (author.risk) context += '- 유의점: ' + author.risk + '\n';
   }
 
-  var SYS = '너는 한빛미디어 콘텐츠 기획 편집자다. 저자에게 보내는 정중한 한국어 출판 섭외 이메일을 쓴다.\n' +
+  var SYS = '너는 출판사 기획 편집자다. 저자에게 보내는 정중한 한국어 출판 섭외 이메일을 쓴다.\n' +
     '- 정중하고 간결하게. 과장·상투어("혁신적", "획기적") 지양.\n' +
     '- 왜 지금 이 주제인지 시장 근거의 수치를 자연스럽게 녹여라.\n' +
     '- 저자 후보가 특정돼 있으면 "왜 당신인가"(저서 이력·전문성·집필 시그널)를 근거로 언급하라.\n' +
     '- 출력은 순수 텍스트. 첫 줄에 "제목: ..." 그다음 빈 줄, 이후 이메일 본문. 마크다운·JSON 금지.';
   var prompt = '아래 정보로 출판 섭외 이메일 초안을 작성하라.\n\n' + context +
     '\n[구성] 제목 한 줄 + 본문(인사 → 제안 배경·시장 근거 → 집필 제안 → 미팅 제안 → 맺음말).\n' +
-    '발신: 한빛미디어 기획 편집자. 수신: 위 저자 후보(특정 안 됐으면 "선생님").';
+    '발신: 출판사 기획 편집자. 수신: 위 저자 후보(특정 안 됐으면 "선생님").';
 
   try {
     var text = await callClaudeApi({ apiKey: apiKey, model: 'claude-sonnet-4-6', system: SYS, prompt: prompt, maxTokens: 2000, noPersona: true });
@@ -1234,7 +1234,7 @@ async function _refineAndSend(idx, target) {
   if (_result.cautions && _result.cautions.length) context += '\n주의: ' + _result.cautions.join(', ');
 
   var prompt;
-  var SYS = '너는 한빛미디어 콘텐츠 1팀 15년차 편집자다.\n' +
+  var SYS = '너는 IT 출판 15년차 기획 편집자다.\n' +
     '[글쓰기 규칙]\n' +
     '- 한 문장 40자 이내. 군더더기 제거. 수식어 최소화.\n' +
     '- "~할 수 있습니다", "혁신적인", "획기적인", "다양한", "효과적인" 사용 금지.\n' +

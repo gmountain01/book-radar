@@ -281,7 +281,7 @@ function _renderBasic() {
   h += '<div class="p18-field"><label>' + _req('제목 (+ 부제)') + '</label><input data-field="title" placeholder="『n8n이 다 해줌:뉴스 요약부터 투자 리포트까지...』"></div>';
   h += '<div class="p18-field-row">';
   h += '<div class="p18-field"><label>' + _req('일자') + '</label><input data-field="date" placeholder="2026. 04. 25"></div>';
-  h += '<div class="p18-field"><label>' + _req('발신') + '</label><input data-field="contact" placeholder="한빛앤㈜/영업마케팅부, 김형진 팀장"></div>';
+  h += '<div class="p18-field"><label>' + _req('발신') + '</label><input data-field="contact" placeholder="출판사/부서, 담당자명"></div>';
   h += '</div>';
   h += '<div class="p18-field-row3">';
   h += '<div class="p18-field"><label>' + _req('저자') + '</label><input data-field="authors" placeholder="홍길동, 김철수"></div>';
@@ -1315,7 +1315,7 @@ window.p18_aiGenerate = async function() {
       model: 'claude-sonnet-4-6',
       maxTokens: 8000,
       prompt: prompt,
-      system: '당신은 한빛미디어 영업마케팅부의 신간 안내 문서 작성 전문가입니다. 서점 담당자에게 도서를 효과적으로 소개하는 문서를 작성합니다. 실제 서점에 배포하는 공식 문서이므로 전문적이고 설득력 있게 작성하세요. AI투 표현을 피하고 편집자 톤으로 작성하세요. 반드시 순수 JSON만 출력하고 모든 필드를 빠짐없이 채우세요.',
+      system: '당신은 출판사 영업마케팅부의 신간 안내 문서 작성 전문가입니다. 서점 담당자에게 도서를 효과적으로 소개하는 문서를 작성합니다. 실제 서점에 배포하는 공식 문서이므로 전문적이고 설득력 있게 작성하세요. AI투 표현을 피하고 편집자 톤으로 작성하세요. 반드시 순수 JSON만 출력하고 모든 필드를 빠짐없이 채우세요.',
       noPersona: true,
       temperature: 0.3
     });

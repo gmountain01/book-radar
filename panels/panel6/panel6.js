@@ -373,7 +373,7 @@ function _renderMeetSummary(d){
       <div class="md-info-item"><span class="lbl">저자</span><span class="val">${author}</span></div>
       <div class="md-info-item"><span class="lbl">소속</span><span class="val">${affil||'—'}</span></div>
       <div class="md-info-item"><span class="lbl">편집자</span><span class="val">${editor}</span></div>
-      <div class="md-info-item"><span class="lbl">출판사</span><span class="val">한빛미디어</span></div>
+      <div class="md-info-item"><span class="lbl">출판사</span><span class="val">${(window.getMyPub&&getMyPub())||'—'}</span></div>
       <div class="md-info-item"><span class="lbl">일시</span><span class="val">${dateStr}</span></div>
       <div class="md-info-item"><span class="lbl">장소</span><span class="val">${place||'—'}</span></div>
     </div>
@@ -974,7 +974,7 @@ async function openAIProposalWizard(catName, aiOnly) {
         <div class="ai-wiz-gen-item">헤더 타이틀 2줄 (저자 분야 + 핵심 메시지)</div>
         <div class="ai-wiz-gen-item">Why This Book? — 출간 필요성 2~3문장</div>
         <div class="ai-wiz-gen-item">시장 근거 4가지 (MARKET · TIMING · READER · OSMU)</div>
-        <div class="ai-wiz-gen-item">한빛미디어 강점 4가지 (DIST · MKT · EDIT · DATA)</div>
+        <div class="ai-wiz-gen-item">출판사 강점 4가지 (DIST · MKT · EDIT · DATA)</div>
         <div class="ai-wiz-gen-item">미팅 제안 멘트</div>
       </div>
     </div>`;

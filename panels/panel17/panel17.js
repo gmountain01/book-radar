@@ -22,7 +22,7 @@ var DEFAULTS = {
   bio: '인디애나대학교 의과대학 영상의학 및 영상과학과 교수로, AI와 딥러닝을 의료 분야에 접목해 알츠하이머병 조기 진단 연구를 이끌고 있다.\n\n주요 저서:\n- 모두의 딥러닝(1-4판)\n- 당신의 이유는 무엇입니까',
   email: '',
   note2: 'https://github.com/taehojo\nhttps://www.jolab.ai\n\n저자가 직접 답하는 Q&A 사이트\nhttp://bit.ly/47LfEbQ',
-  ad: 'AI 시대, 개발자의 지식 파트너\n\nAI 기술이 세상을 바꾸고 있는 지금,\n30년 넘게 책으로 지식을 전해온\n한빛미디어&한빛아카데미가\nAI 콘텐츠 서비스 전문기업인\n한빛앤을 설립했습니다.',
+  ad: '',
   desc: 'AI 시대의 새로운 코딩 방법을 배우고 싶을 때\n대화하며 쉽게 프로그래밍을 시작하고 싶을 때\n실제 프로젝트로 최신 워크플로를 체험하고 싶을 때',
   rec: '"AI와 대화하듯 프로그램을 만들어 본 경험이 제 업무 방식의 큰 전환점이 되었습니다."\n— 하버드대 의과대학 교수 캐롤 림\n\n"이 책을 따라가다 보면 독자는 마치 게임에서 레벨업하듯 자연스럽게 성장하게 될 것입니다."\n— 국회의원 황정아',
   spineTitle: '', spineSub: ''
@@ -133,8 +133,8 @@ root.innerHTML = `
           <textarea id="p17_note2" rows="3" placeholder="저자 블로그, GitHub, 유튜브 등" oninput="p17_update()"></textarea></div>
       </div>
       <div class="p17-section" id="p17_sec_cover3">
-        <div class="p17-field"><label>광고 문구 <span class="p17-hint-inline">한빛앤</span></label>
-          <textarea id="p17_ad" rows="3" placeholder="한빛앤 광고" oninput="p17_update()"></textarea></div>
+        <div class="p17-field"><label>광고 문구</label>
+          <textarea id="p17_ad" rows="3" placeholder="출판사 광고 문구" oninput="p17_update()"></textarea></div>
       </div>
       <div class="p17-section" id="p17_sec_cover4">
         <div class="p17-field"><label>책 설명</label>
@@ -405,21 +405,25 @@ function p17_update() {
   var c3 = document.getElementById('p17_pv_c3');
   if (c3) {
     if (t) c3.style.background = t.flap; else c3.style.cssText = '';
-    var adText = d.ad || '한빛앤 광고';
-    var adParts = adText.split('\n');
-    var adTitle = adParts[0] || '';
-    var adRest = adParts.slice(1).join('\n');
-    // 빈 줄로 소제목 분리
-    var adSections = adRest.split(/\n\n+/);
-    var adHtml = '<div class="ad"><div class="ad-title">' + _esc(adTitle) + '</div>';
-    adSections.forEach(function(sec) {
-      if (!sec.trim()) return;
-      var secLines = sec.trim().split('\n');
-      adHtml += '<div class="ad-sub">' + _esc(secLines[0]) + '</div>';
-      if (secLines.length > 1) adHtml += '<div>' + secLines.slice(1).map(function(l){ return _esc(l); }).join('<br>') + '</div>';
-    });
-    adHtml += '</div>';
-    c3.innerHTML = adHtml;
+    var adText = d.ad || '';
+    if (adText.trim()) {
+      var adParts = adText.split('\n');
+      var adTitle = adParts[0] || '';
+      var adRest = adParts.slice(1).join('\n');
+      // 빈 줄로 소제목 분리
+      var adSections = adRest.split(/\n\n+/);
+      var adHtml = '<div class="ad"><div class="ad-title">' + _esc(adTitle) + '</div>';
+      adSections.forEach(function(sec) {
+        if (!sec.trim()) return;
+        var secLines = sec.trim().split('\n');
+        adHtml += '<div class="ad-sub">' + _esc(secLines[0]) + '</div>';
+        if (secLines.length > 1) adHtml += '<div>' + secLines.slice(1).map(function(l){ return _esc(l); }).join('<br>') + '</div>';
+      });
+      adHtml += '</div>';
+      c3.innerHTML = adHtml;
+    } else {
+      c3.innerHTML = '';
+    }
   }
 
   // ═══ 표4 뒤표지 — PDF 참조: 상단 카피(볼드), 추천의 한마디 제목, 추천사 목록, 하단 가격 ═══
@@ -509,7 +513,7 @@ function p17_exportText() {
   text += '저자 소개:\n' + (d.bio || '') + '\n';
   text += '이메일: ' + (d.email || '') + '\n';
   text += '기타: ' + (d.note2 || '') + '\n\n';
-  text += '[표3 뒷날개]\n' + (d.ad || '한빛앤 광고') + '\n\n';
+  text += '[표3 뒷날개]\n' + (d.ad || '') + '\n\n';
   text += '[표4 뒤표지]\n';
   text += '책 설명:\n' + (d.desc || '') + '\n';
   text += '추천사:\n' + (d.rec || '') + '\n\n';

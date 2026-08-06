@@ -2497,10 +2497,10 @@ async function openProposalFromCat(catName,useAI=false){
     setVal(`pw-body-${i}`,w.body);
   });
 
-  // ── 한빛미디어와 함께하면 4개 ──
+  // ── 우리 출판사와 함께하면 4개 ──
   const hbCards=[
     {num:'DIST',title:'전 채널 동시 유통',body:'교보·yes24·알라딘 등 주요 서점 MD와 직접 협업, 신간 기획전 입점 및 노출 극대화를 함께 설계합니다.'},
-    {num:'MKT',title:'IT 독자층 타겟 마케팅',body:`한빛미디어는 ${catName} 독자층에 이미 친숙한 브랜드입니다. 출간 전후 채널H·SNS·뉴스레터를 활용해 독자 유입을 지속적으로 만들어 갑니다.`},
+    {num:'MKT',title:'IT 독자층 타겟 마케팅',body:`우리 출판사는 ${catName} 독자층에 이미 친숙한 브랜드입니다. 출간 전후 자체 채널·SNS·뉴스레터를 활용해 독자 유입을 지속적으로 만들어 갑니다.`},
     {num:'EDIT',title:'전담 편집팀 원고 지원',body:'기획부터 교정·교열·디자인까지 전담 편집팀이 함께합니다. 저자님은 내용에만 집중하실 수 있습니다.'},
     {num:'DATA',title:'데이터 기반 기획 지원',body:`베스트셀러 순위 데이터와 강의 수요 분석을 바탕으로, 독자가 원하는 내용과 구성을 함께 설계합니다. (강의 ${d.lecture.length}개, 수강생 ${totalPop.toLocaleString()}명 분석 완료)`},
   ];
@@ -2837,7 +2837,7 @@ function dlHTML(){
       <tbody>${rows}</tbody>
     </table>
   </div>
-  <div class="foot">한빛미디어 리리가 도와줌 · ${date} 생성 · 내부 자료 — 외부 유출 금지</div>
+  <div class="foot">리리가 도와줌 · ${date} 생성 · 내부 자료 — 외부 유출 금지</div>
 </div></body></html>`;
 
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});

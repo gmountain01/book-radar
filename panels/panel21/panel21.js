@@ -856,11 +856,11 @@ function _buildFullHtml(parsed, settings, aiCss){
     +'초판 발행 YYYY년 M월 D일<br>'
     +'지은이 [저자명]<br>'
     +'펴낸이 [발행인명]<br>'
-    +'펴낸곳 한빛미디어(주)<br>'
-    +'전화 02-325-5544 / 팩스 02-336-7124<br>'
-    +'등록 1999년 6월 24일 제25100-2017-000058호<br><br>'
+    +'펴낸곳 [출판사명]<br>'
+    +'전화 [전화번호] / 팩스 [팩스번호]<br>'
+    +'등록 [등록정보]<br><br>'
     +'ISBN 979-11-XXXXX-XX-X XXXXX<br><br>'
-    +'&copy; YYYY [저자명], 한빛미디어(주)'
+    +'&copy; YYYY [저자명], [출판사명]'
     +'</div></div>\n';
 
   return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">'

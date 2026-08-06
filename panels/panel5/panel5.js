@@ -580,7 +580,7 @@ async function generatePlan5WithAI() {
     ctx = `기획 대상: ${currentTitle || currentField}`;
   }
 
-  const prompt = `당신은 한빛미디어에서 10년간 IT 도서를 기획해온 편집자입니다. 집필 기획안을 작성하세요.
+  const prompt = `당신은 IT 출판사에서 10년간 IT 도서를 기획해온 편집자입니다. 집필 기획안을 작성하세요.
 
 [글쓰기 원칙]
 - 출판 실무자가 사내 기획회의에서 발표하는 톤. 딱딱한 보고서가 아니라 설득력 있는 피칭.
