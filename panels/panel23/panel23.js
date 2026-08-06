@@ -16,6 +16,9 @@ var _activeSource = 'all';
 var _searchQuery = '';
 var _dateRange = 'all';
 var currentMd = '', tocItems = [];
+var _curReportTitle = '', _curReportDate = '';  // 현재 열린 리포트 메타 (📌 인사이트용)
+var _p23Pins = [];      // renderMd에서 추출한 📌 대상(기획/인사이트) 항목
+var _p23Signals = [];   // renderSignals에서 추출한 출판 기회 신호
 
 // ══════════════════════════════════════════════════════
 // HTML 골격
@@ -486,11 +489,13 @@ function renderSignals(articles, trends) {
 
   if (!signals.length) return '<p class="p23-muted">아직 충분한 데이터가 쌓이지 않았습니다. 매일 수집하면 트렌드가 보입니다.</p>';
 
+  _p23Signals = signals;
   var h = '<div class="p23-signal-list">';
-  signals.forEach(function(sig) {
+  signals.forEach(function(sig, si) {
     var cls = sig.type === 'growth' ? 'p23-sig-growth' : sig.type === 'new' ? 'p23-sig-new' : 'p23-sig-cross';
     h += '<div class="p23-signal-card ' + cls + '">';
-    h += '<div class="p23-signal-head"><span class="p23-signal-icon">' + sig.icon + '</span><span class="p23-signal-kw">' + esc(sig.kw) + '</span></div>';
+    h += '<div class="p23-signal-head"><span class="p23-signal-icon">' + sig.icon + '</span><span class="p23-signal-kw">' + esc(sig.kw) + '</span>' +
+         '<button class="p23-pin-btn" type="button" onclick="p23_pinSignal(' + si + ')">📌 기획 보드</button></div>';
     h += '<div class="p23-signal-desc">' + esc(sig.desc) + '</div>';
     if (sig.articles.length) {
       h += '<div class="p23-signal-refs">';
@@ -823,6 +828,7 @@ window.p23_openReport = function(idx, btn) {
   $rptList.querySelectorAll('.p23-rpt-item').forEach(function(b) { b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
   $rptTitle.textContent = r.title;
+  _curReportTitle = r.title || ''; _curReportDate = r.date || '';
   $pdfBtn.disabled = false;
   currentMd = r.content;
   renderMd(currentMd);
@@ -854,7 +860,7 @@ $rptLayout.addEventListener('drop', function(e) { e.preventDefault(); dragCnt=0;
 function loadFile(file) {
   if (!file.name.match(/\.(md|markdown|txt)$/i)) { alert('.md 또는 .txt 파일만 지원합니다.'); return; }
   var reader = new FileReader();
-  reader.onload = function(ev) { currentMd = ev.target.result; $rptTitle.textContent = file.name; $pdfBtn.disabled = false; renderMd(currentMd); };
+  reader.onload = function(ev) { currentMd = ev.target.result; $rptTitle.textContent = file.name; _curReportTitle = file.name; _curReportDate = ''; $pdfBtn.disabled = false; renderMd(currentMd); };
   reader.readAsText(file, 'UTF-8');
 }
 
@@ -901,13 +907,15 @@ function parseMd(md) {
 
 function renderMd(md) {
   var r=parseMd(md); $empty.style.display='none'; $content.style.display='block'; $content.innerHTML=r.html; tocItems=r.headings;
+  _p23Pins=[];
   // 핵심 인사이트 강조 박스
   $content.querySelectorAll('h2').forEach(function(h){
-    if(!h.textContent.match(/핵심\s*인사이트/)) return;
+    if(!h.textContent.match(/핵심\s*인사이트|추가\s*인사이트/)) return;
     var box=document.createElement('div'); box.className='p23-insight-box';
     var sibs=[],nx=h.nextElementSibling;
     while(nx&&nx.tagName!=='H2'){sibs.push(nx);nx=nx.nextElementSibling;}
     h.parentNode.insertBefore(box,h); box.appendChild(h); sibs.forEach(function(s){box.appendChild(s);});
+    _p23AddPinBtn(box, h, 'insight', h.textContent.trim());
   });
   // 기획 카드 강조
   $content.querySelectorAll('h3').forEach(function(h){
@@ -917,9 +925,45 @@ function renderMd(md) {
     var uc='p23-mid';
     sibs.forEach(function(s){var t=s.textContent;if(t.match(/긴급도/)){if(t.match(/즉시/))uc='p23-urgent';else if(t.match(/빠른|선점/))uc='p23-chase';}});
     card.classList.add(uc); h.parentNode.insertBefore(card,h); card.appendChild(h); sibs.forEach(function(s){card.appendChild(s);});
+    _p23AddPinBtn(card, h, 'plan', h.textContent.trim());
   });
   renderTocSidebar(); $main.scrollTop=0;
 }
+
+// 카드/박스 헤딩 옆에 📌 버튼을 추가하고, 본문 전체를 _p23Pins에 저장한다.
+function _p23AddPinBtn(container, headEl, kind, title) {
+  var idx=_p23Pins.length;
+  _p23Pins.push({ kind:kind, title:title, body:container.textContent.trim() });
+  var btn=document.createElement('button');
+  btn.className='p23-pin-btn'; btn.type='button';
+  btn.textContent='📌 기획 보드';
+  btn.setAttribute('data-idx', String(idx));
+  btn.setAttribute('onclick', 'p23_pinInsight('+idx+')');
+  headEl.appendChild(btn);
+}
+
+// 기획 N 카드 / 인사이트 섹션 → 기획 보드에 추가
+window.p23_pinInsight = function(idx) {
+  var p=_p23Pins[idx]; if(!p) return;
+  var title = (p.kind==='plan' ? p.title : p.title);
+  if (isInBoard('insight', title)) { showToast('이미 기획 보드에 있는 항목입니다', 'orange'); return; }
+  addToPlanningBoard({
+    type:'insight', source:'panel23', title:title,
+    data:{ body:p.body, reportTitle:_curReportTitle, reportDate:_curReportDate }
+  });
+};
+
+// 출판 기회 신호 → 기획 보드에 추가
+window.p23_pinSignal = function(idx) {
+  var sig=_p23Signals[idx]; if(!sig) return;
+  var title='기회 신호: '+sig.kw;
+  if (isInBoard('signal', title)) { showToast('이미 기획 보드에 있는 항목입니다', 'orange'); return; }
+  var typeLabel = sig.type==='growth' ? '3주 연속 증가' : sig.type==='new' ? '신규 트렌드' : '크로스소스';
+  addToPlanningBoard({
+    type:'signal', source:'panel23', title:title,
+    data:{ signalType:typeLabel, desc:sig.desc, vals:sig.vals||[], keyword:sig.kw }
+  });
+};
 
 function renderTocSidebar() {
   var o='<div class="p23-toc-title">목차</div>';

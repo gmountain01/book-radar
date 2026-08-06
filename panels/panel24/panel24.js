@@ -7,9 +7,19 @@ var sortKey = 'count';
 var sortAsc = false;
 var searchQ = '';
 var pubFilter = '';
+var topicFilter = '';
+var pendingTopic = null;   // 초기화 전 예약된 주제 필터 (p24_applyTopicFilter)
 var page = 0;
 var PAGE_SIZE = 30;
 var loaded = false;
+
+// 19개 주제 (build_authors.py TOPIC_KW와 동일 순서)
+var TOPIC_LIST = [
+  "AI/LLM 일반","바이브코딩/노코드","AI 에이전트/RAG","프롬프트/활용","이미지/영상 AI",
+  "데이터분석/사이언스","딥러닝/머신러닝","파이썬","웹개발","앱개발/모바일",
+  "컴퓨터과학/기초","클라우드/DevOps","보안/해킹","엑셀/오피스","게임개발",
+  "비전공자/교양","자격증/취업","로봇/IoT/하드웨어","블록체인/Web3"
+];
 
 function initPanel24() {
   var el = document.getElementById('p24Content');
@@ -18,6 +28,7 @@ function initPanel24() {
   if (window._AUTHORS_DATA && window._AUTHORS_DATA.authors) {
     allAuthors = window._AUTHORS_DATA.authors;
     loaded = true;
+    if (pendingTopic !== null) { topicFilter = pendingTopic; pendingTopic = null; }
     applyFilterSort();
     render();
   } else {
@@ -32,6 +43,7 @@ function applyFilterSort() {
   var q = searchQ.toLowerCase();
   filtered = allAuthors.filter(function(a) {
     if (pubFilter && a.pubs.indexOf(pubFilter) < 0) return false;
+    if (topicFilter && (!a.topics || a.topics.indexOf(topicFilter) < 0)) return false;
     if (q) {
       var nameMatch = a.name.toLowerCase().indexOf(q) >= 0;
       var bookMatch = a.books.some(function(b){ return b.title.toLowerCase().indexOf(q) >= 0; });
@@ -103,6 +115,9 @@ function render() {
   html += '<select class="p24-select" onchange="p24_onPubFilter(this.value)"><option value="">전체 출판사</option>';
   allPubs.forEach(function(p) { html += '<option value="' + escHtml(p) + '"' + (p === pubFilter ? ' selected' : '') + '>' + escHtml(p) + '</option>'; });
   html += '</select>';
+  html += '<select class="p24-select" onchange="p24_onTopicFilter(this.value)"><option value="">전체 주제</option>';
+  TOPIC_LIST.forEach(function(t) { html += '<option value="' + escHtml(t) + '"' + (t === topicFilter ? ' selected' : '') + '>' + escHtml(t) + '</option>'; });
+  html += '</select>';
   html += '<div class="p24-sort-wrap">';
   sortBtns.forEach(function(b) {
     var active = sortKey === b.key;
@@ -169,6 +184,17 @@ function render() {
 
 window.p24_onSearch = function(v) { searchQ = v; applyFilterSort(); render(); };
 window.p24_onPubFilter = function(v) { pubFilter = v; applyFilterSort(); render(); };
+window.p24_onTopicFilter = function(v) { topicFilter = v; applyFilterSort(); render(); };
+
+// 외부 연동 계약: panel25 "저자 후보 보기" 등에서 호출.
+// 패널 미초기화(데이터 미로드) 상태면 값을 예약했다가 onActivate 시 적용.
+window.p24_applyTopicFilter = function(topic) {
+  topic = topic || '';
+  if (!loaded || !allAuthors.length) { pendingTopic = topic; return; }
+  topicFilter = topic;
+  applyFilterSort();
+  render();
+};
 window.p24_setSort = function(k) {
   if (sortKey === k) sortAsc = !sortAsc;
   else { sortKey = k; sortAsc = k === 'name'; }

@@ -21,6 +21,43 @@ OUT_DIR = os.path.join(SCRIPT_DIR, "..", "data", "authors")
 PANEL_JS_PATH = os.path.join(SCRIPT_DIR, "..", "panels", "panel24", "authors-data.js")
 
 
+# ══════════════════════════════════════════════════════
+# 주제 태깅 (generate_report.py의 TOPIC_KW와 동일 로직)
+# ══════════════════════════════════════════════════════
+TOPIC_KW = {
+    "AI/LLM 일반": ["ai", "인공지능", "llm", "gpt", "클로드", "제미나이", "생성형", "챗gpt", "오픈ai", "openai", "claude", "gemini"],
+    "바이브코딩/노코드": ["바이브 코딩", "바이브코딩", "vibe coding", "노코드", "로우코드"],
+    "AI 에이전트/RAG": ["에이전트", "agent", "rag", "랭체인", "langchain", "langgraph", "mcp", "에이전틱"],
+    "프롬프트/활용": ["프롬프트", "prompt", "ai 활용", "업무 자동화", "활용법", "활용 가이드"],
+    "이미지/영상 AI": ["이미지 생성", "stable diffusion", "미드저니", "comfyui", "영상 ai", "sora", "캡컷", "영상 편집", "ai 영상", "ai 쇼츠"],
+    "데이터분석/사이언스": ["데이터 분석", "데이터분석", "판다스", "pandas", "데이터 사이언스", "통계", "r 프로그래밍"],
+    "딥러닝/머신러닝": ["딥러닝", "머신러닝", "deep learning", "machine learning", "텐서플로", "파이토치", "트랜스포머"],
+    "파이썬": ["파이썬", "python", "점프 투 파이썬"],
+    "웹개발": ["웹", "리액트", "react", "next.js", "스프링", "spring", "html", "css", "자바스크립트", "타입스크립트"],
+    "앱개발/모바일": ["앱 개발", "flutter", "swift", "코틀린", "안드로이드", "ios"],
+    "컴퓨터과학/기초": ["컴퓨터 개론", "자료구조", "알고리즘", "운영체제", "컴퓨팅", "이산수학", "c언어", "c++", "자바 프로그래밍"],
+    "클라우드/DevOps": ["클라우드", "aws", "azure", "도커", "쿠버네티스", "kubernetes", "devops", "terraform"],
+    "보안/해킹": ["보안", "해킹", "정보보안", "사이버", "모의침투"],
+    "엑셀/오피스": ["엑셀", "excel", "파워포인트", "한글", "오피스", "워드"],
+    "게임개발": ["게임 개발", "유니티", "unity", "언리얼", "unreal", "게임 프로그래밍"],
+    "비전공자/교양": ["비전공자", "교양", "코딩 입문", "처음 배우는", "쉽게 배우는", "혼자 공부"],
+    "자격증/취업": ["자격증", "정보처리", "취업", "코딩 테스트", "코딩테스트"],
+    "로봇/IoT/하드웨어": ["로봇", "아두이노", "라즈베리", "iot", "반도체", "하드웨어", "임베디드"],
+    "블록체인/Web3": ["블록체인", "web3", "nft", "솔리디티", "이더리움"],
+}
+
+
+def classify_topics(titles: list[str]) -> list[str]:
+    """저자의 보유 도서 제목들을 소문자 매칭해 해당하는 모든 주제 수집 (복수분류).
+    매칭 없으면 빈 배열."""
+    joined = " ".join(t.lower() for t in titles if t)
+    matched = []
+    for topic, kws in TOPIC_KW.items():
+        if any(k in joined for k in kws):
+            matched.append(topic)
+    return matched
+
+
 def parse_author_field(raw: str) -> list[dict]:
     """저자 필드 파싱 → [{name, role}] 반환
     예: '아르빈드 나라야난,사야시 카푸르 저/강미경 역' → 저자 2명 + 역자 1명
@@ -118,6 +155,7 @@ def build_from_archive(archive: dict) -> dict:
             'count': len(books),
             'bestRank': best_rank,
             'totalDays': total_days,
+            'topics': classify_topics([b['title'] for b in books]),
         })
 
     # 권수 → 총등장일 → 최고순위 순 정렬
@@ -215,6 +253,7 @@ def build_from_xlsx(xlsx_path: str) -> dict:
             'count': len(books),
             'bestRank': min(b['bestRank'] for b in books) if books else 999,
             'totalDays': sum(b['days'] for b in books),
+            'topics': classify_topics([b['title'] for b in books]),
         })
     authors.sort(key=lambda a: (-a['count'], -a['totalDays'], a['bestRank']))
 

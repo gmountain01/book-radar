@@ -31,12 +31,17 @@ def main():
         print('버전 범프 커밋을 찾지 못했습니다 (히스토리 얕음?) — 검사 건너뜀')
         return
 
+    # 자동 생성 데이터 파일 — 매일 CI(fetch-rss.yml)가 재생성·커밋하므로
+    # 버전 범프 대상에서 제외 (코드가 아닌 데이터, GitHub Pages max-age=600으로 갱신 보장)
+    GENERATED = {'panels/panel24/authors-data.js'}
+
     # 2. 범프 이후 캐시 대상 자산(.js/.css) 변경 목록
     changed = git('log', '--name-only', '--format=', f'{bump}..HEAD',
                   '--', 'shared', 'panels')
     files = sorted({
         f for f in changed.splitlines()
         if f and (f.endswith('.js') or f.endswith('.css')) and '/libs/' not in f
+        and f.replace('\\', '/') not in GENERATED
     })
 
     if not files:

@@ -36,7 +36,8 @@ function ensureArchiveLoaded(cb) {
   if (_archiveLoading) return; // 이미 로딩 중 — 콜백만 큐에 추가
   _archiveLoading = true;
   var script = document.createElement('script');
-  script.src = 'data/yes24/archive.js';
+  // 일 단위 캐시 버스팅 — 매일 재생성되는 데이터가 stale 캐시로 남지 않게 (QA L-1/정합성)
+  script.src = 'data/yes24/archive.js?d=' + new Date().toISOString().slice(0, 10);
   script.setAttribute('data-yes24-archive', '1');
   function _flush() { var cbs = _archiveCallbacks.splice(0); cbs.forEach(function(fn){ fn(); }); }
   script.onload = function() { _archiveLoaded = true; _archiveLoading = false; _flush(); };
@@ -146,10 +147,104 @@ function computeTrendLag() {
 // ── [개선4] 아이템 전환 추적 ──
 var TRACKING_KEY = 'p25_item_tracking';
 var TRACK_STAGES = ['검토','섭외중','계약','집필중','출간','보류'];
+// 안정 id — 아이템 concept+fitType 기반 해시 (concept 문자열 그대로를 키로 쓰지 않음)
+function _hashStr(s) {
+  s = String(s || '');
+  var h = 0;
+  for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
+  return 'it' + (h >>> 0).toString(36);
+}
+function _itemTrackId(item) { return _hashStr((item.concept || '') + '|' + (item.fitType || '')); }
+function _legacyTrackKey(item) { return (item.concept || '').substring(0, 50); }
+function _localDateStr() {
+  var d = new Date();
+  function p(n) { return (n < 10 ? '0' : '') + n; }
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+// 로드 시 구 데이터(문자열 값) → {stage, updatedAt, memo} 객체로 마이그레이션
 function getTracking() {
-  try { return JSON.parse(localStorage.getItem(TRACKING_KEY) || '{}'); } catch(e) { return {}; }
+  var t;
+  try { t = JSON.parse(localStorage.getItem(TRACKING_KEY) || '{}'); } catch(e) { t = {}; }
+  if (!t || typeof t !== 'object') t = {};
+  var changed = false;
+  Object.keys(t).forEach(function(k) {
+    var v = t[k];
+    if (typeof v === 'string') {
+      t[k] = { stage: v, updatedAt: null, memo: '' };  // 구 데이터 보존
+      changed = true;
+    } else if (v && typeof v === 'object') {
+      if (typeof v.stage === 'undefined') { v.stage = ''; changed = true; }
+      if (typeof v.updatedAt === 'undefined') { v.updatedAt = null; changed = true; }
+      if (typeof v.memo === 'undefined') { v.memo = ''; changed = true; }
+    } else {
+      delete t[k]; changed = true;
+    }
+  });
+  if (changed) saveTracking(t);
+  return t;
 }
 function saveTracking(t) { try { localStorage.setItem(TRACKING_KEY, JSON.stringify(t)); } catch(e) { console.warn('[panel25] saveTracking: localStorage 저장 실패', e); } }
+
+// ── 19개 주제 분류 (generate_report.py TOPIC_KW 동기화) ──
+var TOPIC_KW = {
+  "AI/LLM 일반": ["ai", "인공지능", "llm", "gpt", "클로드", "제미나이", "생성형", "챗gpt", "오픈ai", "openai", "claude", "gemini"],
+  "바이브코딩/노코드": ["바이브 코딩", "바이브코딩", "vibe coding", "노코드", "로우코드"],
+  "AI 에이전트/RAG": ["에이전트", "agent", "rag", "랭체인", "langchain", "langgraph", "mcp", "에이전틱"],
+  "프롬프트/활용": ["프롬프트", "prompt", "ai 활용", "업무 자동화", "활용법", "활용 가이드"],
+  "이미지/영상 AI": ["이미지 생성", "stable diffusion", "미드저니", "comfyui", "영상 ai", "sora", "캡컷", "영상 편집", "ai 영상", "ai 쇼츠"],
+  "데이터분석/사이언스": ["데이터 분석", "데이터분석", "판다스", "pandas", "데이터 사이언스", "통계", "r 프로그래밍"],
+  "딥러닝/머신러닝": ["딥러닝", "머신러닝", "deep learning", "machine learning", "텐서플로", "파이토치", "트랜스포머"],
+  "파이썬": ["파이썬", "python", "점프 투 파이썬"],
+  "웹개발": ["웹", "리액트", "react", "next.js", "스프링", "spring", "html", "css", "자바스크립트", "타입스크립트"],
+  "앱개발/모바일": ["앱 개발", "flutter", "swift", "코틀린", "안드로이드", "ios"],
+  "컴퓨터과학/기초": ["컴퓨터 개론", "자료구조", "알고리즘", "운영체제", "컴퓨팅", "이산수학", "c언어", "c++", "자바 프로그래밍"],
+  "클라우드/DevOps": ["클라우드", "aws", "azure", "도커", "쿠버네티스", "kubernetes", "devops", "terraform"],
+  "보안/해킹": ["보안", "해킹", "정보보안", "사이버", "모의침투"],
+  "엑셀/오피스": ["엑셀", "excel", "파워포인트", "한글", "오피스", "워드"],
+  "게임개발": ["게임 개발", "유니티", "unity", "언리얼", "unreal", "게임 프로그래밍"],
+  "비전공자/교양": ["비전공자", "교양", "코딩 입문", "처음 배우는", "쉽게 배우는", "혼자 공부"],
+  "자격증/취업": ["자격증", "정보처리", "취업", "코딩 테스트", "코딩테스트"],
+  "로봇/IoT/하드웨어": ["로봇", "아두이노", "라즈베리", "iot", "반도체", "하드웨어", "임베디드"],
+  "블록체인/Web3": ["블록체인", "web3", "nft", "솔리디티", "이더리움"]
+};
+// 아이템 텍스트 → 19개 주제명 매핑 (첫 매칭). 실패 시 ''
+function _mapItemToTopic(item) {
+  if (!item) return '';
+  var text = ((item.concept || '') + ' ' + (item.targetLevel || '') + ' ' + (item.rationale || '')).toLowerCase();
+  var names = Object.keys(TOPIC_KW);
+  for (var i = 0; i < names.length; i++) {
+    var kws = TOPIC_KW[names[i]];
+    for (var j = 0; j < kws.length; j++) {
+      if (text.indexOf(kws[j].toLowerCase()) >= 0) return names[i];
+    }
+  }
+  return '';
+}
+
+// ── [작업1] 리포트 핵심 섹션 추출 (통계 테이블 제외, 인사이트·기획 아이템·액션만) ──
+function _extractReportContext(fullContent) {
+  if (!fullContent) return '';
+  var wanted = ['핵심 인사이트', '추가 인사이트', '출판 기획 아이템', '추천 다음 액션'];
+  var re = /^##[ \t]+(.+?)[ \t]*$/gm;  // 레벨2 헤더만 (### 은 매칭 안 됨)
+  var heads = [];
+  var m;
+  while ((m = re.exec(fullContent)) !== null) {
+    heads.push({ title: m[1], start: m.index });
+  }
+  if (!heads.length) return '';
+  var out = [];
+  for (var i = 0; i < heads.length; i++) {
+    var title = heads[i].title;
+    var isWanted = wanted.some(function(w) { return title.indexOf(w) >= 0; });
+    if (!isWanted) continue;
+    var end = (i + 1 < heads.length) ? heads[i + 1].start : fullContent.length;
+    out.push(fullContent.substring(heads[i].start, end).trim());
+  }
+  return out.join('\n\n');
+}
+
+// 섭외 메일 초안 캐시 (idx -> {status, text})
+var _outreachDrafts = {};
 
 // ── 데이터 자동 수집 ──
 function collectAllData() {
@@ -230,13 +325,49 @@ function collectAllData() {
     data.dashboard.summary = '총 ' + analysis.length + '개 카테고리 분석 — 공백 ' + data.dashboard.gaps.length + '개, 열세 ' + data.dashboard.behind.length + '개, 우위 ' + data.dashboard.leading.length + '개';
   }
 
-  // 7. 저자 목록
+  // 7. 저자 목록 — 주제 관련 저자 우선 정렬 후 50명 구성
   data.authors = [];
   data.authorsTotal = 0;
   if (window._AUTHORS_DATA && window._AUTHORS_DATA.authors) {
-    data.authorsTotal = window._AUTHORS_DATA.authors.length;
-    data.authors = window._AUTHORS_DATA.authors.slice(0, 50).map(function(a) {
+    var allAuthors = window._AUTHORS_DATA.authors;
+    data.authorsTotal = allAuthors.length;
+
+    // 주제 힌트 수집: 키워드/카테고리 + 대시보드 카테고리 + 보드 아이템
+    var topicHints = [];
+    data.keywords.forEach(function(c) { if (c.keyword) topicHints.push(c.keyword); if (c.category) topicHints.push(c.category); });
+    data.dashboard.gaps.concat(data.dashboard.behind, data.dashboard.leading).forEach(function(g) { if (g.cat) topicHints.push(g.cat); });
+    try {
+      var _bd = getBoard();
+      (_bd.items || []).forEach(function(it) {
+        if (it.title) topicHints.push(it.title);
+        if (it.data && it.data.category) topicHints.push(it.data.category);
+        if (it.data && it.data.reason) topicHints.push(it.data.reason);
+      });
+    } catch(e) { /* 보드 없음 무시 */ }
+    var hintText = topicHints.join(' ').toLowerCase();
+
+    function _authorRelevance(a) {
+      var topics = a.topics || [];  // 구버전 데이터 방어
+      if (!topics.length || !hintText) return 0;
+      var score = 0;
+      topics.forEach(function(t) {
+        if (!t) return;
+        var tl = String(t).toLowerCase();
+        if (hintText.indexOf(tl) >= 0) { score += 2; return; }
+        var parts = tl.split(/[\/\s]+/).filter(function(p) { return p.length >= 2; });
+        if (parts.some(function(p) { return hintText.indexOf(p) >= 0; })) score += 1;
+      });
+      return score;
+    }
+
+    // 관련도 내림차순 → 동점은 원래 순서 유지(상위 저자). 힌트 없으면 전원 0 → 원래 순서
+    var ranked = allAuthors.map(function(a, idx) { return { a: a, idx: idx, rel: _authorRelevance(a) }; });
+    ranked.sort(function(x, y) { return y.rel !== x.rel ? y.rel - x.rel : x.idx - y.idx; });
+
+    data.authors = ranked.slice(0, 50).map(function(o) {
+      var a = o.a;
       return { name: a.name, count: a.count, pubs: a.pubs, bestRank: a.bestRank, totalDays: a.totalDays,
+               topics: (a.topics || []).slice(0, 5),
                books: (a.books || []).slice(0, 3).map(function(b){ return typeof b === 'string' ? b : b.title; }) };
     });
   }
@@ -364,29 +495,61 @@ function _renderResult(r) {
   // recommendedItems — 아이템 카드 (fitType별 색상)
   if (r.recommendedItems && r.recommendedItems.length) {
     var tracking = getTracking();
+    var trackingDirty = false;
     h += '<div class="p25-section-title">추천 기획 아이템</div>';
     h += '<div class="p25-items-grid">';
     r.recommendedItems.forEach(function(item, i) {
       var fitClass = item.fitType === '안전' ? 'fit-safe' : item.fitType === '데이터' ? 'fit-data' : 'fit-risk';
-      var trackKey = (item.concept || '').substring(0, 50);
-      var curStage = tracking[trackKey] || '';
+      var trackId = _itemTrackId(item);
+      // 구 concept-substring 키 엔트리는 신규 해시 키로 승계 후 삭제 (QA L-1: 이중 저장 방지)
+      var legacyKey = _legacyTrackKey(item);
+      if (!tracking[trackId] && tracking[legacyKey]) {
+        tracking[trackId] = tracking[legacyKey];
+        delete tracking[legacyKey];
+        trackingDirty = true;
+      }
+      var entry = tracking[trackId] || null;
+      var curStage = entry ? (entry.stage || '') : '';
+      var updatedAt = entry ? entry.updatedAt : null;
+      var memo = entry ? (entry.memo || '') : '';
       h += '<div class="p25-item-card ' + fitClass + '">';
       h += '<div class="p25-item-head"><div class="p25-item-fit">' + escHtml(item.fitType || '') + '</div>';
-      // 전환 추적 드롭다운
-      h += '<select class="p25-track-select" data-key="' + escHtml(trackKey) + '" onchange="p25_setStage(this)">';
+      // 전환 추적 드롭다운 + 메모 버튼
+      h += '<div class="p25-track-wrap">';
+      h += '<select class="p25-track-select" data-key="' + escHtml(trackId) + '" onchange="p25_setStage(this)">';
       h += '<option value="">상태 선택</option>';
       TRACK_STAGES.forEach(function(s) { h += '<option value="' + s + '"' + (curStage === s ? ' selected' : '') + '>' + s + '</option>'; });
-      h += '</select></div>';
+      h += '</select>';
+      h += '<button class="p25-memo-btn" title="메모" onclick="p25_editMemo(\'' + trackId + '\')">📝</button>';
+      h += '</div></div>';
+      if (updatedAt) h += '<div class="p25-track-date">최근 변경 ' + escHtml(updatedAt) + '</div>';
+      if (memo) h += '<div class="p25-track-memo">📝 ' + escHtml(memo) + '</div>';
       h += '<div class="p25-item-concept">' + escHtml(item.concept) + '</div>';
       if (item.targetLevel) h += '<div class="p25-item-target">🎯 ' + escHtml(item.targetLevel) + '</div>';
       h += '<div class="p25-item-rationale">' + escHtml(item.rationale || '') + '</div>';
       h += '<div class="p25-item-actions">';
       h += '<button class="p25-item-send" onclick="p25_toProposal(' + i + ')">→ 저자 제안서</button>';
       h += '<button class="p25-item-send" onclick="p25_toPlan(' + i + ')">→ 출판 기획서</button>';
+      h += '<button class="p25-item-send" onclick="p25_viewAuthors(' + i + ')">→ 저자 후보 보기</button>';
+      h += '<button class="p25-item-send" onclick="p25_draftOutreach(' + i + ')">→ 섭외 메일 초안</button>';
       h += '</div>';
+      // 섭외 메일 초안 표시 영역
+      var draft = _outreachDrafts[i];
+      if (draft) {
+        h += '<div class="p25-outreach">';
+        if (draft.status === 'loading') {
+          h += '<div class="p25-outreach-loading"><span class="p25-spinner"></span> 섭외 메일 초안 생성 중…</div>';
+        } else {
+          h += '<div class="p25-outreach-head"><span class="p25-outreach-title">섭외 메일 초안</span>';
+          h += '<button class="p25-outreach-copy" onclick="p25_copyOutreach(' + i + ')">복사</button></div>';
+          h += '<pre class="p25-outreach-body">' + escHtml(draft.text || '') + '</pre>';
+        }
+        h += '</div>';
+      }
       h += '</div>';
     });
     h += '</div>';
+    if (trackingDirty) saveTracking(tracking);  // 레거시 키 승계분 1회 저장 (QA L-1)
   }
 
   // authorMatching — 비교 표
@@ -480,7 +643,20 @@ window.p25_run = async function() {
 
     if (data.reports.length) {
       userMsg += '[시장 리포트]\n';
-      data.reports.forEach(function(r) { userMsg += r.title + ' (' + r.date + '): ' + (r.content || r.summary || '').substring(0, 500) + '\n'; });
+      data.reports.forEach(function(r) {
+        // 전체 리포트 원본에서 핵심 섹션 추출 (data.reports.content는 1500자로 절단돼 후반부 유실)
+        var fullContent = '';
+        if (window._REPORTS && window._REPORTS.reports) {
+          var full = window._REPORTS.reports.filter(function(rr){ return rr.title === r.title; })[0];
+          if (full) fullContent = full.content || '';
+        }
+        var extracted = _extractReportContext(fullContent);
+        if (extracted) {
+          userMsg += r.title + ' (' + r.date + '):\n' + extracted.substring(0, 6000) + '\n';
+        } else {
+          userMsg += r.title + ' (' + r.date + '): ' + (r.content || r.summary || '').substring(0, 500) + '\n';
+        }
+      });
       userMsg += '\n';
     }
     if (feedAnalysis) userMsg += '[RSS 피드 종합]\n' + feedAnalysis + '\n\n';
@@ -582,9 +758,11 @@ window.p25_run = async function() {
     }
 
     if (data.authors.length) {
-      userMsg += '[저자 DB]\n';
+      userMsg += '[저자 DB — 위 시장/키워드 주제와 관련도 높은 저자 우선 정렬]\n';
       data.authors.slice(0, 50).forEach(function(a) {
-        userMsg += a.name + ' (' + a.pubs.join('/') + ') 도서: ' + a.books.join(', ') + '\n';
+        var line = a.name + ' (' + a.pubs.join('/') + ') 도서: ' + a.books.join(', ');
+        if (a.topics && a.topics.length) line += ' [주제: ' + a.topics.join(', ') + ']';
+        userMsg += line + '\n';
       });
       userMsg += '\n';
     }
@@ -616,6 +794,8 @@ window.p25_run = async function() {
       console.warn('[panel25] JSON 파싱 실패:', (text||'').substring(0, 300));
       throw new Error('AI 응답을 파싱할 수 없습니다. 다시 시도해주세요.');
     }
+    // 새 결과 확정 — 이전 아이템 인덱스 기준 섭외 메일 캐시 무효화 (QA M-1)
+    _outreachDrafts = {};
 
     // 결과 유효성 검증
     if (!_result.summary && !_result.recommendedItems) {
@@ -651,6 +831,7 @@ function _setProgress(el, step, total, msg) {
 // ── 이벤트 ──
 window.p25_clearResult = function() {
   _result = null;
+  _outreachDrafts = {};  // 섭외 메일 캐시 동반 초기화 (QA M-1)
   var board = getPlanningBoard();
   delete board.result;
   savePlanningBoard(board);
@@ -682,10 +863,120 @@ window.p25_setStage = function(sel) {
   var key = sel.getAttribute('data-key');
   var val = sel.value;
   var t = getTracking();
-  if (val) t[key] = val;
-  else delete t[key];
+  var entry = t[key] || { stage: '', updatedAt: null, memo: '' };
+  if (val) { entry.stage = val; entry.updatedAt = _localDateStr(); }
+  else { entry.stage = ''; }
+  if (!entry.stage && !entry.memo) delete t[key];
+  else t[key] = entry;
   saveTracking(t);
+  render();
 };
+window.p25_editMemo = function(key) {
+  var t = getTracking();
+  var entry = t[key] || { stage: '', updatedAt: null, memo: '' };
+  var next = window.prompt('전환 추적 메모 (짧게):', entry.memo || '');
+  if (next === null) return;  // 취소
+  entry.memo = next.trim();
+  if (!entry.stage && !entry.memo) delete t[key];
+  else t[key] = entry;
+  saveTracking(t);
+  render();
+};
+
+// ── [작업2] 저자 후보 보기 — panel24로 이동 + 주제 필터 ──
+window.p25_viewAuthors = function(idx) {
+  var item = (_result && _result.recommendedItems || [])[idx];
+  var topic = item ? _mapItemToTopic(item) : '';
+  switchTab(24, document.getElementById('tab24'));
+  if (topic && typeof window.p24_applyTopicFilter === 'function') {
+    try { window.p24_applyTopicFilter(topic); }
+    catch(e) { console.warn('[panel25] p24_applyTopicFilter 실패:', e); }
+  }
+  showToast(topic ? ('저자 목록 — "' + topic + '" 필터') : '저자 목록으로 이동', 'green');
+};
+
+// ── [작업3a] 섭외 메일 초안 ──
+window.p25_draftOutreach = async function(idx) {
+  if (!_result) return;
+  var item = (_result.recommendedItems || [])[idx];
+  if (!item) return;
+  if (_outreachDrafts[idx] && _outreachDrafts[idx].status === 'loading') return;
+  _outreachDrafts[idx] = { status: 'loading', text: '' };
+  render();
+
+  var apiKey;
+  try { apiKey = await loadApiKey(); } catch(e) { apiKey = null; }
+  if (!apiKey) {
+    delete _outreachDrafts[idx];
+    showToast('통합현황에서 Claude API 키를 설정해주세요.', 'orange');
+    render();
+    return;
+  }
+
+  // 저자 후보 매칭
+  var matching = (_result.authorMatching || []).filter(function(am) {
+    return (am.bestFitItem || '').indexOf(item.concept) >= 0 || (item.concept || '').indexOf(am.bestFitItem || '___') >= 0;
+  });
+  var author = matching.length ? matching[0] : null;
+
+  var context = '[기획 아이템 개요]\n';
+  context += '- 컨셉: ' + (item.concept || '') + '\n';
+  context += '- 대상 독자: ' + (item.targetLevel || '') + '\n';
+  context += '- 기획 근거: ' + (item.rationale || '') + '\n';
+  if (_result.summary) context += '\n[시장 근거 — 수치 포함]\n' + _result.summary + '\n';
+  if (author) {
+    context += '\n[저자 후보 — 왜 이 저자인가]\n- 이름: ' + author.author + '\n';
+    if (author.strength) context += '- 강점/집필 시그널: ' + author.strength + '\n';
+    if (author.risk) context += '- 유의점: ' + author.risk + '\n';
+  }
+
+  var SYS = '너는 한빛미디어 콘텐츠 기획 편집자다. 저자에게 보내는 정중한 한국어 출판 섭외 이메일을 쓴다.\n' +
+    '- 정중하고 간결하게. 과장·상투어("혁신적", "획기적") 지양.\n' +
+    '- 왜 지금 이 주제인지 시장 근거의 수치를 자연스럽게 녹여라.\n' +
+    '- 저자 후보가 특정돼 있으면 "왜 당신인가"(저서 이력·전문성·집필 시그널)를 근거로 언급하라.\n' +
+    '- 출력은 순수 텍스트. 첫 줄에 "제목: ..." 그다음 빈 줄, 이후 이메일 본문. 마크다운·JSON 금지.';
+  var prompt = '아래 정보로 출판 섭외 이메일 초안을 작성하라.\n\n' + context +
+    '\n[구성] 제목 한 줄 + 본문(인사 → 제안 배경·시장 근거 → 집필 제안 → 미팅 제안 → 맺음말).\n' +
+    '발신: 한빛미디어 기획 편집자. 수신: 위 저자 후보(특정 안 됐으면 "선생님").';
+
+  try {
+    var text = await callClaudeApi({ apiKey: apiKey, model: 'claude-sonnet-4-6', system: SYS, prompt: prompt, maxTokens: 2000, noPersona: true });
+    if (!text || !text.trim()) throw new Error('AI로부터 빈 응답을 받았습니다.');
+    _outreachDrafts[idx] = { status: 'done', text: text.trim() };
+    showToast('섭외 메일 초안이 생성되었습니다.', 'green');
+  } catch(e) {
+    console.warn('[panel25] 섭외 메일 초안 실패:', e);
+    delete _outreachDrafts[idx];
+    showToast('초안 생성 실패: ' + e.message, 'red');
+  }
+  render();
+};
+window.p25_copyOutreach = function(idx) {
+  var d = _outreachDrafts[idx];
+  if (!d || !d.text) return;
+  var text = d.text;
+  if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('클립보드에 복사됨', 'green');
+    }).catch(function() { _p25FallbackCopy(text); });
+  } else {
+    _p25FallbackCopy(text);
+  }
+};
+function _p25FallbackCopy(text) {
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast(ok ? '클립보드에 복사됨' : '복사 실패 — 직접 선택해 복사하세요', ok ? 'green' : 'red');
+  } catch(e) {
+    showToast('복사 실패 — 직접 선택해 복사하세요', 'red');
+  }
+}
 
 // ── AI 정제 후 전달 ──
 async function _refineAndSend(idx, target) {

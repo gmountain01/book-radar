@@ -4,6 +4,42 @@
 
 ---
 
+## 2026-08-06 — v2.7.0 QA 수정 (FIX-40~43)
+
+### panels/panel25 + scripts/check_version.py (전체 QA 2에이전트 병렬 — 신규 코드 정밀 + 시스템 정합성)
+
+- **[M] FIX-40 섭외 메일 캐시 잔존:** `_outreachDrafts`가 아이템 인덱스 키인데 종합 의견 재생성 시 초기화되지 않아 새 아이템 카드에 이전 아이템의 섭외 메일이 표시됨 → `p25_run` 결과 확정 시·`p25_clearResult`에서 초기화.
+- **[L] FIX-41 추적 레거시 키 이중 저장:** 읽기만 legacy 폴백하고 쓰기는 해시 키만 사용해 단계 변경 시 고아 엔트리 잔존 → 렌더 시 legacy→해시 키 승계+삭제 1회 마이그레이션(`trackingDirty` 저장).
+- **[M] FIX-42 CI 매일 실패(check_version ↔ 자동 커밋 충돌):** fetch-rss.yml이 매일 재생성·커밋하는 `panels/panel24/authors-data.js`를 check_version.py가 버전 미상향 위반으로 판정(2026-08-06 아침 데이터 커밋에서 실제 CI failure 발생) → 자동 생성 데이터 파일 GENERATED 예외 목록 추가.
+- **[L] FIX-43 archive.js 동적 로드 캐시 버스팅:** panel25 `ensureArchiveLoaded`의 `data/yes24/archive.js`(7.2MB, 매일 재생성)에 `?d=YYYY-MM-DD` 일 단위 파라미터 부착.
+- **QA 이상무 확인:** panel23 📌 인덱스 재렌더 정합·panel24 필터 AND 결합/pending 패턴·escHtml 전면 적용·window 노출 전수·TOPIC 사전 4곳 일치·탭 배선/데이터 흐름/CI 커버리지/localStorage 5MB 안전 등 약 48개 항목 검증 통과.
+
+---
+
+## 2026-08-06 — v2.7.0 (인사이트→행동 퍼널 FUNNEL-1~3)
+
+### scripts/build_authors.py + panels/panel24 (FUNNEL-2: 저자 주제 태깅)
+
+- **[M] 저자 DB 주제 태깅:** generate_report.py의 TOPIC_KW(19주제)를 build_authors.py에 이식, 저자 보유 도서 제목 기반 복수분류로 `topics[]` 필드 부여. 3,808명 중 2,490명(65%) 태깅. authors.js/json + authors-data.js 재생성.
+- **[M] panel24 주제 드롭다운 필터:** 19주제+전체, 기존 텍스트 검색·정렬·페이지네이션과 AND 결합. 모바일 폭 100% 대응.
+- **[M] `window.p24_applyTopicFilter(topic)` 연동 API:** 미초기화 시 pendingTopic 보관 → onActivate 적용(탭 전환 직후 호출 방어). panel25 "저자 후보 보기"의 진입점.
+
+### panels/panel23 (FUNNEL-1: 리포트 인사이트 원클릭 보드 인입)
+
+- **[M] 기획 N 카드·핵심/추가 인사이트 박스·기회 신호 카드에 📌 버튼:** `addToPlanningBoard`로 `{type:'insight'|'signal', title, data:{본문·리포트명·생성일}}` 인입. onclick 인덱스 방식(XSS 안전), isInBoard 중복 방지 토스트.
+
+### panels/panel25 (FUNNEL-1·2·3: 컨텍스트 수정 + 저자 매칭 + 섭외 실행)
+
+- **[H] AI 종합 리포트 500자 잘림 수정:** `_extractReportContext` — 핵심 인사이트·추가 인사이트·출판 기획 아이템·추천 다음 액션 섹션만 정규식 추출(~6,000자 상한, 실패 시 기존 폴백). 기존엔 앞 500자만 프롬프트에 도달해 기획 아이템 섹션이 통째로 누락됐음.
+- **[M] 주제 기반 저자 매칭:** authorMatching 주입을 "상위 50명 고정" → 키워드/카테고리/보드 힌트 기반 `_authorRelevance` 관련도 정렬 상위 50명으로 교체, 프롬프트에 `[주제: …]` 표기.
+- **[M] "→ 저자 후보 보기" 버튼:** `_mapItemToTopic`(TOPIC_KW 동기화)으로 아이템→주제 매핑 후 switchTab(24)+p24_applyTopicFilter 호출.
+- **[M] "→ 섭외 메일 초안" 버튼:** `p25_draftOutreach` — 기획 개요+시장 근거+저자 근거로 Claude 초안 생성(sonnet, maxTokens 2000), 카드 확장 표시+클립보드 복사(폴백 포함).
+- **[M] 추적 스키마 보강:** `p25_item_tracking` 키를 concept 앞50자 → title+fitType 해시 안정 id로, 값을 `{stage, updatedAt, memo}` 객체로 확장. 구 문자열 값 자동 마이그레이션+legacy 키 폴백(데이터 유실 없음). 단계 변경 시 날짜 자동 기록, 메모 입력 UI.
+- **신규 window 노출:** p25_viewAuthors, p25_draftOutreach, p25_copyOutreach, p25_editMemo.
+- **?v=236 일괄 상향.** 근거: dev-advisor 인사이트→행동 퍼널 진단(5단계 중 3단계 부재·2단계 반쪽) 즉시 액션 TOP3.
+
+---
+
 ## 2026-07-07 — v2.6.7 (캐시 버스팅 자동화 AUTO-1~2)
 
 ### scripts/bump_version.py + scripts/check_version.py + .github/workflows/ci.yml (AUTO-1~2)
