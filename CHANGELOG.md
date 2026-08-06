@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-08-06 — v2.7.1 (새 리포트 뱃지 + 홈 브리핑 FUNNEL-4)
+
+### shared/app.js + index.html + panels/panel23 + shared/styles.css
+
+- **[M] tab23 새 리포트 뱃지:** `updateReportBadge()` — 최신 리포트 식별자(`id|date|title`)를 localStorage `p23_last_seen_report`와 비교, 미확인이면 사이드바 NEW 뱃지 점등(p25Badge 패턴). panel23 "📊 리포트" 탭 진입(`renderReportList`) 시 `markLatestReportSeen()`으로 확인 처리+뱃지 해제.
+- **[M] panel0 홈 브리핑 카드:** `renderHomeBriefing()` — 최신 리포트 `## 핵심 인사이트` 볼드 헤드라인 최대 3줄(실패 시 summary 폴백) + 생성일 + NEW 표시 + `weekly_trends` 급상승 키워드 상위 3개(없으면 생략). 클릭 시 switchTab(23) 이동. 대용량 archive.js 추가 로드 없이 기존 전역 데이터만 사용, escHtml 전면 적용, `_REPORTS` 미로드 시 미렌더.
+- **?v=237 일괄 상향.** 근거: dev-advisor 퍼널 진단 차순위 1번 — 퍼널 ①(인사이트 도달) 개통.
+
+---
+
 ## 2026-08-06 — v2.7.0 QA 수정 (FIX-40~43)
 
 ### panels/panel25 + scripts/check_version.py (전체 QA 2에이전트 병렬 — 신규 코드 정밀 + 시스템 정합성)

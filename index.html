@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 릴리스 시 모든 로컬 ?v= 파라미터를 일괄 치환하세요. libs/ 서드파티 파일은 제외. 현재: v=236 -->
+<!-- 릴리스 시 모든 로컬 ?v= 파라미터를 일괄 치환하세요. libs/ 서드파티 파일은 제외. 현재: v=237 -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10,27 +10,27 @@
 <script src="libs/d3.v7.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="libs/pretendard.min.css" rel="stylesheet">
-<link rel="stylesheet" href="shared/styles.css?v=236">
-<link rel="stylesheet" href="panels/panel5/panel5.css?v=236">
-<link rel="stylesheet" href="panels/panel6/panel6.css?v=236">
-<link rel="stylesheet" href="panels/panel7/panel7.css?v=236">
-<link rel="stylesheet" href="panels/panel8/panel8.css?v=236">
-<link rel="stylesheet" href="panels/panel9/panel9.css?v=236">
-<link rel="stylesheet" href="panels/panel10/panel10.css?v=236">
-<link rel="stylesheet" href="panels/panel11/panel11.css?v=236">
-<link rel="stylesheet" href="panels/panel12/panel12.css?v=236">
-<link rel="stylesheet" href="panels/panel13/panel13.css?v=236">
-<link rel="stylesheet" href="panels/panel14/panel14.css?v=236">
-<link rel="stylesheet" href="panels/panel15/panel15.css?v=236">
-<link rel="stylesheet" href="panels/panel16/panel16.css?v=236">
-<link rel="stylesheet" href="panels/panel21/panel21.css?v=236">
-<link rel="stylesheet" href="panels/panel17/panel17.css?v=236">
-<link rel="stylesheet" href="panels/panel18/panel18.css?v=236">
-<link rel="stylesheet" href="panels/panel22/panel22.css?v=236">
-<link rel="stylesheet" href="panels/panel23/panel23.css?v=236">
-<link rel="stylesheet" href="panels/panel24/panel24.css?v=236">
-<link rel="stylesheet" href="panels/panel25/panel25.css?v=236">
-<link rel="stylesheet" href="shared/unify.css?v=236">
+<link rel="stylesheet" href="shared/styles.css?v=237">
+<link rel="stylesheet" href="panels/panel5/panel5.css?v=237">
+<link rel="stylesheet" href="panels/panel6/panel6.css?v=237">
+<link rel="stylesheet" href="panels/panel7/panel7.css?v=237">
+<link rel="stylesheet" href="panels/panel8/panel8.css?v=237">
+<link rel="stylesheet" href="panels/panel9/panel9.css?v=237">
+<link rel="stylesheet" href="panels/panel10/panel10.css?v=237">
+<link rel="stylesheet" href="panels/panel11/panel11.css?v=237">
+<link rel="stylesheet" href="panels/panel12/panel12.css?v=237">
+<link rel="stylesheet" href="panels/panel13/panel13.css?v=237">
+<link rel="stylesheet" href="panels/panel14/panel14.css?v=237">
+<link rel="stylesheet" href="panels/panel15/panel15.css?v=237">
+<link rel="stylesheet" href="panels/panel16/panel16.css?v=237">
+<link rel="stylesheet" href="panels/panel21/panel21.css?v=237">
+<link rel="stylesheet" href="panels/panel17/panel17.css?v=237">
+<link rel="stylesheet" href="panels/panel18/panel18.css?v=237">
+<link rel="stylesheet" href="panels/panel22/panel22.css?v=237">
+<link rel="stylesheet" href="panels/panel23/panel23.css?v=237">
+<link rel="stylesheet" href="panels/panel24/panel24.css?v=237">
+<link rel="stylesheet" href="panels/panel25/panel25.css?v=237">
+<link rel="stylesheet" href="shared/unify.css?v=237">
 <!-- panel8/9 external deps (로컬 libs/ — CDN Tracking Prevention 우회) -->
 <script src="libs/pdf.min.js"></script>
 <script src="libs/mammoth.browser.min.js"></script>
@@ -59,7 +59,7 @@
   <button class="nav-item locked" data-icon="👥" id="tab2" onclick="switchTab(2,this)"><span class="nav-label">저자풀 🔒</span></button>
   <button class="nav-item" data-icon="🔑" id="tab10" onclick="switchTab(10,this)"><span class="nav-label">키워드 분석</span></button>
   <button class="nav-item locked" data-icon="📺" id="tab7" onclick="switchTab(7,this)"><span class="nav-label">유튜버 분석 🔒</span></button>
-  <button class="nav-item" data-icon="📊" id="tab23" onclick="switchTab(23,this)"><span class="nav-label">시장 분석</span></button>
+  <button class="nav-item" data-icon="📊" id="tab23" onclick="switchTab(23,this)"><span class="nav-label">시장 분석</span><span id="p23ReportBadge" style="display:none;background:var(--accent);color:#fff;border-radius:10px;padding:0 6px;font-size:.6rem;font-weight:700;margin-left:4px;">NEW</span></button>
   <button class="nav-item" data-icon="📚" id="tab24" onclick="switchTab(24,this)"><span class="nav-label">저자 목록</span></button>
   <button class="nav-item" data-icon="📋" id="tab25" onclick="switchTab(25,this)"><span class="nav-label">기획 보드</span><span id="p25Badge" style="display:none;background:var(--accent);color:#fff;border-radius:10px;padding:0 6px;font-size:.65rem;font-weight:700;margin-left:4px;">0</span></button>
 
@@ -98,6 +98,7 @@
 
 <!-- ===== 탭1: 데이터 업로드 ===== -->
 <div class="panel active" id="panel0">
+  <div id="homeBriefing"></div>
   <div class="hint">
     베스트셀러·강의 파일은 자동으로 로드됩니다.<br>
     <b>각 팀 출간관리 파일</b>은 직접 업로드해야 준비 현황이 함께 표시됩니다.
@@ -1506,41 +1507,41 @@
 <!-- ═══════ 교정 도우미 패널 (panel8) ═══════ -->
 
 <!-- 외부 스크립트: 의존성 순서대로 로드 -->
-<script src="shared/config.js?v=236"></script>
-<script src="shared/api-keys.js?v=236"></script><!-- API 키 (gitignore, 로컬 전용) -->
-<script src="shared/app.js?v=236"></script>
-<script src="shared/youtube.js?v=236"></script>
-<script src="shared/router.js?v=236"></script>
-<script defer src="panels/panel2/panel2-data.js?v=236"></script>
-<script defer src="panels/panel3/panel3.js?v=236"></script>
-<script defer src="panels/panel5/panel5.js?v=236"></script>
-<script defer src="panels/panel6/panel6.js?v=236"></script>
-<script defer src="panels/panel7/panel7.js?v=236"></script>
-<script defer src="panels/panel8/교정규칙.js?v=236"></script>
-<script defer src="panels/panel8/loanword-data.js?v=236"></script>
-<script defer src="panels/panel8/test-fixtures.js?v=236"></script>
-<script defer src="data/naver-speller-key.js?v=236"></script>
-<script defer src="panels/panel8/panel8.js?v=236"></script>
-<script defer src="panels/panel9/panel9.js?v=236"></script>
-<script defer src="panels/panel10/panel10.js?v=236"></script>
-<script defer src="panels/panel13/panel13.js?v=236"></script>
-<script defer src="panels/panel14/panel14.js?v=236"></script>
-<script defer src="panels/panel15/panel15.js?v=236"></script>
-<script defer src="panels/panel16/panel16.js?v=236"></script>
-<script defer src="panels/panel18/panel18.js?v=236"></script>
-<script defer src="panels/panel21/panel21.js?v=236"></script>
-<script defer src="panels/panel17/panel17.js?v=236"></script>
-<script defer src="panels/panel17/p17-concepts.js?v=236"></script>
-<script defer src="panels/panel22/panel22.js?v=236"></script>
-<script src="data/rss/archive.js?v=236"></script>
-<script src="data/rss/feeds.js?v=236"></script>
-<script src="data/reports/reports.js?v=236"></script>
-<script defer src="panels/panel23/panel23.js?v=236"></script>
-<script defer src="panels/panel24/authors-data.js?v=236"></script>
-<script defer src="panels/panel24/panel24.js?v=236"></script>
-<script defer src="panels/panel25/panel25.js?v=236"></script>
-<script defer src="panels/panel12/panel12.js?v=236"></script>
-<script defer src="panels/panel11/panel11.js?v=236"></script>
+<script src="shared/config.js?v=237"></script>
+<script src="shared/api-keys.js?v=237"></script><!-- API 키 (gitignore, 로컬 전용) -->
+<script src="shared/app.js?v=237"></script>
+<script src="shared/youtube.js?v=237"></script>
+<script src="shared/router.js?v=237"></script>
+<script defer src="panels/panel2/panel2-data.js?v=237"></script>
+<script defer src="panels/panel3/panel3.js?v=237"></script>
+<script defer src="panels/panel5/panel5.js?v=237"></script>
+<script defer src="panels/panel6/panel6.js?v=237"></script>
+<script defer src="panels/panel7/panel7.js?v=237"></script>
+<script defer src="panels/panel8/교정규칙.js?v=237"></script>
+<script defer src="panels/panel8/loanword-data.js?v=237"></script>
+<script defer src="panels/panel8/test-fixtures.js?v=237"></script>
+<script defer src="data/naver-speller-key.js?v=237"></script>
+<script defer src="panels/panel8/panel8.js?v=237"></script>
+<script defer src="panels/panel9/panel9.js?v=237"></script>
+<script defer src="panels/panel10/panel10.js?v=237"></script>
+<script defer src="panels/panel13/panel13.js?v=237"></script>
+<script defer src="panels/panel14/panel14.js?v=237"></script>
+<script defer src="panels/panel15/panel15.js?v=237"></script>
+<script defer src="panels/panel16/panel16.js?v=237"></script>
+<script defer src="panels/panel18/panel18.js?v=237"></script>
+<script defer src="panels/panel21/panel21.js?v=237"></script>
+<script defer src="panels/panel17/panel17.js?v=237"></script>
+<script defer src="panels/panel17/p17-concepts.js?v=237"></script>
+<script defer src="panels/panel22/panel22.js?v=237"></script>
+<script src="data/rss/archive.js?v=237"></script>
+<script src="data/rss/feeds.js?v=237"></script>
+<script src="data/reports/reports.js?v=237"></script>
+<script defer src="panels/panel23/panel23.js?v=237"></script>
+<script defer src="panels/panel24/authors-data.js?v=237"></script>
+<script defer src="panels/panel24/panel24.js?v=237"></script>
+<script defer src="panels/panel25/panel25.js?v=237"></script>
+<script defer src="panels/panel12/panel12.js?v=237"></script>
+<script defer src="panels/panel11/panel11.js?v=237"></script>
 <script>
 /* ── Ctrl+Alt+Enter: 개발자 콘솔 토글 ── */
 (function(){

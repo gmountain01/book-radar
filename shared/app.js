@@ -153,6 +153,109 @@ function savePlanningBoard(board) {
   safeLSSet('p25_board', JSON.stringify(board));
 }
 
+// ━━━ 새 리포트 뱃지 + 홈 브리핑 (tab23 시장 분석 인사이트 도달) ━━━
+var P23_SEEN_KEY = 'p23_last_seen_report';
+
+// 최신 리포트 (data/reports/reports.js가 로드한 전역, 없으면 null)
+function _latestReport() {
+  var reps = (window._REPORTS && window._REPORTS.reports) || [];
+  return reps.length ? reps[0] : null;
+}
+// 리포트 식별자 (id + date + title 조합)
+function _reportSig(r) {
+  if (!r) return '';
+  return (r.id || '') + '|' + (r.date || '') + '|' + (r.title || '');
+}
+function _getSeenReport() {
+  try { return localStorage.getItem(P23_SEEN_KEY) || ''; }
+  catch(e) { console.warn('[app] p23 마지막 확인 리포트 읽기 실패', e); return ''; }
+}
+// 사이드바 tab23 새 리포트 뱃지 갱신 (최신 리포트가 미확인이면 점등)
+function updateReportBadge() {
+  var badge = document.getElementById('p23ReportBadge');
+  if (!badge) return;
+  var r = _latestReport();
+  if (!r) { badge.style.display = 'none'; return; }
+  var isNew = _reportSig(r) !== _getSeenReport();
+  badge.style.display = isNew ? 'inline-flex' : 'none';
+}
+// 최신 리포트를 확인함으로 표시 → 뱃지 제거 (panel23 리포트 탭 열람 시 호출)
+function markLatestReportSeen() {
+  var r = _latestReport();
+  if (!r) return;
+  try { localStorage.setItem(P23_SEEN_KEY, _reportSig(r)); }
+  catch(e) { console.warn('[app] p23 마지막 확인 리포트 저장 실패', e); }
+  var badge = document.getElementById('p23ReportBadge');
+  if (badge) badge.style.display = 'none';
+}
+
+// 리포트 content의 "## 핵심 인사이트" 섹션에서 볼드 헤드라인 최대 3개 추출
+function _extractInsightHeadlines(content) {
+  if (!content) return [];
+  var m = content.match(/##\s*핵심 인사이트([\s\S]*?)(?:\n#{1,2}\s|$)/);
+  var section = m ? m[1] : content;
+  var out = [], re = /\*\*([^*\n]+)\*\*/g, mm;
+  while ((mm = re.exec(section)) && out.length < 3) {
+    var t = mm[1].trim();
+    if (t) out.push(t);
+  }
+  return out;
+}
+// 최근 주 급상승 키워드 상위 N개 (weekly_trends 마지막 2주 비교)
+function _topRisingKeywords(n) {
+  try {
+    var trends = (window._RSS_ARCHIVE && window._RSS_ARCHIVE.weekly_trends) || [];
+    if (trends.length < 2) return [];
+    var curr = trends[trends.length - 1].keywords || {};
+    var prev = trends[trends.length - 2].keywords || {};
+    var rising = [];
+    for (var kw in curr) {
+      var c = curr[kw] || 0, p = prev[kw] || 0;
+      if (p === 0 && c >= 2) rising.push({ kw: kw, c: c });
+      else if (p > 0 && c >= p * 2) rising.push({ kw: kw, c: c });
+    }
+    rising.sort(function(a, b) { return b.c - a.c; });
+    return rising.slice(0, n || 3).map(function(x) { return x.kw; });
+  } catch(e) { console.warn('[app] 급상승 키워드 추출 실패', e); return []; }
+}
+
+// panel0 홈 브리핑 카드 "이번 주 시장 변화" 렌더 (데이터 전무 시 미렌더)
+function renderHomeBriefing() {
+  var el = document.getElementById('homeBriefing');
+  if (!el) return;
+  var r = _latestReport();
+  if (!r) { el.innerHTML = ''; return; }
+  var isNew = _reportSig(r) !== _getSeenReport();
+
+  var insights = _extractInsightHeadlines(r.content);
+  if (!insights.length && r.summary) insights = [r.summary];
+
+  var lines = insights.map(function(t) {
+    return '<li class="hb-line">' + escHtml(t) + '</li>';
+  }).join('');
+
+  var kwHtml = '';
+  var kws = _topRisingKeywords(3);
+  if (kws.length) {
+    kwHtml = '<div class="hb-kw"><span class="hb-kw-label">🔥 급상승</span>' +
+      kws.map(function(k) { return '<span class="hb-kw-chip">' + escHtml(k) + '</span>'; }).join('') +
+    '</div>';
+  }
+
+  el.innerHTML =
+    '<div class="home-brief" onclick="switchTab(23,document.getElementById(\'tab23\'))">' +
+      '<div class="hb-head">' +
+        '<span class="hb-title">📊 이번 주 시장 변화</span>' +
+        (isNew ? '<span class="hb-new">NEW</span>' : '') +
+        '<span class="hb-date">' + escHtml(r.date || '') + '</span>' +
+      '</div>' +
+      '<div class="hb-rpt-title">' + escHtml(r.title || '') + '</div>' +
+      (lines ? '<ul class="hb-list">' + lines + '</ul>' : '') +
+      kwHtml +
+      '<div class="hb-foot"><span class="hb-more">시장 분석 자세히 보기 →</span></div>' +
+    '</div>';
+}
+
 /**
  * localStorage 안전 저장 — 5MB 한도 초과 시 오래된 캐시 자동 정리 후 재시도
  */
@@ -1353,6 +1456,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   loadDefaults();
   if(typeof meetInitDefaults === 'function') meetInitDefaults('brief');
   if(typeof meetRender === 'function') meetRender();
+  try { updateReportBadge(); renderHomeBriefing(); } catch(e){ console.warn('[app] 홈 브리핑/뱃지 초기화 실패', e); }
 });
 
 

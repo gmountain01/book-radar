@@ -757,6 +757,8 @@ function getPubHint(kw) {
 var _reportsList = [];
 var _currentReportIdx = -1;
 function renderReportList() {
+  // 리포트 탭 열람 → 최신 리포트 확인 처리 + 사이드바 NEW 뱃지 제거
+  if (typeof markLatestReportSeen === 'function') { try { markLatestReportSeen(); } catch(e) { console.warn('[panel23] markLatestReportSeen 실패', e); } }
   _reportsList = (window._REPORTS && window._REPORTS.reports) || [];
   if (!_reportsList.length) {
     /* 리모트 폴백 */
