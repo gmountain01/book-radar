@@ -1472,9 +1472,10 @@ async function loadDefaults(){
   const myPubSel=document.getElementById('myPub');
   myPubSel.value='';
   onMyPubChange();
+  // 경쟁 출판사 — 기본 전체 선택 해제, 사용자가 직접 선택
   const compSel=document.getElementById('compSel');
   for(const o of compSel.options){
-    o.selected=!DEFAULT_EXCLUDE_PUBS.includes(o.value);
+    o.selected=false;
   }
 }
 
