@@ -433,6 +433,15 @@ function _collectSubInfo(item) {
     }
     case 'report':
       return d.date || '';
+    case 'dashboard': {
+      var dp = [];
+      if (d.category) dp.push(d.category);
+      if (d.compCount != null) dp.push('경쟁 ' + d.compCount + '종');
+      if (d.compBest) dp.push('경쟁 최고 ' + d.compBest + '위');
+      if (d.mineBest) dp.push('자사 ' + d.mineBest + '위');
+      if (d.lectureCount) dp.push('강의 ' + d.lectureCount + '개');
+      return dp.join(' · ');
+    }
     default:
       return d.date || d.category || '';
   }
@@ -649,10 +658,12 @@ function _renderResult(r) {
       h += '<option value="">상태 선택</option>';
       TRACK_STAGES.forEach(function(s) { h += '<option value="' + s + '"' + (curStage === s ? ' selected' : '') + '>' + s + '</option>'; });
       h += '</select>';
-      h += '<button class="p25-memo-btn" title="메모" onclick="p25_editMemo(\'' + trackId + '\')">📝</button>';
+      h += '<button class="p25-memo-btn" title="메모" onclick="p25_editMemo(' + i + ')">📝</button>';
       h += '</div></div>';
       if (updatedAt) h += '<div class="p25-track-date">최근 변경 ' + escHtml(updatedAt) + '</div>';
+      h += '<div class="p25-memo-zone" id="p25memo_' + i + '" data-key="' + escHtml(trackId) + '">';
       if (memo) h += '<div class="p25-track-memo">📝 ' + escHtml(memo) + '</div>';
+      h += '</div>';
       h += '<div class="p25-item-concept">' + escHtml(item.concept) + '</div>';
       if (item.targetLevel) h += '<div class="p25-item-target">🎯 ' + escHtml(item.targetLevel) + '</div>';
       h += '<div class="p25-item-rationale">' + escHtml(item.rationale || '') + '</div>';
@@ -792,7 +803,7 @@ window.p25_run = async function() {
 
     // [사용자 선정 근거] — 편집자가 직접 📌한 insight/signal/article/report (판단에 우선 반영)
     var pinnedEvidence = board.items.filter(function(it) {
-      return it.type === 'insight' || it.type === 'signal' || it.type === 'article' || it.type === 'report';
+      return it.type === 'insight' || it.type === 'signal' || it.type === 'article' || it.type === 'report' || it.type === 'dashboard';
     });
     // 최신순 정렬 — 총량 상한 초과 시 최신 항목 우선 포함
     pinnedEvidence.sort(function(a, b) { return String(b.addedAt || '').localeCompare(String(a.addedAt || '')); });
@@ -818,6 +829,15 @@ window.p25_run = async function() {
           line = '📄 리포트: ' + (pit.title || '') + (pd.date ? ' (' + pd.date + ')' : '') + '\n';
           var rbody = pd.content || pd.summary || '';
           if (rbody) line += '  ' + String(rbody).substring(0, 300) + '\n';
+        } else if (pit.type === 'dashboard') {
+          line = '📊 대시보드: ' + (pit.title || '');
+          var dv = [];
+          if (pd.compCount != null) dv.push('경쟁 ' + pd.compCount + '종');
+          if (pd.compBest) dv.push('경쟁 최고 ' + pd.compBest + '위');
+          if (pd.mineBest) dv.push('자사 ' + pd.mineBest + '위');
+          if (pd.lectureCount) dv.push('강의 ' + pd.lectureCount + '개');
+          if (dv.length) line += ' [' + dv.join(', ') + ']';
+          line += '\n';
         }
         if (evBlock.length + line.length > evBudget) break;
         evBlock += line;
@@ -1035,16 +1055,53 @@ window.p25_setStage = function(sel) {
   saveTracking(t);
   render();
 };
-window.p25_editMemo = function(key) {
+// 📝 클릭 → 카드 내 인라인 편집 폼 토글 (모바일 UX 개선, window.prompt 대체)
+window.p25_editMemo = function(i) {
+  var zone = document.getElementById('p25memo_' + i);
+  if (!zone) return;
+  if (zone.querySelector('.p25-memo-edit')) return;  // 이미 편집 중
+  var key = zone.getAttribute('data-key');
+  var t = getTracking();
+  var entry = t[key];
+  var cur = entry ? (entry.memo || '') : '';
+  zone.innerHTML =
+    '<div class="p25-memo-edit">' +
+      '<input type="text" class="p25-memo-input" value="' + escHtml(cur) + '" placeholder="전환 추적 메모 (짧게)" maxlength="200">' +
+      '<button class="p25-memo-save" title="저장" onclick="p25_saveMemo(' + i + ')">저장</button>' +
+      '<button class="p25-memo-cancel" title="취소" onclick="p25_cancelMemo(' + i + ')">취소</button>' +
+    '</div>';
+  var input = zone.querySelector('.p25-memo-input');
+  if (input) {
+    input.focus();
+    try { input.setSelectionRange(input.value.length, input.value.length); } catch(e) {}
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); window.p25_saveMemo(i); }
+      else if (e.key === 'Escape') { e.preventDefault(); window.p25_cancelMemo(i); }
+    });
+  }
+};
+window.p25_saveMemo = function(i) {
+  var zone = document.getElementById('p25memo_' + i);
+  if (!zone) return;
+  var input = zone.querySelector('.p25-memo-input');
+  if (!input) return;
+  var key = zone.getAttribute('data-key');
   var t = getTracking();
   var entry = t[key] || { stage: '', updatedAt: null, memo: '' };
-  var next = window.prompt('전환 추적 메모 (짧게):', entry.memo || '');
-  if (next === null) return;  // 취소
-  entry.memo = next.trim();
+  entry.memo = input.value.trim();
   if (!entry.stage && !entry.memo) delete t[key];
   else t[key] = entry;
   saveTracking(t);
   render();
+};
+window.p25_cancelMemo = function(i) {
+  var zone = document.getElementById('p25memo_' + i);
+  if (!zone) return;
+  var key = zone.getAttribute('data-key');
+  var t = getTracking();
+  var entry = t[key];
+  var memo = entry ? (entry.memo || '') : '';
+  zone.innerHTML = memo ? '<div class="p25-track-memo">📝 ' + escHtml(memo) + '</div>' : '';
 };
 
 // ── [작업2] 저자 후보 보기 — panel24로 이동 + 주제 필터 ──

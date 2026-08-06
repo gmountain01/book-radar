@@ -102,7 +102,7 @@
 .p23-info-tip{font-size:11px;font-weight:500;color:var(--muted2,#9b9890);cursor:help;margin-left:2px;border:1px solid var(--border,#dddbd2);border-radius:50%;width:15px;height:15px;display:inline-flex;align-items:center;justify-content:center;line-height:1;}
 
 /* 주간 트렌드 테이블 */
-.p23-trend-table-wrap{margin-bottom:24px;overflow:hidden;border:1px solid var(--border,#dddbd2);border-radius:12px;background:var(--surface,#fff);}
+.p23-trend-table-wrap{margin-bottom:24px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;border:1px solid var(--border,#dddbd2);border-radius:12px;background:var(--surface,#fff);}
 .p23-trend-table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed;}
 .p23-trend-table th{background:var(--surface2,#edece7);padding:8px 6px;text-align:center;font-weight:600;border-bottom:2px solid var(--border,#dddbd2);white-space:nowrap;font-size:10px;overflow:hidden;text-overflow:ellipsis;color:var(--muted,#56544e);}
 .p23-trend-table th:first-child{width:160px;text-align:left;padding-left:14px;color:var(--text,#1a1917);}
@@ -205,13 +205,14 @@
 .p23-toc-item.p23-toc-h3{padding-left:28px;font-size:11px;color:var(--muted,#56544e);}
 .p23-toc-item.p23-toc-h3.active{color:var(--accent,#4F46B8);}
 
-/* 모바일 리포트 드롭다운 (데스크톱 숨김) */
-.p23-mobile-rpt-select{
+/* 모바일 리포트/목차 드롭다운 (데스크톱 숨김) */
+.p23-mobile-rpt-select,.p23-mobile-toc-select{
   display:none;width:100%;padding:8px 12px;font-size:13px;font-weight:500;
   border:1px solid var(--border,#dddbd2);border-radius:8px;
   background:var(--surface,#fff);color:var(--text,#1a1917);
   font-family:inherit;margin:0;flex-shrink:0;
 }
+.p23-mobile-toc-select{margin-top:8px;}
 
 /* 메인 콘텐츠 영역 — 전체 폭 활용 */
 .p23-main{overflow-y:auto;padding:0;background:var(--bg,#f4f3ef);}
@@ -319,6 +320,11 @@
 .p23-kw-chip.active{border-color:var(--accent,#4F46B8);background:var(--accent,#4F46B8);color:#fff;}
 .p23-kw-chip.active .p23-chip-cnt{background:rgba(255,255,255,.2);color:#fff;}
 .p23-chip-cnt{font-size:10px;font-family:'JetBrains Mono',monospace;background:var(--surface2,#edece7);padding:1px 6px;border-radius:12px;margin-left:4px;color:var(--muted,#56544e);}
+/* 칩 📈 차트 강조 토글 아이콘 */
+.p23-kw-hilite{display:inline-block;margin-left:6px;font-size:11px;line-height:1;opacity:.5;cursor:pointer;transition:opacity .15s,transform .15s;}
+.p23-kw-hilite:hover{opacity:1;transform:scale(1.2);}
+.p23-kw-hilite.active{opacity:1;filter:drop-shadow(0 0 2px var(--accent,#4F46B8));}
+.p23-kw-chip.active .p23-kw-hilite{opacity:.85;}
 
 /* 기사 모아보기 */
 .p23-kw-articles{background:var(--surface,#fff);border:1px solid var(--accent,#4F46B8);border-radius:12px;padding:16px;margin-bottom:20px;}
@@ -333,7 +339,7 @@
 /* ══════════════════════════════════════════════════════
    B-6. 소스 활동 히트맵
    ══════════════════════════════════════════════════════ */
-.p23-heatmap-wrap{overflow:hidden;border:1px solid var(--border,#dddbd2);border-radius:12px;background:var(--surface,#fff);margin-bottom:24px;}
+.p23-heatmap-wrap{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;border:1px solid var(--border,#dddbd2);border-radius:12px;background:var(--surface,#fff);margin-bottom:24px;}
 .p23-heatmap{width:100%;border-collapse:collapse;font-size:11px;}
 .p23-heatmap th{background:var(--surface2,#edece7);padding:8px 10px;text-align:center;font-weight:600;border-bottom:2px solid var(--border,#dddbd2);font-size:10px;color:var(--muted,#56544e);}
 .p23-heatmap th:first-child{text-align:left;padding-left:14px;width:160px;color:var(--text,#1a1917);}
@@ -354,15 +360,22 @@
   .p23-sources{display:none!important;}
   .p23-type-chips{padding:8px 16px!important;}
 
+  /* 피드 검색바: 검색 입력 한 줄 + 날짜 버튼/건수 다음 줄로 줄바꿈 */
+  .p23-search-bar{flex-wrap:wrap!important;padding:10px 16px!important;gap:8px!important;}
+  .p23-search{flex:1 1 100%!important;}
+
   /* 트렌드 */
   .p23-trend-summary{grid-template-columns:repeat(2,1fr)!important;}
   .p23-surge-row{grid-template-columns:1fr!important;}
   .p23-signal-list{grid-template-columns:1fr!important;}
+  /* 8주+ 누적 시 테이블/히트맵 가로 스크롤 (세로 오염 없이) */
+  .p23-trend-table{min-width:560px;}
+  .p23-heatmap{min-width:480px;}
 
   /* 리포트: 사이드바(목록+목차) 숨김 — 드롭다운으로 대체 */
   .p23-rpt-layout{grid-template-columns:1fr!important;}
   .p23-toc{display:none!important;}
-  .p23-mobile-rpt-select{display:block!important;}
+  .p23-mobile-rpt-select,.p23-mobile-toc-select{display:block!important;}
   .p23-content{padding:16px!important;}
   .p23-upload-bar{flex-wrap:wrap;gap:6px;}
 }

@@ -1993,7 +1993,23 @@ function renderMineChart(){
   });
 }
 
+// 통합 분석 인사이트 카드 📌 — 카테고리별 핀 항목 레지스트리 (XSS 안전 인덱스 방식)
+var _dashPins=[];
+function _dashPinBtn(title,data){
+  var idx=_dashPins.push({title:title,data:data})-1;
+  var added=isInBoard('dashboard',title);
+  return '<button class="pin-btn ic-pin'+(added?' added':'')+'" data-i="'+idx+'" onclick="dashPin(this)" title="기획 보드에 담기">'+(added?'✅':'📌')+'</button>';
+}
+window.dashPin=function(btn){
+  var it=_dashPins[+btn.dataset.i];
+  if(!it)return;
+  if(isInBoard('dashboard',it.title))removeFromBoard('dashboard',it.title);
+  else addToPlanningBoard({type:'dashboard',source:'panel1',title:it.title,data:it.data});
+  renderGapAnalysis();
+};
+
 function renderGapAnalysis(){
+  _dashPins=[];
   const insights=document.getElementById('insight-list');
   const insightBox=document.getElementById('insight-box');
   if(!insights)return;
@@ -2019,7 +2035,7 @@ function renderGapAnalysis(){
       const topAge=compTop.year>2000?new Date().getFullYear()-compTop.year:-1;
       const ageNote=topAge>=4?`<span style="font-size:.62rem;color:var(--red);font-weight:700;"> · ${topAge}년 경과</span>`:
                     topAge>=2?`<span style="font-size:.62rem;color:var(--yellow);"> · ${compTop.year}년작</span>`:'';
-      rows+=`<div class="ic-row"><span class="ic-row-label">${i+1}위 ${d.cat}</span><span class="ic-row-val">경쟁사 ${d.comp.length}권${lecInfo} · 1위 <strong>${compTop.rank}위</strong> 『${trunc(compTop.title,20)}』${ageNote}${planInfo}</span></div>`;
+      rows+=`<div class="ic-row"><span class="ic-row-label">${i+1}위 ${d.cat}</span><span class="ic-row-val">경쟁사 ${d.comp.length}권${lecInfo} · 1위 <strong>${compTop.rank}위</strong> 『${trunc(compTop.title,20)}』${ageNote}${planInfo}</span>${_dashPinBtn('공백 카테고리: '+d.cat,{status:'gap',category:d.cat,compCount:d.comp.length,compBest:compTop.rank,compTitle:compTop.title,compYear:compTop.year,lectureCount:d.lecture.length,plannedCount:d.planned.length})}</div>`;
       if(i<top3.length-1)rows+=`<div class="ic-divider"></div>`;
     });
     const restCnt=gapCats.length-3;
@@ -2037,7 +2053,7 @@ function renderGapAnalysis(){
     top3.forEach((d,i)=>{
       const compTop=d.comp[0];
       const mineTop=d.mine[0];
-      rows+=`<div class="ic-row"><span class="ic-row-label">${d.cat}</span><span class="ic-row-val">우리 <strong>${mineTop.rank}위</strong> 『${mineTop.title.slice(0,14)}…』 vs 경쟁 <strong>${compTop.rank}위</strong> 『${compTop.title.slice(0,14)}…』</span></div>`;
+      rows+=`<div class="ic-row"><span class="ic-row-label">${d.cat}</span><span class="ic-row-val">우리 <strong>${mineTop.rank}위</strong> 『${mineTop.title.slice(0,14)}…』 vs 경쟁 <strong>${compTop.rank}위</strong> 『${compTop.title.slice(0,14)}…』</span>${_dashPinBtn('열세 카테고리: '+d.cat,{status:'behind',category:d.cat,mineBest:mineTop.rank,compBest:compTop.rank,mineTitle:mineTop.title,compTitle:compTop.title})}</div>`;
       if(i<top3.length-1)rows+=`<div class="ic-divider"></div>`;
     });
     cards.push(`<div class="ic ic-yellow">
@@ -2055,7 +2071,7 @@ function renderGapAnalysis(){
       const mineTop=d.mine[0];
       const compInfo=d.comp.length>0?`경쟁사 최고 <strong>${d.comp[0].rank}위</strong>`:'<em>경쟁사 없음 (독점)</em>';
       const lecInfo=d.lecture.length>0?` · 강의 ${d.lecture.length}개`:'';
-      rows+=`<div class="ic-row"><span class="ic-row-label">${d.cat}</span><span class="ic-row-val">우리 <strong>${mineTop.rank}위</strong> · ${compInfo}${lecInfo}</span></div>`;
+      rows+=`<div class="ic-row"><span class="ic-row-label">${d.cat}</span><span class="ic-row-val">우리 <strong>${mineTop.rank}위</strong> · ${compInfo}${lecInfo}</span>${_dashPinBtn('우위 카테고리: '+d.cat,{status:'leading',category:d.cat,mineBest:mineTop.rank,compBest:(d.comp.length>0?d.comp[0].rank:null),compCount:d.comp.length,lectureCount:d.lecture.length})}</div>`;
       if(i<top3.length-1)rows+=`<div class="ic-divider"></div>`;
     });
     cards.push(`<div class="ic ic-green">

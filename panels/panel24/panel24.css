@@ -26,6 +26,12 @@
 .p24-author-name { font-weight:600; color:var(--fg,#222); }
 .p24-book-count { display:inline-flex; align-items:center; justify-content:center; min-width:28px; padding:2px 8px; border-radius:12px; background:var(--accent,#4F46B8); color:#fff; font-weight:700; font-size:.78rem; }
 .p24-pub-badge { display:inline-block; padding:1px 7px; border-radius:6px; font-size:.72rem; background:var(--accent-light,#e3e5f9); color:var(--accent,#4F46B8); margin:1px 3px 1px 0; white-space:nowrap; }
+/* 주제 칩 — 저자 행 이름 아래 + 프로필 모달 */
+.p24-topic-chips { margin-top:3px; display:flex; flex-wrap:wrap; gap:3px; }
+.p24-topic-chip { display:inline-block; padding:1px 6px; border-radius:5px; font-size:.68rem; background:var(--teal-bg,#e0f2f1); color:var(--teal,#00897b); white-space:nowrap; line-height:1.5; }
+.p24-topic-more { background:var(--surface,#f0f0f0); color:var(--muted,#888); }
+.p24-topic-chips-modal { margin-top:0; }
+
 .p24-book-list { font-size:.78rem; color:var(--muted,#666); line-height:1.5; }
 .p24-book-item { margin-bottom:2px; }
 .p24-book-item .p24-rank { color:var(--accent,#4F46B8); font-weight:600; margin-right:4px; }
@@ -87,6 +93,9 @@
   .p24-table td { padding:.4rem .5rem; }
   .p24-book-list { font-size:.72rem; }
   .p24-book-count { font-size:.72rem; min-width:22px; padding:1px 6px; }
+  /* 모바일 4열 모드: 저자 행 주제 칩 생략 (모달 칩은 유지) */
+  .p24-table .p24-topic-chips { display:none; }
+  .p24-topic-chips-modal { display:flex; }
   .p24-pagination { gap:.25rem; }
   .p24-page-btn { padding:.3rem .5rem; font-size:.75rem; }
 

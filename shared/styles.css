@@ -508,6 +508,9 @@ select{background:var(--surface);}
 .pin-btn.added{background:var(--green-bg);color:var(--green);border-color:var(--green-bd);}
 .pin-btn.added:hover{background:var(--green-bd);color:var(--green);}
 @media(max-width:800px){.pin-btn{min-height:32px;padding:.4rem .8rem;}}
+/* 인사이트 카드 행 내 소형 핀 */
+.ic-pin{min-height:22px;padding:.15rem .45rem;font-size:11px;flex-shrink:0;align-self:flex-start;}
+@media(max-width:800px){.ic-pin{min-height:28px;padding:.28rem .5rem;}}
 
 /* ══════════════════════════════════════════════════════════════════
    차트 & 공백 분석 섹션

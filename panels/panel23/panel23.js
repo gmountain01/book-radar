@@ -90,6 +90,7 @@ ROOT.innerHTML =
       '</div>' +
       '<div class="p23-main" id="p23_main">' +
         '<select class="p23-mobile-rpt-select" id="p23_mobileRptSelect" onchange="p23_mobileSelectReport(this)"><option value="">리포트 선택...</option></select>' +
+        '<select class="p23-mobile-toc-select" id="p23_mobileTocSelect" onchange="p23_mobileSelectToc(this)"><option value="">📑 목차 이동...</option></select>' +
         '<div class="p23-empty" id="p23_empty"><div class="p23-empty-icon">📊</div>' +
           '<div class="p23-empty-text">시장 분석 리포트</div>' +
           '<div class="p23-empty-hint">리포트를 선택하거나 "직접 업로드"로 .md 파일을 열 수 있습니다</div></div>' +
@@ -398,6 +399,7 @@ function hasPubSignal(t) {
 // ══════════════════════════════════════════════════════
 var _trendChart = null;
 var _trendChartKws = {}; // {kw: boolean} 토글 상태
+var _chartHilite = null; // 키워드 칩 📈 토글로 강조 중인 시리즈 (null=전체 표시)
 
 function renderTrend() {
   if (!_archive) { $trendWrap.innerHTML = '<div class="p23-empty"><div class="p23-empty-text">아카이브 데이터 없음</div></div>'; return; }
@@ -704,16 +706,49 @@ function _renderTrendChart(trends, allKw) {
   });
 }
 
+// ── 4-0. 키워드 칩 📈 → 차트 시리즈 강조 토글 (기사 모아보기와 별개 동작) ──
+// 강조: 대상 시리즈만 진하게, 나머지는 흐리게. 재클릭 시 원상복귀.
+window.p23_hiliteChart = function(kw) {
+  if (!_trendChart) return;
+  var ds = _trendChart.data.datasets;
+  var chips = document.getElementById('p23_kwChips');
+  if (_chartHilite === kw) {
+    // 원상복귀
+    ds.forEach(function(d, i) { d.borderColor = CHART_COLORS[i % CHART_COLORS.length]; d.borderWidth = 2; });
+    _chartHilite = null;
+  } else {
+    ds.forEach(function(d, i) {
+      var c = CHART_COLORS[i % CHART_COLORS.length];
+      if (d.label === kw) {
+        d.borderColor = c; d.borderWidth = 3.5;
+        // 강조 대상이 범례로 숨겨져 있으면 표시
+        var meta = _trendChart.getDatasetMeta(i); meta.hidden = null; _trendChartKws[d.label] = true;
+      } else { d.borderColor = c + '22'; d.borderWidth = 1.5; }
+    });
+    _chartHilite = kw;
+  }
+  if (chips) chips.querySelectorAll('.p23-kw-hilite').forEach(function(b){ b.classList.toggle('active', _chartHilite && b.getAttribute('data-kw') === _chartHilite); });
+  _trendChart.update();
+};
+
 // ── 4. 키워드 칩 + 기사 모아보기 ──
 function _renderKwChips(articles, allKw) {
   var $chips = document.getElementById('p23_kwChips');
   if (!$chips) return;
+  _chartHilite = null; // 차트 재렌더 시 강조 상태 초기화
   // 키워드별 기사 수
   var kwCnt = {};
   articles.forEach(function(a) { (a.keywords||[]).forEach(function(k){ kwCnt[k]=(kwCnt[k]||0)+1; }); });
+  // 차트에 그려진 상위 8개 키워드만 📈 강조 토글 노출
+  var inChart = {};
+  allKw.slice(0, 8).forEach(function(k){ inChart[k] = true; });
   var h = '';
   allKw.forEach(function(kw) {
-    h += '<button class="p23-kw-chip" data-kw="' + esc(kw) + '" onclick="p23_showKwArticles(\'' + esc(kw).replace(/'/g,"\\'") + '\')">' + esc(kw) + ' <span class="p23-chip-cnt">' + (kwCnt[kw]||0) + '</span></button>';
+    var kwJs = esc(kw).replace(/'/g,"\\'");
+    var hil = inChart[kw]
+      ? '<span class="p23-kw-hilite" data-kw="' + esc(kw) + '" title="차트에서 이 키워드 강조" onclick="event.stopPropagation();p23_hiliteChart(\'' + kwJs + '\')">📈</span>'
+      : '';
+    h += '<button class="p23-kw-chip" data-kw="' + esc(kw) + '" onclick="p23_showKwArticles(\'' + kwJs + '\')">' + esc(kw) + ' <span class="p23-chip-cnt">' + (kwCnt[kw]||0) + '</span>' + hil + '</button>';
   });
   $chips.innerHTML = h;
 }
@@ -844,33 +879,8 @@ function calcTrend(vals) {
 /* renderOpportunities — replaced by renderSignals */
 
 function getPubHint(kw) {
-  var hints = {
-    'AI Agent': '에이전트 프레임워크 비교, MCP 연동 실전서 수요 높음',
-    'Coding': '바이브코딩/AI 코딩 도구 업데이트 반영 개정판 기회',
-    'Automation': 'n8n/Make AI 자동화 실전서 공백',
-    'SDK/API': 'Claude/GPT API 활용 개발서, 멀티모델 연동 가이드',
-    'LLM': 'LLM 파인튜닝/RAG 구축 실전 수요',
-    'RAG': 'RAG 파이프라인 구축 전문서 수요 높음',
-    'MCP': 'MCP 프로토콜 실전서 시장 공백',
-    'Multimodal': '멀티모달 AI 활용서 (이미지+텍스트+음성)',
-    'Open Source': '오픈소스 LLM 활용/파인튜닝 입문서',
-    'Framework': '새 프레임워크 입문서 선점 기회',
-    'Optimization': 'LLM 추론 최적화/배포 실전서',
-    'Cloud/DevOps': '클라우드 AI 인프라 구축 가이드',
-    'AI Safety': 'AI 안전/윤리 교양서 수요 증가',
-    'Reasoning': 'AI 추론/사고 능력 해설서',
-    'Vision': '컴퓨터 비전 + LLM 통합 활용서',
-    'Image AI': 'AI 이미지/영상 생성 도구 가이드',
-    'Robotics': 'AI 로봇/임베디드 AI 입문서',
-    'Enterprise AI': '기업용 AI 도입 전략서',
-    'Developer Tools': 'AI 개발 도구 비교/실전 가이드',
-    'Fine-tuning': '파인튜닝 실전서 (LoRA, QLoRA 등)',
-    'Deployment': 'AI 모델 배포/서빙 인프라 가이드',
-    'Embeddings': '임베딩 + 벡터DB 검색 시스템 구축서',
-    'Vector DB': '벡터 데이터베이스 실전 활용서',
-    'Security': 'AI 보안/프롬프트 인젝션 방어 가이드',
-    'AI Education': 'AI 교육/학습 도구 활용서',
-  };
+  // 사전은 panels/panel23/pub-hints.js(window._PUB_HINTS)로 분리 — 미로드 시 폴백
+  var hints = window._PUB_HINTS || {};
   return hints[kw] || '이 주제의 한국어 도서 공급 현황 확인 필요';
 }
 
@@ -1100,7 +1110,21 @@ function renderTocSidebar() {
   var o='<div class="p23-toc-title">목차</div>';
   tocItems.forEach(function(it){if(it.level>3)return;var c='p23-toc-item'+(it.level===3?' p23-toc-h3':'');o+='<button class="'+c+'" data-target="'+it.id+'" onclick="p23_scrollTo(this)">'+esc(it.text)+'</button>';});
   $tocNav.innerHTML=o;
+  // 모바일 목차 드롭다운 동기화 (데스크톱에선 CSS로 숨김)
+  var msel = document.getElementById('p23_mobileTocSelect');
+  if (msel) {
+    var opts = '<option value="">📑 목차 이동...</option>';
+    tocItems.forEach(function(it){ if(it.level>3) return; var pre = it.level===3 ? '   • ' : ''; opts += '<option value="'+esc(it.id)+'">'+pre+esc(it.text)+'</option>'; });
+    msel.innerHTML = opts;
+    msel.value = '';
+  }
 }
+// 모바일 목차 드롭다운 → 해당 헤딩으로 스크롤 (데스크톱 목차 클릭과 동일 동작)
+window.p23_mobileSelectToc = function(sel) {
+  var id = sel.value; if (!id) return;
+  var el = document.getElementById(id); if (!el) return;
+  el.scrollIntoView({ behavior:'smooth', block:'start' });
+};
 window.p23_scrollTo = function(btn) { var el=document.getElementById(btn.getAttribute('data-target')); if(!el) return; $tocNav.querySelectorAll('.p23-toc-item').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); el.scrollIntoView({behavior:'smooth',block:'start'}); };
 $main.addEventListener('scroll', function(){if(!tocItems.length)return;var st=$main.scrollTop,aid='';tocItems.forEach(function(it){var el=document.getElementById(it.id);if(el&&el.offsetTop-80<=st)aid=it.id;});if(aid)$tocNav.querySelectorAll('.p23-toc-item').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-target')===aid);});});
 

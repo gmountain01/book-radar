@@ -4,6 +4,25 @@
 
 ---
 
+## 2026-08-06 — v2.7.4 (UI/UX 중기 8건 UX-6~13)
+
+### panels/panel23 (UX-6·7·10·12·13)
+
+- **[M] UX-6 모바일 리포트 목차 드롭다운:** 모바일 `.p23-toc` 전면 숨김으로 장문 내비게이션 불가 → `#p23_mobileTocSelect`(h2/h3 들여쓰기 동기화, 선택 시 scrollIntoView). 데스크톱 사이드바 유지.
+- **[M] UX-7 트렌드 테이블·히트맵 가로 스크롤:** `overflow:hidden`→`overflow-x:auto`+모바일 min-width — 8주+ 누적 시 잘림 방지, 세로 오염 차단.
+- **[L] UX-10 모바일 피드 검색바 flex-wrap:** 검색+날짜 4버튼+건수 한 줄 압축 해소, 검색 입력 전폭.
+- **[M] UX-12 키워드 칩↔차트 연동:** 차트 표시 상위 8개 칩에 📈 토글 아이콘(stopPropagation — 기존 기사 모아보기 클릭 보존). 대상 시리즈 강조(3.5px+원색)/나머지 알파 흐림, 재클릭 원복.
+- **[L] UX-13 getPubHint 사전 분리:** 하드코딩 25항목 → `panels/panel23/pub-hints.js`(`window._PUB_HINTS`) 이동, 폴백 유지, index.html 태그 추가.
+
+### panels/panel24·25 + shared (UX-8·9·11)
+
+- **[M] UX-8 panel24 주제 뱃지:** 저자 행 이름 아래 topics 칩 최대 2개+`+N`(모바일 4열 모드 생략), 프로필 모달 전체 칩. teal 토큰.
+- **[M] UX-9 panel1 통합 분석 📌:** 공백/열세/우위 카테고리 행마다 📌(`type:'dashboard'`, 경쟁/자사/강의 수치 근거 동봉, dataset 방식) — panel25 수집함 그룹(📉)·AI 프롬프트 `[사용자 선정 근거]` 소비 연결(`📊 대시보드:` 라인).
+- **[M] UX-11 panel25 메모 인라인 편집:** `window.prompt` → 카드 내 input+저장/취소(Enter/Esc), 프리필 이스케이프, 기존 저장 로직 유지.
+- **?v=239 일괄 상향(57곳), 헤더 v2.7.4.** 근거: advisory_20260806.md 중기 후보 8건 전체 구현.
+
+---
+
 ## 2026-08-06 — v2.7.3 (UI/UX TOP5 UX-1~5: 인사이트 전달력 개선)
 
 ### panels/panel25 (UX-1 [H]: 📌 수집함 — 파이프라인 단절 해소)

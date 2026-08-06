@@ -74,6 +74,16 @@ function applyFilterSort() {
   page = 0;
 }
 
+// 주제 칩 HTML (최대 max개 + 잔여 +N). topics 없으면 빈 문자열.
+function _topicChips(topics, max) {
+  if (!topics || !topics.length) return '';
+  var shown = topics.slice(0, max);
+  var extra = topics.length - shown.length;
+  var html = shown.map(function(t) { return '<span class="p24-topic-chip">' + escHtml(t) + '</span>'; }).join('');
+  if (extra > 0) html += '<span class="p24-topic-chip p24-topic-more">+' + extra + '</span>';
+  return '<div class="p24-topic-chips">' + html + '</div>';
+}
+
 function render() {
   var el = document.getElementById('p24Content');
   if (!el) return;
@@ -152,7 +162,7 @@ function render() {
 
     html += '<tr>';
     html += '<td style="color:var(--muted);font-size:.78rem;">' + (start + i + 1) + '</td>';
-    html += '<td><span class="p24-author-name" style="cursor:pointer;" onclick="p24_showProfile(' + (start+i) + ')">' + escHtml(a.name) + '</span></td>';
+    html += '<td><span class="p24-author-name" style="cursor:pointer;" onclick="p24_showProfile(' + (start+i) + ')">' + escHtml(a.name) + '</span>' + _topicChips(a.topics, 2) + '</td>';
     html += '<td><span class="p24-book-count">' + a.count + '</span></td>';
     html += '<td>' + pubBadges + '</td>';
     html += '<td style="font-weight:600;color:var(--accent);">' + (a.bestRank < 999 ? a.bestRank + '위' : '-') + '</td>';
@@ -268,6 +278,11 @@ window.p24_showProfile = function(idx) {
         '<div class="p24-modal-stat-card"><div class="p24-stat-value">' + a.pubs.length + '</div><div class="p24-stat-label">출판사 수</div></div>' +
       '</div>' +
       '<div class="p24-modal-section"><div class="p24-modal-section-title">출판사</div>' + pubBadges + '</div>' +
+      (a.topics && a.topics.length
+        ? '<div class="p24-modal-section"><div class="p24-modal-section-title">주제</div><div class="p24-topic-chips p24-topic-chips-modal">' +
+            a.topics.map(function(t) { return '<span class="p24-topic-chip">' + escHtml(t) + '</span>'; }).join('') +
+          '</div></div>'
+        : '') +
       '<div class="p24-modal-section"><div class="p24-modal-section-title">전체 도서 (' + a.books.length + '권)</div>' +
         '<div class="p24-modal-books"><table class="p24-table"><thead><tr>' +
           '<th style="width:35px">#</th><th>도서명</th><th style="width:70px;text-align:center;">최고순위</th><th style="width:70px;text-align:center;">등장일수</th>' +
