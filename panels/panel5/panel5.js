@@ -401,7 +401,7 @@ function propRender() {
     </div>
 
     <div class="pd2-footer">
-      <div class="pd2-footer-l">한빛미디어 IT출판부<br>${dateStr}</div>
+      <div class="pd2-footer-l">${dateStr}</div>
       <div class="pd2-footer-r">CONFIDENTIAL</div>
     </div>`;
 

@@ -175,7 +175,7 @@ ${ctxBand}
 
 </div>
 <div class="md-footer">
-  <span>한빛미디어 출판기획팀</span>
+  <span></span>
   <span>${authorName}님 전달용 — 미팅 전 검토 부탁드립니다</span>
 </div>`;
 }
@@ -254,7 +254,7 @@ ${ctxBand}
 
 </div>
 <div class="md-footer">
-  <span>한빛미디어 출판기획팀 — 내부용</span>
+  <span>내부용</span>
   <span>${editor}</span>
 </div>`;
 }
@@ -328,7 +328,7 @@ ${ctxBand}
 
 </div>
 <div class="md-footer">
-  <span>한빛미디어 출판기획팀 — 내부용</span>
+  <span>내부용</span>
   <span>${editor}</span>
 </div>`;
 }
@@ -433,7 +433,7 @@ function _renderMeetSummary(d){
 
 </div>
 <div class="md-footer">
-  <span>한빛미디어 출판기획팀</span>
+  <span></span>
   <span>${author !== '저자명' ? author+'님 제출용' : '저자 제출용'}</span>
 </div>`;
 }
