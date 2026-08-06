@@ -468,18 +468,26 @@ function _renderCollectionBox(board) {
     });
     var order = COLLECT_TYPE_ORDER.slice();
     Object.keys(groups).forEach(function(t) { if (order.indexOf(t) < 0) order.push(t); });
+    var _now = Date.now();
     order.forEach(function(t) {
       var g = groups[t];
       if (!g || !g.length) return;
+      // 그룹 내 최신 추가 순 정렬
+      g.sort(function(a, b) { return String(b.it.addedAt || '').localeCompare(String(a.it.addedAt || '')); });
       var meta = COLLECT_TYPE_META[t] || { icon:'📌', label:t };
       h += '<div class="p25-collect-group">';
       h += '<div class="p25-collect-group-title">' + meta.icon + ' ' + escHtml(meta.label) + ' <span class="p25-collect-group-n">' + g.length + '</span></div>';
       g.forEach(function(o) {
         var sub = _collectSubInfo(o.it);
+        // 24시간 내 추가 항목 NEW 표시 + 추가 날짜(M/D)
+        var addedTs = Date.parse(o.it.addedAt || '') || 0;
+        var isNew = addedTs && (_now - addedTs) < 86400000;
+        var addedStr = '';
+        if (addedTs) { var ad = new Date(addedTs); addedStr = (ad.getMonth() + 1) + '/' + ad.getDate(); }
         h += '<div class="p25-collect-item">';
         h += '<div class="p25-collect-item-main">';
-        h += '<span class="p25-collect-item-title">' + escHtml(o.it.title || '(제목 없음)') + '</span>';
-        if (sub) h += '<span class="p25-collect-item-sub">' + escHtml(sub) + '</span>';
+        h += '<span class="p25-collect-item-title">' + (isNew ? '<span class="p25-collect-new">NEW</span>' : '') + escHtml(o.it.title || '(제목 없음)') + '</span>';
+        h += '<span class="p25-collect-item-sub">' + escHtml(sub || '') + (addedStr ? (sub ? ' · ' : '') + '<span class="p25-collect-date">📌 ' + addedStr + '</span>' : '') + '</span>';
         h += '</div>';
         h += '<button class="p25-collect-del" title="제거" onclick="p25_removeItem(' + o.idx + ')">✕</button>';
         h += '</div>';

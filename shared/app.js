@@ -108,11 +108,17 @@ function addToPlanningBoard(item) {
   if (!item.memo) item.memo = '';
   board.items.push(item);
   safeLSSet('p25_board', JSON.stringify(board));
-  showToast('📌 기획 보드에 추가됨', 'green');
+  // 토스트에 항목명 표시 (28자 초과 시 말줄임)
+  var _tFull = String(item.title || '');
+  showToast('📌 추가됨: ' + _tFull.substring(0, 28) + (_tFull.length > 28 ? '…' : ''), 'green');
   var badge = document.getElementById('p25Badge');
   if (badge) {
     badge.textContent = board.items.length;
     badge.style.display = board.items.length > 0 ? 'inline-flex' : 'none';
+    // 추가 순간 뱃지 팝 애니메이션 (리플로우로 재트리거)
+    badge.classList.remove('badge-pop');
+    void badge.offsetWidth;
+    badge.classList.add('badge-pop');
   }
 }
 function getPlanningBoard() {
