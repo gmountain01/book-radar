@@ -4,6 +4,27 @@
 
 ---
 
+## 2026-08-06 — v2.7.3 (UI/UX TOP5 UX-1~5: 인사이트 전달력 개선)
+
+### panels/panel25 (UX-1 [H]: 📌 수집함 — 파이프라인 단절 해소)
+
+- **[H] UX-1 📌 수집함 섹션:** 📌한 근거(insight/signal/article/report/keyword/youtuber/author)가 개수 뱃지만 올리고 보이지도, AI 판단에 반영되지도 않던 블랙박스 해소. 접이식 "📌 수집함(N)" — type별 그룹 목록+부가정보 1줄+개별 ✕ 삭제, 접힘 상태 localStorage 기억. AI 종합 프롬프트에 `[사용자 선정 근거 — 우선 반영]` 블록 병합(최신순, 3,000자 상한, 발췌 300자).
+
+### panels/panel23 (UX-2·3·4a·5a)
+
+- **[H] UX-2 피드 source_type 필터 칩+뱃지:** source_type 데이터 100%·UI 0% 해소 — 전체/🔥커뮤니티/📰미디어/🏢기업블로그/📢벤더 칩 5개(기존 소스 필터·검색과 AND, 모바일 가로 스크롤 칩 행), 카드에 유형 뱃지(커뮤니티 강조색, media 무표시).
+- **[M] UX-3 트렌드 판단형 지표:** 가중 집계값 "N건" 오표기 → **pt** 정정+ⓘ 가중치 툴팁, 요약 4카드를 전주 대비 ▲/▼ 포함 판단 지표로 교체(이번 주 기사/급상승/기회 신호/신규 키워드), 급상승·하락 카드에 증감 pt 명시. `_computeSurge` 계산/렌더 분리.
+- **[M] UX-4a 외부 진입 API:** `p23_showReport()`(리포트 탭+최신 리포트 자동 오픈), `p23_showKeyword(kw)`(키워드 기사 모아보기) — 미로드 시 pending 예약 패턴.
+- **[M] UX-5a 피드 카드 📌:** `p23_pinFeedItem` — type:'article'로 보드 인입(source/date/link/keywords/source_type 동봉), 중복 방지.
+
+### shared/app.js·styles.css + panels/panel7·10·24 (UX-4b·5b)
+
+- **[M] UX-4b 홈 브리핑 딥링크:** 카드 클릭 → `_hbOpenReport()`(switchTab 23+리포트 탭 자동 오픈, 기존엔 피드 탭 착지), 급상승 키워드 칩 클릭 → `_hbKwClick()`(stopPropagation+해당 키워드 기사 모아보기). dataset 방식, 가드+폴백.
+- **[M] UX-5b 📌 공통 클래스:** `.pin-btn`/`.pin-btn.added` 신설(디자인 토큰, hover 채움, 모바일 터치 32px) — 4패널 4스타일 하드코딩 색상 통일. panel7·10·24 버튼 클래스 교체(onclick 로직 무변경), panel23·25는 각 담당분에서 적용.
+- **?v=238 일괄 상향, 헤더 v2.7.3.** 근거: dev-advisor 전체 UI/UX×인사이트 전달력 진단(_workspace/advisory_20260806.md) 즉시 개선 TOP5.
+
+---
+
 ## 2026-08-06 — v2.7.2 (RSS 수집 개선 RSS-1~3: 소스 수리+수요 신호+쏠림 완화)
 
 ### scripts/fetch_rss.py + data/rss/

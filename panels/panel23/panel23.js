@@ -13,8 +13,11 @@ var _feedData = null;   // window._RSS_FEEDS
 var _archive = null;    // window._RSS_ARCHIVE
 var _filteredItems = [];
 var _activeSource = 'all';
+var _activeType = 'all';   // source_type 필터 칩 (all/community/media/corp/vendor)
 var _searchQuery = '';
 var _dateRange = 'all';
+var _pendingReport = false;   // 외부 진입(p23_showReport) — 리포트 목록 로드 전 예약
+var _pendingKeyword = null;   // 외부 진입(p23_showKeyword) — 아카이브 로드 전 예약
 var currentMd = '', tocItems = [];
 var _curReportTitle = '', _curReportDate = '';  // 현재 열린 리포트 메타 (📌 인사이트용)
 var _p23Pins = [];      // renderMd에서 추출한 📌 대상(기획/인사이트) 항목
@@ -46,6 +49,13 @@ ROOT.innerHTML =
             '<button class="p23-date-btn" onclick="p23_setDateRange(\'3m\',this)">3개월</button>' +
           '</div>' +
           '<span class="p23-result-count" id="p23_resultCount"></span>' +
+        '</div>' +
+        '<div class="p23-type-chips" id="p23_typeChips">' +
+          '<button class="p23-type-chip active" data-type="all" onclick="p23_filterType(\'all\',this)">전체</button>' +
+          '<button class="p23-type-chip" data-type="community" onclick="p23_filterType(\'community\',this)">🔥 커뮤니티</button>' +
+          '<button class="p23-type-chip" data-type="media" onclick="p23_filterType(\'media\',this)">📰 미디어</button>' +
+          '<button class="p23-type-chip" data-type="corp" onclick="p23_filterType(\'corp\',this)">🏢 기업블로그</button>' +
+          '<button class="p23-type-chip" data-type="vendor" onclick="p23_filterType(\'vendor\',this)">📢 벤더</button>' +
         '</div>' +
         '<div class="p23-feed-list" id="p23_feedList"></div>' +
       '</div>' +
@@ -124,6 +134,43 @@ window.p23_switchTab = function(tab, btn) {
 };
 
 // ══════════════════════════════════════════════════════
+// 외부 진입 API (홈 브리핑 딥링크 — switchTab(23) 직후 호출됨)
+// panel24 pendingTopic 패턴: 데이터 미로드 시 예약했다가 로드 후 적용
+// ══════════════════════════════════════════════════════
+
+// 리포트 목록이 준비돼 있으면 최신 리포트를 자동 오픈, 아니면 예약
+function _openLatestReport() {
+  if (!_reportsList.length) { _pendingReport = true; return; }
+  _pendingReport = false;
+  var firstBtn = $rptList.querySelector('.p23-rpt-item');
+  p23_openReport(0, firstBtn);
+}
+
+// 리포트 탭으로 전환 + 최신 리포트 오픈
+window.p23_showReport = function() {
+  var btn = ROOT.querySelector('.p23-tab[data-tab="report"]');
+  p23_switchTab('report', btn);   // renderReportList() 호출 → 목록 준비
+  _openLatestReport();
+};
+
+// 트렌드 탭으로 전환 + 특정 키워드의 기사 모아보기 오픈
+window.p23_showKeyword = function(kw) {
+  if (!kw) return;
+  if (!_archive) { _pendingKeyword = kw; return; }   // 아카이브 미로드 → 예약
+  var btn = ROOT.querySelector('.p23-tab[data-tab="trend"]');
+  p23_switchTab('trend', btn);    // renderTrend() → 칩/모아보기 DOM 생성
+  p23_showKwArticles(kw);
+};
+
+// 데이터 로드 완료 시 예약된 외부 진입 요청 처리
+function _flushPending() {
+  if (_pendingKeyword && _archive) {
+    var k = _pendingKeyword; _pendingKeyword = null;
+    window.p23_showKeyword(k);
+  }
+}
+
+// ══════════════════════════════════════════════════════
 // A. 피드 (최신 RSS)
 // ══════════════════════════════════════════════════════
 var _REMOTE_BASE = 'https://gmountain01.github.io/book-radar/data/';
@@ -141,6 +188,7 @@ function _applyFeedData() {
       info = '누적 ' + (_archive.total_articles || 0) + '건' + (info ? ' | ' + info : '');
     }
     $fetchedAt.textContent = info;
+    _flushPending();
   } else {
     $feedList.innerHTML = '<div class="p23-empty"><div class="p23-empty-icon">📡</div>' +
       '<div class="p23-empty-text">RSS 데이터 없음</div>' +
@@ -192,6 +240,8 @@ function _buildMergedFeeds() {
       if (!feedMap[sid]) {
         feedMap[sid] = {id:sid, name:a.source_name||sid, icon:a.icon||'📰', tags:a.keywords?a.keywords.slice(0,3):[], itemMap:{}};
       }
+      // 소스 유형(source_type)은 소스별로 일관 — 최초 관측값 기록 (구버전 방어 || '')
+      if ((a.source_type || '') && !feedMap[sid].source_type) feedMap[sid].source_type = a.source_type;
       if (a.link && !feedMap[sid].itemMap[a.link]) {
         feedMap[sid].itemMap[a.link] = {title:a.title, link:a.link, date:a.date, summary:a.summary, keywords:a.keywords};
       }
@@ -205,7 +255,7 @@ function _buildMergedFeeds() {
     var items = [];
     Object.keys(f.itemMap).forEach(function(k) { items.push(f.itemMap[k]); });
     items.sort(function(a,b) { return (b.date||'').localeCompare(a.date||''); });
-    _mergedFeeds.push({id:f.id, name:f.name, icon:f.icon, tags:f.tags, items:items});
+    _mergedFeeds.push({id:f.id, name:f.name, icon:f.icon, tags:f.tags, source_type:f.source_type||'', items:items});
   });
   /* 기사 많은 소스 순 */
   _mergedFeeds.sort(function(a,b) { return b.items.length - a.items.length; });
@@ -226,6 +276,15 @@ function renderSources() {
 window.p23_filterSrc = function(src, btn) {
   _activeSource = src;
   $sources.querySelectorAll('.p23-src-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  filterAndRender();
+};
+
+// 소스 유형(source_type) 필터 칩 — 소스 필터·검색과 AND 결합
+window.p23_filterType = function(type, btn) {
+  _activeType = type;
+  var chips = document.getElementById('p23_typeChips');
+  if (chips) chips.querySelectorAll('.p23-type-chip').forEach(function(b){ b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
   filterAndRender();
 };
@@ -265,22 +324,31 @@ function filterAndRender() {
   _filteredItems = [];
   _mergedFeeds.forEach(function(feed) {
     if (_activeSource !== 'all' && feed.id !== _activeSource) return;
+    if (_activeType !== 'all' && (feed.source_type || '') !== _activeType) return;
     feed.items.forEach(function(item) {
       var itemDs = _isoDate(item.date);
       if (cutoff && (!itemDs || itemDs < cutoff)) return;
       if (_searchQuery && (item.title + ' ' + (item.summary||'')).toLowerCase().indexOf(_searchQuery) === -1) return;
-      _filteredItems.push({ source: feed.name, icon: feed.icon, tags: feed.tags, title: item.title, link: item.link, date: item.date, summary: item.summary });
+      _filteredItems.push({ source: feed.name, icon: feed.icon, tags: feed.tags, source_type: feed.source_type || '', title: item.title, link: item.link, date: item.date, summary: item.summary });
     });
   });
   _filteredItems.sort(function(a,b) { return (b.date||'').localeCompare(a.date||''); });
   renderFeedList();
 }
 
+// source_type → 카드 유형 뱃지 HTML (media/미상은 노이즈 방지 위해 뱃지 없음)
+function _typeBadge(st) {
+  if (st === 'community') return '<span class="p23-type-badge p23-tb-community">🔥 커뮤니티</span>';
+  if (st === 'corp') return '<span class="p23-type-badge p23-tb-corp">🏢 기업블로그</span>';
+  if (st === 'vendor') return '<span class="p23-type-badge p23-tb-vendor">📢 벤더</span>';
+  return '';
+}
+
 function renderFeedList() {
   $resultCnt.textContent = _filteredItems.length + '건';
   if (!_filteredItems.length) { $feedList.innerHTML = '<div class="p23-empty"><div class="p23-empty-text">검색 결과 없음</div></div>'; return; }
   var h = '', prevDate = '';
-  _filteredItems.forEach(function(item) {
+  _filteredItems.forEach(function(item, idx) {
     var ds = _isoDate(item.date);
     if (ds !== prevDate) {
       prevDate = ds;
@@ -290,13 +358,25 @@ function renderFeedList() {
     var hasPub = hasPubSignal(item.title + ' ' + item.summary);
     h += '<div class="p23-feed-card">' +
       '<div class="p23-card-head"><span class="p23-card-src">' + item.icon + ' ' + esc(item.source) + '</span>' +
+      _typeBadge(item.source_type) +
       (hasPub ? '<span class="p23-pub-signal">📚 출판 기회</span>' : '') +
-      '<span class="p23-card-tags">' + item.tags.map(function(t){return '<span class="p23-tag">'+esc(t)+'</span>';}).join('') + '</span></div>' +
+      '<span class="p23-card-tags">' + item.tags.map(function(t){return '<span class="p23-tag">'+esc(t)+'</span>';}).join('') + '</span>' +
+      '<button class="pin-btn p23-pin-btn p23-feed-pin" type="button" onclick="p23_pinFeedItem(' + idx + ')">📌 기획 보드</button></div>' +
       '<a class="p23-card-title" href="' + esc(item.link) + '" target="_blank">' + esc(item.title) + '</a>' +
       '<p class="p23-card-summary">' + esc(item.summary) + '</p></div>';
   });
   $feedList.innerHTML = h;
 }
+
+// 피드 카드(아카이브 기사) → 기획 보드에 추가
+window.p23_pinFeedItem = function(idx) {
+  var item = _filteredItems[idx]; if (!item) return;
+  if (isInBoard('article', item.title)) { showToast('이미 기획 보드에 있는 항목입니다', 'orange'); return; }
+  addToPlanningBoard({
+    type:'article', source:'panel23', title:item.title,
+    data:{ source:item.source, date:item.date, link:item.link, keywords:item.tags||[], source_type:item.source_type||'' }
+  });
+};
 
 function hasPubSignal(t) {
   t = ' ' + t.toLowerCase() + ' '; // 공백 패딩 — 단어 경계 매칭 (storage/dragon 등 오탐 방지)
@@ -325,20 +405,26 @@ function renderTrend() {
   var articles = _archive.articles || [];
   var trends = _archive.weekly_trends || [];
 
-  // ── 0. 요약 카드 ──
+  // ── 선(先)계산: 판단형 요약 지표에 필요한 값 ──
+  var sd = _computeSurge(trends);                 // 급상승/하락 (pt 기준)
+  var signalsHtml = renderSignals(articles, trends);  // _p23Signals 세팅
+  var wk = _weeklyArticleCounts(articles, trends);    // 이번 주/전주 실제 기사 수
+  var newKw = sd.surging.filter(function(s){ return s.tag === '신규'; }).length;
+
+  // ── 0. 요약 카드 — 판단형 지표 (허영 절대치 → 이번 주 변화 중심) ──
   var h = '<div class="p23-trend-summary">' +
-    '<div class="p23-stat-card"><div class="p23-stat-num">' + articles.length + '</div><div class="p23-stat-label">누적 아티클</div></div>' +
-    '<div class="p23-stat-card"><div class="p23-stat-num">' + (trends.length) + '</div><div class="p23-stat-label">수집 주차</div></div>' +
-    '<div class="p23-stat-card"><div class="p23-stat-num">' + countSources(articles) + '</div><div class="p23-stat-label">소스</div></div>' +
-    '<div class="p23-stat-card"><div class="p23-stat-num">' + countUniqueKw(articles) + '</div><div class="p23-stat-label">추출 키워드</div></div>' +
+    '<div class="p23-stat-card"><div class="p23-stat-num">' + wk.thisWeek + ' ' + _statDelta(wk.delta) + '</div><div class="p23-stat-label">이번 주 기사 (전주 대비)</div></div>' +
+    '<div class="p23-stat-card"><div class="p23-stat-num">' + sd.surging.length + '</div><div class="p23-stat-label">🔥 급상승 키워드</div></div>' +
+    '<div class="p23-stat-card"><div class="p23-stat-num">' + _p23Signals.length + '</div><div class="p23-stat-label">📗 기회 신호</div></div>' +
+    '<div class="p23-stat-card"><div class="p23-stat-num">' + newKw + '</div><div class="p23-stat-label">🆕 신규 키워드</div></div>' +
   '</div>';
 
   // ── 1. 급상승 / 하락 키워드 카드 ──
-  h += renderSurgeCards(trends);
+  h += renderSurgeCards(sd);
 
   // ── 2. 출판 기회 신호 (알림 카드) ──
   h += '<h3 class="p23-section-title">📗 출판 기회 신호</h3>';
-  h += renderSignals(articles, trends);
+  h += signalsHtml;
 
   // ── 3. 키워드 트렌드 차트 (Chart.js) ──
   h += '<h3 class="p23-section-title">📈 키워드 트렌드 차트</h3>';
@@ -350,7 +436,8 @@ function renderTrend() {
 
   // ── 5. 주간 키워드 트렌드 테이블 ──
   var allKw = getAllKeywords(trends);
-  h += '<h3 class="p23-section-title">주간 키워드 빈도 테이블</h3>';
+  h += '<h3 class="p23-section-title">주간 키워드 트렌드 테이블 (pt)' +
+       '<span class="p23-info-tip" title="가중 지수(pt): 커뮤니티 2.0배 ~ 벤더 0.5배로 소스 신뢰도를 반영한 집계값입니다. 실제 기사 건수가 아닙니다.">ⓘ</span></h3>';
   h += '<div class="p23-trend-table-wrap"><table class="p23-trend-table"><thead><tr><th>키워드</th>';
   trends.forEach(function(w) { h += '<th>' + w.week.replace('2026-','') + '</th>'; });
   h += '<th>추세</th></tr></thead><tbody>';
@@ -377,10 +464,36 @@ function renderTrend() {
   _renderKwChips(articles, allKw);
 }
 
-// ── 1. 급상승 / 하락 카드 ──
-function renderSurgeCards(trends) {
-  if (trends.length < 2) return '';
+// ── 판단형 요약 헬퍼 ──
+// 이번 주 / 전주 "실제 기사 수"(가중 아님) 및 증감 — 요약 카드용
+function _weeklyArticleCounts(articles, trends) {
+  if (!trends.length) return { thisWeek: 0, lastWeek: 0, delta: 0 };
+  var byWeek = {};
+  articles.forEach(function(a) {
+    if (!a.date) return;
+    var d = new Date(a.date);
+    if (isNaN(d.getTime())) return;
+    var w = isoWeek(d);
+    byWeek[w] = (byWeek[w] || 0) + 1;
+  });
+  var tw = trends[trends.length - 1].week;
+  var lw = trends.length >= 2 ? trends[trends.length - 2].week : null;
+  var thisWeek = byWeek[tw] || 0;
+  var lastWeek = lw ? (byWeek[lw] || 0) : 0;
+  return { thisWeek: thisWeek, lastWeek: lastWeek, delta: thisWeek - lastWeek };
+}
+
+// 요약 카드용 증감 화살표 (▲ 상승 / ▼ 하락 / – 동일)
+function _statDelta(d) {
+  if (d > 0) return '<span class="p23-stat-delta p23-delta-up">▲' + d + '</span>';
+  if (d < 0) return '<span class="p23-stat-delta p23-delta-down">▼' + Math.abs(d) + '</span>';
+  return '<span class="p23-stat-delta p23-delta-flat">–</span>';
+}
+
+// ── 1. 급상승 / 하락 계산 (렌더와 분리 — 요약 카드에서도 재사용) ──
+function _computeSurge(trends) {
   var len = trends.length;
+  if (len < 2) return { surging: [], falling: [], isInProgress: false, len: len };
 
   // 진행 중 주 감지 — 최신 week가 오늘이 속한 ISO 주와 같으면 아직 집계 미완
   var isInProgress = (trends[len - 1].week === isoWeek(new Date()));
@@ -408,6 +521,22 @@ function renderSurgeCards(trends) {
   surging.sort(function(a,b){ return b.c - a.c; });
   falling.sort(function(a,b){ return a.c/a.p - b.c/b.p; });
 
+  return { surging: surging, falling: falling, isInProgress: isInProgress, len: len };
+}
+
+// 급상승/하락 항목의 전주 대비 증감(pt) 화살표
+function _surgeDelta(c, p) {
+  var d = c - p;
+  if (d > 0) return '<span class="p23-surge-delta p23-delta-up">▲' + d + '</span>';
+  if (d < 0) return '<span class="p23-surge-delta p23-delta-down">▼' + Math.abs(d) + '</span>';
+  return '';
+}
+
+// ── 1. 급상승 / 하락 카드 렌더 (pt 단위 + 전주 대비 증감 명시) ──
+function renderSurgeCards(sd) {
+  if (sd.len < 2) return '';
+  var surging = sd.surging, falling = sd.falling, isInProgress = sd.isInProgress, len = sd.len;
+
   var progressBadge = isInProgress
     ? '<span style="font-size:.7rem;font-weight:400;background:#f59e0b;color:#fff;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;">이번 주 진행 중 — 집계 미완</span>'
     : '';
@@ -418,7 +547,7 @@ function renderSurgeCards(trends) {
   h += '<div class="p23-surge-title">🔥 급상승 키워드' + progressBadge + '</div>';
   if (!surging.length) { h += '<div class="p23-surge-empty">이번 주 급상승 키워드 없음</div>'; }
   else { surging.slice(0,6).forEach(function(s) {
-    h += '<div class="p23-surge-item"><span class="p23-surge-kw">' + esc(s.kw) + '</span><span class="p23-surge-badge p23-badge-up">' + s.tag + '</span><span class="p23-surge-cnt">' + s.c + '건</span></div>';
+    h += '<div class="p23-surge-item"><span class="p23-surge-kw">' + esc(s.kw) + '</span><span class="p23-surge-badge p23-badge-up">' + s.tag + '</span><span class="p23-surge-cnt">' + s.c + 'pt ' + _surgeDelta(s.c, s.p) + '</span></div>';
   }); }
   h += '</div>';
   // 하락
@@ -426,7 +555,7 @@ function renderSurgeCards(trends) {
   h += '<div class="p23-surge-title">📉 하락 키워드' + (isInProgress && len >= 3 ? '<span style="font-size:.7rem;font-weight:400;color:var(--muted);margin-left:6px;">직전 완결 주 기준</span>' : '') + '</div>';
   if (!falling.length) { h += '<div class="p23-surge-empty">급하락 키워드 없음</div>'; }
   else { falling.slice(0,6).forEach(function(s) {
-    h += '<div class="p23-surge-item"><span class="p23-surge-kw">' + esc(s.kw) + '</span><span class="p23-surge-badge p23-badge-down">' + s.tag + '</span><span class="p23-surge-cnt">' + s.c + '건</span></div>';
+    h += '<div class="p23-surge-item"><span class="p23-surge-kw">' + esc(s.kw) + '</span><span class="p23-surge-badge p23-badge-down">' + s.tag + '</span><span class="p23-surge-cnt">' + s.c + 'pt ' + _surgeDelta(s.c, s.p) + '</span></div>';
   }); }
   h += '</div>';
   h += '</div>';
@@ -436,6 +565,7 @@ function renderSurgeCards(trends) {
 // ── 2. 출판 기회 신호 (3가지 패턴 감지) ──
 function renderSignals(articles, trends) {
   var signals = [];
+  _p23Signals = [];   // 재렌더 시 이전 신호 잔재 제거 (요약 카드 카운트 정확성)
 
   // 패턴 A: 3주 연속 증가
   if (trends.length >= 3) {
@@ -495,7 +625,7 @@ function renderSignals(articles, trends) {
     var cls = sig.type === 'growth' ? 'p23-sig-growth' : sig.type === 'new' ? 'p23-sig-new' : 'p23-sig-cross';
     h += '<div class="p23-signal-card ' + cls + '">';
     h += '<div class="p23-signal-head"><span class="p23-signal-icon">' + sig.icon + '</span><span class="p23-signal-kw">' + esc(sig.kw) + '</span>' +
-         '<button class="p23-pin-btn" type="button" onclick="p23_pinSignal(' + si + ')">📌 기획 보드</button></div>';
+         '<button class="pin-btn p23-pin-btn" type="button" onclick="p23_pinSignal(' + si + ')">📌 기획 보드</button></div>';
     h += '<div class="p23-signal-desc">' + esc(sig.desc) + '</div>';
     if (sig.articles.length) {
       h += '<div class="p23-signal-refs">';
@@ -689,9 +819,6 @@ function renderSourceHeatmap(articles, trends) {
   return h;
 }
 
-function countSources(arr) { var s = new Set(); arr.forEach(function(a){s.add(a.source);}); return s.size; }
-function countUniqueKw(arr) { var s = new Set(); arr.forEach(function(a){(a.keywords||[]).forEach(function(k){s.add(k);});}); return s.size; }
-
 function getAllKeywords(trends) {
   // 전체 등장 횟수로 정렬
   var cnt = {};
@@ -792,6 +919,8 @@ function _renderReportListInner() {
     });
     sel.innerHTML = opts;
   }
+  // 외부 진입(p23_showReport)이 목록 로드 전 예약된 경우 지금 적용
+  if (_pendingReport) _openLatestReport();
 }
 
 window.p23_mobileSelectReport = function(sel) {
@@ -838,8 +967,8 @@ window.p23_openReport = function(idx, btn) {
   var titleBar = $rptTitle.parentElement;
   if (titleBar && !titleBar.querySelector('.p23-board-btn')) {
     var pbBtn = document.createElement('button');
-    pbBtn.className = 'p23-board-btn';
-    pbBtn.style.cssText = 'margin-left:8px;background:var(--accent-light,#e3e5f9);color:var(--accent,#4F46B8);border:none;border-radius:6px;padding:3px 10px;font-size:.75rem;cursor:pointer;';
+    pbBtn.className = 'pin-btn p23-pin-btn p23-board-btn';
+    pbBtn.style.cssText = 'margin-left:8px;';
     pbBtn.textContent = '📌 기획 보드';
     pbBtn.onclick = function() { p23_addReportToBoard(idx); };
     titleBar.appendChild(pbBtn);
@@ -937,7 +1066,7 @@ function _p23AddPinBtn(container, headEl, kind, title) {
   var idx=_p23Pins.length;
   _p23Pins.push({ kind:kind, title:title, body:container.textContent.trim() });
   var btn=document.createElement('button');
-  btn.className='p23-pin-btn'; btn.type='button';
+  btn.className='pin-btn p23-pin-btn'; btn.type='button';
   btn.textContent='📌 기획 보드';
   btn.setAttribute('data-idx', String(idx));
   btn.setAttribute('onclick', 'p23_pinInsight('+idx+')');

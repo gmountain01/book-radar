@@ -159,8 +159,8 @@ function render() {
     html += '<td style="font-size:.78rem;color:var(--muted);">' + a.totalDays + '일</td>';
     html += '<td class="p24-book-list">' + bookHtml + '</td>';
     html += '<td>' + (isInBoard('author', a.name)
-      ? '<button class="p24-expand-btn" style="white-space:nowrap;color:#16a34a;cursor:pointer;" onclick="p24_removeBoard(' + (start+i) + ')" title="기획 보드에서 제거">✅</button>'
-      : '<button class="p24-expand-btn" style="white-space:nowrap;" onclick="p24_addBoard(' + (start+i) + ')" title="기획 보드에 추가">📌</button>')
+      ? '<button class="pin-btn added" onclick="p24_removeBoard(' + (start+i) + ')" title="기획 보드에서 제거">✅</button>'
+      : '<button class="pin-btn" onclick="p24_addBoard(' + (start+i) + ')" title="기획 보드에 추가">📌</button>')
     + '</td>';
     html += '</tr>';
   });
@@ -275,8 +275,8 @@ window.p24_showProfile = function(idx) {
       '</div>' +
       '<div class="p24-modal-footer">' +
         (isInBoard('author', a.name)
-          ? '<button class="p24-modal-board-btn" style="background:#dcfce7;color:#16a34a;border-color:#bbf7d0;cursor:pointer;" onclick="p24_removeBoard(' + idx + ');p24_closeProfile();">✅ 보드에 추가됨 (클릭하여 해제)</button>'
-          : '<button class="p24-modal-board-btn" onclick="p24_addBoard(' + idx + ');p24_closeProfile();">📌 기획 보드에 추가</button>') +
+          ? '<button class="pin-btn added" onclick="p24_removeBoard(' + idx + ');p24_closeProfile();">✅ 보드에 추가됨 (클릭하여 해제)</button>'
+          : '<button class="pin-btn" onclick="p24_addBoard(' + idx + ');p24_closeProfile();">📌 기획 보드에 추가</button>') +
       '</div>' +
     '</div>' +
   '</div>';

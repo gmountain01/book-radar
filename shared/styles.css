@@ -486,10 +486,28 @@ select{background:var(--surface);}
 .home-brief .hb-line{font-size:13px;line-height:1.6;color:var(--text);margin-bottom:.15rem;}
 .home-brief .hb-kw{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;margin-bottom:.5rem;}
 .home-brief .hb-kw-label{font-size:11px;font-weight:600;color:var(--muted);}
-.home-brief .hb-kw-chip{font-size:11px;background:var(--accent-light);color:var(--accent);border-radius:9999px;padding:2px 9px;font-weight:500;}
+.home-brief .hb-kw-chip{font-size:11px;background:var(--accent-light);color:var(--accent);border-radius:9999px;padding:2px 9px;font-weight:500;cursor:pointer;transition:background .15s ease,color .15s ease;}
+.home-brief .hb-kw-chip:hover{background:var(--accent);color:#fff;}
 .home-brief .hb-foot{text-align:right;}
 .home-brief .hb-more{font-size:12px;font-weight:600;color:var(--accent);}
 @media(max-width:800px){.home-brief{padding:.85rem 1rem;}.home-brief .hb-line{font-size:12px;}}
+
+/* ══════════════════════════════════════════════════════════════════
+   📌 기획 보드 담기 버튼 공통 (panel7/10/24 통일)
+   기본 = accent 계열 pill, .added = 이미 보드에 담긴 채움(green) 상태
+   ══════════════════════════════════════════════════════════════════ */
+.pin-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.25rem;
+  min-height:28px;padding:.32rem .7rem;
+  font-size:12px;font-weight:600;font-family:inherit;line-height:1;white-space:nowrap;
+  background:var(--accent-light);color:var(--accent);
+  border:1px solid transparent;border-radius:8px;cursor:pointer;
+  transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.pin-btn:hover{background:var(--accent);color:#fff;}
+.pin-btn.added{background:var(--green-bg);color:var(--green);border-color:var(--green-bd);}
+.pin-btn.added:hover{background:var(--green-bd);color:var(--green);}
+@media(max-width:800px){.pin-btn{min-height:32px;padding:.4rem .8rem;}}
 
 /* ══════════════════════════════════════════════════════════════════
    차트 & 공백 분석 섹션

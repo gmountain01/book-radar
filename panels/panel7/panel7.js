@@ -845,8 +845,8 @@ function renderCardGrid(items) {
               📊 분석하기
             </button>
             ${isInBoard('youtuber', sn.title||'')
-              ? `<button class="btn btn-sm" style="margin-left:4px;background:#dcfce7;color:#16a34a;border:none;cursor:pointer;" onclick="event.stopPropagation();p7_removeBoard(this.dataset.title);" data-title="${escHtml(sn.title||'')}">✅ 보드 추가됨</button>`
-              : `<button class="btn btn-sm" style="margin-left:4px;background:var(--accent-light,#e3e5f9);color:var(--accent,#4F46B8);border:none;cursor:pointer;" onclick="event.stopPropagation();p7_addBoard('${escHtml(cid)}',this.dataset.title,${subs});" data-title="${escHtml(sn.title||'')}">📌 기획 보드</button>`
+              ? `<button class="pin-btn added" style="margin-left:4px;" onclick="event.stopPropagation();p7_removeBoard(this.dataset.title);" data-title="${escHtml(sn.title||'')}">✅ 보드 추가됨</button>`
+              : `<button class="pin-btn" style="margin-left:4px;" onclick="event.stopPropagation();p7_addBoard('${escHtml(cid)}',this.dataset.title,${subs});" data-title="${escHtml(sn.title||'')}">📌 기획 보드</button>`
             }
           </div>
         `;

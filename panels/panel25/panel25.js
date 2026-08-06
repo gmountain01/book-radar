@@ -375,6 +375,132 @@ function collectAllData() {
   return data;
 }
 
+// ── 📌 수집함 (board.items 목록 렌더) ──
+var COLLECT_COLLAPSE_KEY = 'p25_collect_collapsed';
+var COLLECT_TYPE_META = {
+  insight:  { icon:'💡', label:'인사이트' },
+  signal:   { icon:'🚨', label:'기회 신호' },
+  article:  { icon:'📰', label:'기사' },
+  report:   { icon:'📄', label:'리포트' },
+  keyword:  { icon:'🔑', label:'키워드' },
+  youtuber: { icon:'📺', label:'유튜버' },
+  author:   { icon:'📚', label:'저자' },
+  trend:    { icon:'📈', label:'트렌드' },
+  dashboard:{ icon:'📉', label:'대시보드' }
+};
+var COLLECT_TYPE_ORDER = ['insight','signal','article','report','keyword','youtuber','author','trend','dashboard'];
+
+function _collectCollapsed() {
+  try { return localStorage.getItem(COLLECT_COLLAPSE_KEY) === '1'; } catch(e) { return false; }
+}
+
+// 아이템 부가정보 1줄 (type별)
+function _collectSubInfo(item) {
+  var d = item.data || {};
+  switch (item.type) {
+    case 'keyword': {
+      var parts = [];
+      if (d.pick_type) parts.push(String(d.pick_type).toUpperCase());
+      if (d.category) parts.push(d.category);
+      else if (d.reason) parts.push(String(d.reason).substring(0, 40));
+      return parts.join(' · ');
+    }
+    case 'youtuber':
+      return d.subs ? ('구독 ' + Number(d.subs).toLocaleString() + '명') : '';
+    case 'author': {
+      var ap = [];
+      if (d.pubs && d.pubs.length) ap.push([].concat(d.pubs).slice(0, 2).join('/'));
+      if (d.bestRank) ap.push('최고 ' + d.bestRank + '위');
+      return ap.join(' · ');
+    }
+    case 'insight': {
+      var ip = [];
+      if (d.reportTitle) ip.push(d.reportTitle);
+      if (d.reportDate) ip.push(d.reportDate);
+      return ip.join(' · ');
+    }
+    case 'signal': {
+      var sp = [];
+      if (d.signalType) sp.push(d.signalType);
+      if (d.keyword) sp.push(d.keyword);
+      return sp.join(' · ');
+    }
+    case 'article': {
+      var rp = [];
+      if (d.source) rp.push(d.source);
+      if (d.date) rp.push(d.date);
+      return rp.join(' · ');
+    }
+    case 'report':
+      return d.date || '';
+    default:
+      return d.date || d.category || '';
+  }
+}
+
+function _renderCollectionBox(board) {
+  var items = board.items || [];
+  var collapsed = _collectCollapsed();
+  var h = '<div class="p25-collect">';
+  h += '<div class="p25-collect-header" onclick="p25_toggleCollection()">';
+  h += '<span class="p25-collect-title">📌 수집함</span>';
+  h += '<span class="p25-collect-count">' + items.length + '건</span>';
+  h += '<span class="p25-collect-toggle" id="p25CollectToggle">' + (collapsed ? '▸' : '▾') + '</span>';
+  h += '</div>';
+  h += '<div class="p25-collect-body" id="p25CollectBody" style="display:' + (collapsed ? 'none' : 'block') + ';">';
+  if (!items.length) {
+    h += '<p class="p25-collect-empty">각 패널의 📌 버튼으로 근거를 모으세요.</p>';
+  } else {
+    // 타입별 그룹핑 — 원래 인덱스 유지(삭제 시 XSS 안전한 인덱스 방식)
+    var groups = {};
+    items.forEach(function(it, idx) {
+      var t = it.type || 'etc';
+      (groups[t] = groups[t] || []).push({ it: it, idx: idx });
+    });
+    var order = COLLECT_TYPE_ORDER.slice();
+    Object.keys(groups).forEach(function(t) { if (order.indexOf(t) < 0) order.push(t); });
+    order.forEach(function(t) {
+      var g = groups[t];
+      if (!g || !g.length) return;
+      var meta = COLLECT_TYPE_META[t] || { icon:'📌', label:t };
+      h += '<div class="p25-collect-group">';
+      h += '<div class="p25-collect-group-title">' + meta.icon + ' ' + escHtml(meta.label) + ' <span class="p25-collect-group-n">' + g.length + '</span></div>';
+      g.forEach(function(o) {
+        var sub = _collectSubInfo(o.it);
+        h += '<div class="p25-collect-item">';
+        h += '<div class="p25-collect-item-main">';
+        h += '<span class="p25-collect-item-title">' + escHtml(o.it.title || '(제목 없음)') + '</span>';
+        if (sub) h += '<span class="p25-collect-item-sub">' + escHtml(sub) + '</span>';
+        h += '</div>';
+        h += '<button class="p25-collect-del" title="제거" onclick="p25_removeItem(' + o.idx + ')">✕</button>';
+        h += '</div>';
+      });
+      h += '</div>';
+    });
+  }
+  h += '</div></div>';
+  return h;
+}
+
+window.p25_toggleCollection = function() {
+  var body = document.getElementById('p25CollectBody');
+  var tgl = document.getElementById('p25CollectToggle');
+  if (!body) return;
+  var willShow = body.style.display === 'none';
+  body.style.display = willShow ? 'block' : 'none';
+  if (tgl) tgl.textContent = willShow ? '▾' : '▸';
+  try { localStorage.setItem(COLLECT_COLLAPSE_KEY, willShow ? '0' : '1'); } catch(e) { console.warn('[panel25] 수집함 접힘 상태 저장 실패', e); }
+};
+
+window.p25_removeItem = function(idx) {
+  var board = getPlanningBoard();
+  if (idx < 0 || idx >= board.items.length) return;
+  board.items.splice(idx, 1);
+  savePlanningBoard(board);
+  _updateBadge(board);
+  render();
+};
+
 // ── 렌더 ──
 function render() {
   var el = document.getElementById('p25Content');
@@ -433,6 +559,9 @@ function render() {
     html += '</div></div>';
   });
   html += '</div>';
+
+  // 📌 수집함 — board.items 목록
+  html += _renderCollectionBox(board);
 
   // 사내 진행작 입력 (중복 회피)
   var inProgress = getInProgress();
@@ -660,6 +789,41 @@ window.p25_run = async function() {
       userMsg += '\n';
     }
     if (feedAnalysis) userMsg += '[RSS 피드 종합]\n' + feedAnalysis + '\n\n';
+
+    // [사용자 선정 근거] — 편집자가 직접 📌한 insight/signal/article/report (판단에 우선 반영)
+    var pinnedEvidence = board.items.filter(function(it) {
+      return it.type === 'insight' || it.type === 'signal' || it.type === 'article' || it.type === 'report';
+    });
+    // 최신순 정렬 — 총량 상한 초과 시 최신 항목 우선 포함
+    pinnedEvidence.sort(function(a, b) { return String(b.addedAt || '').localeCompare(String(a.addedAt || '')); });
+    if (pinnedEvidence.length) {
+      var evBudget = 3000;
+      var evBlock = '[사용자 선정 근거 — 편집자가 직접 중요하다고 표시한 근거이므로 판단에 우선 반영하라]\n';
+      for (var pi = 0; pi < pinnedEvidence.length; pi++) {
+        var pit = pinnedEvidence[pi];
+        var pd = pit.data || {};
+        var line = '';
+        if (pit.type === 'insight') {
+          line = '💡 인사이트: ' + (pit.title || '') + (pd.reportTitle ? ' (' + pd.reportTitle + ')' : '') + '\n';
+          if (pd.body) line += '  ' + String(pd.body).substring(0, 300) + '\n';
+        } else if (pit.type === 'signal') {
+          line = '🚨 기회 신호: ' + (pd.keyword || pit.title || '') + ' — ' + (pd.signalType || '') + (pd.desc ? ' / ' + pd.desc : '');
+          if (pd.vals && pd.vals.length) line += ' [수치: ' + [].concat(pd.vals).join(', ') + ']';
+          line += '\n';
+        } else if (pit.type === 'article') {
+          line = '📰 기사: ' + (pit.title || '') + (pd.source ? ' (' + pd.source + ')' : '') + (pd.date ? ' ' + pd.date : '');
+          if (pd.keywords && pd.keywords.length) line += ' [키워드: ' + [].concat(pd.keywords).slice(0, 6).join(', ') + ']';
+          line += '\n';
+        } else if (pit.type === 'report') {
+          line = '📄 리포트: ' + (pit.title || '') + (pd.date ? ' (' + pd.date + ')' : '') + '\n';
+          var rbody = pd.content || pd.summary || '';
+          if (rbody) line += '  ' + String(rbody).substring(0, 300) + '\n';
+        }
+        if (evBlock.length + line.length > evBudget) break;
+        evBlock += line;
+      }
+      userMsg += evBlock + '\n';
+    }
 
     if (data.trends.length) {
       userMsg += '[주간 트렌드]\n';

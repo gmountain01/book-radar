@@ -1016,8 +1016,8 @@ function renderCards(cards, catData) {
       '<div class="card-actions">' +
         '<button class="kw-proposal-btn" onclick="kwGenerateProposal(' + idx + ', this)" title="이 키워드로 출판 기획 초안을 생성합니다">📋 기획 초안 생성</button>' +
         (isInBoard('keyword', card.keyword)
-          ? '<button class="kw-proposal-btn" style="background:#dcfce7;color:#16a34a;cursor:pointer;" onclick="p25_removeKeyword(' + idx + ')" title="기획 보드에서 제거">✅ 보드 추가됨</button>'
-          : '<button class="kw-proposal-btn" style="background:var(--accent-light);color:var(--accent);" onclick="p25_addKeyword(' + idx + ')" title="기획 보드에 추가">📌 기획 보드</button>') +
+          ? '<button class="pin-btn added" onclick="p25_removeKeyword(' + idx + ')" title="기획 보드에서 제거">✅ 보드 추가됨</button>'
+          : '<button class="pin-btn" onclick="p25_addKeyword(' + idx + ')" title="기획 보드에 추가">📌 기획 보드</button>') +
       '</div>' +
       '<div class="card-proposal" id="kwProposal-' + idx + '"></div>' +
       '<div class="card-foot">' +

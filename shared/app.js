@@ -238,12 +238,12 @@ function renderHomeBriefing() {
   var kws = _topRisingKeywords(3);
   if (kws.length) {
     kwHtml = '<div class="hb-kw"><span class="hb-kw-label">🔥 급상승</span>' +
-      kws.map(function(k) { return '<span class="hb-kw-chip">' + escHtml(k) + '</span>'; }).join('') +
+      kws.map(function(k) { return '<span class="hb-kw-chip" data-kw="' + escHtml(k) + '" onclick="_hbKwClick(event,this)">' + escHtml(k) + '</span>'; }).join('') +
     '</div>';
   }
 
   el.innerHTML =
-    '<div class="home-brief" onclick="switchTab(23,document.getElementById(\'tab23\'))">' +
+    '<div class="home-brief" onclick="_hbOpenReport()">' +
       '<div class="hb-head">' +
         '<span class="hb-title">📊 이번 주 시장 변화</span>' +
         (isNew ? '<span class="hb-new">NEW</span>' : '') +
@@ -255,6 +255,26 @@ function renderHomeBriefing() {
       '<div class="hb-foot"><span class="hb-more">시장 분석 자세히 보기 →</span></div>' +
     '</div>';
 }
+
+// 홈 브리핑 카드 클릭 → 시장 분석(panel23) 전환 후 최신 리포트 자동 오픈
+function _hbOpenReport() {
+  try { switchTab(23, document.getElementById('tab23')); } catch(e){ console.warn('[app] 홈 브리핑 탭 전환 실패', e); }
+  if (typeof window.p23_showReport === 'function') {
+    try { window.p23_showReport(); } catch(e){ console.warn('[app] p23_showReport 호출 실패', e); }
+  }
+}
+
+// 홈 브리핑 급상승 키워드 칩 클릭 → panel23 트렌드로 이동 + 해당 키워드 기사 모아보기
+function _hbKwClick(event, el) {
+  if (event) event.stopPropagation();
+  var kw = (el && el.getAttribute('data-kw')) || '';
+  try { switchTab(23, document.getElementById('tab23')); } catch(e){ console.warn('[app] 홈 브리핑 탭 전환 실패', e); }
+  if (typeof window.p23_showKeyword === 'function') {
+    try { window.p23_showKeyword(kw); } catch(e){ console.warn('[app] p23_showKeyword 호출 실패', e); }
+  }
+}
+window._hbOpenReport = _hbOpenReport;
+window._hbKwClick = _hbKwClick;
 
 /**
  * localStorage 안전 저장 — 5MB 한도 초과 시 오래된 캐시 자동 정리 후 재시도

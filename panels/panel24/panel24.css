@@ -58,8 +58,6 @@
 .p24-modal-books .p24-table { font-size:.8rem; }
 
 .p24-modal-footer { text-align:right; margin-top:.6rem; }
-.p24-modal-board-btn { padding:.5rem 1.2rem; border:none; border-radius:8px; background:var(--accent,#4F46B8); color:#fff; font-size:.85rem; font-weight:600; cursor:pointer; }
-.p24-modal-board-btn:hover { opacity:.9; }
 
 .p24-author-name:hover { color:var(--accent,#4F46B8); text-decoration:underline; }
 
