@@ -931,7 +931,7 @@ async function handleBestData(data, fname){
     bestRows.push({rank:rc>=0?(parseInt(r[rc])||i):i,title:String(r[tc]||'').trim(),pub:String(r[pc]||'').trim(),author:ac>=0?String(r[ac]||'').trim():'',sp:sc>=0?(parseInt(String(r[sc]||'').replace(/[^0-9]/g,''))||0):0,year});
   }
   const pubs=[...new Set(bestRows.map(r=>r.pub))].sort();
-  document.getElementById('myPub').innerHTML=pubs.map(p=>`<option value="${p}">${p} (${bestRows.filter(r=>r.pub===p).length}권)</option>`).join('');
+  document.getElementById('myPub').innerHTML='<option value="">출판사를 선택하세요</option>'+pubs.map(p=>`<option value="${p}">${p} (${bestRows.filter(r=>r.pub===p).length}권)</option>`).join('');
   document.getElementById('compSel').innerHTML=pubs.map(p=>`<option value="${p}">${p}</option>`).join('');
   showStatus('1',fname,`${bestRows.length}행 · ${pubs.length}개 출판사`);
   onMyPubChange();
@@ -1468,9 +1468,9 @@ async function loadDefaults(){
   }
   setLoading('lecture', false);
 
-  // 출판사 선택 — 데이터 로드 완료 후 실행
+  // 출판사 선택 — 기본값은 플레이스홀더('출판사를 선택하세요'), 사용자가 직접 선택
   const myPubSel=document.getElementById('myPub');
-  for(const o of myPubSel.options){if(o.value===DEFAULT_MY_PUB){o.selected=true;break;}}
+  myPubSel.value='';
   onMyPubChange();
   const compSel=document.getElementById('compSel');
   for(const o of compSel.options){
