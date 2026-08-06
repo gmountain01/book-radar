@@ -747,7 +747,7 @@ function meetInitDefaults(mode) {
     if (el && !el.value.trim()) el.value = val;
   };
   if (mode === 'brief') {
-    dflt('m-place', '서울 서대문구 연희로2길 62');
+    dflt('m-place', '서울 강남구 강남대로 396 (강남역)');
     dflt('m-title', '가제: 미정');
     dflt('m-agenda',
       '1. 시장 현황 및 출판 기회 공유\n2. 제안 도서 방향 함께 논의\n3. 저자님 관심 분야 및 집필 여건 확인\n4. 목차 가안 함께 검토\n5. 출판 조건 및 향후 일정 협의');
