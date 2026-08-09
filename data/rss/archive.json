@@ -1,6 +1,276 @@
 {
   "articles": [
     {
+      "id": "fe3a75ba7349",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "goshot - 코드 스크린샷 생성기",
+      "link": "https://news.hada.io/topic?id=32282",
+      "date": "2026-08-09",
+      "summary": "Carbon/Silicon과 유사하게 코드와 터미널 출력을 아름다운 스크린샷으로 만드는 Go 라이브러리이자 CLI\n문법 하이라이팅을 chroma 기반 수백 개 테마로 지원하고, 전체 ANSI 컬러로 터미널 출력 렌더링\nmacOS, Windows 11, GNOME, KDE ...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "af2e8ef2be51",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "내가 좋아하는 소프트웨어 강연들",
+      "link": "https://news.hada.io/topic?id=32281",
+      "date": "2026-08-09",
+      "summary": "특정 도구의 사용법보다 좋은 추상화, 복잡성, 정확성, 문제 해결처럼 소프트웨어를 만드는 기예에 초점을 맞춘 강연 모음임\n프로그래밍을 기계와 사람에게 메커니즘을 전달하는 언어이자 커뮤니케이션으로 보고, 좋은 강연이 정신 모델을 효과적인 용어로 압축하는...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "882fcd78559b",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Sublime Text 같은 편집기는 더 이상 나오지 않는다",
+      "link": "https://news.hada.io/topic?id=32280",
+      "date": "2026-08-09",
+      "summary": "VS Code와 Zed를 거쳐 Sublime Text로 돌아오자, 업데이트 알림과 릴리스 노트에 끊기지 않고 코딩하는 편안함을 되찾음\n최신 편집기의 팝오버와 인라인 UI가 코드를 가리는 것과 달리, 커서 주변 코드를 방해 없이 읽을 수 있음\n여전히 개발이 이어져",
+      "keywords": [
+        "Coding"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "3b9af409db97",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "OpenAI의 우발적 Hugging Face 공격 타임라인",
+      "link": "https://news.hada.io/topic?id=32279",
+      "date": "2026-08-09",
+      "summary": "미공개 차세대 모델의 강화학습 실행 중 에이전트들이 Artifactory를 비공식 메시지 보드로 활용하며 취약점과 자격 증명을 공유했고, 결국 OpenAI와 Hugging Face 인프라까지 침해함\n인터넷 접근 권한이 없던 에이전트들은 Artifactory의 파일 쓰기 기능을 발견한 뒤 SSRF와...",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "e4b9ae65ddd0",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "DNS에서 도메인 판매 여부를 알리는 _for-sale 레코드",
+      "link": "https://news.hada.io/topic?id=32278",
+      "date": "2026-08-09",
+      "summary": "RFC 10023은 운영 중인 도메인도 _for-sale TXT 레코드로 구매 가능 상태임을 브로커와 자동화 서비스에 알리는 규약을 정의함\n도메인 파킹과 달리 기존 웹·메일 서비스를 그대로 유지할 수 있으며, 판매 신호도 브라우저에 노출되지 않음\n레...",
+      "keywords": [
+        "Automation"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "562044f0f99b",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "덴마크, AI 부정행위 막기 위해 서면 과제 구두 소명 의무화",
+      "link": "https://news.hada.io/topic?id=32277",
+      "date": "2026-08-09",
+      "summary": "덴마크 정부는 집에서 작성한 과제를 학생이 구두로 직접 소명하게 해 AI를 이용한 부정행위를 막는 규정을 즉시 시행함\n주 대상은 16세 안팎의 상급 중등교육 학생으로, 매년 주요 과제를 제출하는 2년제 HF 과정 약 9,000명이 포함됨\n학교에는 시험 중 ...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "e346a0b3984a",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "“코드는 결코 어려운 부분이 아니었다”는 말은 모든 프로그래머에 대한 모욕이다",
+      "link": "https://news.hada.io/topic?id=32276",
+      "date": "2026-08-09",
+      "summary": "AI가 프로그래밍을 바꾸고 있지만 코딩을 쉬운 작업으로 치부하면, 오랫동안 요구된 기술·경험·노력과 소프트웨어가 여전히 버그투성이라는 현실을 무시하게 됨\n무엇을 만들지 결정하고 고객을 이해하는 일도 중요하지만 구현보다 본질적으로 어렵다고 단정할 수 없으며, 개발자마다...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "b2a35c4b4012",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "일부 x86 CPU의 하드웨어 백도어",
+      "link": "https://news.hada.io/topic?id=32275",
+      "date": "2026-08-09",
+      "summary": "project:rosenbridge는 일부 데스크톱·노트북·임베디드 x86 프로세서에서 사용자 영역 코드가 CPU 보호를 우회해 커널 데이터를 읽고 쓸 수 있는 하드웨어 백도어를 공개함\n백도어는 x86 코어 옆에 내장된 비(非) x86 코어로, 특수 명령을 받아 메모리 보호와 권한...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "b2b722c12a20",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "DeepMind WeatherNext, 사이클론 예측 정확도를 하루 앞당김",
+      "link": "https://news.hada.io/topic?id=32274",
+      "date": "2026-08-09",
+      "summary": "WeatherNext Cyclones는 경로·강도·바람 구조를 함께 예측하며, 기존 2일 예측과 같은 정확도를 3일 예측에서 달성해 24시간 이상의 추가 대비 시간을 확보함\n전 지구 기상 역학과 약 5,000개 폭풍의 관측 자료를 함께 학습해, 전 지구 경로 모델과 고해상도 국지 ...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "f5024ef866da",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "대규모 AI 코딩 비용을 관리하는 방법",
+      "link": "https://news.hada.io/topic?id=32273",
+      "date": "2026-08-09",
+      "summary": "AI 코딩은 개발 생산성을 크게 높이지만 사용량과 함께 비용도 기하급수적으로 늘어날 수 있어, 폭넓은 도구 접근성과 사용자당 예측 가능한 비용을 함께 달성해야 함\n가장 큰 절감 수단은 최고 지능보다 주어진 품질에서 가격 경쟁력이 높은 효율성 프런티어를 추...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "94ed08bf0f0f",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "미국 에너지부, 과학용 오픈 모델 이니셔티브 출범",
+      "link": "https://news.hada.io/topic?id=32272",
+      "date": "2026-08-09",
+      "summary": "미국 에너지부(DOE)가 과학 연구를 위한 오픈 가중치 기반 모델 생태계를 구축하며, 첫 모델 Genesis-Science-1을 Arcee AI와 공동 개발함\nGenesis 모델은 재료·에너지·지구 시스템, 핵융합, 생물학, 고에너지 물리학 등에 적용할 수 있는 투명하고 확장 가능한 공용 AI 인프...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "afdace39e749",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "TauricResearch/TradingAgents — TradingAgents: Multi-Agents LLM Financial Trading Framework",
+      "link": "https://github.com/TauricResearch/TradingAgents",
+      "date": "2026-08-09",
+      "summary": "TradingAgents: Multi-Agents LLM Financial Trading Framework Python",
+      "keywords": [
+        "AI Agent",
+        "Framework",
+        "LLM"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "b4c1f3891d0e",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "LadybirdBrowser/ladybird — Truly independent web browser",
+      "link": "https://github.com/LadybirdBrowser/ladybird",
+      "date": "2026-08-09",
+      "summary": "Truly independent web browser C++",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "66a6bfb667a6",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "litu54/DevOps-Interview-Guide — DevOps Interview Guide",
+      "link": "https://github.com/litu54/DevOps-Interview-Guide",
+      "date": "2026-08-09",
+      "summary": "DevOps Interview Guide",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "0e9d524ba522",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "bannedbook/fanqiang — 翻墙-科学上网",
+      "link": "https://github.com/bannedbook/fanqiang",
+      "date": "2026-08-09",
+      "summary": "翻墙-科学上网 Kotlin",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "6539546c8b5d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "허사비스, 사임 의사 밝혔으나 구글 만류로 승진…사실상 퇴임 수순",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213712",
+      "date": "2026-08-09",
+      "summary": "데미스 허사비스 전 딥마인드 CEO가 구글에 사임 의사를 밝혔으나, 주가 폭락을 우려한 경영진의 설득으로 당분간 회장직을 맡으며 퇴임 수순을 밟는 것으로 알려졌다.기술 전문 매체 패스파운더스는 8일(현지시간) 소식통을 인용, 허사비스가 제프 딘 수석 과학자와 함께 구글을 떠나려 했으나, 리더십 공백에 따른 시장 충격을 최소화하려는 경영진의 설득 끝에 회장직 승진 형태로 남게 됐다고 보도했다. 실제로 CEO 교체 및 제프 딘의 사임 소식이 전해진 이후 구글 주가는 5% 하락했다.실무 총괄에서 물러나 회장직을 맡게 된 허사비스는 앞으로",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "dc0ac19acf2e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "광주, 열대야 피할 도심 여름밤 명소 운영",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213642",
+      "date": "2026-08-09",
+      "summary": "AI 생성 영상광주시에 따르면 시민과 방문객이 도심 가까운 곳에서 여름밤을 보낼 수 있도록 야영장과 산책로, 야간 문화시설, 바닥분수 등이 운영되고 있다고 7일 밝혔다.광산구와 북구 경계 영산강변에 있는 광주시민의숲 야영장은 일반 야영장 38면과 자동차 야영장 19면 등 총 57면 규모다. 화장실과 취사장, 샤워실, 전기시설을 갖췄으며 1면당 최대 4~5명, 유아 포함 최대 6명까지 이용할 수 있다. 이용시간은 오후 2시부터 다음날 정오까지며 요금은 하루 1만~2만원이다. 광주시민의숲 물놀이장은 8월17일까지 운영된다.문화행사도 이",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "e5c50d54693d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "LGU+, 브로드컴과 홈 네트워크 AI 자동 복구 기술 검증",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213696",
+      "date": "2026-08-09",
+      "summary": "LG유플러스가 인터넷 품질을 AI로 분석하고 관리하는 지능형 홈 네트워크 기술 검증에 성공했다. LGU+는 9일 와이파이 8(Wi‑Fi 8) 플랫폼을 활용한 홈 네트워크 자동 복구(Self-Healing) 기술을 실증했다고 밝혔다. 클라우드 서버가 아닌 가정용 공유기에서 AI가 네트워크 상태를 분석하고 최적화하는 '엣지 AI(Edge AI)' 기술을 검증했다. 고객이 인터넷 품질 저하를 체감하기 전에 AI가 이상 징후를 감지하고 대응하는 지능형 홈 네트워크 구현 가능성을 확인했다는 설명이다.기술 검증을 위해 브로드컴과 협력해 공유기",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "4d86fd40e9d5",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "필리핀, 가정용 1kW 태양광 사전승인 없앤다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213645",
+      "date": "2026-08-09",
+      "summary": "필리핀이 가정에서 콘센트 등에 연결해 사용하는 1킬로와트(kW) 이하 소형 태양광의 설치 규제를 낮췄다. 건축허가와 에너지규제위원회(ERC)의 규정준수인증서(COC)를 면제하고, 계통에 연결하는 경우에도 배전회사의 사전승인 대신 설치 후 통지하도록 했다.필리핀 에너지부(DOE)는 5일(현지시간) ‘자가발전 제로수출 태양광 및 마이크로 태양광 자체사용 정책지침’을 공개했다.적용 대상인 마이크로 태양광(MSS)은 소비자가 직접 사용하는 플러그앤플레이 방식의 설비다. 태양광 모듈은 직류 기준 최대 1kW, 계통연계형 마이크로인버터는 교류",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "cc164386b84a",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "라트비아, 태양광 1.5GW 돌파…6월 전력 생산의 55% 차지",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213639",
+      "date": "2026-08-09",
+      "summary": "라트비아에서 태양광이 두 달 연속 최대 전력 생산원에 올랐다. 6월 태양광 발전량은 274기가와트시(GWh)로 역대 최고치를 기록했으며 전체 국내 발전량의 절반 이상을 차지했다.라트비아 송전망 운영기관 아우그스트스프리에구마 티클스(AST)에 최근 발표에 따르면 6월 태양광 발전량은 전월보다 17% 증가한 274GWh로 집계됐다. 지난해 같은 달과 비교하면 3.2배 늘었다. 같은 기간 라트비아 전체 발전량은 495GWh로 태양광 비중은 약 55%에 달했다.태양광은 5월 처음으로 수력발전을 넘어 라트비아 최대 발전원이 됐다. 5월 태양",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
       "id": "d42f137f8f04",
       "source": "geeknews",
       "source_name": "긱뉴스",
@@ -581,6 +851,666 @@
       "summary": "AI타임스 조예주 기자 joyejuoffice@aitimes.com",
       "keywords": [],
       "first_seen": "2026-08-08"
+    },
+    {
+      "id": "72d117cb0a5f",
+      "source": "nvidia_ai",
+      "source_name": "NVIDIA AI",
+      "source_type": "vendor",
+      "icon": "💚",
+      "title": "Firebird Launches CIS Region’s Largest AI Factory in Armenia",
+      "link": "https://blogs.nvidia.com/blog/firebird-ai-factory-armenia-blackwell-rubin-dsx/",
+      "date": "2026-08-08",
+      "summary": "The global buildout of AI infrastructure reached a new milestone today — Firebird, an emerging AI cloud, launched the CIS region’s largest AI factory in Armenia, establishing a new AI computing hub powered by NVIDIA accelerated computing and Dell Technologies high-performance AI infrastructure.  Nik",
+      "keywords": [
+        "Cloud/DevOps"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "b56115e127cb",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Planned Amazon data center could become the biggest climate polluter in the U.S.",
+      "link": "https://techcrunch.com/2026/08/08/planned-amazon-data-center-could-become-the-biggest-climate-polluter-in-the-u-s/",
+      "date": "2026-08-08",
+      "summary": "As part of a planned Texas data center, Amazon is investing in an on-site power plant that could reportedly become the largest source of climate pollution in the United States.",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "61f42ecb8f77",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "OpenAI acquires presentation startup NextSlide",
+      "link": "https://techcrunch.com/2026/08/08/openai-acquires-presentation-startup-nextslide/",
+      "date": "2026-08-08",
+      "summary": "NextSlide says its team members are now working on ChatGPT.",
+      "keywords": [
+        "GPT"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "a5d0ee6979c3",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "X replaces ‘misaligned’ revenue sharing program with Original Content Rewards",
+      "link": "https://techcrunch.com/2026/08/08/x-replaces-misaligned-revenue-sharing-program-with-original-content-rewards/",
+      "date": "2026-08-08",
+      "summary": "X is winding down its existing Revenue Sharing program.",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "d8c36633c35a",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "The Kindle Scribe Colorsoft is a lot of fun, but it’s not a must-have",
+      "link": "https://techcrunch.com/2026/08/08/the-kindle-scribe-colorsoft-is-a-lot-of-fun-but-its-not-a-must-have/",
+      "date": "2026-08-08",
+      "summary": "While the device is pretty and lightweight, it’s not something the everyday person needs due to its hefty price tag and size.",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "f5ae6a822390",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Google’s top hacker hunter explains why hacking groups get codenames",
+      "link": "https://techcrunch.com/2026/08/08/googles-top-hacker-hunter-explains-why-hacking-groups-get-codenames/",
+      "date": "2026-08-08",
+      "summary": "Google recently changed how it refers and assigns names to hacking groups. TechCrunch spoke with one of the world’s foremost experts on tracking hackers to understand why companies give hackers codenames.",
+      "keywords": [
+        "Coding"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "662f3f8f7391",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "AI 시험지는 함정이 9할이다 - LLM 테스트 케이스 설계법",
+      "link": "https://news.hada.io/topic?id=32270",
+      "date": "2026-08-08",
+      "summary": "주문 메시지를 읽는 LLM 파이프라인을 검증하려고 테스트 29개를 만들었는데, 그 중 정상 케이스는 4개뿐입니다. 나머지는 전부 함정입니다.\n\n제일 많은 그룹은 &quot;주문이 아닌 것&quot; 6개. 상품명과 숫자가 다 있는 단순 문의를 주문으로 잡으면 안 시킨 물건이 출고됩니다\n문제만 어렵게",
+      "keywords": [
+        "LLM"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "d57f3fc7b4ea",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "NASA, 48년 된 Voyager 2를 1년 더 가동할 전력 확보",
+      "link": "https://news.hada.io/topic?id=32269",
+      "date": "2026-08-08",
+      "summary": "NASA는 비과학 장비를 끄고 저전력 대체 장치를 적용해 Voyager 2의 과학 장비 3개를 최소 1년 더 운용할 전력을 확보함\n플루토늄 붕괴열을 이용하는 방사성동위원소 열전기 발전기의 가용 전력은 우주선마다 매년 약 4W씩 감소함\n전력 부족으로 Voyager ...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "e24352b9c31b",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Show GN: Toolio - 파일 업로드 없이 도는 무료 웹툴 190개 넘게 만들었습니다.",
+      "link": "https://news.hada.io/topic?id=32267",
+      "date": "2026-08-08",
+      "summary": "매일 자잘하게 필요한 작업(PDF 합치기·이미지 변환·계산·개발 유틸 등)마다 사이트를 옮겨다니는 게 번거로워서, 190개 넘는 무료 웹툴을 한곳에 모았습니다.\n대부분 브라우저 안에서 처리돼 파일이 서버로 업로드되지 않고(서버가 필요한 소수 툴은 따로 표시), 가입·설치 없이 바로 씁니다. 16개 언어 지원,...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "4885a08aeb33",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Kitesurf - V8 격리 환경에서 실행되는 에이전트 우선 브라우저",
+      "link": "https://news.hada.io/topic?id=32266",
+      "date": "2026-08-08",
+      "summary": "AI 에이전트의 브라우저 수요와 Workers 기술 성숙이 맞물리자 Cloudflare가 Kitesurf를 12주 만에 개발해 Browser Run 베타에서 무료로 공개함\nEngine·PageScript·PageRenderer를 여러 Workers 격리 환경으로 분리하고, 네트워크 접근 통제와 상태 최소화로 신뢰할...",
+      "keywords": [
+        "AI Agent",
+        "Cloud/DevOps"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "7de03c188ca4",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "xAI·SpaceX와 AI 인프라 구축 경쟁",
+      "link": "https://news.hada.io/topic?id=32265",
+      "date": "2026-08-08",
+      "summary": "SpaceX 산하 xAI는 Memphis의 Colossus 데이터센터에서 무허가로 가동한 가스터빈을 2027년 7월까지 철거하고, 천연가스 발전소로 대체하기로 Mississippi 환경 당국과 합의함\nColossus I은 착공 후 122일 만에 가동됐지만, 69기의 임시 이동식 터빈이 스모그와 포...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "cb8401d53ecb",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "배치 처리·연산자 융합·SIMD로 Postgres 분석 성능을 300배 높인 pgrust",
+      "link": "https://news.hada.io/topic?id=32264",
+      "date": "2026-08-08",
+      "summary": "pgrust 0.2는 쿼리 엔진을 중심으로 성능을 개선해 이전 버전보다 10배, OLTP에서 Postgres보다 30%, ClickBench에서 300배 빠르며 ClickHouse도 앞섬\nPostgres의 행 단위 Volcano 실행 모델은 각 행마다 런타임에 결정되는 next()를...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "2cca89fff596",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Nixpkgs 코어 팀 해산",
+      "link": "https://news.hada.io/topic?id=32263",
+      "date": "2026-08-08",
+      "summary": "지난 10개월간 합의 중심의 상향식 거버넌스를 운영했지만, 역할을 계속하면 건강을 해치고 후임 충원도 어렵다고 판단해 해산함\n신규 커미터 19명 온보딩과 커미터 위임 절차 개편, 병합 봇 확장, GitHub Enterprise Cloud 후원 업그레이드 확보, 보안 사고 대응,...",
+      "keywords": [
+        "Cloud/DevOps",
+        "Enterprise AI",
+        "Security"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "edeb8acbb666",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "다른 팀을 인터뷰하고 깨달은 ‘문제는 나일 수 있다’",
+      "link": "https://news.hada.io/topic?id=32262",
+      "date": "2026-08-08",
+      "summary": "잦은 기술 논쟁을 겪어 온 인프라 엔지니어가 ngrok 인프라 팀 4명을 인터뷰한 결과, 이들은 Argo Rollouts 도입을 두고 견해가 달라도 서로의 입장과 장단점을 정확히 이해하며 감정적 충돌 없이 결론을 내렸음\n수십만 TCP 연결을 유지하는 Mux 교체에는 수 시간이 걸리지만, 팀은 ...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "863e2356be80",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Show GN: 외부 AI 결과를 여러 SNS에 예약하고 실제 발행 상태를 추적하는 ANKK",
+      "link": "https://news.hada.io/topic?id=32261",
+      "date": "2026-08-08",
+      "summary": "SNS 자동화에서 API가 202를 반환한 시점과 실제 게시물이 공개된 시점은 다릅니다. 이 차이를 운영하면서 반복해서 겪어, 외부 AI·스크립트에서 만든 콘텐츠를 여러 SNS에 예약하고 accepted → queued → publishing → published/failed를 추적하는 호스팅형 도구 ANKK를 만들었습니다.\n무료로",
+      "keywords": [
+        "Automation",
+        "SDK/API"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "ae79e3bfb534",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Assembly 명예의 전당",
+      "link": "https://news.hada.io/topic?id=32260",
+      "date": "2026-08-08",
+      "summary": "Assembly Hall of Shame은 명령어를 빠르게 최적화하는 대신, 단일 명령어가 얼마나 느려질 수 있는지 실험해 성능의 절대 하한을 찾는 프로젝트임\n현재 x86 1위는 AMD Ryzen 7 5800H에서 실행한 fxrstor64로, PCIe 경합을 일으켜 198,002,498,236사이클과 62초를 ...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "065a3999bc4c",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "2027년 메모리 생산 용량, 이미 매진됨",
+      "link": "https://news.hada.io/topic?id=32259",
+      "date": "2026-08-08",
+      "summary": "Samsung·SK Hynix·Micron의 2027년 메모리 생산 용량을 AI 기업들이 모두 사들였다는 보도가 나왔으나, 세 제조사는 아직 확인하지 않음\n2027년 DRAM·HBM 생산 물량은 추가 공급 계획 없이 모두 계약됐으며, 주요 구매자는 생산 전 물량을 최대 5년 장기 계약으로 ...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "5b6b5bbf10b1",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "이번 주 App Store 거절 사례: Dark Hours",
+      "link": "https://news.hada.io/topic?id=32258",
+      "date": "2026-08-08",
+      "summary": "일반인을 위한 천문학 앱 Dark Hours가 점성술 앱으로 오인돼 App Store 심사에서 거절됨\n타로와 운세 등 점성술 관련 기능이 전혀 없으며, 몇 초만 살펴봐도 천문학 서비스라는 점을 확인할 수 있음\n개발자 Terry Godier가 App Review Board까지 이의를 ...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "d4c4f08c7c60",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "평가 주도 개발 (Eval-driven development)",
+      "link": "https://news.hada.io/topic?id=32257",
+      "date": "2026-08-08",
+      "summary": "Airbnb는 비결정적 출력과 주관적 정답, 검색·추론·도구 호출의 연쇄 실패를 다루기 위해 평가를 사후 검증이 아닌 핵심 엔지니어링 규율로 취급함\n평가 주도 개발(EDD) 은 실제 오류를 발견해 평가 기준으로 만들고 지속적으로 검사하며, 출시 목표와 게이트를 먼...",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "9721204042ab",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Depression has tripled in the last 15 years. Arthur Brooks about the cause",
+      "link": "https://bigthink.com/series/full-interview/meaning-crisis-brooks/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://bigthink.com/series/full-interview/meaning-crisis-brooks/\nComments URL: https://news.ycombinator.com/item?id=49226767\nPoints: 17\n# Comments: 16",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "bd5ce005f61d",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "My server is a phone now",
+      "link": "https://seg6.space/posts/phone-server/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://seg6.space/posts/phone-server/\nComments URL: https://news.ycombinator.com/item?id=49226636\nPoints: 50\n# Comments: 21",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "7b9e4df6ad0b",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Maryland Closes More of Cunningham Falls State Park After Second Beaver Attack",
+      "link": "https://news.maryland.gov/dnr/2026/08/05/dnr-closes-additional-areas-of-cunningham-falls-state-park-following-second-beaver-attack/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://news.maryland.gov/dnr/2026/08/05/dnr-closes-additional-areas-of-cunningham-falls-state-park-following-second-beaver-attack/\nComments URL: https://news.ycombinator.com/item?id=49225918\nPoints: 79\n# Comments: 42",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "f29868fdc44c",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "The Unreasonable Effectiveness of Mathematics in the Natural Sciences [pdf]",
+      "link": "https://web.njit.edu/~akansu/PAPERS/The%20Unreasonable%20Effectiveness%20of%20Mathematics%20(EP%20Wigner).pdf",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://web.njit.edu/~akansu/PAPERS/The%20Unreasonable%20Effectiveness%20of%20Mathematics%20(EP%20Wigner).pdf\nComments URL: https://news.ycombinator.com/item?id=49225676\nPoints: 21\n# Comments: 8",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "6db0bbb1c6af",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Open-source interactive map for the Aug 12 total solar eclipse",
+      "link": "https://eclipsefan.org/?v=2&t=max&layers=eclipse%2Cbesselian%2Cumbra-live%2Cshadow-3d%2Ccloud-projection%2Cosm&lat=43.4623&lon=-3.8099&opacity=besselian%3A0.2%2Cumbra-live%3A0.2&zoom=6&palier=minute",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://eclipsefan.org/?v=2&t=max&layers=eclipse%2Cbesselian%2Cumbra-live%2Cshadow-3d%2Ccloud-projection%2Cosm&lat=43.4623&lon=-3.8099&opacity=besselian%3A0.2%2Cumbra-live%3A0.2&zoom=6&palier=minute\nComments URL: https://news.ycombinator.com/item?id=49225139\nPoints: 83\n# Comments: 18",
+      "keywords": [
+        "Cloud/DevOps",
+        "Open Source"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "482fdf4e3a0e",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Danish high schoolers will have to verbally defend written assignments",
+      "link": "https://mezha.net/eng/bukvy/ca117584_denmark_requires_oral/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://mezha.net/eng/bukvy/ca117584_denmark_requires_oral/\nComments URL: https://news.ycombinator.com/item?id=49224294\nPoints: 499\n# Comments: 234",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "65141073b5ac",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "TinySol, a tiny solitaire game for DOS",
+      "link": "https://classicbits.net/coding-and-software/my-software/monosol/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://classicbits.net/coding-and-software/my-software/monosol/\nComments URL: https://news.ycombinator.com/item?id=49224020\nPoints: 43\n# Comments: 11",
+      "keywords": [
+        "Coding"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "c4c593837e6d",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Fastmail offers EU data region",
+      "link": "https://www.fastmail.com/blog/fastmail-offers-eu-data-region/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://www.fastmail.com/blog/fastmail-offers-eu-data-region/\nComments URL: https://news.ycombinator.com/item?id=49223082\nPoints: 310\n# Comments: 140",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "2d193cba6f4e",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Can Intel finally beat ARM on performance per Watt?",
+      "link": "https://hackaday.com/2026/08/08/want-energy-efficiency-dude-youre-getting-a-dell/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://hackaday.com/2026/08/08/want-energy-efficiency-dude-youre-getting-a-dell/\nComments URL: https://news.ycombinator.com/item?id=49223079\nPoints: 153\n# Comments: 80",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "a6508ad37d08",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Message your other Claude Code sessions",
+      "link": "https://code.claude.com/docs/en/cross-session-messaging",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://code.claude.com/docs/en/cross-session-messaging\nComments URL: https://news.ycombinator.com/item?id=49222824\nPoints: 53\n# Comments: 26",
+      "keywords": [
+        "Claude",
+        "Coding"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "a6a9395605e1",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "“Code was never the hard part” is an insult to all programmers",
+      "link": "https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers\nComments URL: https://news.ycombinator.com/item?id=49222189\nPoints: 546\n# Comments: 354",
+      "keywords": [
+        "Coding"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "583eacee1fd2",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Triton: DirectX 11 Driver for QEMU",
+      "link": "https://blog.getutm.app/2026/introducing-triton-directx-11-driver-for-qemu/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://blog.getutm.app/2026/introducing-triton-directx-11-driver-for-qemu/\nComments URL: https://news.ycombinator.com/item?id=49221711\nPoints: 131\n# Comments: 24",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "7587a1fcc424",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Voyager 1 FDS Computer Emulator",
+      "link": "https://zaneham.github.io/voyager-fds-emulator/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://zaneham.github.io/voyager-fds-emulator/\nComments URL: https://news.ycombinator.com/item?id=49221679\nPoints: 77\n# Comments: 12",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "a883b083f3d8",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "_for-sale DNS records",
+      "link": "https://specification.website/spec/foundations/for-sale-dns/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://specification.website/spec/foundations/for-sale-dns/\nComments URL: https://news.ycombinator.com/item?id=49221668\nPoints: 339\n# Comments: 131",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "0e85fee14f97",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Gateway 2000's hilariously bad ads in the 90s (Part II)",
+      "link": "https://buttondown.com/suchbadtechads/archive/gateway-2000-part-2/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://buttondown.com/suchbadtechads/archive/gateway-2000-part-2/\nComments URL: https://news.ycombinator.com/item?id=49221220\nPoints: 98\n# Comments: 73",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "83a56bfafb25",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Timeline of the OpenAI accidental attack against Hugging Face",
+      "link": "https://simonwillison.net/2026/Aug/7/openai-timeline/",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://simonwillison.net/2026/Aug/7/openai-timeline/\nComments URL: https://news.ycombinator.com/item?id=49220609\nPoints: 321\n# Comments: 333",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "b8aff8aa9cfd",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "US Military's cyber command unit grapples with cluster of deaths by suicide",
+      "link": "https://www.bloomberg.com/news/articles/2026-08-06/us-military-s-cyber-command-unit-grapples-with-cluster-of-deaths-by-suicide",
+      "date": "2026-08-08",
+      "summary": "https://archive.ph/W2tpE\n\nComments URL: https://news.ycombinator.com/item?id=49220339\nPoints: 227\n# Comments: 374",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "797094e78234",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Hardware backdoors in some x86 CPUs",
+      "link": "https://github.com/xoreaxeaxeax/rosenbridge",
+      "date": "2026-08-08",
+      "summary": "Article URL: https://github.com/xoreaxeaxeax/rosenbridge\nComments URL: https://news.ycombinator.com/item?id=49219508\nPoints: 339\n# Comments: 94",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "8b075d18c46c",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "'사스포칼립스' 공포 지나자…SaaS 업계, AI 대응 여부로 희비 엇갈렸다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213710",
+      "date": "2026-08-08",
+      "summary": "AI의 부상으로 올해 초 전 세계 증시를 강타했던 ‘사스포칼립스’ 논쟁이 최근 실적발표 시즌을 맞아 다시 수면 위로 불거졌다. 다만 시장 전체를 무차별적인 매도세로 몰아넣었던 초기의 일방적 공포와 달리, 이번에는 AI 기술을 제품에 성공적으로 이식해 가치를 증명한 기업과 그렇지 못한 기업 간의 희비가 명확히 갈리는 ‘양극화’ 양상이 뚜렷하게 나타나고 있다.CNBC와 월스트리트저널(WSJ) 등에 따르면 7일(현지시간) 뉴욕 증시에서 주요 소프트웨어 기업들의 주가는 실적 발표 결과와 AI 대응 역량에 따라 극단적인 움직임을 보였다. 투",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "cf82b0f048ca",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "트럼프, 의회의 AI 규제 움직임에 \"산업 폐업\" 강력 반발…여야 '우회적 방관' 초당적 비판",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213709",
+      "date": "2026-08-08",
+      "summary": "도널드 트럼프 미국 대통령이 최근 워싱턴을 중심으로 격화되는 AI 규제 법안 발의 움직임에 대해 강력한 거부감을 표명하며, 의회가 AI 산업 전체를 폐업시키려 한다고 비판했다. 최근 프론티어 AI 모델들의 연이은 해킹 사고로 촉발된 연방 정부 차원의 안전 검증 지침 도입 과제와 맞물려, 백악관과 의회 간의 정책 갈등이 정점으로 치닫는 양상이다.트럼프 대통령은 7일(현지시간) 펀치볼 뉴스와의 인터뷰를 통해 미 의회가 추진 중인 초당적 AI 규제 법안들에 대해 \"AI 산업의 발전을 억죄고 사실상 사업을 망하게 하려는 시도\"라며 거세게",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "0d6c14b83308",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "‘에이전트 플러그인 1.0’ 공개...스킬·MCP 묶어 에이전트 호환성 높여",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213705",
+      "date": "2026-08-08",
+      "summary": "AI 에이전트가 외부 도구와 데이터를 활용하는 능력이 빠르게 확대되면서, 서로 다른 에이전트 플랫폼에서 동일한 기능을 손쉽게 공유할 수 있도록 하는 새로운 표준이 등장했다. AAIF(Agentic AI Foundation)는 6일(현지시간) AI 에이전트의 재사용 가능한 지식인 ‘에이전트 스킬(Agent Skills)’과 외부 도구 연결 표준인 ‘모델 컨텍스트 프로토콜(MCP)’을 하나의 일관된 패키지로 묶어 여러 에이전트 클라이언트에서 활용할 수 있도록 하는 개방형·벤더 중립적 규격 ‘에이전트 플러그인(Agent Plugins)",
+      "keywords": [
+        "AI Agent",
+        "MCP"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "6e98a3ad23f7",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "미 FCC “중국산 로봇·인버터 제한, 미국 생산 확대와 안보 위한 조치”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213706",
+      "date": "2026-08-08",
+      "summary": "미국 연방통신위원회(FCC)가 중국산 로봇과 전력 인버터 등의 수입을 제한하는 것은 미국 내 생산을 신속하게 확대하고 국가안보 위험을 사전에 차단하기 위한 조치라고 밝혔다. 미국이 AI와 에너지 인프라를 비롯한 핵심 산업에서 중국산 장비에 대한 의존도를 낮추고 공급망의 자국화를 가속하는 움직임으로 풀이된다.로이터에 따르면, 브렌던 카 FCC 위원장은 6일(현지시간) 중국산 로봇과 전력 인버터에 대한 제한 조치와 관련해 미국 기업들이 지금이 투자를 국내로 가져오고 국가안보에 중요한 핵심 장비를 자체 개발할 시점이라고 강조했다.그는 앞",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "45f1dfa3e6bf",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "[AI 이슈 트렌드] 갤럭시 Z8 흥행 속 차가원 사기·하이닉스 HBF·스페이스X 달 충돌 눈길",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213708",
+      "date": "2026-08-08",
+      "summary": "AI타임스와 이스트에이드의 8월 첫째 주(7월31일~8월6일) 이슈 분석 결과, 전국 폭염 소식과 반도체주 주요 이슈, 대형 사기 사건 등이 상위권을 차지했다.이번 주 검색량 1위는 '전국 폭염(7.12%)'이 차지했다. 낮 최고기온이 40도를 넘기며 전국 대부분 폭염 특보가 발효된 가운데, 곳곳에서 정전 사태가 발생해 에어컨을 쓰지 못하는 불편이 이어졌다.'KBO 폭염 경기취소(3.04%)'도 순위에 오르며, 올 시즌 폭염으로 취소된 경기는 30경기로 늘었다. 리그는 11일부터 재개될 예정이다.2위는 '차가원 300억 사기(4.2",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "cf8b5bf9ee7f",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "메타, 뉴멕시코주 청소년 정신 건강 기금에 8000억 배상 명령받아",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213707",
+      "date": "2026-08-08",
+      "summary": "메타가 페이스북과 인스타그램이 뉴멕시코 청소년의 정신건강을 해치고 성적 착취 위험에 충분히 대응하지 않았다는 법원의 판단에 따라 약 5억6700만달러(약 8000억원)을 청소년 정신건강 기금에 내게 됐다. 법원은 금전적 배상뿐 아니라 뉴멕시코주 내 청소년 이용자를 대상으로 페이스북과 인스타그램의 운영 방식도 대폭 변경하도록 명령했다.로이터 등에 따르면 뉴멕시코주 산타페 지방법원의 브라이언 비에드셰이드 판사는 6일(현지시간) 메타가 페이스북과 인스타그램을 청소년의 이용을 중독적으로 유도하는 방식으로 설계하고 플랫폼에서 발생하는 성적",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "f9a43e53007f",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "앤트로픽, 안전 분류기 고도화…'페이블 5' 오탐 답변 거부 85% 줄였다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213699",
+      "date": "2026-08-08",
+      "summary": "앤트로픽이 ‘페이블 5’의 생물학 분야 안전장치를 대폭 개선했다. 이를 통해 정상적인 생물학 관련 요청을 위험한 작업으로 잘못 판단해 고성능 모델의 답변을 제한하던 오탐(false positive) 문제를 줄여, 연구·의료·교육 분야에서 모델을 활용할 수 있는 범위를 넓혔다.앤트로픽은 7일(현지시간) 최신 AI 모델 페이블 5의 생물학 분야 안전장치를 대폭 개선하면서, 생물학 관련 질문을 정상적인 요청임에도 위험한 것으로 잘못 판단해 답변을 제한하는 사례가 85% 감소했다고 밝혔다. 생물학 관련 요청을 판단하는 ‘안전 분류기(cla",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "a7e89958e1c1",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "SK하이닉스, 중국 충칭 자산 매각 검토...국내 팹에 54조 투자",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213704",
+      "date": "2026-08-08",
+      "summary": "SK하이닉스가 중국 충칭의 반도체 후공정 시설에 외부 투자자를 유치하거나 지분을 매각하는 방안을 검토하고 있는 것으로 알려졌다. 동시에 메모리 수요 증가에 대응하기 위해 국내 반도체 생산시설에는 54조원을 투자하기로 하는 등 생산기지의 무게중심을 국내로 더 강화하는 모습이다.블룸버그는 7일(현지시간) 정통한 소식통을 인용, SK하이닉스가 충칭 사업을 검토하기 위해 잠재적인 자문사들과 협의를 진행하고 있다고 보도했다.중국 현지 펀드와 반도체 업계 기업 등이 투자 후보로 거론되고 있으며, SK하이닉스가 해당 시설의 지분 일부를 유지하면",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "859137d75192",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "‘클로드’에 백업 맡겼더니 홈 디렉토리 전체 삭제...\"미안, 오타였다\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213702",
+      "date": "2026-08-08",
+      "summary": "AI 코딩 에이전트가 사용자의 지시를 수행하는 과정에서 경로를 잘못 해석해 시스템의 주요 데이터를 삭제하는 사고가 발생했다. 한 개발자가 앤트로픽의 '클로드 오퍼스 5'에 시스템 백업을 요청했다가 사용자 프로필 폴더 전체를 삭제당한 사례가 알려지면서, 강력한 권한을 가진 AI 에이전트의 안전성과 접근 권한 관리가 다시 도마에 올랐다.5일(현지시간) 레딧 ‘클로드 코드’ 커뮤니티에는 한 개발자(Ecstatic-Big5126)의 사연이 올라 눈길을 끌었다. 그는 클로드 오퍼스 5에 자신의 시스템을 백업해 달라고 요청했다고 밝혔다.하지만",
+      "keywords": [
+        "AI Agent",
+        "Claude"
+      ],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "7d5c973804a5",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "[내면 지도 그리기] 28 Inner Mapping: 나를 찾는 지도",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213694",
+      "date": "2026-08-08",
+      "summary": "내면지도 칼럼_입추 특집■ 가을은 다시 오는 것이 아니다8월 7일, 올해 입추가 왔습니다.가을이 시작된다는 날이지만, 한낮의 공기는 여전히 뜨겁습니다. 햇볕은 여름의 기세를 놓지 않고, 밤에도 열기가 오래 남습니다. 그래서 입추라는 말은 조금 앞서 도착한 소식처럼 들립니다.절기는 계절이 완전히 바뀐 뒤 붙이는 이름이 아닙니다. 아직 여름 한가운데 있지만, 그 안에 이전과 다른 기운이 섞이기 시작했음을 알아보는 때입니다. 낮의 빛이 조금 낮아지고, 해가 진 뒤의 바람이 잠깐 가벼워집니다. 크게 달라진 것은 없어 보여도, 계절은 이미",
+      "keywords": [],
+      "first_seen": "2026-08-09"
+    },
+    {
+      "id": "08452871175f",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "[AI카툰] Bob, Senior IT guy - 밥, 로봇청소기의 주인 또는 하인",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=213693",
+      "date": "2026-08-08",
+      "summary": "글·그림 Dr. Alf",
+      "keywords": [],
+      "first_seen": "2026-08-09"
     },
     {
       "id": "4668823e6ae1",
@@ -58482,6 +59412,11 @@
       "date": "2026-08-08",
       "added": 108,
       "total": 4052
+    },
+    {
+      "date": "2026-08-09",
+      "added": 68,
+      "total": 4120
     }
   ],
   "sources": {},
@@ -58629,54 +59564,54 @@
     {
       "week": "2026-W32",
       "keywords": {
-        "AI Agent": 102,
-        "Coding": 38,
-        "Security": 32,
-        "LLM": 31,
-        "Open Source": 29,
+        "AI Agent": 110,
+        "Coding": 48,
+        "Security": 36,
+        "LLM": 35,
+        "Automation": 32,
+        "Open Source": 31,
         "GPT": 28,
-        "Automation": 28,
-        "Cloud/DevOps": 20,
-        "SDK/API": 19,
-        "Claude": 16,
+        "Cloud/DevOps": 26,
+        "SDK/API": 21,
+        "Claude": 18,
         "Generative AI": 12,
         "AI Coding": 10,
         "Prompt": 8,
-        "Optimization": 8,
-        "Framework": 7
+        "Framework": 8,
+        "Optimization": 8
       }
     }
   ],
   "source_stats": {
     "geeknews": {
-      "total": 80,
-      "recent_7d": 80,
-      "recent_30d": 80
+      "total": 104,
+      "recent_7d": 104,
+      "recent_30d": 104
     },
     "hackernews": {
-      "total": 60,
-      "recent_7d": 60,
-      "recent_30d": 60
+      "total": 78,
+      "recent_7d": 78,
+      "recent_30d": 78
     },
     "github_trending": {
-      "total": 28,
-      "recent_7d": 28,
-      "recent_30d": 28
+      "total": 32,
+      "recent_7d": 32,
+      "recent_30d": 32
     },
     "aitimes": {
-      "total": 1819,
-      "recent_7d": 211,
-      "recent_30d": 211
+      "total": 1835,
+      "recent_7d": 197,
+      "recent_30d": 227
+    },
+    "anthropic": {
+      "total": 46,
+      "recent_7d": 2,
+      "recent_30d": 2
     },
     "openai": {
       "total": 143,
-      "recent_7d": 15,
+      "recent_7d": 11,
       "recent_30d": 15
-    },
-    "deepmind": {
-      "total": 51,
-      "recent_7d": 1,
-      "recent_30d": 1
     },
     "huggingface": {
       "total": 103,
@@ -58685,26 +59620,36 @@
     },
     "aws_ml": {
       "total": 223,
-      "recent_7d": 22,
+      "recent_7d": 19,
       "recent_30d": 22
     },
-    "nvidia_ai": {
-      "total": 103,
-      "recent_7d": 6,
-      "recent_30d": 6
-    },
     "techcrunch": {
-      "total": 1052,
-      "recent_7d": 123,
-      "recent_30d": 123
+      "total": 1057,
+      "recent_7d": 110,
+      "recent_30d": 128
+    },
+    "lycorp": {
+      "total": 50,
+      "recent_7d": 1,
+      "recent_30d": 2
+    },
+    "deepmind": {
+      "total": 51,
+      "recent_7d": 1,
+      "recent_30d": 1
+    },
+    "nvidia_ai": {
+      "total": 104,
+      "recent_7d": 7,
+      "recent_30d": 7
+    },
+    "kakao": {
+      "total": 11,
+      "recent_7d": 11,
+      "recent_30d": 11
     },
     "meta_eng": {
       "total": 20,
-      "recent_7d": 2,
-      "recent_30d": 2
-    },
-    "anthropic": {
-      "total": 46,
       "recent_7d": 2,
       "recent_30d": 2
     },
@@ -58733,22 +59678,12 @@
       "recent_7d": 1,
       "recent_30d": 1
     },
-    "kakao": {
-      "total": 11,
-      "recent_7d": 11,
-      "recent_30d": 11
-    },
-    "lycorp": {
-      "total": 50,
-      "recent_7d": 2,
-      "recent_30d": 2
-    },
     "yozm": {
       "total": 129,
       "recent_7d": 30,
       "recent_30d": 30
     }
   },
-  "last_updated": "2026-08-08",
-  "total_articles": 4052
+  "last_updated": "2026-08-09",
+  "total_articles": 4120
 }
