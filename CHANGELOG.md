@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-08-31 — v2.7.12 (YES24 일일 수집 클라우드 자동화)
+
+### scripts/download_yes24.py (신규) + scripts/generate_report.py + .github/workflows/fetch-rss.yml
+
+- **[H] YES24 엑셀 다운로드 자동화 신규:** `download_yes24.py` — Playwright로 YES24 IT 일일 베스트셀러 200위 페이지 접속 → "엑셀로 받기" 버튼(`javascript:void(0)`) 클릭 → 다운로드 캡처. 파일명은 **한국시간 기준 어제**(`YYYYMMDD_yes24_it_bestseller.xlsx` — 일일 베스트셀러는 전날 집계이므로 -1일). `YES24_OUT_DIR` 환경변수로 저장 경로 지정(CI용), `--show`/`--date`/`--no-upload` 옵션. (로컬 보조 실행용 `yes24받기.bat` — 저장소 외부, 커밋 대상 아님)
+- **[M] 매일 워크플로우에 수집 단계 편입:** `fetch-rss.yml`에 Playwright 설치 + `download_yes24.py --no-upload`(대상 `data/yes24/daily`) 단계를 분석 직전에 추가. `continue-on-error`로 YES24 일시 오류가 나머지 파이프라인을 막지 않도록. 받은 xlsx는 기존 커밋 단계(`git add data/`)로 저장소에 영구 기록.
+- **[M] generate_report.py 로컬 수집 + 구멍 점검:** Drive 스캔(과거 수동 업로드분)에 더해 `data/yes24/daily/*.xlsx` 로컬 수집(`local_daily_files`) 추가 — **Google 인증 불필요**. Drive 접근 실패해도 로컬 수집이 계속되도록 조기 `return` 제거. `report_gaps`로 first~last 사이 빠진 날짜 감지·경고(YES24가 과거 일별을 제공하지 않아 백필 불가 — 알림용).
+- **효과:** 내 PC 전원과 무관하게 **매일 09:00(KST) 클라우드 자동 수집→분석**. 수동 다운로드/업로드 폐지. 검증: 미국 IP(GitHub Actions)에서도 정상 다운로드(로컬과 바이트 동일 114,485), 전체 파이프라인 실행 성공(archive 243일 46,982건, "날짜 구멍 없음"). **프론트 미변경 — ?v 유지.**
+
+---
+
 ## 2026-08-06 — v2.7.11 (경쟁 출판사 기본 전체 해제)
 
 ### shared/app.js + shared/config.js
