@@ -475,6 +475,239 @@
       "first_seen": "2026-08-31"
     },
     {
+      "id": "c053743dc5a1",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "The U.S. is building barriers around drones and robots, but China has scale to get around them",
+      "link": "https://techcrunch.com/2026/08/30/the-u-s-is-building-barriers-around-drones-and-robots-china-still-has-scale/",
+      "date": "2026-08-31",
+      "summary": "The U.S. is shutting out more foreign-made drones and robots. China’s scale means the global competition may simply move elsewhere.",
+      "keywords": [
+        "Robotics"
+      ],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "e2c8ab284714",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "이더넷 패치 케이블로 파일 전송하기",
+      "link": "https://news.hada.io/topic?id=33065",
+      "date": "2026-08-31",
+      "summary": "두 컴퓨터를 이더넷 패치 케이블로 직접 연결하고 IP 주소만 설정하면 별도 네트워크 장비 없이 대용량 파일을 전송할 수 있음\nLinux에서는 양쪽 인터페이스에 IPv6 주소를 지정한 뒤 socat과 dd를 이용해 TCP로 파일을 복사할 수 있음...",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "a4448c182290",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "“단어를 신중하게 골랐을 뿐”: 문장으로 만든 양쪽 정렬",
+      "link": "https://news.hada.io/topic?id=33063",
+      "date": "2026-08-31",
+      "summary": "1990년대 후반에 작성된 Super Metroid 공략 글은 17000단어가 넘는 본문에서 모든 줄의 오른쪽 끝을 글자로 정확하게 맞춤\n고정폭 글꼴은 모든 글자/공백의 너비가 같아 양쪽 정렬을 적용하면 단어 사이가 벌어지고, 남은 공간을 고르게 나누기도 어려움\n조판에서 사용하는...",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "35c2eaec5421",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "SolarWindow launches 0.85 mm-thick, self-adhesive solar film",
+      "link": "https://www.pv-magazine.com/2026/08/27/https-www-pv-magazine-com-2026-08-27-solarwindow-launches-flexible-self-adhesive-solar-film/",
+      "date": "2026-08-31",
+      "summary": "Article URL: https://www.pv-magazine.com/2026/08/27/https-www-pv-magazine-com-2026-08-27-solarwindow-launches-flexible-self-adhesive-solar-film/\nComments URL: https://news.ycombinator.com/item?id=49505062\nPoints: 6\n# Comments: 3",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "359de8f98fdd",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Flock Safety's controversial CEO just got a taste of his own medicine",
+      "link": "https://www.neowin.net/news/the-ceo-of-americas-biggest-surveillance-network-just-got-a-taste-of-his-own-medicine/",
+      "date": "2026-08-31",
+      "summary": "Article URL: https://www.neowin.net/news/the-ceo-of-americas-biggest-surveillance-network-just-got-a-taste-of-his-own-medicine/\nComments URL: https://news.ycombinator.com/item?id=49505040\nPoints: 11\n# Comments: 1",
+      "keywords": [
+        "AI Safety"
+      ],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "c7eb872b0043",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Why do I lose my passion and want to do nothing?",
+      "link": "https://news.ycombinator.com/item?id=49505014",
+      "date": "2026-08-31",
+      "summary": "When AI makes results readily available, why do I lose my passion and want to do nothing?\n\nComments URL: https://news.ycombinator.com/item?id=49505014\nPoints: 24\n# Comments: 11",
+      "keywords": [
+        "Automation"
+      ],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "60195215d900",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "CobaltC – The Successor to C?",
+      "link": "https://strawberry9.github.io/the-wrong-memory/Appendix_06.html",
+      "date": "2026-08-31",
+      "summary": "Article URL: https://strawberry9.github.io/the-wrong-memory/Appendix_06.html\nComments URL: https://news.ycombinator.com/item?id=49504922\nPoints: 4\n# Comments: 2",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "08b354405160",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "스페이스X, 가스 터빈 부품 직접 생산…데이터센터 전력난 정면 돌파",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214644",
+      "date": "2026-08-31",
+      "summary": "스페이스X가 AI 데이터센터의 극심한 전력난을 돌파하기 위해 대형 가스 터빈 부품 직접 생산에 나선다. 세계적인 전력 인프라 병목 현상의 핵심 원인으로 꼽히는 터빈 블레이드 공급 부족을 자체 주조 공장 설립을 통해 직접 해결하겠다는 구상이다. 디인포메이션은 29일(현지시간) 스페이스X가 텍사스주 오스틴 인근 바스트롭에 위치한 사업장에 대형 산업용 가스 터빈(IGT) 부품 생산을 위한 주조 공장을 신설하기로 하고 엔지니어 및 프로그래머 채용에 나섰다고 보도했다.일론 머스크 CEO도 X를 통해 사실을 인정했다. \"스페이스X와 테슬라가",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "c82d8345086e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "‘K-폴드’ 하나로 단백질·약물·핵산 예측…“한국판 신약 설계 독자 모델 나왔다”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214628",
+      "date": "2026-08-31",
+      "summary": "국내에서 자체 설계, 학습한 차세대 바이오 AI 모델이 등장했다. 연구자들이 손쉽게 사용할 수 있도록 웹서비스 형태로도 공개됐다. 한국과학기술원(KAIST, 총장 배충식)은 과학기술정보통신부의 ‘AI 특화 파운데이션 모델 프로젝트’ 주관기관으로서 ‘팀 KAIST’를 구성하고, 차세대 바이오 AI 모델 ‘케이폴드(K-Fold)’를 공개했다고 28일 밝혔다.이번 연구는 김우연 화학과 교수가 총괄했으며, 김우연 교수 연구팀을 비롯해 황성주·안성수 김재철AI대학원 교수팀이 AI 모델 개발을 맡았다. 오병하, 김호민, 이규리 생명과학과 교수",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "2f549ea25fe8",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "채널코퍼레이션, 업스테이지·프렌들리AI와 'AI 실무 토론회' 연다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214635",
+      "date": "2026-08-31",
+      "summary": "기업용 AI 플랫폼 ‘채널톡’ 운영사 채널코퍼레이션(대표 최시원)은 오는 9월18일 서울 본사에서 업스테이지, 프렌들리AI와 AI 제품 개발 실무 토론회 ‘AI 프로덕트 프론티어’를 개최한다고 밝혔다.이번 행사는 ‘AI 시대, 최전선에서 방향을 만드는 사람들’을 주제로 AI 업계 리더들과 국내 AI 업계가 나아갈 방향을 모색하기 위해 마련됐다.행사는 오프닝 세션을 시작으로 ▲국내 AI 스타트업 3사 대표가 참여하는 패널토크 ▲현장 질의응답 ▲참가자 네트워킹 순으로 진행된다.패널토크는 이경훈 채널코퍼레이션 최고 전략책임자(CSO)가",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "9863075b0871",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "아스테로모프 AI 모델, 국제물리올림피아드서 금메달 성적 기록",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214639",
+      "date": "2026-08-31",
+      "summary": "국내 AI 스타트업 아스테로모프가 국제물리올림피아드(IPhO)에서 금메달에 해당하는 성적을 거뒀다.아스테로모프(대표 이민형)는 지난 7월 열린 제56회 IPhO 이론시험에 참가, 자체 개발 AI 모델로 30점 만점에 28.6점을 획득했다고 31일 밝혔다.IPhO는 전세계 고등학생들을 대상으로 매년 열리는 국제 물리 경시대회로, 고난도의 이론 및 실험 물리 문제를 겨루는 자리다. 올해 대회는 콜롬비아 부카라망가에서 개최됐다.고동현 부사장을 포함한 아스테로모프 엔지니어팀은 AI 모델의 현장 평가를 위해 콜롬비아로 이동해 시험에 참여했다",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "b42b1ffa62c9",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "원티드랩, 최대 상금 1000만원 ‘AI 챔피언십’ 개최",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214636",
+      "date": "2026-08-31",
+      "summary": "원티드랩(대표 이복기)은 아이디어를 현실로 만드는 해커톤 '원티드 AI 챔피언십 - AI 해커톤, 한계 밖으로'를 개최한다고 31일 밝혔다. 참가 대상은 만 19세 이상 대학(원)생 및 일반인으로, 개인 또는 최대 5인 팀 단위로 지원할 수 있다. AI를 활용해 실제 문제를 해결하거나 새로운 가치를 만드는 프로젝트라면 주제 제한 없이 자유롭게 지원 가능하며, 오는 9월18일까지 접수를 마친 참가자는 20일까지 과제를 제출하면 된다. 이후 예선 심사(원티드랩 심사위원단 평가 80%, 온라인 투표 20%)를 거쳐 10월7일 본선 진출팀",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "daedd41d3b00",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "KT, 우리은행 ‘AI 챗봇·상담봇’ 구축...\"에이전트로 막힘 없는 금융 상담\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214634",
+      "date": "2026-08-31",
+      "summary": "KT(대표 박윤영)가 우리은행(은행장 정진완)이 발주한 ‘AI 챗봇 및 상담봇 재구축’ 사업자로 선정돼 AI 고객 상담 시스템 구축에 착수한다고 31일 밝혔다.이번 사업은 우리은행에서 운영하는 비대면 고객 상담 채널인 '챗봇'과 '상담봇'의 인프라를 고도화하는 데 목표를 둔다. AI를 토대로 금융상담을 제공하는 ‘AI 뱅커’와 AI 에이전트를 연계해 챗봇의 상담 범위와 업무 처리 기능을 확대하는 것이 핵심이다. 상담 시 고객 의도를 정확하게 파악하고 인바운드 상담 완결성을 높인다는 계획이다. 아웃바운드 상담과 영업점 상담까지 AI",
+      "keywords": [
+        "AI Agent",
+        "Chatbot"
+      ],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "cc43357a108d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "이스트소프트, 대국민 AI '알비서' 하반기 선보인다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214638",
+      "date": "2026-08-31",
+      "summary": "이스트소프트(대표 정상원)는 AI 비서 '알비서'를 하반기 중 선보인다고 31일 밝혔다.알비서는 가장 쓰기 편한 설치형 AI 에이전트를 목표로 ▲스스로 과업을 완결하는 개인형 에이전트 ▲개인의 파일 시스템을 이해하는 PC 설치형·앱·웹 지원 ▲소형언어모델(SLM) 기반 서비스 지속가능성 ▲알툴즈 기반 운영망을 확보할 전망이다.특히 AI 챗봇 기능은 근거 기반 답변을 찾아주는 '딥리서치'와 외부 앱을 연동해 결과물 완성도를 높이는 '스킬 위시스토어'를 함께 탑재한다.이 외에도 행정을 돕는 공공 서비스, 개인 정보를 학습해 일상을 편리",
+      "keywords": [
+        "AI Agent",
+        "Chatbot"
+      ],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "f4ee5c1ee302",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "세계 태양광·ESS 동시 투자 상반기 37.5조…1년 새 3배로",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214630",
+      "date": "2026-08-31",
+      "summary": "태양광발전소와 에너지저장장치(ESS)를 함께 구축하는 사업에 대한 글로벌 투자가 올해 상반기 역대 최대를 기록했다. 태양광 발전 확대에 따른 출력제한과 전력가격 하락 등으로 단독 태양광 사업의 수익 불확실성이 커지면서 ESS를 결합한 사업으로 투자금이 이동하는 모습이다.글로벌 에너지시장조사업체 블룸버그NEF(BNEF)는 지난 26일(현지시간) 발표한 자료에서 올해 상반기 태양광·ESS 병설 프로젝트 투자액이 250억달러(약 34조4500억원)를 기록했다고 밝혔다. 지난해 하반기의 약 2배, 지난해 상반기의 3배 수준으로 미국과 호주",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "e0e55c6fa06d",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "AI 데이터센터, 폐열로 '냉각'…연산용 전력 최대 97MW 더 쓴다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214631",
+      "date": "2026-08-31",
+      "summary": "AI 데이터센터의 자가발전 과정에서 버려지는 열을 냉각에 활용해 연산에 사용할 수 있는 전력을 늘리는 설계가 나왔다. 1기가와트(GW) 규모 데이터센터의 경우 냉각용 전력 소비를 줄여 최대 97메가와트(MW)를 AI 연산에 추가로 사용할 수 있다는 분석이다.미국 냉난방·빌딩설비 기업 존슨콘트롤즈는 지난 7월 28일(현지시간) 이 같은 내용을 담은 ‘흡수식 냉동기 설계 가이드’를 발표했다.이에 따르면, 데이터센터가 현장에서 전력을 생산할 경우 투입 에너지의 약 57%가 열 형태로 버려질 수 있다.핵심은 폐열을 다시 전기로 만드는 것이",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "1dada3460c9e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "중남미 에너지 저장장치, 2035년 34GW 전망…10년 새 13배 성장",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214629",
+      "date": "2026-08-31",
+      "summary": "중남미 에너지저장장치(ESS) 시장이 2035년까지 34기가와트(GW) 규모로 성장할 것이라는 전망이 나왔다. 재생에너지 발전 확대에 따른 출력제한과 송전망 부족, 각국의 ESS 입찰 확대가 시장 성장을 이끌 것으로 예상된다.글로벌 에너지시장조사 전문 우드맥킨지는 지난 27일(현지시간) 발표한 ‘중남미 에너지저장 전망 2026’에서 역내 누적 저장설비 용량이 2025년 2.5GW에서 2035년 34GW로 약 13배 증가할 것으로 내다봤다. 연평균 성장률은 30%로 전망했다.이는 지난해 전망보다 높아진 수치다. 우드맥킨지는 2025년",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
       "id": "bfe56328bcac",
       "source": "geeknews",
       "source_name": "긱뉴스",
@@ -1522,6 +1755,22 @@
       "date": "2026-08-30",
       "summary": "구글이 검색 결과 상단에 있는 'AI 개요'의 동작 방식을 개편해 사용자 검색 환경을 기존 파란색 링크 목록 중심에서 AI와의 대화 모드로 전환하는 실험을 시작했다. 이번 변경 사항은 SEO 전문가 크리스 롱이 최초로 포착해 27일(현지시간) X를 통해 공유했다.이에 따르면, 개편의 핵심은 AI 개요의 '동적 자동 확장'과 '레이아웃 무효화' 알고리즘이다. 기존 방식은 검색어 입력 시 AI 개요 요약문의 일부만 보여준 뒤 하단에 '더 보기' 버튼을 제공해, 사용자가 직접 클릭해야 전체 답변이 펼쳐지는 구조였다. 이를 통해 전통적인",
       "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "b2e97fc252dc",
+      "source": "kakao",
+      "source_name": "카카오테크",
+      "source_type": "corp",
+      "icon": "💛",
+      "title": "같은 장애를 두 번 겪지 않기 위해, 배포 전에 리뷰합니다 — KRIS 개발기",
+      "link": "https://tech.kakao.com/posts/831",
+      "date": "2026-08-30",
+      "summary": "들어가며\n지난 글 LLM as a Judge를 활용한 CodeBuddy 성능 평가에서는 사내 AI 코드 리뷰 서비스 코드버디(CodeBuddy)의 응답 품질을 어떻게 측정할 것인지를 다뤘습니다. 평가 체계를 세우고 나니 다음 질문이 따라왔습니다.\n\"그래서 이 리뷰가 실제로 무엇을 막아주고 있는가?\"\n코드버디는 PR을 요약하고(describe), 리뷰하고(review), 개선안을 제안합니다(improve). 정확도는 꾸준히 올라갔습니다. 그런데 리뷰 결과...",
+      "keywords": [
+        "Coding",
+        "LLM"
+      ],
       "first_seen": "2026-08-31"
     },
     {
@@ -90578,11 +90827,6 @@
   ],
   "daily_stats": [
     {
-      "date": "2026-06-05",
-      "added": 57,
-      "total": 665
-    },
-    {
       "date": "2026-06-06",
       "added": 60,
       "total": 725
@@ -91026,6 +91270,11 @@
       "date": "2026-08-31",
       "added": 71,
       "total": 6345
+    },
+    {
+      "date": "2026-08-31",
+      "added": 18,
+      "total": 6363
     }
   ],
   "sources": {},
@@ -91154,10 +91403,10 @@
       "week": "2026-W35",
       "keywords": {
         "AI Agent": 128,
-        "Coding": 68,
+        "Coding": 70,
         "Open Source": 63,
         "Automation": 58,
-        "LLM": 54,
+        "LLM": 56,
         "Security": 50,
         "Claude": 48,
         "SDK/API": 25,
@@ -91173,11 +91422,12 @@
     {
       "week": "2026-W36",
       "keywords": {
-        "AI Agent": 7,
+        "AI Agent": 10,
         "Open Source": 5,
         "MCP": 4,
         "LLM": 4,
         "Coding": 2,
+        "Robotics": 2,
         "RAG": 1,
         "Embeddings": 1,
         "Vector DB": 1,
@@ -91186,21 +91436,25 @@
         "Gemini": 1,
         "Security": 1,
         "Cloud/DevOps": 1,
-        "GPT": 1,
-        "Vision": 1
+        "GPT": 1
       }
     }
   ],
   "source_stats": {
+    "techcrunch": {
+      "total": 1375,
+      "recent_7d": 108,
+      "recent_30d": 446
+    },
     "geeknews": {
-      "total": 705,
-      "recent_7d": 226,
-      "recent_30d": 705
+      "total": 707,
+      "recent_7d": 228,
+      "recent_30d": 707
     },
     "hackernews": {
-      "total": 509,
-      "recent_7d": 155,
-      "recent_30d": 509
+      "total": 513,
+      "recent_7d": 159,
+      "recent_30d": 513
     },
     "github_trending": {
       "total": 175,
@@ -91208,14 +91462,9 @@
       "recent_30d": 175
     },
     "aitimes": {
-      "total": 2389,
-      "recent_7d": 192,
-      "recent_30d": 781
-    },
-    "techcrunch": {
-      "total": 1374,
-      "recent_7d": 107,
-      "recent_30d": 445
+      "total": 2399,
+      "recent_7d": 202,
+      "recent_30d": 791
     },
     "lycorp": {
       "total": 53,
@@ -91263,9 +91512,9 @@
       "recent_30d": 22
     },
     "kakao": {
-      "total": 12,
-      "recent_7d": 1,
-      "recent_30d": 12
+      "total": 13,
+      "recent_7d": 2,
+      "recent_30d": 13
     },
     "meta_eng": {
       "total": 23,
@@ -91294,5 +91543,5 @@
     }
   },
   "last_updated": "2026-08-31",
-  "total_articles": 6345
+  "total_articles": 6363
 }
