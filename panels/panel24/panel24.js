@@ -120,6 +120,14 @@ function render() {
   if (filtered.length !== allAuthors.length) html += ' · 필터 ' + filtered.length + '명';
   html += '</span></div>';
 
+  // 도서 순위 추적 — YES24 일별 아카이브 기반 (v2.7.17)
+  html += '<div class="p24-track">';
+  html += '<input class="p24-search p24-track-q" type="text" placeholder="📈 도서 순위 추적 — 도서명·저자명 입력 후 Enter" value="' + escHtml(_trackQ) + '" onkeydown="if(event.key===\'Enter\')p24_trackSearch(this.value)">';
+  html += '<button class="p24-sort-btn" onclick="p24_trackSearch(this.previousElementSibling.value)">추적</button>';
+  if (_trackResults) html += '<button class="p24-sort-btn" onclick="p24_trackClear()">✕ 닫기</button>';
+  html += '</div>';
+  html += '<div id="p24-track-results"></div>';
+
   html += '<div class="p24-toolbar">';
   html += '<input class="p24-search" type="text" placeholder="저자명, 도서명, 출판사 검색…" value="' + escHtml(searchQ) + '" oninput="p24_onSearch(this.value)">';
   html += '<select class="p24-select" onchange="p24_onPubFilter(this.value)"><option value="">전체 출판사</option>';
@@ -190,6 +198,107 @@ function render() {
 
   html += '</div>';
   el.innerHTML = html;
+  _renderTrackResults();  // 리렌더 시 추적 결과·차트 복원
+}
+
+// ━━━ 도서 순위 추적 (YES24 일별 아카이브) ━━━
+var _trackQ = '';
+var _trackResults = null;   // [{title, author, publisher, series:[{date,rank}]}]
+var _trackCharts = [];
+var _bookIndex = null;      // "title||author" → 엔트리 (아카이브 1회 스캔)
+
+// panel25 ensureArchiveLoaded와 동일 전역(window._YES24_ARCHIVE)·스크립트 태그 공유 — 이중 로드 방지
+function _ensureArchive(cb) {
+  if (window._YES24_ARCHIVE && window._YES24_ARCHIVE.snapshots) { cb(); return; }
+  var existing = document.querySelector('script[data-yes24-archive]');
+  if (existing) {  // panel25가 이미 로딩 중 — 폴링으로 대기
+    var n = 0;
+    var t = setInterval(function() {
+      if (window._YES24_ARCHIVE || ++n > 100) { clearInterval(t); cb(); }
+    }, 100);
+    return;
+  }
+  var script = document.createElement('script');
+  script.src = 'data/yes24/archive.js?d=' + new Date().toISOString().slice(0, 10);
+  script.setAttribute('data-yes24-archive', '1');
+  script.onload = cb;
+  script.onerror = function() { console.warn('[panel24] archive.js 로드 실패'); cb(); };
+  document.head.appendChild(script);
+}
+
+function _buildBookIndex() {
+  if (_bookIndex) return _bookIndex;
+  _bookIndex = {};
+  var snaps = (window._YES24_ARCHIVE || {}).snapshots || {};
+  Object.keys(snaps).sort().forEach(function(d) {
+    snaps[d].forEach(function(it) {
+      if (!it.title) return;
+      var key = it.title + '||' + (it.author || '');
+      var e = _bookIndex[key];
+      if (!e) e = _bookIndex[key] = { title: it.title, author: it.author || '', publisher: it.publisher || '', series: [] };
+      e.series.push({ date: d, rank: it.rank || 0 });
+    });
+  });
+  return _bookIndex;
+}
+
+window.p24_trackSearch = function(q) {
+  q = (q || '').trim();
+  if (q.length < 2) { showToast('2글자 이상 입력하세요.', 'yellow'); return; }
+  _trackQ = q;
+  _ensureArchive(function() {
+    var idx = _buildBookIndex();
+    var ql = q.toLowerCase();
+    var matches = [];
+    Object.keys(idx).forEach(function(k) {
+      var e = idx[k];
+      if (e.title.toLowerCase().indexOf(ql) !== -1 || e.author.toLowerCase().indexOf(ql) !== -1) matches.push(e);
+    });
+    matches.sort(function(a, b) { return b.series.length - a.series.length; });  // 등장일수 많은 순
+    _trackResults = matches.slice(0, 8);
+    _renderTrackResults();
+    if (!matches.length) showToast('아카이브 200위 내 기록이 없는 도서입니다.', 'yellow');
+  });
+};
+
+window.p24_trackClear = function() { _trackQ = ''; _trackResults = null; render(); };
+
+function _renderTrackResults() {
+  var box = document.getElementById('p24-track-results');
+  if (!box) return;
+  _trackCharts.forEach(function(c) { try { c.destroy(); } catch(e){} });
+  _trackCharts = [];
+  if (!_trackResults) { box.innerHTML = ''; return; }
+  if (!_trackResults.length) { box.innerHTML = '<div class="p24-track-empty">"' + escHtml(_trackQ) + '" — 아카이브 기록 없음</div>'; return; }
+
+  box.innerHTML = _trackResults.map(function(e, i) {
+    var best = Math.min.apply(null, e.series.map(function(s){ return s.rank || 999; }));
+    var last = e.series[e.series.length - 1];
+    return '<div class="p24-track-card">' +
+      '<div class="p24-track-meta"><b>' + escHtml(e.title) + '</b>' +
+        '<span>' + escHtml(e.author) + ' · ' + escHtml(e.publisher) + '</span>' +
+        '<span>최고 ' + best + '위 · 등장 ' + e.series.length + '일 · 최근 ' + escHtml(last.date.slice(5)) + ' ' + last.rank + '위</span></div>' +
+      '<div class="p24-track-chart"><canvas id="p24-tc-' + i + '"></canvas></div>' +
+    '</div>';
+  }).join('');
+
+  if (typeof Chart === 'undefined') return;
+  _trackResults.forEach(function(e, i) {
+    var cv = document.getElementById('p24-tc-' + i);
+    if (!cv) return;
+    _trackCharts.push(new Chart(cv, {
+      type: 'line',
+      data: { labels: e.series.map(function(s){ return s.date.slice(5); }),
+              datasets: [{ data: e.series.map(function(s){ return s.rank; }),
+                           borderColor: '#4F46B8', backgroundColor: 'rgba(79,70,184,.08)',
+                           borderWidth: 1.5, pointRadius: e.series.length > 60 ? 0 : 2, fill: true, tension: .2 }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: false } },
+        // ponytail: 미등장일(200위 밖)은 x축에서 생략됨 — 갭 시각화가 필요해지면 시간축+null 데이터로 업그레이드
+        scales: { y: { reverse: true, min: 1, ticks: { font: { size: 9 } }, title: { display: true, text: '순위', font: { size: 9 } } },
+                  x: { ticks: { font: { size: 9 }, maxTicksLimit: 8 } } } }
+    }));
+  });
 }
 
 window.p24_onSearch = function(v) { searchQ = v; applyFilterSort(); render(); };

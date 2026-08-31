@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-08-31 — v2.7.17 (도서 순위 추적 + daily 보존 정책 — dev-advisor TOP3·중기 1)
+
+### panels/panel24 + .github/workflows/fetch-rss.yml
+
+- **[M] TRACK-1 도서 순위 추적(panel24):** 243일 46,982건 아카이브의 첫 book-level 소비 UI. 저자 목록 상단에 "📈 도서 순위 추적" 검색(도서명·저자명, Enter/버튼) → 매칭 상위 8종을 카드로 — 도서·저자·출판사, 최고 순위·등장일수·최근 순위 메타 + **Chart.js 일별 순위 라인 차트**(y축 반전: 1위가 위, 60일 초과 시 점 생략, 최대 8틱). 아카이브는 `window._YES24_ARCHIVE` 전역·`data-yes24-archive` 스크립트 태그를 panel25와 공유하는 lazy-load(`_ensureArchive` — 이중 로드 방지, 로딩 중이면 폴링 대기), 최초 검색 시 1회 스캔으로 `title||author` 인덱스 구축. 리렌더(검색/정렬/페이지) 시 차트 destroy 후 복원. 미등장일(200위 밖)은 x축 생략 — 갭 시각화 필요 시 시간축+null로 업그레이드(코드 주석 명시).
+- **[S] PRUNE-1 daily xlsx 30일 보존:** archive.json이 정본이므로 반영 끝난 30일 초과 `data/yes24/daily/*.xlsx`를 커밋 스텝 직전에 삭제(파일명 YYYYMMDD 기준, 형식 불일치 파일은 건너뜀). 저장소 비대(연 ~42MB) 방지. `git add data/`가 삭제도 스테이징.
+- **검증:** 모의 아카이브로 인덱스 구축·검색·날짜 정렬 검증, prune 경계(정확히 30일=보존, 31일+=삭제)·형식 가드 실측 통과. **panel24 js·css ?v=250, 헤더 v2.7.17.**
+
+---
+
 ## 2026-08-31 — v2.7.16 (파이프라인 신뢰성 2건 — dev-advisor 즉시 액션 TOP1·2)
 
 ### .github/workflows/fetch-rss.yml + scripts/generate_report.py + shared/app.js·styles.css + data/yes24/meta.js

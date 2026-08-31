@@ -48,6 +48,17 @@ jobs:
       - name: Build report index
         run: python scripts/build_reports.py
 
+      # daily xlsx 보존 정책: archive.json이 정본 — 반영 끝난 30일 초과분은 삭제해 저장소 비대 방지
+      - name: Prune daily xlsx older than 30 days
+        run: |
+          cutoff=$(date -d '30 days ago' +%Y%m%d)
+          for f in data/yes24/daily/*.xlsx; do
+            [ -e "$f" ] || continue
+            d=$(basename "$f" | cut -c1-8)
+            case "$d" in [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]) ;; *) continue ;; esac
+            if [ "$d" -lt "$cutoff" ]; then rm "$f"; echo "prune: $f"; fi
+          done
+
       - name: Commit & push changes
         run: |
           git config user.name "github-actions[bot]"

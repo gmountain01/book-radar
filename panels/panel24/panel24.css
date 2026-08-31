@@ -107,3 +107,13 @@
   .p24-modal-stat-card { padding:.5rem; }
   .p24-stat-value { font-size:1rem; }
 }
+
+/* 도서 순위 추적 (v2.7.17) */
+.p24-track{display:flex;gap:.4rem;margin:.3rem 0 .5rem;}
+.p24-track-q{flex:1;}
+.p24-track-card{display:flex;gap:.8rem;align-items:center;background:var(--card,#fff);border:1px solid var(--line,#e4e4e7);border-radius:8px;padding:.5rem .7rem;margin-bottom:.4rem;}
+.p24-track-meta{flex:0 0 220px;display:flex;flex-direction:column;gap:2px;font-size:.72rem;color:var(--muted);}
+.p24-track-meta b{font-size:.8rem;color:var(--text);line-height:1.3;}
+.p24-track-chart{flex:1;height:90px;min-width:0;}
+.p24-track-empty{padding:.6rem;font-size:.78rem;color:var(--muted);}
+@media (max-width:768px){.p24-track-card{flex-direction:column;align-items:stretch;}.p24-track-meta{flex:none;}}
