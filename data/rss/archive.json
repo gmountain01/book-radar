@@ -708,6 +708,219 @@
       "first_seen": "2026-08-31"
     },
     {
+      "id": "a9cdbb5f05b0",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "대한민국 AI 윤리원칙 확정, 3대 가치와 7대 원칙 제시",
+      "link": "https://news.hada.io/topic?id=33071",
+      "date": "2026-08-31",
+      "summary": "정부가 AI 기본법 제27조에 따라 사회 전 영역에 적용할 대한민국 AI 윤리원칙을 확정함\n인간의 존엄성, 사회의 공공선, 인류의 지속가능성을 3대 가치로 제시함\n인간중심성, 프라이버시 보호, 공정성/포용성, 책임성, 안전성, 신뢰성, 투명성을 ...",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "ab225f8f1e03",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Burning Man 공동창립자 “축제는 영혼을 잃었다”",
+      "link": "https://news.hada.io/topic?id=33070",
+      "date": "2026-08-31",
+      "summary": "초기 Burning Man은 소유자와 지휘자, 공식 이념 없이 참가자들이 직접 만들어낸 무정부주의적 협업 공동체였지만, 지금은 부유층이 완성된 경험을 구매하는 상업적 축제로 변했다는 공동창립자 John Law의 비판\nCacophony Society의 즉흥적인 사막 탐험과 Desert Site Works의",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "2164ec59b763",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Haiku R1/beta6 출시, Firefox와 QEMU 하드웨어 가상화 추가",
+      "link": "https://news.hada.io/topic?id=33069",
+      "date": "2026-08-31",
+      "summary": "이전 베타 이후 약 2년간의 개발을 반영해 530건 이상의 버그와 개선 요청을 처리하고, 성능과 안정성, 최신 x86 하드웨어 호환성을 높임\nMozilla의 허가를 받은 정식 Firefox 브랜드 빌드가 HaikuDepot에 추가됐으며, LibreWolf, Waterfox, Floorp, Icedove 등도 ...",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "e8bc179602c5",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "The EU has begun enforcing the AI Act: first RFIs to model providers",
+      "link": "https://tokenstead.ai/guides/eu-ai-act-first-enforcement-security-rfis",
+      "date": "2026-08-31",
+      "summary": "Article URL: https://tokenstead.ai/guides/eu-ai-act-first-enforcement-security-rfis\nComments URL: https://news.ycombinator.com/item?id=49505351\nPoints: 32\n# Comments: 33",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "3f72accdec87",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "OpenClaw 2.0, Accidentally",
+      "link": "https://openclaw.ai/blog/openclaw-2-accidentally",
+      "date": "2026-08-31",
+      "summary": "Article URL: https://openclaw.ai/blog/openclaw-2-accidentally\nComments URL: https://news.ycombinator.com/item?id=49505310\nPoints: 6\n# Comments: 0",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "ef9ea4ffc355",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "UC Berkeley indefinitely suspends international student work authorizations",
+      "link": "https://www.dailycal.org/news/campus/after-second-ice-threat-uc-berkeley-indefinitely-suspends-international-student-work-authorizations/article_0e9ae0c0-dd4d-4455-a25b-e8be7b47e350.html",
+      "date": "2026-08-31",
+      "summary": "Article URL: https://www.dailycal.org/news/campus/after-second-ice-threat-uc-berkeley-indefinitely-suspends-international-student-work-authorizations/article_0e9ae0c0-dd4d-4455-a25b-e8be7b47e350.html\nComments URL: https://news.ycombinator.com/item?id=49505288\nPoints: 74\n# Comments: 61",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "08f919ff1def",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "P99 0 ms* autocomplete for 240M domain names",
+      "link": "https://ruurtjan.com/articles/p99-0ms-autocomplete-for-240-million-domain-names",
+      "date": "2026-08-31",
+      "summary": "Article URL: https://ruurtjan.com/articles/p99-0ms-autocomplete-for-240-million-domain-names\nComments URL: https://news.ycombinator.com/item?id=49505219\nPoints: 33\n# Comments: 18",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "d2343f95f4ea",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Internet centralization and the original sin of NAT",
+      "link": "https://dreamstation.systems/personal/ntppost.html",
+      "date": "2026-08-31",
+      "summary": "Article URL: https://dreamstation.systems/personal/ntppost.html\nComments URL: https://news.ycombinator.com/item?id=49504905\nPoints: 16\n# Comments: 5",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "51bcf06e57c4",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "앤트로픽, 과학자용 '클로드 팀 플랜' 출시...1만명에 무료 제공",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214650",
+      "date": "2026-08-31",
+      "summary": "앤트로픽이 전 세계 학술 및 비영리 연구 기관 연구진을 지원하기 위한 '과학자용 클로드 팀 플랜(Claude Team plan for scientists)'을 공식 공개했다.27일(현지시간) 출시된 이번 프로그램은 전 세계 1만여명의 과학자들을 대상으로 무료 이용 기회를 제공하며, 가설 설정부터 데이터 분석, 코드 작성, 논문 발표에 이르는 전체 연구 프로세스를 AI로 가속할 수 있도록 지원하는 데 주력한다.자격 검증을 거친 수석 연구원(PI)은 클로드 팀 구독 플랜에 가입한 뒤 연구팀 소속 인원을 기본 계정(Standard)으로",
+      "keywords": [
+        "Claude",
+        "Data Analysis"
+      ],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "5ce7b750dc16",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "메타, 청소년 소송 합의 후 틱톡·유튜브 향해 '동참' 압박...신문 광고까지 동원",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214647",
+      "date": "2026-08-31",
+      "summary": "미국 주 정부들과 청소년 소셜 미디어 중독 소송에서 180억달러(약 24조7400억원) 규모의 역사적 합의를 체결한 메타가 경쟁사인 틱톡과 유튜브, 스냅 등을 향해 고강도 압박전을 펼치고 있다.블룸버그에 따르면 메타는 지난 26일(현지시간) 미국 주 정부 연합과 합의한 직후 뉴욕타임스와 워싱턴포스트, 월스트리트저널, 로스앤젤레스타임스 등 주요 매체에 전면 광고를 게재했다.광고에는 \"우리는 십대들이 새로운 업계 표준의 혜택을 누릴 수 있도록 하고 싶지만, 혼자서는 할 수 없다. 이러한 보호 조치는 우리가 틱톡과 유튜브 같은 동종 업계",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "cd3440b734da",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "SKT, AI 안경으로 찍은 사진 정리해주는 '에이닷 로그' 출시",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214640",
+      "date": "2026-08-31",
+      "summary": "SK텔레콤(대표 정재헌)은 메타의 AI 안경과 스마트폰으로 촬영한 사진을 AI가 정리하고 다시 찾아보도록 돕는 '에이닷 로그(A. log)' 기능을 선보였다고 31일 밝혔다.'에이닷 로그'는 사진 속 정보를 AI로 분석해 제목·설명과 함께 적합한 태그를 자동 생성한다. 예를 들어 공연 포스터를 촬영하면 공연명·일시·장소 등의 정보가 기록으로 정리되고, 자동 생성된 태그를 기준으로 연관 기록을 목록으로 찾아볼 수 있다.대표적으로 ▲명함 ▲영수증 ▲화이트보드 ▲회의자료 ▲주차 위치 ▲포스터 등 다양한 카테고리로 자동 분류된다.레이밴 메",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "fa06e01b4b13",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "목포시보건소, 9월 ‘자기혈관 숫자알기’ 캠페인…혈압·혈당 관리 홍보",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214641",
+      "date": "2026-08-31",
+      "summary": "AI 생성 영상목포시가 심뇌혈관질환 예방관리주간인 9월1일~7일을 맞아 9월 한 달간 ‘자기혈관 숫자알기-레드서클 캠페인’을 진행한다고 31일 밝혔다. 시민들이 자신의 혈압·혈당·콜레스테롤 수치를 확인하고 생활습관을 관리하도록 알리는 것이 핵심이다.목포는 누리집과 라디오·TV, 버스운행정보시스템(BIS), SNS 등을 활용한 온라인·비대면 홍보와 현장 건강홍보관을 함께 운영한다.캠페인에서는 혈압·혈당·콜레스테롤 수치를 정기적으로 확인하는 습관을 강조한다. 금연과 절주, 적정량의 음식 섭취, 규칙적인 운동, 적정 체중·허리둘레 유지,",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "d61c3c2b2596",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "나주, 9월30일부터 ‘배따기 체험’…1000명 선착순 모집",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214633",
+      "date": "2026-08-31",
+      "summary": "AI 생성 영상나주시가 나주배박물관과 인근 체험농장에서 ‘2026년 나주배따기 체험행사’를 연다고 28일 밝혔다.9월30일부터 10월4일까지하루 4회씩 총 20회 운영하며 회차당 50명, 모두 1000명이 참여할 수 있다. 참가자는 나주배 3개를 직접 수확해 가져갈 수 있다.행사는 나주배의 역사와 재배 과정을 배우고 실제 농장에서 수확까지 경험하는 60분 과정으로 구성됐다. 9월30일부터 10월2일까지는 유치원과 초등학생, 일반 단체를 대상으로 운영한다. 10월3일과 4일에는 개인과 가족 단위 참가자를 받는다.참가자는 먼저 나주배박",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "b5f6629ba19c",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "전남광주, 국립의대 후보대학에 국립순천대 추천",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214632",
+      "date": "2026-08-31",
+      "summary": "AI 생성 영상전남광주통합특별시가 국립의대 신설 후보대학으로 국립순천대학교를 선정해 정부에 추천하기로 했다. 국립순천대는 전국 의료전문가 8명이 참여한 서류·발표심사에서 89.15점을 받아 국립목포대학교의 87.85점을 앞섰다.정부는 지난 25일 제37회 국무회의에서 ‘지역 국립의대 신설에 대한 예비타당성조사 면제 안건’을 조건부 의결하고, 전남광주에 30일까지 의과대학 신설 후보대학을 추천하도록 요청했다.교육부도 26일 신설 후보 1개 대학을 추천해 추진계획서를 다시 제출하도록 안내했다. 이에 전남광주는 심사의 객관성과 공정성,",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "edec3482e6a6",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "빅테크, 스타트업 지분 평가이익으로 220조 횡재…월가 \"착시 현상\" 경고",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214646",
+      "date": "2026-08-31",
+      "summary": "구글과 아마존, 엔비디아 등 빅테크 기업들이 최근 분기 실적 발표에서 AI 스타트업과 관련 벤처에 대한 지분 평가이익으로 1600억달러(약 220조원)가 넘는 수익을 기록한 것으로 나타났다. 이로 인해 세전 이익이 급증하며 사상 최고치를 경신하는 기업들이 늘어났지만, 시장 전문가들은 이러한 이익이 실제 사업 성과가 아닌 장부상 착시일 수 있다고 경고하고 나섰다.파이낸셜타임스(FT)는 30일(현지시간) 이번 '실적 부풀리기'는 지분 평가액의 가파른 상승에 따른 것이라고 분석했다.이에 따르면, 주요 하이퍼스케일러 기업들은 영업이익 외에",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
+      "id": "7303ec6b227a",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "'맥', 애플 최고 인기 제품으로 떠올라...\"오픈AI·앤트로픽도 사들였다\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214645",
+      "date": "2026-08-31",
+      "summary": "오픈AI와 앤트로픽 등 주요 AI 기업과 네오클라우드 기업들이 애플의 '맥 미니'와 '맥 스튜디오'를 대량으로 사들이면서, 맥 제품군이 애플 내에서 가장 빠르게 성장하는 사업 부문으로 떠올랐다. 그동안 비즈니스 시장에서 비교적 외면받아온 데스크톱 라인업이 예상을 깨고 핵심 하드웨어로 재조명받는 모습이다.애플은 지난 7월30일(현지시간) 분기 실적 발표를 통해 맥 매출이 전년 동기 대비 29% 급증한 104억달러(약 14조2875억원)를 기록하며 회사 내 다른 어떤 제품군보다 높은 성장세를 보였다고 밝혔다. 디 인포메이션에 따르면,",
+      "keywords": [],
+      "first_seen": "2026-08-31"
+    },
+    {
       "id": "bfe56328bcac",
       "source": "geeknews",
       "source_name": "긱뉴스",
@@ -90827,11 +91040,6 @@
   ],
   "daily_stats": [
     {
-      "date": "2026-06-06",
-      "added": 60,
-      "total": 725
-    },
-    {
       "date": "2026-06-07",
       "added": 19,
       "total": 744
@@ -91275,6 +91483,11 @@
       "date": "2026-08-31",
       "added": 18,
       "total": 6363
+    },
+    {
+      "date": "2026-08-31",
+      "added": 16,
+      "total": 6379
     }
   ],
   "sources": {},
@@ -91425,6 +91638,7 @@
         "AI Agent": 10,
         "Open Source": 5,
         "MCP": 4,
+        "Security": 4,
         "LLM": 4,
         "Coding": 2,
         "Robotics": 2,
@@ -91434,7 +91648,6 @@
         "Prompt": 1,
         "SDK/API": 1,
         "Gemini": 1,
-        "Security": 1,
         "Cloud/DevOps": 1,
         "GPT": 1
       }
@@ -91447,14 +91660,14 @@
       "recent_30d": 446
     },
     "geeknews": {
-      "total": 707,
-      "recent_7d": 228,
-      "recent_30d": 707
+      "total": 710,
+      "recent_7d": 231,
+      "recent_30d": 710
     },
     "hackernews": {
-      "total": 513,
-      "recent_7d": 159,
-      "recent_30d": 513
+      "total": 518,
+      "recent_7d": 164,
+      "recent_30d": 518
     },
     "github_trending": {
       "total": 175,
@@ -91462,9 +91675,14 @@
       "recent_30d": 175
     },
     "aitimes": {
-      "total": 2399,
-      "recent_7d": 202,
-      "recent_30d": 791
+      "total": 2407,
+      "recent_7d": 210,
+      "recent_30d": 799
+    },
+    "kakao": {
+      "total": 13,
+      "recent_7d": 2,
+      "recent_30d": 13
     },
     "lycorp": {
       "total": 53,
@@ -91511,11 +91729,6 @@
       "recent_7d": 6,
       "recent_30d": 22
     },
-    "kakao": {
-      "total": 13,
-      "recent_7d": 2,
-      "recent_30d": 13
-    },
     "meta_eng": {
       "total": 23,
       "recent_7d": 2,
@@ -91543,5 +91756,5 @@
     }
   },
   "last_updated": "2026-08-31",
-  "total_articles": 6363
+  "total_articles": 6379
 }
