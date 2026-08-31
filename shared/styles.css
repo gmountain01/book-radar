@@ -481,6 +481,8 @@ select{background:var(--surface);}
 .home-brief .hb-title{font-size:14px;font-weight:700;color:var(--text);}
 .home-brief .hb-new{font-size:.6rem;font-weight:700;background:var(--accent);color:#fff;border-radius:10px;padding:1px 7px;letter-spacing:.03em;}
 .home-brief .hb-date{font-size:11px;color:var(--muted);margin-left:auto;}
+.home-brief .hb-fresh{font-size:.62rem;color:var(--muted);background:var(--accent-light);border-radius:10px;padding:1px 8px;white-space:nowrap;}
+.home-brief .hb-fresh-stale{background:#fee2e2;color:#b91c1c;font-weight:600;}
 .home-brief .hb-rpt-title{font-size:12px;font-weight:600;color:var(--muted2);margin-bottom:.5rem;}
 .home-brief .hb-list{margin:0 0 .5rem;padding-left:1.1rem;}
 .home-brief .hb-line{font-size:13px;line-height:1.6;color:var(--text);margin-bottom:.15rem;}

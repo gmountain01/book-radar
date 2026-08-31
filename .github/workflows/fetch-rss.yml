@@ -55,3 +55,18 @@ jobs:
           git add data/ panels/panel24/authors-data.js data/naver-speller-key.js
           git diff --staged --quiet || git commit -m "auto-update data $(date -u +'%Y-%m-%d')"
           git push
+
+      # 최종 판정: YES24 수집이 2일 이상 끊기면 워크플로 실패 → GitHub이 실패 메일 발송.
+      # 커밋 뒤에 두어 이 실패가 RSS 등 나머지 데이터 반영을 막지 않는다.
+      - name: Check YES24 data freshness
+        run: |
+          python - <<'EOF'
+          import json, sys
+          from datetime import datetime, timedelta, timezone
+          last = json.load(open("data/yes24/archive.json", encoding="utf-8")).get("last_date", "")
+          # 수집분은 KST 어제 날짜 — 정상이면 last_date >= 오늘(KST)-1
+          threshold = (datetime.now(timezone(timedelta(hours=9))) - timedelta(days=2)).strftime("%Y-%m-%d")
+          if last < threshold:
+              sys.exit(f"YES24 수집 중단 감지: 마지막 수집 {last} (기준 {threshold} 이전) — download_yes24.py 셀렉터/페이지 구조를 확인하세요.")
+          print(f"YES24 신선도 OK: 마지막 수집 {last}")
+          EOF

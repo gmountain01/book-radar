@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-08-31 — v2.7.16 (파이프라인 신뢰성 2건 — dev-advisor 즉시 액션 TOP1·2)
+
+### .github/workflows/fetch-rss.yml + scripts/generate_report.py + shared/app.js·styles.css + data/yes24/meta.js
+
+- **[M] REL-1 수집 갭 → 워크플로 실패 승격:** YES24 다운로드가 `continue-on-error`라 페이지 개편 시 조용히 며칠씩 구멍 나던 사일런트 실패 차단. fetch-rss.yml 마지막에 "Check YES24 data freshness" 스텝 — archive.json `last_date`가 KST 오늘-2 이전이면 `exit 1` → GitHub 기본 실패 메일로 알림(별도 인프라 0). **커밋 스텝 뒤에 배치**해 이 실패가 RSS 등 나머지 데이터 반영을 막지 않음.
+- **[M] REL-2 홈 브리핑 데이터 신선도 칩:** `save_archive()`가 경량 `data/yes24/meta.js`(last_date·total_days·missing_days, ~100바이트) 생성(7.6MB archive.js를 홈에서 로드하지 않기 위함) — 갭 계산은 `_missing_dates()` 헬퍼로 분리해 `report_gaps()`와 공용. `renderHomeBriefing()`에 칩 추가: "📦 YES24 ~MM-DD · N일 (· 누락 N일)", 마지막 수집이 2일 초과 지연이면 빨간 "⚠ 수집 지연 N일" 강조(`.hb-fresh`/`.hb-fresh-stale`). meta.js 미로드 시 칩 생략 가드. 초회 meta.js를 현재 archive(243일·누락 0)로 생성해 커밋.
+- **검증:** 칩 stale 계산 3케이스·신선도 임계(threshold 2026-08-29) 검증, save_archive+report_gaps 스모크(임시 아카이브로 meta.js·갭 경고 실측) 통과. **app.js·styles.css ?v=249, meta.js 태그 신설, 헤더 v2.7.16.**
+- 근거: dev-advisor 진단 — "리스크 축이 기능 부족→파이프라인 신뢰성으로 이동". TOP3(도서별 순위 추이 스파크라인 [M])은 다음 착수 후보.
+
+---
+
 ## 2026-08-31 — v2.7.15 (QA 탐지 버그 수정 3건 — v2.7.12~14 후속)
 
 ### panels/panel8 + panels/panel5·6 + scripts/download_yes24.py

@@ -248,11 +248,24 @@ function renderHomeBriefing() {
     '</div>';
   }
 
+  // YES24 데이터 신선도 칩 (data/yes24/meta.js — CI가 매일 갱신)
+  var freshHtml = '';
+  var meta = window.YES24_META;
+  if (meta && meta.last_date) {
+    var staleDays = Math.floor((Date.now() - new Date(meta.last_date + 'T00:00:00+09:00')) / 86400000);
+    var stale = staleDays > 2;  // 수집분은 어제 날짜 — 2일 초과 지연이면 수집 중단 의심
+    freshHtml = '<span class="hb-fresh' + (stale ? ' hb-fresh-stale' : '') + '" title="YES24 베스트셀러 수집 현황">' +
+      '📦 YES24 ~' + escHtml(meta.last_date.slice(5)) + ' · ' + meta.total_days + '일' +
+      (stale ? ' · ⚠ 수집 지연 ' + staleDays + '일' : (meta.missing_days ? ' · 누락 ' + meta.missing_days + '일' : '')) +
+    '</span>';
+  }
+
   el.innerHTML =
     '<div class="home-brief" onclick="_hbOpenReport()">' +
       '<div class="hb-head">' +
         '<span class="hb-title">📊 이번 주 시장 변화</span>' +
         (isNew ? '<span class="hb-new">NEW</span>' : '') +
+        freshHtml +
         '<span class="hb-date">' + escHtml(r.date || '') + '</span>' +
       '</div>' +
       '<div class="hb-rpt-title">' + escHtml(r.title || '') + '</div>' +

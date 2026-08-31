@@ -204,6 +204,21 @@ def load_archive() -> dict:
     return {"snapshots": {}, "first_date": "", "last_date": "", "total_days": 0}
 
 
+def _missing_dates(archive: dict) -> list[str]:
+    """first~last 사이 빠진 날짜 목록 (report_gaps·meta.js 공용)."""
+    dates = sorted(archive["snapshots"].keys())
+    if len(dates) < 2:
+        return []
+    d0, d1 = date.fromisoformat(dates[0]), date.fromisoformat(dates[-1])
+    have = set(dates)
+    missing, cur = [], d0
+    while cur <= d1:
+        if cur.isoformat() not in have:
+            missing.append(cur.isoformat())
+        cur += timedelta(days=1)
+    return missing
+
+
 def save_archive(archive: dict):
     os.makedirs(YES24_DIR, exist_ok=True)
     with open(ARCHIVE_PATH, "w", encoding="utf-8") as f:
@@ -213,6 +228,15 @@ def save_archive(archive: dict):
     with open(js_path, "w", encoding="utf-8") as f:
         f.write("window._YES24_ARCHIVE = ")
         json.dump(archive, f, ensure_ascii=False)
+        f.write(";")
+
+    # 홈 브리핑 신선도 칩용 경량 메타 (archive.js 7MB를 홈에서 로드하지 않기 위함)
+    meta = {"last_date": archive.get("last_date", ""),
+            "total_days": archive.get("total_days", 0),
+            "missing_days": len(_missing_dates(archive))}
+    with open(os.path.join(YES24_DIR, "meta.js"), "w", encoding="utf-8") as f:
+        f.write("window.YES24_META = ")
+        json.dump(meta, f, ensure_ascii=False)
         f.write(";")
 
 
@@ -817,16 +841,7 @@ def local_daily_files() -> list[dict]:
 
 def report_gaps(archive: dict):
     """아카이브의 first~last 사이 빠진 날짜를 알려준다(백필 불가 — 알림용)."""
-    dates = sorted(archive["snapshots"].keys())
-    if len(dates) < 2:
-        return
-    d0, d1 = date.fromisoformat(dates[0]), date.fromisoformat(dates[-1])
-    have = set(dates)
-    missing, cur = [], d0
-    while cur <= d1:
-        if cur.isoformat() not in have:
-            missing.append(cur.isoformat())
-        cur += timedelta(days=1)
+    missing = _missing_dates(archive)
     if missing:
         shown = ", ".join(missing[:15]) + (" ..." if len(missing) > 15 else "")
         print(f"⚠ 빠진 날짜 {len(missing)}개: {shown}")
