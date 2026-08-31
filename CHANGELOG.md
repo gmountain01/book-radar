@@ -4,6 +4,16 @@
 
 ---
 
+## 2026-08-31 — v2.7.14 (유니코드 클리너 — AI 생성물 보이지 않는 문자 정리)
+
+### shared/app.js
+
+- **[M] `stripInvisibles` 신설 + `callClaudeApi` 반환부 적용:** SKILL.md 결정론적 유니코드 패스의 브라우저판. AI가 반환한 텍스트에서 **보이지 않는 문자를 제거**한다 — 제로폭(U+200B–200D)·word joiner(U+2060)·BOM(U+FEFF)·소프트하이픈(U+00AD)·양방향 제어(U+200E/200F·202A–202E·2066–2069) 삭제, NBSP·figure·narrow-NBSP(U+00A0/2007/202F)는 일반 공백으로 정규화. **눈에 보이는 내용은 불변**, CJK 전각 공백(U+3000)은 조판 의미가 있어 보존. `callClaudeApi` 한 곳에서 처리해 모든 패널 생성물에 자동 적용. 부수 효과: 토큰 사이 NBSP로 깨지던 `JSON.parse`도 정규화로 안정화(교정·키워드 등 JSON 호출에 이득).
+- **검증:** 무형 문자 제거·NBSP 정규화·전각공백 보존·빈 입력 처리 단위 확인 통과. app.js 변경 → **?v=248**, 헤더/타이틀 **v2.7.14**.
+- 이로써 SKILL.md의 (1) 프롬프트 humanization(v2.7.13) + (2) 유니코드 정리(v2.7.14) 양쪽이 글 생성 전 지점에 반영됨.
+
+---
+
 ## 2026-08-31 — v2.7.13 (AI 티 억제 — 글 생성 전 지점 humanization)
 
 ### shared/app.js + scripts/generate_report.py

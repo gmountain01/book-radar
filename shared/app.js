@@ -391,6 +391,19 @@ var WRITING_HYGIENE =
   '- 구체적 판단과 디테일(이름·도구·수치·사례)로 글쓴이의 목소리가 드러나게. 변주를 위해 없는 주장을 지어내지 마라\n' +
   '- 애매한 hedging(모든 걸 균형 맞추려는 태도) 대신 근거 있는 분명한 입장\n';
 
+// SKILL.md 결정론적 유니코드 패스(브라우저판) — AI 생성물의 보이지 않는 문자 정리.
+// 눈에 보이는 내용은 건드리지 않는다. 제로폭/BOM/방향 제어/소프트하이픈 제거,
+// NBSP류는 일반 공백으로(토큰 사이 NBSP는 JSON.parse도 깨므로 정규화가 파싱에도 이득).
+// CJK 전각 공백(U+3000)은 조판 의미가 있어 보존.
+function stripInvisibles(s) {
+  if (!s) return s;
+  return s
+    .replace(/[​-‍⁠﻿]/g, '')            // 제로폭 + word joiner + BOM
+    .replace(/­/g, '')                                    // soft hyphen
+    .replace(/[‎‏‪-‮⁦-⁩]/g, '') // 양방향 제어 문자
+    .replace(/[   ]/g, ' ');                  // NBSP·figure·narrow-NBSP → 일반 공백
+}
+
 // Prompt Caching용 system 배열 생성 헬퍼
 // 직접 fetch 호출하는 곳에서 system 필드에 이 함수 결과를 넣으면 캐싱 적용
 function _cachedSystem(text) {
@@ -478,7 +491,7 @@ async function callClaudeApi(opts) {
   if (data.stop_reason === 'max_tokens') {
     console.warn('[callClaudeApi] 응답이 max_tokens 한도로 잘렸습니다. 재시도하거나 maxTokens를 높이세요.');
   }
-  return data.content[0].text;
+  return stripInvisibles(data.content[0].text);
 }
 
 // ━━━ API 키 저장소 ━━━
