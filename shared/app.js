@@ -376,6 +376,21 @@ var PUBLISHING_PERSONA =
   '- 의외성: 독자가 예상 못한 각도, 신선한 비유, 반직관적 인사이트\n' +
   '- 구체성: 이름, 도구, 버전, 실제 사례 — 뭉뚱그리지 않기\n';
 
+// SKILL.md(clean-user-facing-text) 기반 — AI 티 억제 규칙.
+// callClaudeApi가 모든 호출에 기본 적용(opts.humanize:false로 개별 해제 가능).
+// 자기-범위형: 독자용 산문에만 적용, JSON·정해진 형식은 최우선 유지.
+var WRITING_HYGIENE =
+  '[사람 문체 원칙 — 독자가 읽을 한국어 산문에만 적용]\n' +
+  '이 원칙은 네가 만들 "독자에게 보여질 산문"(기획서·소개글·홍보 카피·이메일·리포트 본문 등)에만 적용한다. ' +
+  'JSON·표·코드·식별자·정해진 출력 형식이 요구되면 그 형식을 최우선으로 지키고 이 원칙은 적용하지 마라. ' +
+  '원문의 사실·숫자·이름·인용·요구된 언어와 어조는 절대 바꾸지 마라.\n' +
+  '- AI 티 상투어 금지: "~할 수 있습니다"의 반복, "~하는 것이 중요합니다", "혁신적/획기적/매우/다양한" 남발, "~에 있어서"·"~라고 할 수 있다" 번역투\n' +
+  '- 상투적 연결어·군더더기 대신 직접적이고 구체적인 표현. 습관적 3점 나열, 과한 대시(—), 매끈하지만 알맹이 없는 총평 피하기\n' +
+  '- 문장 길이·리듬을 섞어라. 모든 문장이 같은 구조로 끝나지 않게\n' +
+  '- 한국어답게 — 영어 어순을 옮긴 듯한 문장 말고, 실제 한국 편집자가 쓰는 자연스러운 구문\n' +
+  '- 구체적 판단과 디테일(이름·도구·수치·사례)로 글쓴이의 목소리가 드러나게. 변주를 위해 없는 주장을 지어내지 마라\n' +
+  '- 애매한 hedging(모든 걸 균형 맞추려는 태도) 대신 근거 있는 분명한 입장\n';
+
 // Prompt Caching용 system 배열 생성 헬퍼
 // 직접 fetch 호출하는 곳에서 system 필드에 이 함수 결과를 넣으면 캐싱 적용
 function _cachedSystem(text) {
@@ -385,7 +400,9 @@ function _cachedSystem(text) {
 
 // ━━━ 범용 Claude API 호출 ━━━
 // 모든 패널이 이 함수를 사용해야 함 (panel8·panel10 등)
-// opts: { apiKey, prompt, system?, model?, maxTokens?, temperature?, noPersona? }
+// opts: { apiKey, prompt, system?, model?, maxTokens?, temperature?, noPersona?, humanize? }
+//   humanize: 기본 true — 독자용 산문에 AI 티 억제 규칙(WRITING_HYGIENE) 적용.
+//             순수 데이터 추출/JSON만 뽑는 호출에서 불필요하면 false로 끌 수 있음(규칙은 자기-범위형이라 켜둬도 안전).
 async function callClaudeApi(opts) {
   var key = opts.apiKey;
   if (!key) throw new Error('API 키가 필요합니다.');
@@ -396,17 +413,23 @@ async function callClaudeApi(opts) {
     max_tokens: mt,
     messages: [{ role: 'user', content: opts.prompt }]
   };
+  var _humanize = (opts.humanize !== false);
   // 페르소나 시스템 프롬프트 적용 + Prompt Caching
   // system을 배열 형태로 전달하면 cache_control 블록 사용 가능
   if (opts.systemBlocks) {
     // 호출부가 직접 구성한 콘텐츠 블록 배열 — cache_control을 세밀하게 지정할 때 사용
-    body.system = opts.systemBlocks;
+    body.system = _humanize
+      ? opts.systemBlocks.concat([{ type: 'text', text: WRITING_HYGIENE, cache_control: { type: 'ephemeral' } }])
+      : opts.systemBlocks;
   } else {
     var sysText = '';
     if (!opts.noPersona) {
       sysText = opts.system ? (PUBLISHING_PERSONA + '\n---\n' + opts.system) : PUBLISHING_PERSONA;
     } else if (opts.system) {
       sysText = opts.system;
+    }
+    if (_humanize) {
+      sysText = sysText ? (sysText + '\n---\n' + WRITING_HYGIENE) : WRITING_HYGIENE;
     }
     if (sysText) {
       body.system = [

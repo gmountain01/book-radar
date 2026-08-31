@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-08-31 — v2.7.13 (AI 티 억제 — 글 생성 전 지점 humanization)
+
+### shared/app.js + scripts/generate_report.py
+
+- **[M] `WRITING_HYGIENE` 규칙 신설 + 단일 주입:** SKILL.md(`clean-user-facing-text`) 원칙을 한국어 규칙으로 정리 — AI 상투어(`~할 수 있습니다` 반복·`혁신적/획기적`·번역투) 금지, 상투 연결어·군더더기·과한 대시·알맹이 없는 총평 억제, 문장 리듬 다양화, 영어 어순 아닌 자연스러운 한국어, 구체적 판단·디테일로 목소리 유지, 근거 있는 분명한 입장. **`callClaudeApi`에서 기본 적용**(`opts.humanize:false`로 개별 해제)하여 모든 패널(기획서·홍보 카피·섭외 메일·초안 등)에 자동 반영. 규칙은 **자기-범위형**("독자용 산문에만, JSON·정해진 형식은 최우선 유지, 사실·숫자·인용 불변")이라 JSON 반환 호출(교정·키워드·기획 분석)에도 안전. `systemBlocks` 경로엔 캐시 블록 1개 추가(블록 수 ≤4 확인), 일반 경로엔 sysText에 병합해 캐시 breakpoint 유지.
+- **[L] 리포트 프롬프트 강화:** `generate_report.py` 주간 리포트 "글쓰기 원칙" 블록을 동일 기준으로 확장(서버측 리포트 본문에도 AI 티 억제 적용).
+- **검증:** system 블록 조립 4케이스(기본 적용/`humanize:false` 해제/`systemBlocks` 추가/`noPersona` 단독) 단위 확인 통과. app.js 변경 → **?v=247**, 헤더/타이틀 **v2.7.13**.
+- **미적용(범위 밖):** SKILL.md의 결정론적 유니코드 정리 패스는 지원 스크립트(`inspect_text.py` 등) 부재 + 브라우저 실행 불가로 이번엔 프롬프트 humanization만 반영. (필요 시 별도 JS 유니코드 클리너 추가 가능)
+
+---
+
 ## 2026-08-31 — v2.7.12 (YES24 일일 수집 클라우드 자동화)
 
 ### scripts/download_yes24.py (신규) + scripts/generate_report.py + .github/workflows/fetch-rss.yml
