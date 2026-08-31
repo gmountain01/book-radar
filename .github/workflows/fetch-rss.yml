@@ -21,6 +21,17 @@ jobs:
       - name: Fetch RSS feeds
         run: python scripts/fetch_rss.py
 
+      - name: Install Playwright (YES24 다운로드용)
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Download today's YES24 excel
+        env:
+          YES24_OUT_DIR: ${{ github.workspace }}/data/yes24/daily
+        run: python scripts/download_yes24.py --no-upload
+        continue-on-error: true   # YES24 일시 오류가 나머지 파이프라인을 막지 않도록
+
       - name: Generate YES24 report (새 파일만 수집)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

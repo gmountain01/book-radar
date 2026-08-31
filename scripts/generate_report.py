@@ -6,6 +6,7 @@ YES24 베스트셀러 자동 분석 리포트 생성기 v2
 - Claude API로 시장 분석 리포트 생성
 - data/reports/yes24_weekly.md 덮어쓰기
 """
+import glob
 import io
 import json
 import os
@@ -15,7 +16,7 @@ import urllib.request
 import zipfile
 import xml.etree.ElementTree as ET
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date, timedelta
 
 # ── 설정 ──
 DRIVE_FOLDER_ID = "1hGsZv7zT6MmFdq2Ouiwrq4Ee72zg1o4O"
@@ -30,6 +31,8 @@ if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 YES24_DIR = os.path.join(SCRIPT_DIR, "..", "data", "yes24")
+# CI가 매일 자동 수집한 엑셀을 커밋해두는 폴더 (download_yes24.py 출력 대상)
+DAILY_DIR = os.path.join(YES24_DIR, "daily")
 ARCHIVE_PATH = os.path.join(YES24_DIR, "archive.json")
 REPORTS_DIR = os.path.join(SCRIPT_DIR, "..", "data", "reports")
 REPORT_PATH = os.path.join(REPORTS_DIR, "yes24_weekly.md")
@@ -798,46 +801,83 @@ def rebuild():
     build_report(archive)
 
 
+def local_daily_files() -> list[dict]:
+    """CI가 커밋해둔 data/yes24/daily/*.xlsx 목록. YYYYMMDD_*.xlsx → date."""
+    out = []
+    for p in sorted(glob.glob(os.path.join(DAILY_DIR, "*.xlsx"))):
+        name = os.path.basename(p)
+        m = re.match(r"(\d{4})(\d{2})(\d{2})", name)
+        if not m:
+            continue
+        out.append({"path": p, "name": name,
+                    "date": f"{m.group(1)}-{m.group(2)}-{m.group(3)}"})
+    return out
+
+
+def report_gaps(archive: dict):
+    """아카이브의 first~last 사이 빠진 날짜를 알려준다(백필 불가 — 알림용)."""
+    dates = sorted(archive["snapshots"].keys())
+    if len(dates) < 2:
+        return
+    d0, d1 = date.fromisoformat(dates[0]), date.fromisoformat(dates[-1])
+    have = set(dates)
+    missing, cur = [], d0
+    while cur <= d1:
+        if cur.isoformat() not in have:
+            missing.append(cur.isoformat())
+        cur += timedelta(days=1)
+    if missing:
+        shown = ", ".join(missing[:15]) + (" ..." if len(missing) > 15 else "")
+        print(f"⚠ 빠진 날짜 {len(missing)}개: {shown}")
+    else:
+        print("✅ 날짜 구멍 없음")
+
+
 def main():
     os.makedirs(YES24_DIR, exist_ok=True)
     os.makedirs(REPORTS_DIR, exist_ok=True)
 
-    # 1. Drive 폴더 파일 목록
-    drive_files = list_drive_files()
-    if not drive_files:
-        print("❌ Drive 파일 없음 — 종료")
-        return
-
-    # 2. 아카이브 로드 + 새 파일 감지
     archive = load_archive()
     existing_dates = set(archive["snapshots"].keys())
-    new_files = [f for f in drive_files if f["date"] not in existing_dates]
-
-    if not new_files:
-        print(f"⏭ 새 파일 없음 (마지막: {archive.get('last_date', '?')}) — 스킵")
-        return
-
-    print(f"🆕 새 파일 {len(new_files)}개 감지")
-
-    # 3. 새 파일 다운로드 + 파싱 + 아카이브 병합
     added = 0
-    for f in new_files:
+
+    # A. Drive 폴더 (과거 파일 수동 업로드분) — 접근 실패해도 로컬 수집은 계속
+    for f in list_drive_files():
+        if f["date"] in existing_dates:
+            continue
         print(f"  📥 {f['name']}...", end=" ")
         data = download_xlsx(f["id"])
         if not data:
-            print("SKIP")
-            continue
+            print("SKIP"); continue
         items = parse_xlsx(data)
         if not items:
-            print("파싱 실패")
-            continue
+            print("파싱 실패"); continue
         archive["snapshots"][f["date"]] = items
+        existing_dates.add(f["date"])
         added += 1
         print(f"{len(items)}건")
 
+    # B. 로컬 daily 폴더 (CI 자동 수집분)
+    for f in local_daily_files():
+        if f["date"] in existing_dates:
+            continue
+        try:
+            items = parse_xlsx(open(f["path"], "rb").read())
+        except Exception as e:
+            print(f"  ⚠ {f['name']} 읽기 실패: {e}"); continue
+        if not items:
+            print(f"  ⚠ {f['name']} 파싱 실패"); continue
+        archive["snapshots"][f["date"]] = items
+        existing_dates.add(f["date"])
+        added += 1
+        print(f"  📥 {f['name']} {len(items)}건 (로컬)")
+
     if added == 0:
-        print("❌ 파싱 성공한 파일 없음 — 종료")
+        print(f"⏭ 새 파일 없음 (마지막: {archive.get('last_date', '?')}) — 스킵")
+        report_gaps(archive)
         return
+
+    print(f"🆕 새로 추가 {added}일")
 
     # 메타데이터 갱신
     all_dates = sorted(archive["snapshots"].keys())
@@ -847,6 +887,7 @@ def main():
 
     save_archive(archive)
     print(f"💾 아카이브 저장: {archive['total_days']}일, {sum(len(v) for v in archive['snapshots'].values())}건")
+    report_gaps(archive)
 
     # 4. 통계 + 리포트
     build_report(archive)
