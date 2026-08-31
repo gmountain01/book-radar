@@ -524,13 +524,23 @@ function parseTocFromPages(pages) {
 
 async function extractFile(file) {
   const ext = file.name.split('.').pop().toLowerCase();
-  if (ext === 'pdf')  return extractPDF(file);
-  if (ext === 'docx') return extractDOCX(file);
-  if (ext === 'hwpx') return extractHWPX(file);
-  if (ext === 'hwp')  return extractHWP(file);
-  if (ext === 'doc')  return extractDOC(file);
-  if (ext === 'txt' || ext === 'md') return extractTXT(file);
-  throw new Error(`지원하지 않는 파일 형식: .${ext}\n지원 형식: PDF, DOCX, HWPX, HWP, DOC, TXT`);
+  let result;
+  if (ext === 'pdf')  result = await extractPDF(file);
+  else if (ext === 'docx') result = await extractDOCX(file);
+  else if (ext === 'hwpx') result = await extractHWPX(file);
+  else if (ext === 'hwp')  result = await extractHWP(file);
+  else if (ext === 'doc')  result = await extractDOC(file);
+  else if (ext === 'txt' || ext === 'md') result = await extractTXT(file);
+  else throw new Error(`지원하지 않는 파일 형식: .${ext}\n지원 형식: PDF, DOCX, HWPX, HWP, DOC, TXT`);
+  // AI 응답은 callClaudeApi에서 stripInvisibles로 정규화됨(v2.7.14) —
+  // 본문도 동일 규칙으로 정규화해야 includes/indexOf 대조가 대칭이 된다(NBSP·soft-hyphen 등).
+  if (result && result.pages) {
+    for (const p of result.pages) {
+      if (p.text) p.text = stripInvisibles(p.text);
+      if (p.lines && p.lines.length) p.lines = p.lines.map(l => typeof l === 'string' ? stripInvisibles(l) : l);
+    }
+  }
+  return result;
 }
 
 /** TXT/MD 파일 — 텍스트 그대로 추출 */

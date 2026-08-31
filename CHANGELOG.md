@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-08-31 — v2.7.15 (QA 탐지 버그 수정 3건 — v2.7.12~14 후속)
+
+### panels/panel8 + panels/panel5·6 + scripts/download_yes24.py
+
+- **[M] FIX-44 panel8 stripInvisibles 비대칭 회귀 수정:** v2.7.14가 AI 응답만 정규화(NBSP→공백·soft-hyphen 제거)하여 원문 본문(PDF/DOCX 추출 그대로)과 `includes` 대조가 깨짐 → 정상 교정 이슈가 할루시네이션으로 오분류·조용히 폐기되는 회귀. `extractFile()`(단일 추출 관문)에서 페이지 `text`·`lines`에 동일 `stripInvisibles` 적용해 대조 대칭 회복. 런타임 재현 검증(NBSP·soft-hyphen 매치 회복) 통과. 기존 캐시 세션(정규화 이전 추출분)은 재추출 시 적용.
+- **[M] FIX-45 panel5·6 직접 fetch 4곳 → callClaudeApi 라우팅:** 기획서 폼 자동완성·AI 초안(panel5 ×2), 미팅 요약·자동완성(panel6 ×2)이 `api.anthropic.com` 직접 fetch로 WRITING_HYGIENE·stripInvisibles를 우회하던 문제("모든 생성 지점" 미달). `callClaudeApi({apiKey, prompt, maxTokens:1500})`로 교체 — 동일 모델(haiku)·페르소나에 hygiene·클리너·usage 로깅·에러 처리 공통화, 코드 ~40줄 삭제. **비대상 판정:** panel11:392(API 키 검증 핑 — 원시 연결 테스트가 목적), panel17:806(이미지 생성)·p17-concepts:366(표지 디자인 스펙 JSON, OpenAI)은 독자용 산문 아님.
+- **[L] FIX-46 download_yes24.py `--date` 가드:** 값 누락 시 IndexError, 형식 미검증으로 오명칭 파일 생성 → `YYYYMMDD`(8자리 숫자) 검증 + 사용법 메시지 exit.
+- **QA 경위:** qa-tester 에이전트 약 22항목 검증(오늘 커밋 4건 대상) — CRITICAL/HIGH 0, MEDIUM 2, LOW 1, 그 외 이상무(정규식 코드포인트·cache breakpoint 수·concat 불변·KST 계산·Drive 실패 복원력·워크플로 커밋 범위·버전 정합 등). 3건 전부 수정. **panel5·6·8 ?v=249, 헤더 v2.7.15.**
+
+---
+
 ## 2026-08-31 — v2.7.14 (유니코드 클리너 — AI 생성물 보이지 않는 문자 정리)
 
 ### shared/app.js

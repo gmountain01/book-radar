@@ -36,7 +36,10 @@ def main():
     # 일일 베스트셀러 = 전날 집계 → 한국시간 기준 어제 날짜로 저장
     ymd = (datetime.now(KST) - timedelta(days=1)).strftime("%Y%m%d")
     if "--date" in sys.argv:
-        ymd = sys.argv[sys.argv.index("--date") + 1]
+        idx = sys.argv.index("--date") + 1
+        if idx >= len(sys.argv) or not (sys.argv[idx].isdigit() and len(sys.argv[idx]) == 8):
+            sys.exit("--date 사용법: --date YYYYMMDD (예: --date 20260830)")
+        ymd = sys.argv[idx]
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     target = OUT_DIR / f"{ymd}_yes24_it_bestseller.xlsx"
 

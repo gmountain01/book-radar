@@ -482,14 +482,9 @@ ${excerpt}
 }`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1500, system: typeof _cachedSystem==='function'?_cachedSystem(PUBLISHING_PERSONA||''):undefined, messages: [{ role: 'user', content: prompt }] })
-    });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const res = await resp.json();
-    const m = res.content[0].text.match(/\{[\s\S]*\}/);
+    // callClaudeApi 경유 — 페르소나+WRITING_HYGIENE+stripInvisibles 공통 적용 (직접 fetch 금지)
+    const aiText = await callClaudeApi({ apiKey, prompt, maxTokens: 1500 });
+    const m = aiText.match(/\{[\s\S]*\}/);
     if (!m) throw new Error('JSON 파싱 실패');
     const r = JSON.parse(m[0]);
     const sv = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
@@ -612,17 +607,9 @@ ${ctx}
 }`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey, 'anthropic-version': '2023-06-01',
-        'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1500, system: typeof _cachedSystem==='function'?_cachedSystem(PUBLISHING_PERSONA||''):undefined, messages: [{ role: 'user', content: prompt }] })
-    });
-    if (!resp.ok) { const e = await resp.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${resp.status}`); }
-    const res = await resp.json();
-    const m = res.content[0].text.match(/\{[\s\S]*\}/);
+    // callClaudeApi 경유 — 페르소나+WRITING_HYGIENE+stripInvisibles 공통 적용 (직접 fetch 금지)
+    const aiText = await callClaudeApi({ apiKey, prompt, maxTokens: 1500 });
+    const m = aiText.match(/\{[\s\S]*\}/);
     if (!m) throw new Error('JSON 응답을 받지 못했습니다.');
     const r = JSON.parse(m[0]);
     const sv = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
