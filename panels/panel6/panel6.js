@@ -738,26 +738,6 @@ function meetInitDefaults(mode) {
   // notes, summary: 빈 상태로 시작 (미팅 중 실시간 기록 / 자동 생성)
 }
 
-function openMeetingFromAuthor(authorName) {
-  const r = (typeof AUTHOR_DATA !== 'undefined' ? AUTHOR_DATA : []).find(x => x.저자명 === authorName);
-  if (!r) return;
-  switchTab(6, document.getElementById('tab6'));
-  const sv = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
-  sv('m-author', r.저자명);
-  // 구분(플랫폼)을 소속/직함으로 활용
-  if (r.구분) sv('m-affil', r.구분);
-  // 대표도서 있으면 경력에 반영
-  if (r.대표도서) {
-    const careerLine = `저서: 『${r.대표도서}』${r.출판사 ? ` (${r.출판사})` : ''}`;
-    sv('m-career', careerLine);
-  }
-  sv('m-editor', r.담당자);
-  _meetCtxAuthor = r.저자명;
-  updateMeetCtxBar();
-  meetRender();
-  showToast(`👤 "${r.저자명}" 저자 정보를 불러왔습니다. 책 정보를 채워주세요.`, 'green');
-}
-
 function openMeetingFromProposal() {
   switchTab(6, document.getElementById('tab6'));
   const gv = id => (document.getElementById(id) || {}).value || '';
@@ -834,17 +814,17 @@ function updateMeetCtxBar() {
   if (!hasA && !hasC) {
     el.innerHTML = `
       <div class="meet-ctx-hint">어떤 저자와의 미팅인가요? —
-        <a onclick="switchTab(2,document.getElementById('tab2'))">저자풀</a>에서 저자를 고르거나
+        <a onclick="switchTab(24,document.getElementById('tab24'))">저자 목록</a>에서 저자를 확인하거나
         <a onclick="switchTab(3,document.getElementById('tab3'))">저자 제안서 탭</a>에서 넘어오세요.</div>
       <div class="meet-ctx-btns">
-        <button class="meet-ctx-link-btn" onclick="switchTab(2,document.getElementById('tab2'))">👤 저자풀에서 선택 ↗</button>
+        <button class="meet-ctx-link-btn" onclick="switchTab(24,document.getElementById('tab24'))">👤 저자 목록 보기 ↗</button>
         <button class="meet-ctx-link-btn" onclick="switchTab(3,document.getElementById('tab3'))">📝 제안서에서 가져오기 ↗</button>
       </div>`;
   } else {
     const tags = [];
     if (hasA) tags.push(`<span class="meet-ctx-tag">👤 ${_meetCtxAuthor}<button class="ctag-del" onclick="_meetCtxAuthor='';updateMeetCtxBar();" title="저자 연결 해제">×</button></span>`);
     if (hasC) tags.push(`<span class="meet-ctx-tag">📚 ${_meetCtxCat}<button class="ctag-del" onclick="_meetCtxCat='';updateMeetCtxBar();" title="카테고리 연결 해제">×</button></span>`);
-    if (!hasA) tags.push(`<button class="meet-ctx-link-btn" onclick="switchTab(2,document.getElementById('tab2'))">👤 저자 선택 ↗</button>`);
+    if (!hasA) tags.push(`<button class="meet-ctx-link-btn" onclick="switchTab(24,document.getElementById('tab24'))">👤 저자 목록 보기 ↗</button>`);
     if (!hasC) tags.push(`<button class="meet-ctx-link-btn" onclick="switchTab(3,document.getElementById('tab3'))">📚 카테고리 연결 ↗</button>`);
     el.innerHTML = `<div class="meet-ctx-tags">${tags.join('')}</div>`;
   }
@@ -977,7 +957,7 @@ async function openAIMeetingWizard() {
   if (!hasTitle) notices.push('도서 제목(안)을 먼저 입력해야 생성할 수 있습니다.');
   else if (!hasKey) notices.push('API 키가 없습니다. AI 생성 시 사전 확인 창에서 입력해주세요.');
   else if (!author) notices.push('저자명이 없으면 일반적인 내용으로 생성됩니다.');
-  else if (!catCtx) notices.push('저자풀에서 저자를 선택하거나 저자 제안서 탭에서 넘어오면 시장 데이터가 연동됩니다.');
+  else if (!catCtx) notices.push('저자 제안서 탭에서 넘어오면 시장 데이터가 연동됩니다.');
 
   document.getElementById('ai-wiz-body').innerHTML = `
     <div class="ai-wiz-sec">
@@ -986,7 +966,7 @@ async function openAIMeetingWizard() {
         ${_wizRow(hasTitle ? 'ok' : 'err', '도서 제목(안)',
           hasTitle ? `"${bookTitle}"` : '미팅 자료 탭에서 도서 제목을 먼저 입력하세요 (필수)')}
         ${_wizRow(author ? 'ok' : 'warn', '저자명',
-          author ? author : '미입력 — 저자풀 탭에서 저자를 선택하면 자동으로 채워집니다')}
+          author ? author : '미입력 — 저자명을 직접 입력하거나 저자 제안서 탭에서 넘어오면 채워집니다')}
         ${_wizRow(catCtx ? 'ok' : 'warn', '시장 데이터 연동',
           catCtx ? `"${catCtx}" 카테고리 데이터 활용` : '없음 — 저자 제안서 탭에서 넘어오면 자동 연결됩니다')}
         ${_wizRow(hasKey ? 'ok' : 'err', 'Anthropic API 키',

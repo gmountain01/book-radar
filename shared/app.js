@@ -788,7 +788,6 @@ function switchTab(i,btn){
   var panelEl = document.getElementById('panel'+i);
   if(panelEl) panelEl.classList.add('active');
   _activePanel = i;
-  if(i===2 && typeof AUTHOR_DATA !== 'undefined') filterAuthors();
   // 패널 비활성화 훅 실행
   if(typeof PanelRegistry !== 'undefined' && prevPanel !== i) PanelRegistry.onDeactivate(prevPanel);
   // 패널 활성화 훅 실행 (각 패널 JS에서 PanelRegistry.register(i, {onActivate}) 등록 시 호출됨)
@@ -1118,7 +1117,7 @@ function closePWModal(){
 }
 
 function unlockTabs(){
-  ['tab1','tab2','tab3','tab4','tab5','tab6','tab7'].forEach(id=>{
+  ['tab1','tab3','tab4','tab5','tab6','tab7'].forEach(id=>{
     const btn = document.getElementById(id);
     if(!btn) return;
     btn.classList.remove('locked');
@@ -1811,7 +1810,6 @@ function renderRows(sorted,q){
           &nbsp;/&nbsp; 준비 ${d.planned.length}건
           &nbsp;/&nbsp; 강의 ${d.lecture.length}개${(()=>{const tot=d.lecture.reduce((s,l)=>s+(l.pop||0),0);return tot>0?` (${tot.toLocaleString()}명)`:'';})()}
         </span>
-        <button class="cat-action-btn" onclick="event.stopPropagation();showCatAuthors('${catEsc}','cb${i}')">👤 저자</button>
         <button class="cat-action-btn proposal" onclick="event.stopPropagation();openProposalFromCat('${catEsc}')">📝 저자 제안서</button>
         <button class="cat-action-btn ai" onclick="event.stopPropagation();openAIProposalWizard('${catEsc}',false)">✨ AI</button>
         <span class="chevron" style="margin-left:.3rem;">▾</span>
@@ -2401,59 +2399,6 @@ function renderWorkload(excludePlanning){
     </table>
     </div>`;
   sec.style.display='block';
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ① 카테고리 → 저자풀 연결
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function showCatAuthors(catName,blockId){
-  const panelId='cap-'+blockId;
-  const existing=document.getElementById(panelId);
-  if(existing){existing.remove();return;}
-
-  // 키워드 추출 (카테고리명 토크나이즈)
-  const keywords=(catName||'').toLowerCase().replace(/[\/·\s]+/g,' ').split(' ').filter(k=>k.length>1);
-
-  // AUTHOR_DATA에서 태그 매칭
-  let matched=[];
-  try{
-    matched=(typeof AUTHOR_DATA!=='undefined'?AUTHOR_DATA:[]).filter(r=>{
-      const tags=(r.태그||'').toLowerCase();
-      const name=(r.저자명||'').toLowerCase();
-      return keywords.some(k=>tags.includes(k)||name.includes(k));
-    });
-  }catch(e){ console.warn('[app.js] renderCatAuthors: 저자 데이터 필터링 실패', e); }
-
-  const panel=document.createElement('div');
-  panel.id=panelId;
-  panel.className='cat-author-panel';
-
-  if(!matched.length){
-    panel.innerHTML=`<div style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.6rem;">
-      <span>태그 일치 저자 없음</span>
-      <a href="#" onclick="switchTab(2,document.getElementById('tab2'));return false;"
-        style="font-size:.72rem;color:var(--blue);text-decoration:underline;">저자풀 전체 보기 →</a>
-    </div>`;
-  } else {
-    const pubIcon=pub=>(pub||'').includes('출간')?'<span style="font-size:.6rem;padding:1px 4px;border-radius:3px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);margin-left:3px;">출간</span>':'';
-    panel.innerHTML=`
-      <div style="font-size:.68rem;font-weight:700;color:var(--purple);margin-bottom:.45rem;">👤 관련 저자 ${matched.length}명</div>
-      <div style="display:flex;flex-wrap:wrap;gap:.35rem;">
-        ${matched.map(r=>`
-          <div style="background:var(--surface);border:1px solid var(--purple-bd);border-radius:6px;padding:.38rem .65rem;font-size:.75rem;max-width:200px;">
-            <div style="font-weight:600;">${r.저자명}${pubIcon(r.출간여부)}</div>
-            <div style="font-size:.63rem;color:var(--muted);margin-top:1px;">${(r.태그||'').split(',').slice(0,3).map(t=>t.trim()).join(' · ')}</div>
-            ${r.담당자?`<div style="font-size:.63rem;color:var(--muted);">담당: ${r.담당자}</div>`:''}
-          </div>`).join('')}
-        <a href="#" onclick="switchTab(2,document.getElementById('tab2'));return false;"
-          style="display:flex;align-items:center;padding:.38rem .65rem;font-size:.7rem;color:var(--blue);text-decoration:none;border:1px dashed var(--blue-bd);border-radius:6px;background:var(--blue-bg);">
-          전체 보기 →
-        </a>
-      </div>`;
-  }
-
-  const block=document.getElementById(blockId);
-  block.querySelector('.cat-hdr').insertAdjacentElement('afterend',panel);
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -4,6 +4,18 @@
 
 ---
 
+## 2026-09-01 — v2.7.18 (panel2 저자풀 완전 삭제 — 탈브랜딩 후속)
+
+### panels/panel2 삭제 + index.html + shared/app.js + panels/panel6
+
+- **[M] panel2(저자풀) 전면 삭제:** 한빛 시절 정적 저자풀 — 담당자 드롭다운 한빛 편집자 실명 하드코딩, 갱신 경로 없는 panel2-data.js. 관리·업데이트 중단 데이터로 사용자 삭제 결정(후계: panel24 저자 목록 — YES24 아카이브 자동 갱신). 삭제 범위: `panels/panel2/` 디렉토리, index.html 사이드바 tab2·패널 div 블록(+임베드 author-json 36KB)·스크립트 태그·재잠금 목록, app.js 탭 전환 훅(791)·unlockTabs(1121).
+- **[M] 통합현황 저자풀 연동 제거:** app.js `showCatAuthors()` + "① 카테고리 → 저자풀 연결" 배너 블록(2406-2457)·카테고리 헤더 `👤 저자` 버튼(1814) 통째 삭제 — 사용자 지목 사용처.
+- **[M] panel5·6 재배선:** "저자풀 ↗" 버튼 → `switchTab(24)` "저자 목록 ↗"(panel5 폼·panel6 미팅 2곳), panel6 위저드 안내문 수동 입력/제안서 연동으로 완화, 고아가 된 `openMeetingFromAuthor()` 삭제. panel24는 자동 채움 미지원이라 탐색 이동만(신규 연동 미개발 — 최소 변경).
+- **보존:** panel7 내부 `yt-panel2`(YouTube 영상목록, 무관), panel24/25 `_AUTHORS_DATA`(별개 데이터), router.js(panel2 등록 원래 없음).
+- **검증:** 구문 3파일 OK, 잔존 참조(저자풀/filterAuthors/showCatAuthors/AUTHOR_DATA/tab2 등) 0건, div 균형 661/661. **순삭제 -215줄. app.js·panel6.js ?v=251, 헤더 v2.7.18 · 2026-09-01.** dashboard-developer 에이전트 수행.
+
+---
+
 ## 2026-08-31 — v2.7.17 (도서 순위 추적 + daily 보존 정책 — dev-advisor TOP3·중기 1)
 
 ### panels/panel24 + .github/workflows/fetch-rss.yml
