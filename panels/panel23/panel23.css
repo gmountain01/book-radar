@@ -311,6 +311,24 @@
    ══════════════════════════════════════════════════════ */
 .p23-chart-wrap{position:relative;height:280px;margin-bottom:16px;background:var(--surface,#fff);border:1px solid var(--border,#dddbd2);border-radius:12px;padding:16px;}
 
+/* ── 📊 시장 역학 ── */
+.p23-empty-sub{font-size:12px;color:var(--muted2,#9b9890);margin-top:4px;}
+.p23-md-note{font-size:12px;color:var(--muted,#56544e);margin-bottom:16px;font-family:'JetBrains Mono',monospace;}
+.p23-md-block{margin-bottom:24px;}
+.p23-md-cap{font-size:12.5px;line-height:1.6;color:var(--muted,#56544e);margin-bottom:10px;}
+.p23-md-cap b{color:var(--text,#1a1917);font-weight:700;}
+.p23-md-up{color:var(--blue,#1e4a8a);font-weight:600;}
+.p23-md-down{color:var(--red,#c23d2f);font-weight:600;}
+.p23-md-green{color:var(--green,#16a34a);font-weight:600;}
+.p23-chart-momentum{height:500px;}
+.p23-chart-scatter{height:380px;}
+.p23-chart-hhi{height:540px;}
+@media (max-width:640px){
+  .p23-chart-momentum{height:440px;}
+  .p23-chart-scatter{height:340px;}
+  .p23-chart-hhi{height:480px;}
+}
+
 /* ══════════════════════════════════════════════════════
    B-4. 키워드 칩 + 기사 모아보기
    ══════════════════════════════════════════════════════ */
@@ -385,3 +403,23 @@
   .p23-rpt-layout{grid-template-columns:1fr!important;}
   .p23-content{max-width:100%;padding:0;}
 }
+
+/* 기획 기회 종합 (v2.7.19) */
+.p23-opp-lead{font-size:1rem;font-weight:800;margin:.6rem 0 .5rem;color:var(--text);}
+.p23-opp-cards{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem;}
+.p23-opp-card{display:flex;gap:.7rem;align-items:center;border:1px solid var(--line,#e4e4e7);border-left-width:5px;border-radius:8px;padding:.6rem .8rem;background:var(--card,#fff);}
+.p23-opp-card.p23-opp-g{border-left-color:#16a34a;}
+.p23-opp-card.p23-opp-y{border-left-color:#d9a014;}
+.p23-opp-card.p23-opp-m{border-left-color:#9a9aa2;}
+.p23-opp-card.p23-opp-r{border-left-color:#c23d2f;}
+.p23-opp-rank{font-size:1.3rem;font-weight:800;color:var(--muted);min-width:1.4rem;text-align:center;}
+.p23-opp-topic{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+.p23-opp-badge{font-size:.66rem;font-weight:700;padding:1px 7px;border-radius:10px;background:var(--accent-light,#e3e5f9);color:var(--accent,#4F46B8);vertical-align:middle;margin-left:.3rem;}
+.p23-opp-reason{font-size:.78rem;color:var(--muted);line-height:1.5;}
+.p23-opp-dot{font-size:.7rem;vertical-align:middle;}
+.p23-opp-dot.g{color:#16a34a;} .p23-opp-dot.y{color:#d9a014;} .p23-opp-dot.m{color:#9a9aa2;} .p23-opp-dot.r{color:#c23d2f;}
+.p23-chart-oppmap{height:420px;}
+.p23-md-details{margin-top:.4rem;border-top:1px dashed var(--line,#e4e4e7);padding-top:.5rem;}
+.p23-md-details>summary{cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);padding:.3rem 0;list-style:revert;}
+.p23-md-details[open]>summary{color:var(--text);margin-bottom:.4rem;}
+@media (max-width:640px){.p23-chart-oppmap{height:340px;}.p23-opp-card{flex-wrap:nowrap;}}

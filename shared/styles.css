@@ -819,18 +819,19 @@ button { font-family: inherit; }
 /* ── 태블릿 (<=1024px) ── */
 @media (max-width: 1024px) {
   :root { --sb-w: 52px; }
-  .sidebar { width: 52px; }
-  .sidebar .nav-section { opacity: 0; pointer-events: none; transition: opacity .2s; }
-  .sidebar .nav-label { display: none; }
-  .sidebar .nav-item {
+  /* 자동접힘은 collapsed 상태에만 적용 — 토글로 펼쳐 고정한 사이드바는 유지 (마우스 떼도 안 닫힘) */
+  .sidebar.collapsed { width: 52px; }
+  .sidebar.collapsed .nav-section { opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .sidebar.collapsed .nav-label { display: none; }
+  .sidebar.collapsed .nav-item {
     padding: .5rem 0; justify-content: center; gap: 0;
     margin: 1px 6px; border-radius: 6px;
     border-left-color: transparent !important;
   }
-  .sidebar:hover { width: var(--sb-w-full, 220px); }
-  .sidebar:hover .nav-section { opacity: 1; pointer-events: auto; }
-  .sidebar:hover .nav-label { display: inline; }
-  .sidebar:hover .nav-item {
+  .sidebar.collapsed:hover { width: var(--sb-w-full, 220px); }
+  .sidebar.collapsed:hover .nav-section { opacity: 1; pointer-events: auto; }
+  .sidebar.collapsed:hover .nav-label { display: inline; }
+  .sidebar.collapsed:hover .nav-item {
     padding: .45rem .9rem .45rem 1rem; justify-content: flex-start;
     gap: .5rem; margin: 1px .5rem 1px 0; border-radius: 0 6px 6px 0;
   }

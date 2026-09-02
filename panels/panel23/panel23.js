@@ -401,6 +401,9 @@ var _trendChart = null;
 var _trendChartKws = {}; // {kw: boolean} 토글 상태
 var _chartHilite = null; // 키워드 칩 📈 토글로 강조 중인 시리즈 (null=전체 표시)
 
+// 📊 시장 역학 (YES24 순위 인사이트) 차트 인스턴스
+var _mdMomentumChart = null, _mdScatterChart = null, _mdHhiChart = null, _mdOppChart = null;
+
 function renderTrend() {
   if (!_archive) { $trendWrap.innerHTML = '<div class="p23-empty"><div class="p23-empty-text">아카이브 데이터 없음</div></div>'; return; }
 
@@ -704,6 +707,238 @@ function _renderTrendChart(trends, allKw) {
       }
     }
   });
+}
+
+// ── 📊 시장 역학 (YES24 순위 인사이트) ──────────────────────────────
+// 데이터: window.YES24_INSIGHTS (data/yes24/insights.js, CI 매일 재생성)
+function _mdTrunc(t, n) { t = t || ''; return t.length > n ? t.slice(0, n - 1) + '…' : t; }
+
+function _marketDynamicsHtml() {
+  var D = window.YES24_INSIGHTS;
+  var h = '<h3 class="p23-section-title">📊 시장 역학 <span class="p23-info-tip" title="YES24 종합 베스트셀러 순위 데이터로 계산한 순위 모멘텀·변동성·출판사 집중도입니다. 매일 자동 갱신됩니다.">ⓘ</span></h3>';
+  if (!D || typeof D !== 'object' || !D.momentum) {
+    return h + '<div class="p23-empty"><div class="p23-empty-text">데이터가 아직 없습니다</div><div class="p23-empty-sub">YES24 순위 인사이트는 매일 자동 갱신됩니다.</div></div>';
+  }
+  h += '<div class="p23-md-note">YES24 종합 베스트셀러 순위(최근 ' + (D.window_days || 30) + '일 기준) · 데이터 기준일 ' + esc(D.generated || '') + '</div>';
+
+  var O = D.opportunity || { top: [], topics: [] };
+
+  // ── 결론: 이번 주 기획 기회 TOP3 ──
+  h += '<div class="p23-opp-lead">🎯 이번 주 기획 기회 <span class="p23-info-tip" title="주제별 상승세(모멘텀)와 경쟁 여유(1−HHI)를 곱해 산출한 기회 점수 상위입니다. 신간 진입에 따른 일시 급등은 제외(창 시작 전부터 있던 책의 추세만)하고, 시장 규모가 너무 작은 주제는 제외합니다.">ⓘ</span></div>';
+  if (O.top && O.top.length) {
+    h += '<div class="p23-opp-cards">';
+    O.top.forEach(function(o, i) {
+      h += '<div class="p23-opp-card ' + _oppCls(o.grade) + '">'
+        + '<div class="p23-opp-rank">' + (i + 1) + '</div>'
+        + '<div class="p23-opp-body"><div class="p23-opp-topic">' + esc(o.topic)
+        + ' <span class="p23-opp-badge">' + esc(o.grade) + '</span></div>'
+        + '<div class="p23-opp-reason">' + esc(o.reason) + '</div></div></div>';
+    });
+    h += '</div>';
+  } else {
+    h += '<div class="p23-md-note">이번 주는 뚜렷한 선점 기회(뜨는데 비어있는 주제)가 없습니다 — 아래 기회 맵에서 전체 주제 위치를 확인하세요.</div>';
+  }
+
+  // ── 기회 맵 (버블) ──
+  h += '<div class="p23-md-block"><div class="p23-md-cap">🗺 <b>기회 맵</b> — 가로=상승세, 세로=경쟁 여유(위=비어있음), 버블 크기=시장 규모. <b>우상단일수록 기획 기회</b> · <span class="p23-opp-dot g">●</span>선점 <span class="p23-opp-dot y">●</span>차별화 <span class="p23-opp-dot m">●</span>관망 <span class="p23-opp-dot r">●</span>회피</div>';
+  h += '<div class="p23-chart-wrap p23-chart-oppmap"><canvas id="p23_mdOppMap"></canvas></div></div>';
+
+  // ── 근거: 개별 지표 (접이식) ──
+  h += '<details class="p23-md-details"><summary>📎 세부 지표 자세히 보기 (순위 모멘텀 · 변동성 · 출판사 집중도)</summary>';
+  h += '<div class="p23-md-block"><div class="p23-md-cap">① <b>순위 모멘텀</b> — 하루 평균 몇 순위씩 오르내리는 중인지. <span class="p23-md-up">파랑=상승</span> · <span class="p23-md-down">빨강=하락</span></div>';
+  h += '<div class="p23-chart-wrap p23-chart-momentum"><canvas id="p23_mdMomentum"></canvas></div></div>';
+  h += '<div class="p23-md-block"><div class="p23-md-cap">② <b>변동성 지도</b> — 가로=평균 순위(왼쪽일수록 상위), 세로=순위 변동폭(아래일수록 안정). <b>좌하단일수록 안정적 강자</b></div>';
+  h += '<div class="p23-chart-wrap p23-chart-scatter"><canvas id="p23_mdScatter"></canvas></div></div>';
+  h += '<div class="p23-md-block"><div class="p23-md-cap">③ <b>주제별 시장 집중도(HHI)</b> — 0에 가까울수록 여러 출판사 분산(진입 여지), 1에 가까울수록 소수 과점(진입 어려움). <span class="p23-md-down">빨강=과점</span> · <span class="p23-md-green">초록=분산</span></div>';
+  h += '<div class="p23-chart-wrap p23-chart-hhi"><canvas id="p23_mdHhi"></canvas></div></div>';
+  h += '</details>';
+  return h;
+}
+
+function _oppCls(g) {
+  return g === '선점' ? 'p23-opp-g' : g === '차별화' ? 'p23-opp-y'
+       : g === '관망' ? 'p23-opp-m' : 'p23-opp-r';
+}
+
+function _renderMarketDynamics() {
+  var D = window.YES24_INSIGHTS;
+  if (!D || typeof D !== 'object' || !D.momentum || !window.Chart) return;
+  var mono = { size: 10, family: 'JetBrains Mono' };
+  var pre = { family: 'Pretendard' };
+
+  // ── ⓪ 기회 맵 (버블: x=모멘텀, y=경쟁여유, r=시장규모, 색=등급) ──
+  if (_mdOppChart) { _mdOppChart.destroy(); _mdOppChart = null; }
+  var oc = document.getElementById('p23_mdOppMap');
+  var T = (D.opportunity && D.opportunity.topics) || [];
+  if (oc && T.length) {
+    var gColor = { '선점': 'rgba(22,163,74,.72)', '차별화': 'rgba(217,160,20,.78)',
+                   '관망': 'rgba(150,150,158,.5)', '회피': 'rgba(194,61,47,.62)' };
+    var maxSize = Math.max.apply(null, T.map(function(t) { return t.size; })) || 1;
+    // 라벨은 클러터 방지: 선점·차별화 + 규모 상위 4개만 이름 표시
+    var bigSet = {};
+    T.slice().sort(function(a, b) { return b.size - a.size; }).slice(0, 4)
+      .forEach(function(t) { bigSet[t.topic] = 1; });
+    var labelPlugin = {
+      id: 'oppLabels',
+      afterDatasetsDraw: function(chart) {
+        var ctx = chart.ctx, meta = chart.getDatasetMeta(0);
+        ctx.save(); ctx.font = '10px Pretendard'; ctx.fillStyle = 'rgba(40,40,48,.9)'; ctx.textBaseline = 'middle';
+        meta.data.forEach(function(pt, i) {
+          var t = T[i]; if (!t) return;
+          if (t.grade === '선점' || t.grade === '차별화' || bigSet[t.topic]) {
+            ctx.textAlign = 'left';
+            ctx.fillText(_mdTrunc(t.topic, 10), pt.x + (pt.options.radius || 6) * 0.5 + 3, pt.y);
+          }
+        });
+        ctx.restore();
+      }
+    };
+    _mdOppChart = new Chart(oc.getContext('2d'), {
+      type: 'bubble',
+      data: {
+        datasets: [{
+          data: T.map(function(t) { return { x: t.mom, y: t.room, r: 5 + Math.sqrt(t.size / maxSize) * 24 }; }),
+          backgroundColor: T.map(function(t) { return gColor[t.grade] || gColor['관망']; }),
+          borderColor: 'rgba(0,0,0,.18)', borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            titleFont: pre, bodyFont: { family: 'Pretendard', size: 12 },
+            callbacks: {
+              title: function(c) { return T[c[0].dataIndex].topic; },
+              label: function(c) { var t = T[c.dataIndex]; return '[' + t.grade + '] 기회 점수 ' + t.score; },
+              afterLabel: function(c) { return T[c.dataIndex].reason; }
+            }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: '← 하락   상승세(순위/일)   상승 →', font: { size: 10, family: 'Pretendard' } }, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: mono } },
+          y: { min: 0, max: 1, title: { display: true, text: '경쟁 여유 (1−HHI, 위=비어있음)', font: { size: 10, family: 'Pretendard' } }, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: mono } }
+        }
+      },
+      plugins: [labelPlugin]
+    });
+  }
+
+  // ── ① 순위 모멘텀 (발산 수평 막대) ──
+  if (_mdMomentumChart) { _mdMomentumChart.destroy(); _mdMomentumChart = null; }
+  var mc = document.getElementById('p23_mdMomentum');
+  if (mc) {
+    var rise = (D.momentum.rising || []).slice(0, 9);
+    var fall = (D.momentum.falling || []).slice(0, 9).reverse(); // 강한 하락이 맨 아래
+    var items = rise.concat(fall); // index0(강한 상승) → 상단
+    _mdMomentumChart = new Chart(mc.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: items.map(function(d) { return _mdTrunc(d.t, 22); }),
+        datasets: [{
+          data: items.map(function(d) { return d.climb; }),
+          backgroundColor: items.map(function(d) { return d.climb >= 0 ? 'rgba(30,74,138,.82)' : 'rgba(194,61,47,.82)'; }),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            titleFont: pre, bodyFont: { family: 'Pretendard', size: 12 },
+            callbacks: {
+              title: function(c) { return items[c[0].dataIndex].t; },
+              label: function(c) { var d = items[c.dataIndex]; return (d.climb >= 0 ? '▲ ' : '▼ ') + Math.abs(d.climb).toFixed(1) + ' 순위/일'; },
+              afterLabel: function(c) { var d = items[c.dataIndex]; return (d.pub || '') + ' · 현재 ' + d.cur + '위'; }
+            }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: '순위 변화 속도 (순위/일 · +상승 −하락)', font: { size: 10, family: 'Pretendard' } }, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: mono } },
+          y: { grid: { display: false }, ticks: { font: { size: 10, family: 'Pretendard' } } }
+        }
+      }
+    });
+  }
+
+  // ── ② 변동성 지도 (산점도) ──
+  if (_mdScatterChart) { _mdScatterChart.destroy(); _mdScatterChart = null; }
+  var sc = document.getElementById('p23_mdScatter');
+  if (sc) {
+    var arr = D.scatter || [];
+    _mdScatterChart = new Chart(sc.getContext('2d'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          data: arr.map(function(s) { return { x: s.rank, y: s.sd }; }),
+          backgroundColor: 'rgba(79,70,184,.35)',
+          borderColor: 'rgba(79,70,184,.55)',
+          pointRadius: 2.5, pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            titleFont: pre, bodyFont: { family: 'Pretendard', size: 12 },
+            callbacks: {
+              title: function(c) { return arr[c[0].dataIndex].t; },
+              label: function(c) { var s = arr[c.dataIndex]; return '평균 ' + Math.round(s.rank) + '위 · 변동폭 ' + s.sd.toFixed(1) + ' · 등장 ' + s.days + '일'; }
+            }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: '평균 순위 (← 상위)', font: { size: 10, family: 'Pretendard' } }, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: mono } },
+          y: { beginAtZero: true, title: { display: true, text: '순위 변동폭 (↓ 안정)', font: { size: 10, family: 'Pretendard' } }, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: mono } }
+        }
+      }
+    });
+  }
+
+  // ── ③ 주제별 시장 집중도 (HHI 수평 막대) ──
+  if (_mdHhiChart) { _mdHhiChart.destroy(); _mdHhiChart = null; }
+  var hc = document.getElementById('p23_mdHhi');
+  if (hc) {
+    var hh = (D.hhi || []).slice(); // 과점순 유지
+    var vals = hh.map(function(x) { return x.hhi; });
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    var span = (hi - lo) || 1;
+    _mdHhiChart = new Chart(hc.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: hh.map(function(x) { return _mdTrunc(x.topic, 16); }),
+        datasets: [{
+          data: vals,
+          backgroundColor: hh.map(function(x) {
+            var t = (x.hhi - lo) / span; // 0=분산(초록) ~ 1=과점(빨강)
+            var r = Math.round(22 + t * 172), g = Math.round(163 - t * 102), b = Math.round(74 - t * 27);
+            return 'rgba(' + r + ',' + g + ',' + b + ',.85)';
+          }),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            titleFont: pre, bodyFont: { family: 'Pretendard', size: 12 },
+            callbacks: {
+              title: function(c) { return hh[c[0].dataIndex].topic; },
+              label: function(c) { return 'HHI ' + hh[c.dataIndex].hhi.toFixed(3); },
+              afterLabel: function(c) { var x = hh[c.dataIndex]; return '1위 ' + (x.top_pub || '') + ' ' + Math.round((x.top_share || 0) * 100) + '% · 도서 ' + x.books + ' · 출판사 ' + x.pubs; }
+            }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: 'HHI (0 분산 ~ 1 독점)', font: { size: 10, family: 'Pretendard' } }, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: mono } },
+          y: { grid: { display: false }, ticks: { font: { size: 10, family: 'Pretendard' } } }
+        }
+      }
+    });
+  }
 }
 
 // ── 4-0. 키워드 칩 📈 → 차트 시리즈 강조 토글 (기사 모아보기와 별개 동작) ──
@@ -1047,7 +1282,10 @@ function parseMd(md) {
 }
 
 function renderMd(md) {
-  var r=parseMd(md); $empty.style.display='none'; $content.style.display='block'; $content.innerHTML=r.html; tocItems=r.headings;
+  var r=parseMd(md); $empty.style.display='none'; $content.style.display='block';
+  // 시장 역학 차트(YES24 순위 인사이트)를 리포트 본문 상단에 배치 — 한눈에 보는 시각 요약
+  $content.innerHTML='<div class="p23-md-section">'+_marketDynamicsHtml()+'</div>'+r.html;
+  tocItems=r.headings;
   _p23Pins=[];
   // 핵심 인사이트 강조 박스
   $content.querySelectorAll('h2').forEach(function(h){
@@ -1069,6 +1307,7 @@ function renderMd(md) {
     _p23AddPinBtn(card, h, 'plan', h.textContent.trim());
   });
   renderTocSidebar(); $main.scrollTop=0;
+  _renderMarketDynamics();   // 리포트 상단 시장 역학 차트 렌더(캔버스 DOM 생성 후)
 }
 
 // 카드/박스 헤딩 옆에 📌 버튼을 추가하고, 본문 전체를 _p23Pins에 저장한다.
@@ -1144,7 +1383,13 @@ loadData();
 if (typeof PanelRegistry !== 'undefined') {
   PanelRegistry.register(23, {
     onActivate: function() { if (!_feedData && !_archive) loadData(); },
-    onDeactivate: function() { if (_trendChart) { _trendChart.destroy(); _trendChart = null; } }
+    onDeactivate: function() {
+      if (_trendChart) { _trendChart.destroy(); _trendChart = null; }
+      if (_mdMomentumChart) { _mdMomentumChart.destroy(); _mdMomentumChart = null; }
+      if (_mdScatterChart) { _mdScatterChart.destroy(); _mdScatterChart = null; }
+      if (_mdHhiChart) { _mdHhiChart.destroy(); _mdHhiChart = null; }
+      if (_mdOppChart) { _mdOppChart.destroy(); _mdOppChart = null; }
+    }
   });
 }
 })();

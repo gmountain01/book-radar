@@ -9,6 +9,7 @@ YES24 베스트셀러 자동 분석 리포트 생성기 v2
 import glob
 import io
 import json
+import math
 import os
 import re
 import sys
@@ -217,6 +218,157 @@ def _missing_dates(archive: dict) -> list[str]:
             missing.append(cur.isoformat())
         cur += timedelta(days=1)
     return missing
+
+
+# ══════════════════════════════════════════════════════
+# 시장 역학 지표 (모멘텀·변동성·집중도) — panel23 차트용 insights.js
+# 결측(200위 밖으로 나간 날)은 값을 지어내지 않고 "등장한 날만" 사용한다.
+# ══════════════════════════════════════════════════════
+MOMENTUM_WINDOW = 30   # 모멘텀·현재 상태 판정 최근 창(일)
+MIN_PTS = 5            # 기울기 계산 최소 표본(등장일)
+
+
+def _linreg_slope(xs: list, ys: list) -> float:
+    """최소제곱 기울기(순위/일). xs=일 인덱스, ys=순위."""
+    n = len(xs)
+    sx, sy = sum(xs), sum(ys)
+    denom = n * sum(x * x for x in xs) - sx * sx
+    if denom == 0:
+        return 0.0
+    return (n * sum(x * y for x, y in zip(xs, ys)) - sx * sy) / denom
+
+
+def _stdev(ys: list) -> float:
+    n = len(ys)
+    if n < 2:
+        return 0.0
+    m = sum(ys) / n
+    return math.sqrt(sum((y - m) ** 2 for y in ys) / (n - 1))
+
+
+def _opp_reason(mom: float, hh: dict, grade: str) -> str:
+    trend = (f"상승세 +{mom:.1f}/일" if mom > 0.2
+             else f"하락세 {mom:.1f}/일" if mom < -0.2 else "보합")
+    comp = "경쟁 분산" if hh["hhi"] < 0.25 else "과점"
+    verdict = {"선점": "지금 선점 적기", "차별화": "차별화 필수",
+               "관망": "관망", "회피": "회피"}[grade]
+    return (f"{trend} · {comp}(HHI {hh['hhi']:.2f}·{hh['pubs']}개 출판사, "
+            f"1위 {hh['top_pub']} {round(hh['top_share'] * 100)}%) · "
+            f"{hh['books']}종 → {verdict}")
+
+
+def compute_insights(archive: dict) -> dict:
+    dates = sorted(archive["snapshots"].keys())
+    series = defaultdict(list)   # title -> [(ordinal, rank)]
+    info = {}
+    for d in dates:
+        o = date.fromisoformat(d).toordinal()
+        for it in archive["snapshots"][d]:
+            t = it.get("title")
+            if not t:
+                continue
+            if it.get("rank"):
+                series[t].append((o, it["rank"]))
+            if t not in info:
+                info[t] = it.get("publisher", "") or "(미상)"
+    recent_start = date.fromisoformat(dates[-1]).toordinal() - MOMENTUM_WINDOW + 1
+
+    momentum, steady_pool, scatter = [], [], []
+    book_climb, book_first = {}, {}   # 주제 종합용: 책별 상승세·첫등장
+    for t, recs in series.items():
+        recs.sort()
+        ranks = [r for (_, r) in recs]
+        avg_all = sum(ranks) / len(ranks)
+        sd_all = round(_stdev(ranks), 1)   # 순위 표준편차 = 밴드 폭(작을수록 안정)
+        days = len(recs)
+        book_first[t] = recs[0][0]
+
+        # ② 변동성 산점도 — 어느 정도 등장한 도서만 (x=평균순위, y=std)
+        if days >= 20:
+            scatter.append({"t": t, "rank": round(avg_all, 1), "sd": sd_all, "days": days})
+        # ② 진짜 스테디셀러 — 오래 지속 + 좁은 순위 밴드(중위권도 포함)
+        if days >= 60:
+            steady_pool.append({"t": t, "pub": info[t], "rank": round(avg_all, 1),
+                                "sd": sd_all, "days": days})
+        # ① 모멘텀 — 최근 창의 순위 기울기(상승=순위 감소이므로 부호 반전)
+        win = [(o, r) for (o, r) in recs if o >= recent_start]
+        if len(win) >= MIN_PTS:
+            xs = [o - recent_start for (o, _) in win]
+            ys = [r for (_, r) in win]
+            climb = -_linreg_slope(xs, ys)   # +면 상승(빨라짐), -면 하락
+            book_climb[t] = climb
+            momentum.append({"t": t, "pub": info[t], "climb": round(climb, 2),
+                             "cur": win[-1][1], "pts": len(win)})
+
+    momentum.sort(key=lambda m: -m["climb"])
+    rising = [m for m in momentum if m["climb"] > 0.3 and m["cur"] <= 60][:15]
+    falling = sorted([m for m in momentum if m["climb"] < -0.3],
+                     key=lambda m: m["climb"])[:15]
+    steady_pool.sort(key=lambda s: s["sd"])   # 가장 안정적(밴드 좁음) 순
+    scatter.sort(key=lambda s: s["rank"])
+
+    # ④ 주제별 출판사 집중도 HHI = Σ(등장일 점유율²), 1에 가까울수록 과점
+    topic_pub_days = defaultdict(lambda: defaultdict(int))
+    topic_books = defaultdict(set)
+    for t, recs in series.items():
+        for topic in _classify_topics_multi(t):
+            topic_pub_days[topic][info[t]] += len(recs)
+            topic_books[topic].add(t)
+    hhi = []
+    for topic, pubdays in topic_pub_days.items():
+        if topic == "기타" or len(topic_books[topic]) < 5:
+            continue
+        total = sum(pubdays.values()) or 1
+        h = sum((v / total) ** 2 for v in pubdays.values())
+        top_pub, top_dv = max(pubdays.items(), key=lambda x: x[1])
+        hhi.append({"topic": topic, "hhi": round(h, 3), "top_pub": top_pub,
+                    "top_share": round(top_dv / total, 3),
+                    "books": len(topic_books[topic]), "pubs": len(pubdays)})
+    hhi.sort(key=lambda h: -h["hhi"])
+
+    # ⑤ 주제별 기획 기회 종합 — 3지표(모멘텀·경쟁여유·시장크기)를 한 점수로 융합
+    #    기회 점수 = max(모멘텀,0) × 경쟁여유(1−HHI).  시장 크기는 곱이 아니라 게이트(작은 니치 제외).
+    #    등급: 뜨는가(mom>0.2) × 자리있나(HHI<0.25) → 선점/차별화/관망/회피 4분면.
+    hhi_by_topic = {h["topic"]: h for h in hhi}
+    opp = []
+    for topic in topic_books:
+        hh = hhi_by_topic.get(topic)
+        if not hh:   # 기타·5종 미만은 hhi에서 이미 제외됨
+            continue
+        # 주제 모멘텀 = 신간 스파이크 제외(창 시작 전부터 있던 책)들의 평균 상승세
+        climbs = [book_climb[t] for t in topic_books[topic]
+                  if t in book_climb and book_first[t] < recent_start]
+        mom = round(sum(climbs) / len(climbs), 2) if climbs else 0.0
+        size = sum(topic_pub_days[topic].values())   # 등장일 합 = 시장 규모
+        room = round(1 - hh["hhi"], 3)
+        is_rising, is_open = mom > 0.2, hh["hhi"] < 0.25
+        grade = ("선점" if is_rising and is_open else "차별화" if is_rising and not is_open
+                 else "관망" if not is_rising and is_open else "회피")
+        opp.append({"topic": topic, "mom": mom, "hhi": hh["hhi"], "room": room,
+                    "books": hh["books"], "pubs": hh["pubs"], "size": size,
+                    "top_pub": hh["top_pub"], "top_share": hh["top_share"],
+                    "grade": grade, "score": round(max(mom, 0) * room, 3),
+                    "reason": _opp_reason(mom, hh, grade)})
+    opp.sort(key=lambda o: -o["score"])
+    # 결론 TOP3 — 시장 크기 게이트(8종 이상) 통과 + 상승세(선점/차별화) 중 점수순
+    top = [o for o in opp if o["books"] >= 8 and o["grade"] in ("선점", "차별화")][:3]
+
+    return {"generated": dates[-1], "window_days": MOMENTUM_WINDOW,
+            "momentum": {"rising": rising, "falling": falling},
+            "steady": steady_pool[:15], "scatter": scatter[:400], "hhi": hhi,
+            "opportunity": {"top": top, "topics": opp}}
+
+
+def save_insights(archive: dict):
+    """panel23 시장 역학 차트용 경량 데이터 (window.YES24_INSIGHTS)."""
+    os.makedirs(YES24_DIR, exist_ok=True)
+    ins = compute_insights(archive)
+    with open(os.path.join(YES24_DIR, "insights.js"), "w", encoding="utf-8") as f:
+        f.write("window.YES24_INSIGHTS = ")
+        json.dump(ins, f, ensure_ascii=False)
+        f.write(";")
+    print(f"📊 시장 역학 지표: 급상승 {len(ins['momentum']['rising'])}·"
+          f"스테디 {len(ins['steady'])}·주제 HHI {len(ins['hhi'])}")
 
 
 def save_archive(archive: dict):
@@ -649,15 +801,17 @@ def generate_fallback_insights(archive: dict) -> str:
             f"최근 출간 도서가 전달보다 10% 이상 증가한 신호다."
         )
 
-    # 3. 1위 출판사
+    # 3. 시장 집중도 (출판사를 주인공화하지 않고 구조를 서술)
     if top_pub:
         p1, d1 = top_pub[0]
         p2, d2 = top_pub[1] if len(top_pub) > 1 else ("", 0)
         share1 = d1 / total_days_all * 100
         share2 = d2 / total_days_all * 100 if d2 else 0
+        top3 = sum(d for _, d in top_pub[:3]) / total_days_all * 100
         insights.append(
-            f"**{p1}이 등장일수 기준 점유율 {share1:.1f}%로 1위.** "
-            + (f"2위 {p2}({share2:.1f}%)와 {share1-share2:.1f}%p 격차를 유지하고 있다." if p2 else "")
+            f"**출판사 집중도 — 상위 3사가 등장일 점유율 {top3:.0f}%를 차지.** "
+            + (f"선두 {p1}({share1:.1f}%)·{p2}({share2:.1f}%) 순으로, 나머지는 다수 출판사에 분산돼 있다." if p2
+               else f"{p1}({share1:.1f}%)가 최상위다.")
         )
 
     # 4. 스테디셀러
@@ -738,6 +892,11 @@ def call_claude(stats: str, dates: list[str]) -> str:
 (5~7개 액션)
 
 ---
+분석 관점 (중요 — 반드시 지킬 것):
+- 이 리포트는 **객관적 시장 분석**이다. 분석의 기준·관점은 특정 출판사가 아니라 **주제·지표(순위·트렌드·집중도·기회)**에 둔다.
+- 어느 출판사도 '우리/자사/선두 주인공'으로 다루지 마라. 특정 출판사 시점에서 시장을 서술하지 마라("○○가 선두이나 경쟁사가 추격 중" 같은 특정사 중심 서사 금지).
+- 출판사는 데이터로 필요할 때만 중립적으로 언급하라(예: "이 주제 상위는 A·B·C"). 시장 1위 등 사실은 그대로 쓰되, 한 출판사를 반복해서 기준점으로 삼지 마라.
+
 글쓰기 원칙 (사람 문체 — AI 티 억제):
 - AI 상투어 금지: "혁신적인/획기적인/매우/다양한" 남발, "~할 수 있습니다"의 반복, "주목할 만합니다", "~에 있어서"·"~라고 할 수 있다" 번역투
 - 상투적 연결어·군더더기 대신 직접적이고 구체적인 표현. 매끈하지만 알맹이 없는 총평, 과한 대시(—) 피하기
@@ -823,6 +982,7 @@ def rebuild():
         return
     all_dates = sorted(archive["snapshots"].keys())
     print(f"♻ 리포트 재생성 모드 — 기존 아카이브 {len(all_dates)}일 사용 ({all_dates[0]} ~ {all_dates[-1]})")
+    save_insights(archive)
     build_report(archive)
 
 
@@ -904,6 +1064,7 @@ def main():
     save_archive(archive)
     print(f"💾 아카이브 저장: {archive['total_days']}일, {sum(len(v) for v in archive['snapshots'].values())}건")
     report_gaps(archive)
+    save_insights(archive)
 
     # 4. 통계 + 리포트
     build_report(archive)
