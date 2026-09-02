@@ -39,9 +39,32 @@ function initPanel24() {
   }
 }
 
+var newOnly = false;              // 🆕 이번 주 신규 저자만 보기 토글
+var NEW_DAYS = 7;                  // 최근 N일 내 첫 등장 = 신규
+
+// 저자 목록 갱신 기준일(YES24 마지막 수집일)
+function _authGenerated() {
+  return (window._AUTHORS_DATA && window._AUTHORS_DATA.generated) || '';
+}
+// 신규 판정 기준일(갱신일 − NEW_DAYS). firstSeen이 이보다 크면 신규.
+function _newCutoff() {
+  var g = _authGenerated();
+  if (!g) return '';
+  var d = new Date(g + 'T00:00:00');
+  d.setDate(d.getDate() - NEW_DAYS);
+  // 로컬 날짜 컴포넌트로 조립 — toISOString의 UTC 변환에 따른 하루 밀림 방지
+  var m = ('0' + (d.getMonth() + 1)).slice(-2), dd = ('0' + d.getDate()).slice(-2);
+  return d.getFullYear() + '-' + m + '-' + dd;
+}
+function _isNewAuthor(a) {
+  var cut = _newCutoff();
+  return !!(cut && a.firstSeen && a.firstSeen > cut);
+}
+
 function applyFilterSort() {
   var q = searchQ.toLowerCase();
   filtered = allAuthors.filter(function(a) {
+    if (newOnly && !_isNewAuthor(a)) return false;
     if (pubFilter && a.pubs.indexOf(pubFilter) < 0) return false;
     if (topicFilter && (!a.topics || a.topics.indexOf(topicFilter) < 0)) return false;
     if (q) {
@@ -118,6 +141,12 @@ function render() {
   html += '<div class="p24-header"><h2>저자 목록</h2>';
   html += '<span class="p24-stats">' + allAuthors.length + '명 저자 · ' + (window._AUTHORS_DATA ? window._AUTHORS_DATA.totalBooks : allAuthors.length) + '권 도서';
   if (filtered.length !== allAuthors.length) html += ' · 필터 ' + filtered.length + '명';
+  var _gen = _authGenerated();
+  if (_gen) {
+    var _newCnt = allAuthors.filter(_isNewAuthor).length;
+    html += ' · <span class="p24-updated" title="YES24 베스트셀러 기준 매일 자동 갱신">갱신 ' + escHtml(_gen) + '</span>';
+    if (_newCnt) html += ' · <button class="p24-new-chip' + (newOnly ? ' active' : '') + '" onclick="p24_toggleNew()" title="최근 ' + NEW_DAYS + '일 내 처음 베스트셀러에 든 저자">🆕 이번 주 신규 ' + _newCnt + '명' + (newOnly ? ' ✕' : '') + '</button>';
+  }
   html += '</span></div>';
 
   // 도서 순위 추적 — YES24 일별 아카이브 기반 (v2.7.17)
@@ -170,7 +199,8 @@ function render() {
 
     html += '<tr>';
     html += '<td style="color:var(--muted);font-size:.78rem;">' + (start + i + 1) + '</td>';
-    html += '<td><span class="p24-author-name" style="cursor:pointer;" onclick="p24_showProfile(' + (start+i) + ')">' + escHtml(a.name) + '</span>' + _topicChips(a.topics, 2) + '</td>';
+    var newBadge = _isNewAuthor(a) ? ' <span class="p24-new-badge" title="최근 ' + NEW_DAYS + '일 내 첫 진입 (' + escHtml(a.firstSeen || '') + ')">NEW</span>' : '';
+    html += '<td><span class="p24-author-name" style="cursor:pointer;" onclick="p24_showProfile(' + (start+i) + ')">' + escHtml(a.name) + '</span>' + newBadge + _topicChips(a.topics, 2) + '</td>';
     html += '<td><span class="p24-book-count">' + a.count + '</span></td>';
     html += '<td>' + pubBadges + '</td>';
     html += '<td style="font-weight:600;color:var(--accent);">' + (a.bestRank < 999 ? a.bestRank + '위' : '-') + '</td>';
@@ -301,6 +331,7 @@ function _renderTrackResults() {
   });
 }
 
+window.p24_toggleNew = function() { newOnly = !newOnly; applyFilterSort(); render(); };
 window.p24_onSearch = function(v) { searchQ = v; applyFilterSort(); render(); };
 window.p24_onPubFilter = function(v) { pubFilter = v; applyFilterSort(); render(); };
 window.p24_onTopicFilter = function(v) { topicFilter = v; applyFilterSort(); render(); };

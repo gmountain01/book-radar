@@ -4,6 +4,17 @@
 
 ---
 
+## 2026-09-02 — v2.7.20 (저자 목록 갱신일 + 신규 저자 표시)
+
+### scripts/build_authors.py + panels/panel24
+
+- **[M] 저자 목록 갱신 가시화:** 저자 목록은 이미 CI 매일 작업(`build_authors.py`, archive.json 재집계)으로 자동 갱신되나 그게 화면에 안 보였음. `build_authors.py`가 저자별 `firstSeen`(첫 베스트셀러 등장일)과 최상위 `generated`(갱신 기준일=YES24 마지막 수집일)를 출력하도록 추가.
+- **[M] panel24 UI:** 헤더에 "갱신 YYYY-MM-DD" 표시 + "🆕 이번 주 신규 N명" 칩(클릭 시 최근 7일 내 첫 진입 저자만 필터). 저자명 옆 주황 **NEW** 뱃지(firstSeen이 갱신일−7일 이후). 신규 판정 `_newCutoff`는 로컬 날짜 컴포넌트로 조립(toISOString UTC 변환에 따른 하루 밀림 방지 — KST에서 8일치 잡히던 것 7일로 교정).
+- 한계 명시: 소스가 "YES24 베스트셀러 200위"라 **베스트셀러에 든 신간 저자만** 반영(베스트셀러 밖 신간은 별도 소스 필요).
+- **검증:** authors-data 재생성(신규 53명·갱신 2026-08-31), Playwright로 헤더·NEW 뱃지·신규 필터 토글 렌더 실측. **panel24 js·css·authors-data ?v=252, 헤더 v2.7.20.**
+
+---
+
 ## 2026-09-02 — v2.7.19 (시장 역학 종합 분석 + 사이드바 수정 + 분석 중립화)
 
 ### scripts/generate_report.py + panels/panel23 + shared/styles.css

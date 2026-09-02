@@ -135,7 +135,9 @@ def build_from_archive(archive: dict) -> dict:
     authors = []
     for name, data in author_map.items():
         books = []
+        all_dates = []
         for bk_key, bk in data['books'].items():
+            all_dates.extend(bk['dates'])
             books.append({
                 'title': bk['title'],
                 'pub': bk['pub'],
@@ -156,16 +158,19 @@ def build_from_archive(archive: dict) -> dict:
             'bestRank': best_rank,
             'totalDays': total_days,
             'topics': classify_topics([b['title'] for b in books]),
+            'firstSeen': min(all_dates) if all_dates else '',   # 저자 첫 베스트셀러 등장일(신규 뱃지용)
         })
 
     # 권수 → 총등장일 → 최고순위 순 정렬
     authors.sort(key=lambda a: (-a['count'], -a['totalDays'], a['bestRank']))
 
+    generated = archive.get('last_date', '') or (max(archive.get('snapshots', {}).keys(), default=''))
     return {
         'authors': authors,
         'totalRows': row_count,
         'totalAuthors': len(authors),
         'totalBooks': sum(a['count'] for a in authors),
+        'generated': generated,   # 저자 목록 갱신 기준일
     }
 
 
