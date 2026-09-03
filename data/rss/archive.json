@@ -1,6 +1,499 @@
 {
   "articles": [
     {
+      "id": "245ccaf2faf1",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "원격근무가 아니라 서투른 비동기 소통이 문제다",
+      "link": "https://news.hada.io/topic?id=33178",
+      "date": "2026-09-03",
+      "summary": "원격근무의 장점을 유지하려면 사무실 복귀보다 비동기 소통 방식을 개선해야 하며, 이를 통해 유연성과 생산성을 함께 지킬 수 있음\n7,700명 대상 연구에서는 원격근무자의 웰빙이 높고 이직률은 낮았지만, 팬데믹 당시의 갑작스러운 전환은 소통과 협업을 약화한 것으로 나타남",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "56c6efebeeb9",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "마케팅 인텔리전스 레이어 - 흩어진 경험을 AI의 재사용 가능한 컨텍스트로 만들기",
+      "link": "https://news.hada.io/topic?id=33177",
+      "date": "2026-09-03",
+      "summary": "문서·회의록·Slack 등에 흩어진 15년 이상의 경험을 구조화해, 다양한 AI 도구가 활용할 수 있는 마케팅 인텔리전스 레이어로 구축하는 법\n/raw에 원본 자료를 넣고 /build를 실행하면 Extractor가 문서 요약이 아니라 다른 상황...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7be6133b012d",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Claude로 커머스 에이전트 구축하기",
+      "link": "https://news.hada.io/topic?id=33176",
+      "date": "2026-09-03",
+      "summary": "Anthropic이 소매, 여행, 통신, 티켓 플랫폼에서 쇼핑 에이전트와 판매자 에이전트를 며칠 안에 구축할 수 있는 블루프린트와 Claude Code 플러그인을 공개함\n쇼핑 에이전트는 여러 상품이 포함된 자연어 요청을 이해해 카탈로그 검색과 비교, 개인화 추천, 장바구니 구성, 결제와 주...",
+      "keywords": [
+        "AI Agent",
+        "Claude",
+        "Coding"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "f95937828791",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Claude Fable 5.1 프롬프팅 가이드",
+      "link": "https://news.hada.io/topic?id=33175",
+      "date": "2026-09-03",
+      "summary": "기존 Claude Fable 5 프롬프트는 대부분 작동하지만, 5.1은 effort, 진행 업데이트, 도구 호출, 대화 이력, 출력 형식이 달라 기존 설정을 그대로 교체하기보다 다시 평가해야 함\n기본값 high에서 시작해 low, medium, xhigh, ...",
+      "keywords": [
+        "Claude",
+        "Prompt"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7fadd85c2a72",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Vorssaint - 여러 Mac 유틸리티를 하나로 모은 메뉴 막대 앱",
+      "link": "https://news.hada.io/topic?id=33174",
+      "date": "2026-09-03",
+      "summary": "앱별 음량 조절, 시스템 모니터, 앱 전환기, 창 관리, 클립보드, 화면 캡처, 파일 정리처럼 따로 구매하던 Mac 도구들을 하나의 메뉴 막대 아이콘에 통합\n무료 오픈소스로 제공되며 계정, 구독, 사용 분석이나 추적 기능 없이 Mac에서 로컬로 실행\n필요한...",
+      "keywords": [
+        "Open Source"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "a6936912df97",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "범용 로봇은 어디까지 왔나 [유튜브]",
+      "link": "https://news.hada.io/topic?id=33173",
+      "date": "2026-09-03",
+      "summary": "Physical Intelligence는 하나의 모델로 여러 로봇이 다양한 현실 작업을 수행하는 범용 물리 지능을 개발하며, 신뢰성, 장기 자율성, 새로운 환경에 대한 일반화를 핵심 과제로 삼음\n물리 세계에서는 모델의 판단이 곧바로 행동으로 이어져 오류 허용 범위가 작으므로, 사람이 실패...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "12dd9c9b8c9e",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "스마트폰이 없습니다… 아니 없었으면 좋겠습니다",
+      "link": "https://news.hada.io/topic?id=33172",
+      "date": "2026-09-03",
+      "summary": "기업과 기관이 앱이나 QR 코드 사용을 요구할 때 “스마트폰이 없다” 고 답하며, 지난 1년 동안 제품 사용에 필요하다는 앱 18개의 설치를 거부함\n앱 하나를 요구하는 데는 스마트폰 소유, 배터리, 저장 공간, 통신망, 데이터 요금제, Google이나 Apple 계정, 개인정보 제공 의사까...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "b81ab0a2e8d9",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "오픈소스에서 정상화되는 파시즘, DHH 재단에 약정된 1,200만 달러",
+      "link": "https://news.hada.io/topic?id=33171",
+      "date": "2026-09-03",
+      "summary": "Ruby on Rails 창시자 DHH의 백인 민족주의적 발언 논란에도 기술 업계 경영진 12명이 Omacom Foundation에 각각 100만 달러씩, 총 약 1,200만 달러($12m) 를 약정함\nRailsConf가 DHH를 연사로 선정한 뒤 Ruby Central은 Sidekiq의 연간 25만 달러 후원",
+      "keywords": [
+        "Open Source"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "aff94d1df3ce",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "AI 시대에 가장 안전한 직업은 글쓰기일 수 있다",
+      "link": "https://news.hada.io/topic?id=33170",
+      "date": "2026-09-03",
+      "summary": "LLM은 코드 생성에서 빠르게 발전했지만 산문에서는 여전히 상투적인 리듬과 표현을 반복하며, 좋은 글을 쓰는 사람은 당분간 쉽게 대체되지 않을 것\n글쓰기에는 명확한 명세와 종료 조건, 객관적인 정답이 없어 컴파일러나 테스트를 통해 자동으로 개선하기 어려운 난해한 ...",
+      "keywords": [
+        "LLM"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "a82103a60eb6",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Perplexity, 대량생산된 구매 가이드를 소프트웨어 추천의 근거로 제시",
+      "link": "https://news.hada.io/topic?id=33169",
+      "date": "2026-09-03",
+      "summary": "Perplexity에 380개 소프트웨어 분야를 질의한 결과, 7,534건의 인용 중 59.8%가 Tranco 10만 위 밖의 출처로 연결돼 추천의 근거가 어디에서 오는지 조사함\n공통 운영 정황을 보이는 세 사이트는 21만 개가 넘는 구매 가이드를 대량 게시하고 41개 분야에서 181회 인용됐으며, 두 곳...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "e9e280bc195e",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Commodore 64, 1982년 9월 1일 출시",
+      "link": "https://news.hada.io/topic?id=33168",
+      "date": "2026-09-03",
+      "summary": "64KB 메모리를 탑재하고 600달러 미만에 판매된 최초의 64KB 컴퓨터로, 출시 6개월 만에 50만 대가 팔림\n정확한 출하 시점에는 이견이 있지만, 1982년 8월 유통사에 초도 물량을 보내 9월 1일 판매를 시작했을 가능성이 높으며 1983년 1월에는 Kentron이 양산 중이...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "d7cce9c45906",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Google, 광고 기술 독점 판결에도 사업 분할은 피하다",
+      "link": "https://news.hada.io/topic?id=33167",
+      "date": "2026-09-03",
+      "summary": "미국 연방법원이 Google의 광고 기술 독점을 시정하도록 사업 관행 변경을 명령했지만, 법무부가 요구한 광고 거래소 매각과 사업 분할은 기각함\n법원은 Google이 퍼블리셔용 광고 도구와 퍼블리셔, 광고주를 연결하는 기술을 독점했다고 판단했지...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "31d2969ab130",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Muse Spark 1.3 공개, 긴 에이전트 작업과 코딩 효율 개선",
+      "link": "https://news.hada.io/topic?id=33166",
+      "date": "2026-09-03",
+      "summary": "Meta가 장시간 이어지는 에이전트 워크플로와 코딩 작업에 맞춰 Muse Spark 1.3을 개선하고, Muse Code와 Meta Model API에 공개함\n하나의 긴 대화에서 여러 작업과 이전 결과를 추적하고, 서로 충돌하는 정보를 정리하며 계획의 빈틈을 스스로 보완하도록 훈련됨...",
+      "keywords": [
+        "AI Agent",
+        "Coding",
+        "SDK/API"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "faa53e53b0b9",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Mistral, Enterprise 제외 사용자 입출력을 기본 학습에 활용",
+      "link": "https://news.hada.io/topic?id=33165",
+      "date": "2026-09-03",
+      "summary": "Mistral은 대화·문서 등 사용자의 입출력 데이터를 모델 학습에 포함할 수 있지만, 사용자는 언제든 참여를 거부할 수 있음\n일반 Vibe 사용자는 기본 학습 대상이며, Vibe Enterprise는 기본적으로 제외되고 관리자가 참여 여부를 제어함\n첨부하거나 업로...",
+      "keywords": [
+        "Enterprise AI"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "841c3faa4945",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Show GN: Ratatosk - CNCF 주요 프로젝트 릴리스 노트에서 보안 수정, 브레이킹 체인지와 같은 중요한 정보를 골...",
+      "link": "https://news.hada.io/topic?id=33164",
+      "date": "2026-09-03",
+      "summary": "안녕하세요. 처음 글 써 봅니다.\n쿠버네티스를 실제로 운영해보면 여러 모듈들의 패치 속도가 너무 빠르다고 느낍니다. 게다가 쓸데없이 버전 업그레이드로 잘 돌아가는 시스템에 장애라도 생기면... 그 부담 때문에 업그레이드를 매번 하지도 못하구요. 그래도 어쩔 수 없이 미뤄둔 업그레이",
+      "keywords": [
+        "Cloud/DevOps",
+        "Security"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "b4c2d4cd5648",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Google, 코딩과 에이전트를 강화한 Gemini 3.8 Flash 및 보안 특화 Flash Cyber 공개",
+      "link": "https://news.hada.io/topic?id=33161",
+      "date": "2026-09-03",
+      "summary": "Google이 6주 사이 세 번째 Flash 모델을 공개했으며, Gemini 3.8 Flash는 장기 코딩과 에이전트 작업, Flash Cyber는 취약점 탐지와 자동 패치에 초점을 맞춤\n3.8 Flash는 3.7과 같은 속도 및 출시 가격을 유지하며, 100만 토큰당 입력 0.75달러, 출력 3.75달러로...",
+      "keywords": [
+        "AI Agent",
+        "Gemini",
+        "Security"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "88525bb577da",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "실제 실업률",
+      "link": "https://news.hada.io/topic?id=33159",
+      "date": "2026-09-03",
+      "summary": "LISEP의 실제 실업률(TRU) 은 실직자뿐 아니라 원하는 만큼 일하지 못하거나 생활임금보다 적게 버는 노동자까지 포함해 미국 노동력의 기능적 실업 상태를 측정함\n2026년 7월 TRU는 24.9% 로 공식 실업률 4.1%를 크게 웃돌았고, 전월보다 0.2%포인트 오르며",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7f139f1241bb",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "LWN 구독료 20% 인상 안내",
+      "link": "https://news.hada.io/topic?id=33158",
+      "date": "2026-09-03",
+      "summary": "LWN은 변동성이 크고 감시 중심인 광고 시장에서 독립하기 위해 2002년 말 도입한 독자 구독 모델을 유지해 옴\n2022년 초 이후 소비자물가가 약 20% 오르고 의료보험 등 일부 비용은 더 크게 상승해, 월간·그룹 구독료를 약 20% 인상함\n새 월 요금은 Star...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "c7f5556eba60",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "fmtlib/fmt — A modern formatting library",
+      "link": "https://github.com/fmtlib/fmt",
+      "date": "2026-09-03",
+      "summary": "A modern formatting library C++",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "17a133fee8f3",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "google-research/timesfm — TimesFM (Time Series Foundation Model) is a pretrained time-series foundation model developed by Google Research for time-series forecasting.",
+      "link": "https://github.com/google-research/timesfm",
+      "date": "2026-09-03",
+      "summary": "TimesFM (Time Series Foundation Model) is a pretrained time-series foundation model developed by Google Research for time-series forecasting. Python",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "9660013ea25c",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "debpalash/VoiceStudio — VoiceStudio is the open-source, fully-local ElevenLabs alternative — voice cloning, voice design, video dubbing, dictation, transcription &amp; audiobook creation in 646 languages.",
+      "link": "https://github.com/debpalash/VoiceStudio",
+      "date": "2026-09-03",
+      "summary": "VoiceStudio is the open-source, fully-local ElevenLabs alternative — voice cloning, voice design, video dubbing, dictation, transcription &amp; audiobook creation in 646 languages. Python",
+      "keywords": [
+        "Open Source",
+        "Speech/Audio",
+        "Video AI"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "e60d19bcbc87",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "sngyai/Sequoia-X — A股自动选股系统 — 多种技术形态自动扫描，收盘后自动运行并推送飞书",
+      "link": "https://github.com/sngyai/Sequoia-X",
+      "date": "2026-09-03",
+      "summary": "A股自动选股系统 — 多种技术形态自动扫描，收盘后自动运行并推送飞书 Python",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "9b3165d8618f",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "superlinked/sie — Open-source inference server and production cluster for all the models your agent needs.",
+      "link": "https://github.com/superlinked/sie",
+      "date": "2026-09-03",
+      "summary": "Open-source inference server and production cluster for all the models your agent needs. Python",
+      "keywords": [
+        "AI Agent",
+        "Open Source",
+        "Optimization"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "f798f6349b39",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "pacifio/atlas — Source control for agents. Use multiple coding agents, track their changes and query them in one place",
+      "link": "https://github.com/pacifio/atlas",
+      "date": "2026-09-03",
+      "summary": "Source control for agents. Use multiple coding agents, track their changes and query them in one place Rust",
+      "keywords": [
+        "AI Agent",
+        "Coding"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "5cd08d05ac6c",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "zyronon/TypeWords — Practice English, one strike, one step forward; 练习英语，一次敲击，一点进步；",
+      "link": "https://github.com/zyronon/TypeWords",
+      "date": "2026-09-03",
+      "summary": "Practice English, one strike, one step forward; 练习英语，一次敲击，一点进步； Vue",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "2412889dd3a8",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "vercel-labs/portless — Replace port numbers with stable, named local URLs. For humans and agents.",
+      "link": "https://github.com/vercel-labs/portless",
+      "date": "2026-09-03",
+      "summary": "Replace port numbers with stable, named local URLs. For humans and agents. TypeScript",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "786d914db71c",
+      "source": "github_trending",
+      "source_name": "GitHub Trending",
+      "source_type": "community",
+      "icon": "🐙",
+      "title": "blader/humanizer — Agent skill that removes signs of AI-generated writing from text",
+      "link": "https://github.com/blader/humanizer",
+      "date": "2026-09-03",
+      "summary": "Agent skill that removes signs of AI-generated writing from text Python",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "5df5cd735e6e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "여수, 생성 AI로 행정업무 효율 높인다…5일간 실무교육 진행",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214780",
+      "date": "2026-09-03",
+      "summary": "AI 생성 영상여수시 공직자 144명이 생성 AI를 활용해 보고서와 기획안 초안을 만들고 데이터를 정리·요약하는 실습 교육을 받았다. 반복적인 행정업무의 효율을 높이는 동시에 개인정보 보호와 결과물 검증 등 AI 활용 과정에서 필요한 기본 원칙도 함께 다뤘다.여수는 8월24일부터 28일까지 5일간 정보화교육장에서 전 직원을 대상으로 ‘생성형 AI 기반 공공행정 마스터 과정’을 운영했다고 2일 밝혔다.교육은 생성 AI의 기본 개념과 프롬프트 작성법부터 실제 행정업무에 활용할 수 있는 실습까지 이어졌다.참가자들은 생성 AI를 이용해 보",
+      "keywords": [
+        "Generative AI",
+        "Prompt"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "c12b5bbf4cb6",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "광주서 만나는 필리핀 민주화의 기억…‘시간 속의 습작’ 전시",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214779",
+      "date": "2026-09-03",
+      "summary": "AI 생성 영상광주 5·18민주화운동기록관에서 필리핀의 독재와 국가폭력, 노동과 원주민 투쟁의 기억을 다룬 작품 30여점을 만날 수 있다. 전시는 오는 5일부터 11월1일까지 열리며 입장료는 무료다.5·18민주화운동기록관은 필리핀 국립대학교 딜리만 캠퍼스 미술대학(UPCFA)과 제16회 광주비엔날레 필리핀 파빌리온 ‘시간 속의 습작(Studies in Time)’을 공동 개최한다고 3일 밝혔다.전시에는 작가와 콜렉티브 등 12개 팀이 참여한다. 회화와 대형 설치, 미디어아트, 퍼포먼스 기록 등 다양한 형식으로 필리핀 현대사가 남긴",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "0a716f0f85a6",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "UAE, 청정에너지 발전 비중 35%로 상향…태양광·배터리 확대",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214778",
+      "date": "2026-09-03",
+      "summary": "아랍에미리트(UAE)가 2030~2031년 청정에너지 발전 비중 목표를 35%로 높였다. 태양광 발전비용 하락과 배터리 기술 발전으로 24시간 전력을 공급하는 재생에너지의 경제성이 높아지면서 관련 발전설비를 추가로 확대할 계획이다.수하일 알 마즈루이 UAE 에너지인프라부 장관은 지난 1일(현지시간) 두바이에서 열린 '미들 이스트 에너지 2026'에서 국영통신 WAM과의 인터뷰를 통해 이같이 밝혔다.UAE는 2023년 에너지전략을 개정하면서 2030년 청정에너지 발전 비중을 32%로 높이겠다는 목표를 세운 바 있다. 새 목표에는 원자",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "82da5bbdcb15",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "사우스오스트레일리아주, 옥상태양광으로 한낮 전력수요 사실상 전부 충당",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214777",
+      "date": "2026-09-03",
+      "summary": "호주 남부의 사우스오스트레일리아주에서 옥상태양광 발전량이 한때 전체 전력수요의 99.9%에 달했다. 가정과 사업장에 설치된 태양광이 낮 시간대 전력수요 대부분을 충당하면서 대규모 발전소와 전력망에서 공급해야 하는 전력은 2메가와트(MW)까지 떨어졌다.호주에너지시장운영기관(AEMO)에 따르면 지난달 31일(현지시간) 오후 1시30분 호주 동부표준시(AEST) 기준 사우스오스트레일리아주의 옥상태양광 발전량은 전체 전력수요의 99.9%를 충당했다.이에 전력망을 통해 공급해야 하는 운영수요는 2MW로 내려가 사우스오스트레일리아주 겨울철 최",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "83dd8bb20922",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "'태양광 미니그리드'로 전력망 밖 농촌 밝힌다…서아프리카 4개국 주목",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214776",
+      "date": "2026-09-03",
+      "summary": "부르키나파소와 말리, 나이지리아, 세네갈 등 서아프리카 4개국에서 태양광과 배터리를 결합한 소규모 독립전력망인 '미니그리드'가 농촌지역 전력 보급의 주요 수단이 될 수 있다는 분석이 나왔다. 기본적인 전력수요를 충족하려면 2030년까지 약 2.25기가와트시(GWh)의 배터리 저장용량이 필요한 것으로 추산됐다.국제재생에너지기구(IRENA)는 지난달 31일(현지시간) 공개한 '서아프리카의 지속가능한 미니그리드 전력화를 위한 배터리 저장 잠재력' 보고서에서 4개국의 태양광·배터리 미니그리드 보급 가능성을 분석했다. IRENA는 전력수요와",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "b3f58cda2da6",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "[9월2일] 캐시 가격 75% 내렸는데 비용은 20% 올랐다…페이블 5.1의 ‘토큰 역설’",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214733",
+      "date": "2026-09-03",
+      "summary": "앤트로픽이 1일(현지시간) 출시한 ‘클로드 페이블 5.1’은 아티피셜 애널리시스 종합 지능 지수(AAII)에서 66점을 기록하며 역대 최고 성능에 올랐습니다. 특히 그동안 타사에 비해 비싸다는 평가를 받던 캐시 읽기 가격을 75% 낮춰 눈길을 끌었습니다.그런데 가격 구조를 들여다보면 흥미로운 점이 나타납니다. 캐시 읽기 가격을 75%나 낮췄지만, 실제 작업당 비용은 이전 모델보다 오히려 20% 높아졌습니다.페이블 5.1은 최대 노력(Max) 설정에서 AAII 66점을 기록해 페이블 5(62점), 클로드 오퍼스 5(63점), GPT-",
+      "keywords": [
+        "Claude",
+        "GPT"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "a65e165b5560",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "메타, '뮤즈 스파크 1.3' 출시...오픈AI 제치고 세계 3위 성능",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214774",
+      "date": "2026-09-03",
+      "summary": "메타가 에이전트 워크플로우와 코딩 성능을 대폭 강화한 '뮤즈 스파크 1.3(Muse Spark 1.3)'을 공개했다. 이 모델은 아티피셜 애널리시스(Artificial Analysis)의 종합 지능 지수 평가에서 오픈AI의 대표 모델들을 제치고 세계 3위에 올라서며 주목받고 있다.메타는 2일(현지시간) 플래그십 모델 뮤즈 스파크 1.3을 발표하고, '뮤즈 코드(Muse Code)' 및 메타 모델 API에 배포했다고 밝혔다. 뮤즈 스파크는 지난 4월 8일 첫 선을 보인 이후 5개월 동안 4번째 버전을 내놓을 정도로 빠른 개발 속도를",
+      "keywords": [
+        "AI Agent",
+        "Coding",
+        "SDK/API"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
       "id": "bfbb1b8ecbef",
       "source": "geeknews",
       "source_name": "긱뉴스",
@@ -418,6 +911,1185 @@
         "Security"
       ],
       "first_seen": "2026-09-02"
+    },
+    {
+      "id": "21f8b896917e",
+      "source": "openai",
+      "source_name": "OpenAI",
+      "source_type": "vendor",
+      "icon": "🟢",
+      "title": "ATV Big Air Tour turned 3 days of work into 3 hours with ChatGPT",
+      "link": "https://openai.com/index/atv-big-air-tour",
+      "date": "2026-09-02",
+      "summary": "ATV Big Air Tour uses ChatGPT Work to speed up marketing, merchandising, and more. It even turned merchandise photos into an inventory website in 15 minutes.",
+      "keywords": [
+        "GPT"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "9fef7b06147a",
+      "source": "google_ai",
+      "source_name": "Google AI",
+      "source_type": "vendor",
+      "icon": "🔵",
+      "title": "Proactive cyber defense for governments and enterprises",
+      "link": "https://blog.google/innovation-and-ai/technology/safety-security/fairwind-program/",
+      "date": "2026-09-02",
+      "summary": "The Fairwind Program is a limited access program for governments and trusted partners to use our cyber defense tools.",
+      "keywords": [
+        "Enterprise AI"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "e2a8d2676512",
+      "source": "deepmind",
+      "source_name": "DeepMind",
+      "source_type": "vendor",
+      "icon": "🧠",
+      "title": "Proactive cyber defense for governments and enterprises",
+      "link": "https://deepmind.google/blog/proactive-cyber-defense-for-governments-and-enterprises/",
+      "date": "2026-09-02",
+      "summary": "",
+      "keywords": [
+        "Enterprise AI"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "43c527ed827d",
+      "source": "deepmind",
+      "source_name": "DeepMind",
+      "source_type": "vendor",
+      "icon": "🧠",
+      "title": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber",
+      "link": "https://deepmind.google/blog/introducing-gemini-3-8-flash-and-38-flash-cyber/",
+      "date": "2026-09-02",
+      "summary": "",
+      "keywords": [
+        "Gemini"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "51791120f5ac",
+      "source": "meta_eng",
+      "source_name": "Meta Engineering",
+      "source_type": "vendor",
+      "icon": "🔷",
+      "title": "An Organizational Second Brain: Building an AI That Learns From Experts",
+      "link": "https://engineering.fb.com/2026/09/02/ml-applications/organizational-second-brain-ai-learns-from-experts/",
+      "date": "2026-09-02",
+      "summary": "We’ve built an AI agent that acts as a secondary expert for a given domain, making deep specialist knowledge readily available and preserved for anyone in an organization to access, share, and build upon. This is not a typical domain-specific agent. Its novelty comes from integrating two layers:  A",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "d23fc469a2f7",
+      "source": "huggingface",
+      "source_name": "Hugging Face",
+      "source_type": "vendor",
+      "icon": "🤗",
+      "title": "Real-Time Intelligence with IBM Time Series Models on Confluent",
+      "link": "https://huggingface.co/blog/ibm-research/real-time-intelligence",
+      "date": "2026-09-02",
+      "summary": "",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "ff5c29ca51f5",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "source_type": "vendor",
+      "icon": "🟠",
+      "title": "Accessing OpenAI models on Amazon Bedrock from Australia with global cross-Region inference",
+      "link": "https://aws.amazon.com/blogs/machine-learning/accessing-openai-gpt-5-6-models-on-amazon-bedrock-from-australia-with-global-cross-region-inference/",
+      "date": "2026-09-02",
+      "summary": "Australian teams can now access OpenAI GPT-5.6 Sol, Terra, and Luna models on Amazon Bedrock with global cross-Region inference from the Asia Pacific (Sydney) and Asia Pacific (Melbourne) Regions. This post shows how to invoke the models, use prompt caching, set up Codex with OpenID Connect authenti",
+      "keywords": [
+        "Coding",
+        "GPT",
+        "Optimization"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "3102cfa116ee",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "source_type": "vendor",
+      "icon": "🟠",
+      "title": "Modernizing and scaling support operations with generative AI on AWS",
+      "link": "https://aws.amazon.com/blogs/machine-learning/modernizing-and-scaling-support-operations-with-generative-ai-on-aws/",
+      "date": "2026-09-02",
+      "summary": "Learn how to build a generative AI-based support operations platform on AWS that converts training videos into structured SOPs, applies Retrieval-Augmented Generation to guide ticket resolution, and uses machine learning to predict SLA risk and prioritize work.",
+      "keywords": [
+        "Video AI"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "fcef18b42bc0",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "source_type": "vendor",
+      "icon": "🟠",
+      "title": "How an AWS team detects dashboard content failures at scale using Amazon Bedrock",
+      "link": "https://aws.amazon.com/blogs/machine-learning/how-an-aws-team-detects-dashboard-content-failures-at-scale-using-amazon-bedrock/",
+      "date": "2026-09-02",
+      "summary": "Business intelligence dashboards can fail silently, showing blank, stale, or wrong data even when every infrastructure monitor reports healthy. Learn how an AWS team built an automated, AI-powered content validation solution on Amazon Bedrock that scans hundreds of dashboards and alerts owners, cutt",
+      "keywords": [
+        "Automation"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "bd054a7dc7c1",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "source_type": "vendor",
+      "icon": "🟠",
+      "title": "From code to diagrams: Agentic architecture documentation with Amazon Bedrock AgentCore",
+      "link": "https://aws.amazon.com/blogs/machine-learning/from-code-to-diagrams-agentic-architecture-documentation-with-amazon-bedrock-agentcore/",
+      "date": "2026-09-02",
+      "summary": "Learn how a global interdealer broker built an automated architecture documentation pipeline on Amazon Bedrock AgentCore that analyzes .NET code bases, generates architecture diagrams, and maintains searchable documentation through Amazon Bedrock Knowledge Bases and AWS CodePipeline.",
+      "keywords": [
+        "AI Agent",
+        "Automation",
+        "Coding"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "479ed6a014f2",
+      "source": "aws_ml",
+      "source_name": "AWS ML",
+      "source_type": "vendor",
+      "icon": "🟠",
+      "title": "Trinity: Agentic AI-powered transition planning for students with disabilities",
+      "link": "https://aws.amazon.com/blogs/machine-learning/trinity-agentic-ai-powered-transition-planning-for-students-with-disabilities/",
+      "date": "2026-09-02",
+      "summary": "Learn how University Startups and its AWS partner g/d/n/a scaled Trinity, a conversational AI solution for students with disabilities, into a serverless multi-agent architecture on Amazon Bedrock that produces IDEA-aligned transition plans for school districts across the US.",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "1584fc2851f0",
+      "source": "ms_ai",
+      "source_name": "Microsoft AI",
+      "source_type": "vendor",
+      "icon": "🟦",
+      "title": "How Kier Group’s Louisa Finlay is using Copilot to drive safety and productivity in the construction industry",
+      "link": "https://news.microsoft.com/source/emea/features/how-kier-groups-louisa-finlay-is-using-copilot-to-drive-safety-and-productivity-in-the-construction-industry/",
+      "date": "2026-09-02",
+      "summary": "The post How Kier Group’s Louisa Finlay is using Copilot to drive safety and productivity in the construction industry appeared first on Source.",
+      "keywords": [
+        "AI Coding",
+        "AI Safety"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7bd6a782670d",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "The Builders Stage brings practical strategies for scaling startups to TechCrunch Disrupt 2026",
+      "link": "https://techcrunch.com/2026/09/02/the-builders-stage-brings-practical-strategies-for-scaling-startups-to-techcrunch-disrupt-2026/",
+      "date": "2026-09-02",
+      "summary": "The Builders Stage is returning to TechCrunch Disrupt, bringing together founders, startup operators, and investors for practical conversations on what it takes to build and scale.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "ef03c3a5f159",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Palo Alto Networks paid $500M for Thrive-backed Console, sources say",
+      "link": "https://techcrunch.com/2026/09/02/palo-alto-networks-paid-500m-for-thrive-backed-console-sources-say/",
+      "date": "2026-09-02",
+      "summary": "The acquisition also leaves Sequoia-backed Serval as the de facto startup leader in AI IT service automation, industry watchers believe.",
+      "keywords": [
+        "Automation"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7ae55826cb10",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "TechCrunch Disrupt 2026’s new Real World AI Stage features Nvidia, robots, and extinct animals",
+      "link": "https://techcrunch.com/2026/09/02/techcrunch-disrupt-2026s-new-real-world-ai-stage-features-nvidia-robots-and-extinct-animals/",
+      "date": "2026-09-02",
+      "summary": "On our new Real World AI stage, we’ll be focusing on the intersection between the digital and physical, and all the ways we’ll continue to see a blending of the two.",
+      "keywords": [
+        "Robotics"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "e23dd80df5c1",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Google spared from ad-business breakup, but judge orders changes to how it operates",
+      "link": "https://techcrunch.com/2026/09/02/google-spared-from-ad-business-breakup-but-judge-orders-changes-to-how-it-operates/",
+      "date": "2026-09-02",
+      "summary": "Google has dodged an effort to break up its ad business, but a judge said Wednesday that the company will need to adjust its business to benefit competitors.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "373be5400612",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "OpenAI’s new reasoning technique alarms AI safety experts",
+      "link": "https://techcrunch.com/2026/09/02/openais-new-reasoning-technique-alarms-ai-safety-experts/",
+      "date": "2026-09-02",
+      "summary": "OpenAI’s new Astra model will use “recurrent depth,” a technique that allows the model to operate outside of the sequential thinking that characterizes most reasoning models.",
+      "keywords": [
+        "AI Safety",
+        "Reasoning"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "274217258fd9",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "MapQuest is now the No. 1 US app after bucking Trump’s ‘Lake America’ renaming",
+      "link": "https://techcrunch.com/2026/09/02/mapquest-is-now-the-no-1-u-s-app-after-bucking-trumps-lake-america-renaming/",
+      "date": "2026-09-02",
+      "summary": "The once-dominant mapping app has surged to the top of Apple’s U.S. App Store after refusing to adopt Trump’s “Lake America” name, drawing more than half of its 2026 U.S. downloads in just six days.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "03845e33c436",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "It sure looks like hackers breached a major ID card verification service",
+      "link": "https://techcrunch.com/2026/09/02/it-sure-looks-like-hackers-breached-a-major-id-card-verification-service/",
+      "date": "2026-09-02",
+      "summary": "An identity theft search site claimed to have more than 150 million driver's license photos stolen from an ID verification service. The crime site has now shut down.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "b6856c11b305",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Delivery Hero board backs Uber’s $15B takeover bid",
+      "link": "https://techcrunch.com/2026/09/02/delivery-hero-board-backs-ubers-15b-takeover-bid/",
+      "date": "2026-09-02",
+      "summary": "If approved, the combined company would become one of the largest food delivery platforms in the world.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "b567a13a8234",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Pangram’s Max Spero on why AI detection is harder than ‘Real or Fake’",
+      "link": "https://techcrunch.com/video/pangrams-max-spero-on-why-ai-detection-is-harder-than-real-or-fake/",
+      "date": "2026-09-02",
+      "summary": "The internet has a trust problem, and&#160;it’s&#160;not just because social media feeds are filling up with AI&#160;slop. AI-generated text and images are now making their way into job applications, product reviews,&#160;and even insurance claims, leaving platforms and users alike scrambling to fig",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "a422fb455c89",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "X shifts US creator payouts from Stripe to X Money",
+      "link": "https://techcrunch.com/2026/09/02/x-shifts-us-creator-payouts-from-stripe-to-x-money/",
+      "date": "2026-09-02",
+      "summary": "X says U.S. creator payouts will now be handled through its X Money payments service, a change that appears to replace the previous Stripe-powered payout system.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "241155a602d3",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "US government sides with OpenAI on issue of training LLMs on copyrighted material",
+      "link": "https://techcrunch.com/2026/09/02/u-s-government-sides-with-openai-on-issue-of-training-llms-on-copyrighted-material/",
+      "date": "2026-09-02",
+      "summary": "\"The United States has a strong interest in continuing to develop a robust and competitive artificial intelligence industry that sets the standard for the practice and procedure of AI use\nglobally,\" the brief reads.",
+      "keywords": [
+        "LLM"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "f7df93e17035",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Enhanced geothermal notches another win as Google buys 400 MW from Fervo",
+      "link": "https://techcrunch.com/2026/09/02/enhanced-geothermal-notches-another-win-as-google-buys-400-mw-from-fervo/",
+      "date": "2026-09-02",
+      "summary": "Fervo's deal with Google could expand to 1 gigawatt of geothermal power, enough to supply a very large AI data center in Utah.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "6a8c3da4a5c8",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Wonderful more than doubles its valuation to $5B in under 6 months",
+      "link": "https://techcrunch.com/2026/09/02/wonderful-more-than-doubles-its-valuation-to-5b-in-under-6-months/",
+      "date": "2026-09-02",
+      "summary": "Wonderful said it will use its $550 million Series C funding to develop products faster, expand its FDE teams, and meet demand for its products.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "bf628eb62ed9",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "India’s richest man now wants to turn aging computers into AI-ready PCs",
+      "link": "https://techcrunch.com/2026/09/02/indias-richest-man-now-wants-to-turn-aging-computers-into-ai-ready-pcs/",
+      "date": "2026-09-02",
+      "summary": "Jio is betting it can turn an aging computer into an AI-ready PC for as little as about $11 for two months.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "b655f5964665",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "HiddenLayer nabs $100M as enterprises rush to secure their AI deployments",
+      "link": "https://techcrunch.com/2026/09/02/hiddenlayer-nabs-100m-as-enterprises-rush-to-secure-their-ai-deployments/",
+      "date": "2026-09-02",
+      "summary": "Security companies are scrambling to build products that can monitor not just agents but also the tools and add-ons they use.",
+      "keywords": [
+        "AI Agent",
+        "Deployment",
+        "Enterprise AI",
+        "Security"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "45920ada7bdc",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "PSA: Amazon’s shopping AI can now tell you if that message is a scam",
+      "link": "https://techcrunch.com/2026/09/02/psa-amazons-shopping-ai-can-now-tell-you-if-that-message-is-a-scam/",
+      "date": "2026-09-02",
+      "summary": "Amazon is adding a scam-detection feature to Alexa for Shopping that can verify whether suspicious emails, texts, and other messages actually came from the retailer.",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "6093921c4fb3",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Adobe acquires Indian market intelligence startup Rilo",
+      "link": "https://techcrunch.com/2026/09/02/adobe-acquires-indian-market-intelligence-startup-rilo/",
+      "date": "2026-09-02",
+      "summary": "This is Adobe's second acquisition out of India after Rephrase.ai in 2023",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "660349341cc2",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Norway considers ban on camera-enabled wearable ‘pervert glasses’",
+      "link": "https://techcrunch.com/2026/09/02/norway-considers-ban-on-camera-enabled-wearable-pervert-glasses/",
+      "date": "2026-09-02",
+      "summary": "The Nordic country says wearable camera headsets need to be regulated given their privacy risks.",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "e584f4b64ca5",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Adobe is making its tools available in Slack",
+      "link": "https://techcrunch.com/2026/09/02/adobe-is-making-its-tools-available-in-slack/",
+      "date": "2026-09-02",
+      "summary": "Users will be able to access Express, Premiere, and Acrobat in Slack",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "229b585082ef",
+      "source": "techcrunch",
+      "source_name": "TechCrunch",
+      "source_type": "media",
+      "icon": "🟩",
+      "title": "Uber is laying off 10% of staff, or 3,300 people",
+      "link": "https://techcrunch.com/2026/09/02/uber-is-laying-off-10-of-staff-or-3300-people/",
+      "date": "2026-09-02",
+      "summary": "Uber is laying off about 3,300 people, or about 10% of its global headcount, in a bid to reduce management layers and invest more in its ridesharing, delivery, and robotaxi divisions.",
+      "keywords": [
+        "Robotics",
+        "Vision"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "a6c75ed8d276",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "FBI, 운전면허증 1억 5,300만 건 이상 판매한 서비스 수사",
+      "link": "https://news.hada.io/topic?id=33154",
+      "date": "2026-09-02",
+      "summary": "다크웹 신원 도용 서비스 Nexus가 미국·캐나다 운전면허증 스캔본 1억 5,300만 건 이상을 판매했으며, FBI New Orleans 지부가 이미지 출처로 의심되는 idscan.net 관련 침해를 공식 수사하기 시작함\nNexus는 신분증 1,000만 건 이상, 여행 문서·국제 신분증 300만...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "426bd733d9af",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Movie Scene Map - 영화/TV/게임/애니/만화의 실제 촬영지와 배경을 탐색하는 지도",
+      "link": "https://news.hada.io/topic?id=33153",
+      "date": "2026-09-02",
+      "summary": "166개국의 실제 촬영지 15,565곳과 약 1만3천개 작품을 연결한 무료 대화형 지도, 작품이나 장소를 검색해 어디에서 무엇을 촬영했는지 확인할 수 있음\n영화와 TV 시리즈에는 카메라가 실제로 있었던 촬영 장소를 표시하고, 촬영 개념이 없는 게임, 애니, 만화에는...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7eba0f8bc505",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Ambient CSS v3 – Blender와 CSS의 만남",
+      "link": "https://news.hada.io/topic?id=33152",
+      "date": "2026-09-02",
+      "summary": "하나의 광원만 정의하면 그림자·하이라이트·표면 그라데이션이 함께 반응하는 물리 기반 CSS 조명 시스템임\nBlender 레이 트레이싱을 기준으로 조명 결과를 보정하고 CSS box-shadow로 렌더링함\n광원의 방향과 고도, 반사 횟수, 두께를 조절...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "33c78cd74652",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Zuzai, AI를 쓰지 않았음을 나타내는 새로운 단어",
+      "link": "https://news.hada.io/topic?id=33151",
+      "date": "2026-09-02",
+      "summary": "AI로 만든 결과물이 급증했지만 AI를 쓰지 않았음을 간결하고 긍정적으로 나타낼 말은 부족해, zuzai라는 신조어가 필요해짐\n“Zuzai uses zero artificial intelligence”의 재귀적 두문자어로, 소문자로 쓰고 “zoo’s eye”처럼 발음함\n글과 이미지뿐 ...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "2e574d487a5b",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "클릭하우스(ClickHouse) – 기적의 데이터베이스 기술",
+      "link": "https://news.hada.io/topic?id=33149",
+      "date": "2026-09-02",
+      "summary": "차트메트릭 창업자 조성문이 ClickHouse를 도입하며 겪은 경험과 그 성능의 원리를 정리한 글\n기존 DB의 한계에서 출발\n\nMySQL/PostgreSQL 같은 관계형 DB는 인덱스에 의존하는데, 모든 질문에 맞는 인덱스를 미리 만들 수 없음. 수십억 행 규모의 GROUP BY/ORDER BY 분석 쿼리는 수 분이 걸리...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "cdd8898c5fe0",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "Show GN: 스마트폰 없이도 결제하기 — 교내 매점에 지문인식 결제 시스템을 직접 만들어 배포한 이야기",
+      "link": "https://news.hada.io/topic?id=33148",
+      "date": "2026-09-02",
+      "summary": "스마트폰 반입 금지로 QR 결제가 막혀서 지문인식 결제 단말을 직접 만들었습니다\n\n디미페이는 한국디지털미디어고등학교에서 사용하는 인하우스 QR 간편결제 솔루션입니다.\n2026학년도부터 초·중등교육법 제20조의5에 따라 교내 스마트폰 소지가 제한되면서, 기존 QR 결제를 사용할 수 없게 ...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "8063643a8326",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "CSS 축소는 정말 필요한가? (2023)",
+      "link": "https://news.hada.io/topic?id=33147",
+      "date": "2026-09-02",
+      "summary": "공백과 주석만 제거하는 CSS 축소는 코드를 읽기 어렵게 만들지만, 다운로드와 파싱 성능에서는 체감할 만한 이점이 거의 없음\nBootstrap은 gzip만으로 147KB에서 22KB까지 줄며, 축소 후 gzip을 적용해도 20KB여서 절감량은 2KB에 그침\n무작위 공백을 넣...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "d3c7fbae3828",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "소비자 핀테크의 언번들링 - 금융상품을 묶는 앱에서 모든 계좌를 관리하는 AI 에이전트로",
+      "link": "https://news.hada.io/topic?id=33145",
+      "date": "2026-09-02",
+      "summary": "Robinhood처럼 여러 금융상품을 한 앱에 묶는 번들링 전략은 강력했지만, AI가 상품 탐색과 계좌 이전을 대신하면 이 묶음이 다시 풀리는 언번들링(unbundling) 이 진행될 수 있음\n차세대 AI 네이티브 소비자 핀테크는 모든 금융상품을 직접 판매하기보다 여러 기관...",
+      "keywords": [
+        "AI Agent"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "8b76c5e05f33",
+      "source": "geeknews",
+      "source_name": "긱뉴스",
+      "source_type": "community",
+      "icon": "🟧",
+      "title": "평균만으로는 충분하지 않다, 딥테크 스타트업을 움직이는 운영체제 [유튜브]",
+      "link": "https://news.hada.io/topic?id=33144",
+      "date": "2026-09-02",
+      "summary": "Science CEO이자 Neuralink 공동창업자였던 Max Hodak은 딥테크 스타트업의 성패가 기술만이 아니라 구매, 예산, 채용, 평가를 연결하는 회사의 운영체제에 달려 있다고 봄\nScience는 사내 플랫폼 Helix로 구매, 제조, 품질 데이터를 연결해 실험 원가와 런웨이를 ...",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7fcb66cc842b",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "METR Report on OpenAI / Hugging Face Hacking Incident",
+      "link": "https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/#core-takeaways-about-this-incident",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/#core-takeaways-about-this-incident\nComments URL: https://news.ycombinator.com/item?id=49543841\nPoints: 86\n# Comments: 70",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "0cd3d05ff8a1",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Launch HN: RonanRX (YC S26) – Personalized Peptides and GLP-1s",
+      "link": "https://ronanrx.com/",
+      "date": "2026-09-02",
+      "summary": "Hi HN,I’m Lloyd, one of two founders of RonanRx. We are building a vertically integrated pharmaceutical company with software for prescribing, telehealth, compounding, manufacturing, and delivery. We are starting with GLP-1s and peptides.The path to RonanRx is fairly unconventional. During the pand",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "203ff3b72c83",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Reasons robotics is hard",
+      "link": "https://secondthoughts.ai/p/14-reasons-robotics-is-hard",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://secondthoughts.ai/p/14-reasons-robotics-is-hard\nComments URL: https://news.ycombinator.com/item?id=49543191\nPoints: 36\n# Comments: 6",
+      "keywords": [
+        "Robotics"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "acff256c50db",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Uber shuts operations in Nigeria and Uganda with immediate effect",
+      "link": "https://www.bbc.com/news/articles/c86xpv8l9y9o",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://www.bbc.com/news/articles/c86xpv8l9y9o\nComments URL: https://news.ycombinator.com/item?id=49543007\nPoints: 95\n# Comments: 58",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "0e35c2f2d9a1",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Nango (YC W23) is hiring across eng, product and GTM (SF and remote)",
+      "link": "https://nango.dev/careers",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://nango.dev/careers\nComments URL: https://news.ycombinator.com/item?id=49542486\nPoints: 0\n# Comments: 0",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "cfa62301efd8",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Altair Basic Interpreter Source Code (1975) [pdf]",
+      "link": "https://images.gatesnotes.com/12514eb8-7b51-008e-41a9-512542cf683b/34d561c8-cf5c-4e69-af47-3782ea11482e/Original-Microsoft-Source-Code.pdf",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://images.gatesnotes.com/12514eb8-7b51-008e-41a9-512542cf683b/34d561c8-cf5c-4e69-af47-3782ea11482e/Original-Microsoft-Source-Code.pdf\nComments URL: https://news.ycombinator.com/item?id=49541754\nPoints: 40\n# Comments: 22",
+      "keywords": [
+        "Coding"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "533361b53b7d",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "I wanna live an NPC life",
+      "link": "https://signalundefied.bearblog.dev/i-wanna-live-an-npc-life/",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://signalundefied.bearblog.dev/i-wanna-live-an-npc-life/\nComments URL: https://news.ycombinator.com/item?id=49541519\nPoints: 188\n# Comments: 177",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "788f87ef4fec",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Fable 5.1 World Modeling",
+      "link": "https://github.com/PhiloLabs/fable51-worlds",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://github.com/PhiloLabs/fable51-worlds\nComments URL: https://news.ycombinator.com/item?id=49541458\nPoints: 144\n# Comments: 51",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "9148fb388181",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Muse Spark 1.3",
+      "link": "https://developer.meta.com/ai/models/muse-spark/",
+      "date": "2026-09-02",
+      "summary": "https://research.meta.ai/blog/introducing-muse-spark-1-3\n\nComments URL: https://news.ycombinator.com/item?id=49541256\nPoints: 395\n# Comments: 264",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7e29e168ab36",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Qantas Airbus A380 engine failure in 2010 (2023)",
+      "link": "https://admiralcloudberg.medium.com/a-matter-of-millimeters-the-story-of-qantas-flight-32-bdaa62dc98e7",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://admiralcloudberg.medium.com/a-matter-of-millimeters-the-story-of-qantas-flight-32-bdaa62dc98e7\nComments URL: https://news.ycombinator.com/item?id=49540565\nPoints: 83\n# Comments: 48",
+      "keywords": [
+        "Cloud/DevOps"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "798f155de833",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Embedded Rust RTOS vs. C RTOS",
+      "link": "https://tweedegolf.nl/en/blog/65/async-rust-vs-rtos-showdown/",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://tweedegolf.nl/en/blog/65/async-rust-vs-rtos-showdown/\nComments URL: https://news.ycombinator.com/item?id=49540415\nPoints: 55\n# Comments: 29",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "8830159e65b0",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Gemini 3.8 Flash and 3.8 Flash Cyber",
+      "link": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/",
+      "date": "2026-09-02",
+      "summary": "https://deepmind.google/models/model-cards/gemini-3-8-flash/\n\nComments URL: https://news.ycombinator.com/item?id=49537553\nPoints: 828\n# Comments: 485",
+      "keywords": [
+        "Gemini"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "eb6cf122182b",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Google avoids a breakup of its ad tech business",
+      "link": "https://www.nytimes.com/2026/09/02/technology/google-ad-tech-remedies.html",
+      "date": "2026-09-02",
+      "summary": "https://archive.ph/rlAbYhttps://www.reuters.com/legal/litigation/google-defeats-us-b...\n\nComments URL: https://news.ycombinator.com/item?id=49537131\nPoints: 266\n# Comments: 181",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "a52dfbd22207",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Exit the Cave",
+      "link": "https://turtlespace.blog/p/exit-the-cave",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://turtlespace.blog/p/exit-the-cave\nComments URL: https://news.ycombinator.com/item?id=49536606\nPoints: 211\n# Comments: 77",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "165a30909c35",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "WebLLM: high-performance in-browser LLM inference engine",
+      "link": "https://github.com/mlc-ai/web-llm",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://github.com/mlc-ai/web-llm\nComments URL: https://news.ycombinator.com/item?id=49536411\nPoints: 90\n# Comments: 17",
+      "keywords": [
+        "LLM",
+        "Optimization"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "ff151594d7a9",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Three sites made 215,128 “best software” pages for AI. Perplexity cites them",
+      "link": "https://trellner.com/reports/manufactured-sources-behind-ai-recommendations/",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://trellner.com/reports/manufactured-sources-behind-ai-recommendations/\nComments URL: https://news.ycombinator.com/item?id=49536375\nPoints: 313\n# Comments: 143",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "9c3c7ffbbeba",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Poisson Disk Sampling",
+      "link": "https://stripeacross.com/posts/poisson-disk-sampling/",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://stripeacross.com/posts/poisson-disk-sampling/\nComments URL: https://news.ycombinator.com/item?id=49536177\nPoints: 129\n# Comments: 19",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "34995e0c7351",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Biggest dark matter detector spots a single weird particle",
+      "link": "https://www.science.org/content/article/world-s-biggest-dark-matter-detector-spots-single-weird-particle",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://www.science.org/content/article/world-s-biggest-dark-matter-detector-spots-single-weird-particle\nComments URL: https://news.ycombinator.com/item?id=49536079\nPoints: 249\n# Comments: 84",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "62d51caf6ad6",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Aging brains blend memories together instead of just forgetting them",
+      "link": "https://studyfinds.com/aging-brains-blend-memories-together-instead-of-forgetting-them-study-finds/",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://studyfinds.com/aging-brains-blend-memories-together-instead-of-forgetting-them-study-finds/\nComments URL: https://news.ycombinator.com/item?id=49535548\nPoints: 214\n# Comments: 92",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "79d8e65f648f",
+      "source": "hackernews",
+      "source_name": "Hacker News",
+      "source_type": "community",
+      "icon": "🟠",
+      "title": "Can I opt out of my input or output data being used for training?",
+      "link": "https://help.mistral.ai/en/articles/455207-can-i-opt-out-of-my-input-or-output-data-being-used-for-training",
+      "date": "2026-09-02",
+      "summary": "Article URL: https://help.mistral.ai/en/articles/455207-can-i-opt-out-of-my-input-or-output-data-being-used-for-training\nComments URL: https://news.ycombinator.com/item?id=49535284\nPoints: 371\n# Comments: 164",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "48324f0b6320",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "메타, 실시간 음성 '뮤즈 보이스 트랜스크라이브' 공개...단어 오류율 1위",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214745",
+      "date": "2026-09-02",
+      "summary": "메타가 실시간 음성 인식과 화자 분리, 발화 종료 감지를 하나의 모델에서 처리할 수 있는 새로운 음성 AI 모델을 공개했다. 단어 오류율 3.1%를 기록하며 스트리밍 음성 인식 벤치마크 1위에 오른 것은 물론, 80밀리초(ms) 단위로 속도와 정확도를 스스로 조절하는 기술을 갖췄다.메타는 1일(현지시간) 실시간 음성 인식 모델 ‘뮤즈 보이스 트랜스크라이브(Muse Voice Transcribe)’​를 출시했다.메타 슈퍼인텔리전스 랩스(MSL)가 개발한 첫 실시간 오디오 인식 모델로, 실시간 스트리밍 자동음성인식(ASR)을 기반으로",
+      "keywords": [
+        "Speech/Audio"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "56b3254d2eff",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "\"필요한 장면 스스로 탐색\"...구글, 제미나이 '에이전트 비디오 분석' 도입",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214749",
+      "date": "2026-09-02",
+      "summary": "구글이 AI가 영상 전체를 단순히 훑는 방식에서 벗어나 필요한 장면을 스스로 찾아 정밀하게 분석하는 기술을 선보이며, 영상 이해의 비용과 정확도를 동시에 개선하는 새로운 접근법을 제시했다. 구글은 1일(현지시간) AI가 영상 전체를 동일한 방식으로 처리하는 대신 분석 목적에 따라 필요한 장면을 스스로 찾아보고 집중적으로 분석하는 새로운 ‘에이전트 기반 비디오 이해(Agentic Video Understanding)’ 기능을 공개했다.이를 통해 장시간 영상 분석에서 토큰 사용량과 비용을 크게 줄이면서도 정확도는 오히려 높일 수 있게",
+      "keywords": [
+        "AI Agent",
+        "Gemini",
+        "Video AI"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "2151754f3582",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "런웨이, 실시간 인터페이스 생성 ‘솔라리스’ 공개...\"SW 패러다임 전환\"",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214753",
+      "date": "2026-09-02",
+      "summary": "AI가 애플리케이션을 만드는 것을 넘어 사용자가 원하는 순간 화면 자체를 실시간으로 생성하는 단계로 진화하고 있다. 런웨이는 31일(현지시간) 사용자의 클릭과 드래그, 입력에 반응해 소프트웨어와 웹사이트의 인터페이스를 프레임 단위로 생성하는 새로운 AI 모델 ‘솔라리스(Solaris)’를 공개했다.이를 통해 고정된 코드와 화면을 미리 만들어 제공하는 기존 소프트웨어 개발 방식을 넘어 운영체제(OS)와 애플리케이션의 구조 자체를 바꾸겠다는 구상이다.런웨이가 새롭게 정의한 ‘인터페이스 월드 모델(Interface World Models",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "2f02ac016cfc",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "월드랩스, 옴니 월드모델 ‘아틀라스’ 공개...사진 한 장으로 3D 공간 추론",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214750",
+      "date": "2026-09-02",
+      "summary": "페이페이 리가 이끄는 AI 스타트업 월드랩스(World Labs)가 텍스트와 이미지, 비디오, 3D 데이터를 하나의 공간적 맥락으로 통합해 실제 세계를 생성·재구성·시뮬레이션할 수 있는 차세대 월드 모델을 공개했다. 단순한 영상 생성 모델을 넘어 공간 구조와 시간에 따른 변화를 함께 이해하고, 카메라 위치와 움직임까지 정밀하게 제어할 수 있다는 점에서 공간지능 AI 경쟁을 한 단계 끌어올렸다는 평가다.월드랩스는 1일(현지시간) 차세대 옴니(Omni) 월드 모델 ‘아틀라스(Atlas)’를 선보였다.아틀라스는 처음부터 텍스트·이미지·비",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "73da74844985",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "허깅페이스 소형 로봇 ‘마이크로덕’ 초반 흥행…중국 록칩 NPU 탑재",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214763",
+      "date": "2026-09-02",
+      "summary": "허깅페이스와 폴렌 로보틱스가 공동 개발한 소형 로봇 ‘마이크로덕(Microduck)’이 출시 직후 폭발적인 판매량을 기록하며 개인용 로봇 시장의 새로운 기대주로 떠올랐다. 특히 이 로봇에는 중국 상하이 증시에 상장된 반도체 기업 록칩(Rockchip)의 반도체가 탑재된 것으로 알려졌다.허깅페이스는 1일(현지시간) CNBC와의 인터뷰에서 마이크로덕이 출시 이후 며칠 만에 1만대 이상 판매됐으며, 매출은 500만달러(약 68억원)를 넘어섰다고 밝혔다.토마스 울프 허깅페이스 공동 창립자는 주문량이 폭발적으로 늘면서 부품 수급이나 생산 현",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "52a20f4b7122",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "구글 “LLM 환각 원인은 지식 부족 아닌 '기억 인출' 실패”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214766",
+      "date": "2026-09-02",
+      "summary": "대형언어모델(LLM)이 사실과 다른 답변을 내놓는 ‘환각’의 상당수가 모델에 지식 자체가 없어서가 아니라, 이미 저장된 정보를 제대로 꺼내지 못하는 '기억 인출 실패' 때문이라는 연구 결과가 나왔다. 이에 따라 모델 크기를 무작정 키우거나 외부 검색(RAG)에 의존하던 기존 환각 대응 방식에서 벗어나, AI에게 '스스로 생각할 시간'을 부여하는 방식으로의 패러다임 전환이 필요할 것으로 보인다.구글 리서치와 이스라엘 테크니온 연구진은 최근 발표한 논문 ‘빈 선반인가, 잃어버린 열쇠인가(Empty Shelves or Lost Keys?",
+      "keywords": [
+        "LLM",
+        "RAG"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "b05b77abb4b0",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "퍼플렉시티, 맥용 ‘하이브리드 컴퓨팅’ 출시...클라우드·온디바이스 AI 통합",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214756",
+      "date": "2026-09-02",
+      "summary": "AI가 클라우드 중심에서 벗어나 사용자의 기기에서 직접 데이터를 처리하는 온디바이스 방식으로 빠르게 확장되고 있다. 특히 기업 업무에서는 AI의 높은 성능과 개인정보 보호를 동시에 확보해야 하는 만큼, 클라우드와 로컬 AI를 결합하는 하이브리드 방식이 새로운 대안으로 부상하고 있다. 퍼플렉시티는 1일(현지시간) 클라우드 AI의 강력한 추론 능력과 개인 기기의 보안성을 결합한 새로운 ‘하이브리드 컴퓨팅’을 맥(Mac)용으로 출시했다.고성능 프론티어 AI는 클라우드에서 웹 검색과 복잡한 추론, 계획 수립 등을 담당하고, 외부로 유출돼서",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "66ffc40b375c",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "[9월2일] 순천 AI 영상 뉴스 - 순천, 9월부터 통합돌봄 확대 등",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214773",
+      "date": "2026-09-02",
+      "summary": "주영효 기자 society@aitimes.comPowered by AItimes AI Solution",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "e56d8fa92627",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "액션캠 넘어 AI 인프라로... 고프로, 광학 기업 합병으로 40% 폭등",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214760",
+      "date": "2026-09-02",
+      "summary": "액션카메라의 대명사 고프로(GoPro)가 광학 부품 기업과의 합병을 계기로 AI 데이터센터와 방산 시장으로 사업 영역을 확대한다. 스마트폰 카메라의 성능 향상으로 주력 사업이 장기간 부진을 겪은 가운데, AI 인프라와 국방 분야에서 새로운 성장 동력을 찾겠다는 전략이다. 사업 전환 소식에 고프로 주가는 하루 만에 약 40% 급등하며 시장의 높은 관심을 끌었다.고프로는 1일(현지시간) 민간 광학·포토닉스 기업 스타맨 옵티컬(Starman Optical)과 최종 합병 계약을 체결했다고 밝혔다.스타맨 옵티컬은 전기 신호를 빛의 신호로 변",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "63047b98a962",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "웨이모·죽스, 로보택시 미국 서비스 동시 확대...테슬라 ‘사이버캡’ 출시에 맞불",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214757",
+      "date": "2026-09-02",
+      "summary": "테슬라가 3일(현지시간) 텍사스 오스틴에서 전용 로보택시 ‘사이버캡’의 정식 출시 행사를 열고 시범 운행에 들어가는 가운데, 웨이모와 죽스 등 선발주자들이 대규모 서비스 확장으로 맞불을 놨다.로이터와 테크크런치 등에 따르면, 웨이모와 죽스는 1일 각각 신규 운행 도시를 늘리고 서비스 영역을 확장한다고 발표했다.웨이모는 덴버와 샌디에이고, 플로리다주 탬파 등 3개 도시에서 무인 유료 로보택시 서비스를 새롭게 시작했다. 이로써 상용 서비스 제공 지역은 미국 내 14개 도시로 늘어났다. 4000여대의 자율주행 차량을 기반으로 매주 50만",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "55eb00b3d1b4",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "카카오, ‘리센느’와 일상 속 AI 경험 알린다",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214762",
+      "date": "2026-09-02",
+      "summary": "카카오(대표 정신아)는 아이돌 그룹 리센느(RESCENE)와 캠페인을 진행, 일상 속 AI 활용 경험을 알려 나간다고 2일 밝혔다. 이번 캠페인은 카카오톡의 AI 서비스를 알리는 데 초점을 맞췄다. 일상 속에서 더 쉽고 편하게 새로운 대화 경험을 할 수 있음을 강조하고 관련 영상을 공개한다는 전략이다. ‘카나나’로 통화 내용을 요약하거나, ‘카나나 인 카카오톡’을 통해 약속 일정을 정리하는 등 이용자 편의 기능과 서비스를 소개한다.리센느를 홍보 모델로 선정한 데에 대해서는 밝고 친근한 이미지, 팬들과 꾸준히 소통해 온 모습이 ‘소통",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "950ba7712a16",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "다이슨, 68만원 AI 비전 칫솔 ‘카메라젯’ 출시…고가·사생활 우려 넘을까",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214769",
+      "date": "2026-09-02",
+      "summary": "다이슨이 구강 케어 시장에 본격 진출하며 AI와 내장 카메라를 탑재한 프리미엄 전동 칫솔을 선보였다. 다이슨은 1일(현지시간) 프랑스 파리에서 신제품 ‘다이슨 카메라젯(Dyson CameraJet)’을 공식 공개했다. 가격은 499달러(약 68만원)로 설정됐으며, AI 알고리즘과 비전 기술을 결합해 기존 구강 위생 기기와 차별화를 이뤘다.칫솔 헤드 부분에 탑재된 초소형 매크로 렌즈 카메라가 핵심이다. 초당 28장의 실시간 이미지를 스캔하고, 47만장의 치과 데이터를 학습한 머신러닝 AI 알고리즘 ‘갭 옵티컬 타겟팅(Gap Optic",
+      "keywords": [
+        "ML/DL"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "f31ff376f485",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "[게시판] KT, 통신·AX·정밀측위로 어린이 통학차 안전 협력 등 단신",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214771",
+      "date": "2026-09-02",
+      "summary": "■ KT(대표 박윤영)는 현대자동차, MTR, 키즈노트와 ‘어린이 통학차 전용 안심 승하차 솔루션 개발 MOU’를 체결했다고 밝혔다. KT는 통신·클라우드 플랫폼과 ‘RTX 패스트’ 정밀위치 서비스를 활용해 어린이 통학차의 안전 서비스를 연결하는 역할을 맡는다. RTX 패스트는 위성신호 보정 기술을 활용해 차선 단위 수준의 정밀한 위치 정보를 제공하는 기술이다.■ 한국과학기술원(KAIST, 총장 배충식)는 미국 캘리포니아공과대학교(Caltech)와 공동연구를 넘어 차세대 연구자를 육성하는 협력 모델을 구축한다고 밝혔다. 양 기관 교",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "d0d3f3669017",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "[게시판]  SKT, AI 운용 시스템  'A-One'으로 불꽃축제 통신 품질 확보 등 단신",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214737",
+      "date": "2026-09-02",
+      "summary": "■ SK텔레콤(대표 정재헌)은 오는 5일 여의도·이촌 한강공원 일대에서 열리는 불꽃축제에 대비해 통신 서비스 특별 대책을 운영한다고 밝혔다. 자체 AI 운용 시스템 'A-One'을 적용해 행사 정보를 실시간으로 센싱하고, AI가 통신 품질과 트래픽을 예측해 이동기지국의 수량과 위치까지 자동 도출해 트래픽 변화에 대응할 방침이다.■ 유비파이(대표 임현)는 글로벌 드론 오픈소스 생태계와 산업 표준을 주도하는 드론코드 재단의 최상위 등급인 플래티넘 회원사에 선정됐다고 밝혔다. 유비파이는 이사회 의석을 배정받아 드론 기술의 상호운용성을 높",
+      "keywords": [
+        "Open Source"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "01f2b73f483a",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "KT, ‘안전 AX 솔루션’ 선보인다…“재난 대응부터 보이스피싱 예방까지”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214764",
+      "date": "2026-09-02",
+      "summary": "KT(대표 박윤영)가 4일까지 부산 벡스코(BEXCO) 제1전시장에서 열리는 ‘2026 대한민국 안전산업박람회(K-SAFETY EXPO 2026)’에 참가해 AI 기술과 AI전환(AX) 인프라를 활용한 안전 솔루션을 소개한다고 밝혔다.2026 대한민국 안전산업박람회는 행정안전부와 부산광역시가 주최하고 BEXCO, KOTRA, 동반성장위원회 등이 주관하는 국내 최대 규모의 안전산업 전문 전시회다. KT는 2022년부터 5년 연속 참가로, 올해는 국민의 안전을 위한 재난안전통신망과 새롭고 다양한 안전 AX 솔루션을 선보인다.구체적으로",
+      "keywords": [
+        "AI Safety"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "35fca658e202",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "AI 토큰 가격 사상 최저치…중국산 모델 인기·가격 경쟁 심화 여파",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214761",
+      "date": "2026-09-02",
+      "summary": "대표적인 AI 토큰 가격 지표가 사상 최저치를 경신하면서 주요 AI 기업들의 수익성 악화 우려가 커지고 있다.CNBC에 따르면, 시장조사 전문 실리콘 데이터(Silicon Data)가 집계하는 'LLM 토큰 지출 지수'는 31일(현지시간) 97센트까지 떨어졌다. 이는 지난해 말 지수 발표 이후 최저치이며, 올여름 기록했던 최고점 대비 절반 이하로 하락한 수치다. LLM 토큰 지출 지수는 단순히 제공업체가 게시한 단가표를 집계하는 것이 아니라, 시장에서 실제 소비되는 100만 토큰당 가중 평균 가격을 측정한다. 지수 산출을 위해 멀티",
+      "keywords": [
+        "LLM"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "e181400dab64",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "아이벡스, 컴퓨터 비전 국제 학회 논문 채택…“메모리 용량 문제 해결”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214765",
+      "date": "2026-09-02",
+      "summary": "산업용 피지컬 AI 전문 아이벡스(대표 성민수)는 사내 연구진이 참여한 논문이 컴퓨터 비전 분야의 주요 국제 학회인 ‘BMVC 2026’에 최종 채택됐다고 2일 밝혔다.BMVC는 영국 머신비전학회(BMVA)가 주관하는 국제 학회로, 컴퓨터 비전 및 패턴 인식 분야의 주요 국제 학회 중 하나로 꼽힌다. 비전 및 딥러닝 알고리즘의 학술적 독창성은 물론, 실제 문제 해결 성능과 이론적 엄밀성을 심사한다. 아이벡스의 이번 연구는 비전 기반 이상 탐지(Anomaly Detection)를 실제 제조 공정과 엣지 AI 환경에 적용할 때 발생하는",
+      "keywords": [
+        "ML/DL"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "a52373e75bc8",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "뉴엔AI “주류 산업 특화 AI로 ‘산토리 맥주’ 소비 트렌드 읽는다”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214755",
+      "date": "2026-09-02",
+      "summary": "뉴엔AI(대표 배성환)는 주류 전문 산토리 글로벌 스피리츠 코리아와 ‘주류 특화 AI 분석 플랫폼’ 공급 계약을 체결했다고 2일 밝혔다. 주류 소비 트렌드의 다변화 속에서 소비자 인사이트를 AI로 정밀 분석하는 것이 핵심 목표다. 산토리 글로벌 스피리츠는 위스키부터 RTD(Ready to Drink) 제품군까지 폭넓은 포트폴리오를 보유한 만큼, 이번 플랫폼 도입을 통해 데이터 기반의 시장 트렌드 파악 및 소비자 인사이트 분석 역량을 고도화할 계획이다.이번에 공급되는 플랫폼에는 뉴엔AI의 식음료(F&B) 특화 AI 분석 기술이 적용된",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "503f4d34f00e",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "원익로보틱스, ‘알레그로 핸드 V6 F’ 출시…접촉 데이터 수집 강화",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214758",
+      "date": "2026-09-02",
+      "summary": "로봇 자동화 전문기업 원익로보틱스가 5지·20자유도(DoF) 다관절 로봇핸드 신제품 ‘알레그로 핸드(Allegro Hand) V6 F’를 출시했다고 2일 밝혔다.V6 F는 기존 4지 중심의 알레그로 핸드 제품군을 5지 구조로 확장한 제품이다. 손 전체의 접촉을 감지하는 압력 센싱 기술과 작업 목적에 따라 선택할 수 있는 제어 기능을 결합해 물체 조작과 데이터 수집을 동시에 수행할 수 있도록 설계했다.기존 4지 모델에서 축적한 정밀 조작 기술에 다섯 번째 손가락과 총 20자유도를 더해 물체를 잡는 자세와 접촉 지점을 다양화했다. 전작",
+      "keywords": [
+        "Automation"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "f45ca1fc0f25",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "오픈AI '아스트라' 출시 임박…다중 안전 조치로 '심각' 위험 통제",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214736",
+      "date": "2026-09-02",
+      "summary": "오픈AI의 차세대 AI 모델 ‘아스트라(Astra)’가 알려진 취약점 공격은 물론 이전에 공개되지 않은 제로데이 취약점까지 스스로 찾아내 실제 공격에 활용하는 능력을 보인 것으로 나타났다. 이러한 자율 사이버 공격 성능을 바탕으로 아스트라의 정식 출시 준비에 착수했으며, 실시간 모니터링 및 자동 차단 등 필수 안전 조치를 모두 완료해 '심각(Critical)' 수준의 위험을 통제할 수 있게 됐다고 밝혔다.1일(현지시간) 오픈AI는 자체 평가에서 아스트라가 알려진 취약점 익스플로잇 개발 평가에서 100%를 기록했으며, 이전 모델보다",
+      "keywords": [],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "b5d07e9f17f5",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "파수 AI, 가상화 방식 ‘DRM 소스코드 보안’ 솔루션 출시",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214759",
+      "date": "2026-09-02",
+      "summary": "파수 AI(대표 조규곤)는 개발 환경의 생산성을 유지하면서 강력한 보안을 제공하는 새로운 소스코드 보안 솔루션을 출시했다고 2일 밝혔다. 새로운 솔루션 ‘DRM 소스코드 보안’은 기존의 방식과 달리 가상화 격리 보호 방식을 채택한 것이 특징이다. 다양한 개발 환경에서 큰 불편함 없이 사용하는 동시에, 조직의 핵심 자산인 소스코드를 안전하게 보호한다는 설명이다. 특히, 소스코드는 기업 기술력과 개발 노하우, 핵심 지적재산권(IP)을 담고 있어서 유출시 기업 경쟁력을 크게 훼손할 수 있다. 또 소스코드에 포함된 취약점이나 인증 정보 등",
+      "keywords": [
+        "Security"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7e2a1970c3a0",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "한국딥러닝, 문서 운영 '딥옵스' 출시…“업무 변화 맞춰 AI 직접 수정”",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214751",
+      "date": "2026-09-02",
+      "summary": "시각지능 AI 통합 솔루션 전문 한국딥러닝(대표 김지현)은 고객이 업무 변화에 맞춰 문서 AI를 직접 수정하고 성능까지 검증할 수 있는 운영 플랫폼 '딥 옵스(DEEP Ops)'를 출시했다고 2일 밝혔다.문서를 읽고 처리하는 것은 문서 AI 에이전트인 '딥 에이전트(DEEP Agent)'가 담당하고, 딥 옵스는 도입 이후 변경·검증·관리하는 운영 부분을 담당한다. 구축 단계에서 끝나던 문서 AI를 계속 바뀌는 업무 환경에 맞춰 운영할 수 있도록 하는 것이 핵심이다.특히, 도입 이후로 반복되던 광학문자인식(OCR)의 수정 과정을 줄여",
+      "keywords": [
+        "AI Agent",
+        "ML/DL"
+      ],
+      "first_seen": "2026-09-03"
+    },
+    {
+      "id": "7b132a0b18fd",
+      "source": "aitimes",
+      "source_name": "AI타임스",
+      "source_type": "media",
+      "icon": "🇰🇷",
+      "title": "순천, 9월부터 통합돌봄 확대…집 조명 바꾸고 운동관리 지원",
+      "link": "https://www.aitimes.com/news/articleView.html?idxno=214752",
+      "date": "2026-09-02",
+      "summary": "AI 생성 영상순천시가 9월부터 돌봄이 필요한 어르신과 장애인의 집 안 낙상 위험을 줄이고 신체 기능을 유지하기 위한 생활밀착형 통합돌봄 서비스를 시작한다. LED 조명과 무선 리모컨을 설치하고, 생활체육지도사가 가정을 찾아 보행·근력 운동을 지도하는 방식이다.순천은 지난 31일 드림건축, 순천시체조협회와 업무협약을 체결하고 ‘스마트 안심조명 설치사업’과 ‘찾아가는 운동관리 사업’을 추진한다고 밝혔다.스마트 안심조명 사업은 돌봄이 필요한 가정의 기존 조명을 LED로 교체하고 무선 리모컨을 설치하는 내용이다. 거동이 불편한 대상자가",
+      "keywords": [],
+      "first_seen": "2026-09-03"
     },
     {
       "id": "ddd60eb51f47",
@@ -94245,11 +95917,6 @@
   ],
   "daily_stats": [
     {
-      "date": "2026-06-09",
-      "added": 62,
-      "total": 834
-    },
-    {
       "date": "2026-06-10",
       "added": 69,
       "total": 903
@@ -94693,6 +96360,11 @@
       "date": "2026-09-02",
       "added": 123,
       "total": 6602
+    },
+    {
+      "date": "2026-09-03",
+      "added": 118,
+      "total": 6720
     }
   ],
   "sources": {},
@@ -94840,64 +96512,84 @@
     {
       "week": "2026-W36",
       "keywords": {
-        "AI Agent": 61,
-        "Coding": 30,
-        "Claude": 26,
-        "GPT": 25,
-        "Security": 24,
-        "Automation": 22,
-        "LLM": 21,
-        "Open Source": 14,
-        "SDK/API": 11,
-        "Video AI": 10,
-        "Cloud/DevOps": 8,
-        "MCP": 7,
-        "Gemini": 6,
-        "Robotics": 6,
-        "AI Coding": 5
+        "AI Agent": 85,
+        "Coding": 40,
+        "Security": 32,
+        "Claude": 31,
+        "LLM": 30,
+        "GPT": 27,
+        "Open Source": 24,
+        "Automation": 24,
+        "SDK/API": 13,
+        "Video AI": 13,
+        "Cloud/DevOps": 12,
+        "Gemini": 12,
+        "Robotics": 10,
+        "Enterprise AI": 8,
+        "Optimization": 8
       }
     }
   ],
   "source_stats": {
-    "techcrunch": {
-      "total": 1415,
-      "recent_7d": 126,
-      "recent_30d": 40
-    },
     "geeknews": {
-      "total": 765,
-      "recent_7d": 226,
-      "recent_30d": 55
+      "total": 792,
+      "recent_7d": 224,
+      "recent_30d": 82
     },
     "hackernews": {
-      "total": 556,
+      "total": 576,
       "recent_7d": 164,
-      "recent_30d": 38
+      "recent_30d": 58
     },
     "github_trending": {
-      "total": 184,
-      "recent_7d": 47,
-      "recent_30d": 9
+      "total": 193,
+      "recent_7d": 51,
+      "recent_30d": 18
     },
     "aitimes": {
-      "total": 2460,
+      "total": 2490,
       "recent_7d": 218,
-      "recent_30d": 53
+      "recent_30d": 83
+    },
+    "techcrunch": {
+      "total": 1435,
+      "recent_7d": 126,
+      "recent_30d": 60
     },
     "anthropic": {
       "total": 52,
-      "recent_7d": 5,
+      "recent_7d": 4,
       "recent_30d": 2
     },
     "openai": {
-      "total": 193,
-      "recent_7d": 20,
-      "recent_30d": 7
+      "total": 194,
+      "recent_7d": 17,
+      "recent_30d": 8
+    },
+    "google_ai": {
+      "total": 55,
+      "recent_7d": 4,
+      "recent_30d": 3
+    },
+    "deepmind": {
+      "total": 60,
+      "recent_7d": 6,
+      "recent_30d": 3
+    },
+    "huggingface": {
+      "total": 127,
+      "recent_7d": 5,
+      "recent_30d": 3
     },
     "aws_ml": {
-      "total": 299,
-      "recent_7d": 28,
-      "recent_30d": 12
+      "total": 304,
+      "recent_7d": 31,
+      "recent_30d": 17
+    },
+    "nvidia_ai": {
+      "total": 120,
+      "recent_7d": 3,
+      "recent_30d": 1
     },
     "kakao": {
       "total": 14,
@@ -94909,35 +96601,15 @@
       "recent_7d": 1,
       "recent_30d": 0
     },
-    "huggingface": {
-      "total": 126,
-      "recent_7d": 8,
-      "recent_30d": 2
-    },
     "toss": {
       "total": 50,
       "recent_7d": 2,
       "recent_30d": 0
     },
-    "google_ai": {
-      "total": 54,
-      "recent_7d": 4,
-      "recent_30d": 2
-    },
-    "deepmind": {
-      "total": 58,
-      "recent_7d": 4,
-      "recent_30d": 1
-    },
-    "nvidia_ai": {
-      "total": 120,
-      "recent_7d": 4,
-      "recent_30d": 1
-    },
     "meta_eng": {
-      "total": 23,
-      "recent_7d": 0,
-      "recent_30d": 0
+      "total": 24,
+      "recent_7d": 1,
+      "recent_30d": 1
     },
     "daangn": {
       "total": 13,
@@ -94945,9 +96617,9 @@
       "recent_30d": 0
     },
     "ms_ai": {
-      "total": 21,
-      "recent_7d": 0,
-      "recent_30d": 0
+      "total": 22,
+      "recent_7d": 1,
+      "recent_30d": 1
     },
     "woowahan": {
       "total": 17,
@@ -94960,6 +96632,6 @@
       "recent_30d": 0
     }
   },
-  "last_updated": "2026-09-02",
-  "total_articles": 6602
+  "last_updated": "2026-09-03",
+  "total_articles": 6720
 }
