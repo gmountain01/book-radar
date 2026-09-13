@@ -50,3 +50,39 @@ const PanelRegistry = {
     }
   }
 };
+
+
+// Share one in-flight request across the author list and planning board.
+window.loadYes24Archive = (function() {
+  var callbacks = null;
+  return function(cb) {
+    if (window._YES24_ARCHIVE && window._YES24_ARCHIVE.snapshots) {
+      if (cb) cb(null);
+      return;
+    }
+    if (callbacks) { if (cb) callbacks.push(cb); return; }
+    callbacks = cb ? [cb] : [];
+    var script = document.createElement('script');
+    var done = false;
+    var timer = setTimeout(function() { finish(new Error('YES24 데이터 로딩 시간 초과')); }, 30000);
+    function finish(error) {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      script.onload = script.onerror = null;
+      if (error) script.remove();
+      var pending = callbacks;
+      callbacks = null;
+      pending.forEach(function(fn) {
+        try { fn(error || null); } catch (e) { console.error('[YES24] callback failed', e); }
+      });
+    }
+    script.src = 'data/yes24/archive.js?d=' + new Date().toISOString().slice(0, 10);
+    script.setAttribute('data-yes24-archive', '1');
+    script.onload = function() {
+      finish(window._YES24_ARCHIVE && window._YES24_ARCHIVE.snapshots ? null : new Error('YES24 데이터 없음'));
+    };
+    script.onerror = function() { finish(new Error('YES24 데이터 로드 실패')); };
+    document.head.appendChild(script);
+  };
+})();

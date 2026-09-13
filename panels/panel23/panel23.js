@@ -12,6 +12,10 @@ var _tab = 'feed';
 var _feedData = null;   // window._RSS_FEEDS
 var _archive = null;    // window._RSS_ARCHIVE
 var _filteredItems = [];
+var _feedIndex = [];
+var _feedPage = 0;
+var FEED_PAGE_SIZE = 50;
+var _feedSearchTimer = null;
 var _activeSource = 'all';
 var _activeType = 'all';   // source_type 필터 칩 (all/community/media/corp/vendor)
 var _searchQuery = '';
@@ -260,6 +264,16 @@ function _buildMergedFeeds() {
   });
   /* 기사 많은 소스 순 */
   _mergedFeeds.sort(function(a,b) { return b.items.length - a.items.length; });
+  _feedIndex = [];
+  _mergedFeeds.forEach(function(feed) {
+    feed.items.forEach(function(item) {
+      _feedIndex.push({sourceId:feed.id, source:feed.name, icon:feed.icon, tags:feed.tags,
+        source_type:feed.source_type || '', title:item.title, link:item.link,
+        date:item.date, summary:item.summary, dateKey:_isoDate(item.date),
+        searchText:(item.title + ' ' + (item.summary || '')).toLowerCase()});
+    });
+  });
+  _feedIndex.sort(function(a,b) { return b.dateKey.localeCompare(a.dateKey); });
 }
 
 function renderSources() {
@@ -290,7 +304,14 @@ window.p23_filterType = function(type, btn) {
   filterAndRender();
 };
 
-$search.addEventListener('input', function() { _searchQuery = this.value.trim().toLowerCase(); filterAndRender(); });
+function scheduleFeedSearch(event) {
+  _searchQuery = $search.value.trim().toLowerCase();
+  clearTimeout(_feedSearchTimer);
+  if (event && event.isComposing) return;
+  _feedSearchTimer = setTimeout(filterAndRender, 150);
+}
+$search.addEventListener('input', scheduleFeedSearch);
+$search.addEventListener('compositionend', scheduleFeedSearch);
 
 window.p23_setDateRange = function(range, btn) {
   _dateRange = range;
@@ -320,22 +341,25 @@ function _getDateCutoff() {
 }
 
 function filterAndRender() {
-  if (!_mergedFeeds.length) return;
+  clearTimeout(_feedSearchTimer);
+  if (!_feedIndex.length) return; // 미로드 시 "RSS 데이터 없음" 안내 유지 (검색 시 덮어쓰기 방지)
   var cutoff = _getDateCutoff();
-  _filteredItems = [];
-  _mergedFeeds.forEach(function(feed) {
-    if (_activeSource !== 'all' && feed.id !== _activeSource) return;
-    if (_activeType !== 'all' && (feed.source_type || '') !== _activeType) return;
-    feed.items.forEach(function(item) {
-      var itemDs = _isoDate(item.date);
-      if (cutoff && (!itemDs || itemDs < cutoff)) return;
-      if (_searchQuery && (item.title + ' ' + (item.summary||'')).toLowerCase().indexOf(_searchQuery) === -1) return;
-      _filteredItems.push({ source: feed.name, icon: feed.icon, tags: feed.tags, source_type: feed.source_type || '', title: item.title, link: item.link, date: item.date, summary: item.summary });
-    });
+  _filteredItems = _feedIndex.filter(function(item) {
+    return (_activeSource === 'all' || item.sourceId === _activeSource) &&
+      (_activeType === 'all' || item.source_type === _activeType) &&
+      (!cutoff || (item.dateKey && item.dateKey >= cutoff)) &&
+      (!_searchQuery || item.searchText.indexOf(_searchQuery) !== -1);
   });
-  _filteredItems.sort(function(a,b) { return (b.date||'').localeCompare(a.date||''); });
+  _feedPage = 0;
   renderFeedList();
+  $feedList.scrollTop = 0;
 }
+
+window.p23_feedPage = function(page) {
+  _feedPage = Math.max(0, Math.min(Math.ceil(_filteredItems.length / FEED_PAGE_SIZE) - 1, page));
+  renderFeedList();
+  $feedList.scrollTop = 0;
+};
 
 // source_type → 카드 유형 뱃지 HTML (media/미상은 노이즈 방지 위해 뱃지 없음)
 function _typeBadge(st) {
@@ -349,8 +373,10 @@ function renderFeedList() {
   $resultCnt.textContent = _filteredItems.length + '건';
   if (!_filteredItems.length) { $feedList.innerHTML = '<div class="p23-empty"><div class="p23-empty-text">검색 결과 없음</div></div>'; return; }
   var h = '', prevDate = '';
-  _filteredItems.forEach(function(item, idx) {
-    var ds = _isoDate(item.date);
+  var start = _feedPage * FEED_PAGE_SIZE;
+  _filteredItems.slice(start, start + FEED_PAGE_SIZE).forEach(function(item, offset) {
+    var idx = start + offset;
+    var ds = item.dateKey;
     if (ds !== prevDate) {
       prevDate = ds;
       var label = ds ? new Date(ds + 'T00:00:00').toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '날짜 미상';
@@ -366,6 +392,12 @@ function renderFeedList() {
       '<a class="p23-card-title" href="' + esc(item.link) + '" target="_blank">' + esc(item.title) + '</a>' +
       '<p class="p23-card-summary">' + esc(item.summary) + '</p></div>';
   });
+  if (_filteredItems.length > FEED_PAGE_SIZE) {
+    h += '<nav class="p23-feed-pages" aria-label="기사 페이지">' +
+      '<button type="button" onclick="p23_feedPage(' + (_feedPage - 1) + ')"' + (_feedPage === 0 ? ' disabled' : '') + '>이전</button>' +
+      '<span>' + (start + 1) + '–' + Math.min(start + FEED_PAGE_SIZE, _filteredItems.length) + ' / ' + _filteredItems.length + '건</span>' +
+      '<button type="button" onclick="p23_feedPage(' + (_feedPage + 1) + ')"' + (start + FEED_PAGE_SIZE >= _filteredItems.length ? ' disabled' : '') + '>다음</button></nav>';
+  }
   $feedList.innerHTML = h;
 }
 

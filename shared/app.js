@@ -781,6 +781,14 @@ var _activePanel = 0;
 function switchTab(i,btn){
   if(!btn || !btn.classList) return;
   if(btn.classList.contains('locked'))return;
+  // Dismiss hover expansion before activating the selected panel.
+  var sidebar = document.getElementById('mainSidebar');
+  if (window.innerWidth <= 768) {
+    if (sidebar && sidebar.classList.contains('mobile-open')) toggleMobileSidebar();
+  } else if (sidebar && sidebar.classList.contains('collapsed')) {
+    sidebar.classList.add('nav-dismissed');
+    sidebar.onpointerleave = function() { sidebar.classList.remove('nav-dismissed'); };
+  }
   var prevPanel = _activePanel;
   document.querySelectorAll('#mainSidebar .nav-item').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -792,15 +800,11 @@ function switchTab(i,btn){
   if(typeof PanelRegistry !== 'undefined' && prevPanel !== i) PanelRegistry.onDeactivate(prevPanel);
   // 패널 활성화 훅 실행 (각 패널 JS에서 PanelRegistry.register(i, {onActivate}) 등록 시 호출됨)
   if(typeof PanelRegistry !== 'undefined') PanelRegistry.onActivate(i);
-  // 모바일: 탭 전환 후 사이드바 자동 닫기
-  if(window.innerWidth <= 768){
-    var sb = document.querySelector('.sidebar');
-    if(sb && sb.classList.contains('mobile-open')) toggleMobileSidebar();
-  }
 }
 
 function toggleSidebar(){
   const sb = document.getElementById('mainSidebar');
+  sb.classList.remove('nav-dismissed');
   const collapsed = sb.classList.toggle('collapsed');
   const w = collapsed ? '52px' : '220px';
   document.documentElement.style.setProperty('--sb-w', w);

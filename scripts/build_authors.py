@@ -17,6 +17,7 @@ if sys.stdout and sys.stdout.encoding and sys.stdout.encoding.lower().startswith
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ARCHIVE_PATH = os.path.join(SCRIPT_DIR, "..", "data", "yes24", "archive.json")
+ALADIN_PATH = os.path.join(SCRIPT_DIR, "..", "data", "aladin", "new_books.json")
 OUT_DIR = os.path.join(SCRIPT_DIR, "..", "data", "authors")
 PANEL_JS_PATH = os.path.join(SCRIPT_DIR, "..", "panels", "panel24", "authors-data.js")
 
@@ -86,8 +87,9 @@ def parse_author_field(raw: str) -> list[dict]:
     return results
 
 
-def build_from_archive(archive: dict) -> dict:
-    """archive.json의 snapshots를 읽어 저자별 데이터를 집계한다."""
+def build_from_archive(archive: dict, aladin_books: list = None) -> dict:
+    """archive.json의 snapshots(베스트셀러)를 읽어 저자별 데이터를 집계한다.
+    aladin_books(신간)가 있으면 베스트셀러 밖 신간 저자도 병합한다."""
     author_map = {}  # name → {books: {key→{title,pub,bestRank,dates,appearances}}}
     row_count = 0
 
@@ -121,7 +123,8 @@ def build_from_archive(archive: dict) -> dict:
                         'pub': pub,
                         'bestRank': rank if rank > 0 else 999,
                         'dates': [],
-                        'appearances': 0
+                        'appearances': 0,
+                        'new': False,
                     }
 
                 bk = author_map[name]['books'][book_key]
@@ -131,24 +134,55 @@ def build_from_archive(archive: dict) -> dict:
                 if date_str and date_str not in bk['dates']:
                     bk['dates'].append(date_str)
 
+    # 알라딘 신간 병합 — 베스트셀러 200위 밖 신간 저자까지 포함
+    for b in (aladin_books or []):
+        title = (b.get('title') or '').strip()
+        pub = (b.get('publisher') or '').strip()
+        for name in b.get('authors', []):
+            name = (name or '').strip()
+            if not name or len(name) < 2:
+                continue
+            author_map.setdefault(name, {'books': {}})
+            # 이미 베스트셀러로 잡힌 책이면 그대로 두고(중복 방지), 없으면 신간으로 추가
+            if title and title not in author_map[name]['books']:
+                author_map[name]['books'][title] = {
+                    'title': title, 'pub': pub, 'bestRank': 999,
+                    'dates': [], 'appearances': 0,
+                    'new': True, 'pubDate': b.get('pubDate', ''),
+                    'firstCol': b.get('firstCollected', ''),
+                }
+
     # 결과 정리
     authors = []
     for name, data in author_map.items():
         books = []
-        all_dates = []
+        first_dates = []   # 첫 등장 후보(베스트셀러 날짜 + 신간 수집일)
+        new_count = 0
         for bk_key, bk in data['books'].items():
-            all_dates.extend(bk['dates'])
+            is_new = bk.get('new', False)
+            if is_new:
+                new_count += 1
+                if bk.get('firstCol'):
+                    first_dates.append(bk['firstCol'])
+            else:
+                first_dates.extend(bk['dates'])
             books.append({
                 'title': bk['title'],
                 'pub': bk['pub'],
                 'bestRank': bk['bestRank'],
                 'days': bk['appearances'],
-                'lastDate': sorted(bk['dates'])[-1] if bk['dates'] else ''
+                'lastDate': sorted(bk['dates'])[-1] if bk['dates'] else '',
+                'new': is_new,
+                'pubDate': bk.get('pubDate', ''),
             })
-        books.sort(key=lambda b: b['bestRank'])
+        # 베스트셀러 책 먼저(순위순), 신간은 뒤로
+        books.sort(key=lambda b: (b['new'], b['bestRank']))
         pubs = sorted(set(b['pub'] for b in books if b['pub']))
-        best_rank = min(b['bestRank'] for b in books) if books else 999
-        total_days = sum(b['days'] for b in books)
+        bs_books = [b for b in books if not b['new']]
+        best_rank = min((b['bestRank'] for b in bs_books), default=999)
+        total_days = sum(b['days'] for b in bs_books)
+        source = ('both' if bs_books and new_count
+                  else 'bestseller' if bs_books else 'new')
 
         authors.append({
             'name': name,
@@ -157,12 +191,15 @@ def build_from_archive(archive: dict) -> dict:
             'count': len(books),
             'bestRank': best_rank,
             'totalDays': total_days,
+            'newCount': new_count,
+            'source': source,   # bestseller / both / new(신간만)
             'topics': classify_topics([b['title'] for b in books]),
-            'firstSeen': min(all_dates) if all_dates else '',   # 저자 첫 베스트셀러 등장일(신규 뱃지용)
+            'firstSeen': min(first_dates) if first_dates else '',
         })
 
-    # 권수 → 총등장일 → 최고순위 순 정렬
-    authors.sort(key=lambda a: (-a['count'], -a['totalDays'], a['bestRank']))
+    # 베스트셀러 저자 먼저(신간 전용은 뒤로) → 권수 → 총등장일 → 최고순위 순
+    _src = {'both': 0, 'bestseller': 0, 'new': 1}
+    authors.sort(key=lambda a: (_src.get(a['source'], 1), -a['count'], -a['totalDays'], a['bestRank']))
 
     generated = archive.get('last_date', '') or (max(archive.get('snapshots', {}).keys(), default=''))
     return {
@@ -295,6 +332,18 @@ def save_result(result: dict):
     print(f"   → {PANEL_JS_PATH}")
 
 
+def load_aladin() -> list:
+    """data/aladin/new_books.json → 신간 도서 리스트(있으면). 없으면 빈 리스트."""
+    if not os.path.exists(ALADIN_PATH):
+        return []
+    try:
+        with open(ALADIN_PATH, 'r', encoding='utf-8') as f:
+            return list(json.load(f).get('books', {}).values())
+    except Exception as e:
+        print(f"  ⚠ 알라딘 신간 읽기 실패: {e}", file=sys.stderr)
+        return []
+
+
 def main():
     # 1순위: data/yes24/archive.json (GitHub Actions / 자동 수집 데이터)
     if os.path.exists(ARCHIVE_PATH):
@@ -303,7 +352,10 @@ def main():
             archive = json.load(f)
         if archive.get("snapshots"):
             print(f"   {archive.get('total_days', '?')}일 데이터 ({archive.get('first_date', '?')} ~ {archive.get('last_date', '?')})")
-            result = build_from_archive(archive)
+            aladin = load_aladin()
+            if aladin:
+                print(f"   + 알라딘 신간 {len(aladin)}권 병합")
+            result = build_from_archive(archive, aladin)
             save_result(result)
             return
 

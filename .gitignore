@@ -4,6 +4,9 @@ shared/api-keys.js
 # 작업 공간 (분석 결과, 임시 파일)
 _workspace/
 
+# 디자인 백업
+_backup_design_*/
+
 # Claude Code 설정
 .claude/
 

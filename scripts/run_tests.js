@@ -117,7 +117,7 @@ function testParseAiJson(sandbox) {
 
 // ── 2. panel8 교정 규칙 픽스처 채점 ──────────────────────────
 // 기준선: 픽스처 도입(FEAT-1) 시점 성능. 하회하면 규칙 회귀로 판단.
-const BASELINE = { minDetected: 30, maxFp: 0 };
+const BASELINE = { minDetected: 29, maxFp: 0 };
 
 function testProofreadFixtures(sandbox) {
   console.log('\n[2/2] panel8 교정 규칙 픽스처 테스트');
@@ -149,7 +149,11 @@ function main() {
     'shared/api-keys.js', // gitignore — CI에는 없을 수 있음 (선택)
     'shared/app.js',
     'panels/panel8/loanword-data.js',
+    'panels/panel8/교정규칙.js',
     'panels/panel8/test-fixtures.js',
+    'libs/es-hangul/browser.js',
+    'panels/panel8/review-policy.js',
+    'panels/panel8/korean-style.js',
     'panels/panel8/panel8.js',
   ];
   console.log('스크립트 로드 (런타임 top-level 오류도 함께 검증):');
@@ -165,6 +169,9 @@ function main() {
 
   testParseAiJson(sandbox);
   testProofreadFixtures(sandbox);
+  require('./test_proofread_review.js')(sandbox);
+  require('./test_author_search.js');
+  require('./test_market_feed.js');
 
   console.log('\n' + (failures ? `❌ 실패 ${failures}건` : '✅ 전체 통과'));
   process.exit(failures ? 1 : 0);

@@ -206,6 +206,7 @@
 .panel8-scope .issue-card.sev-high{border-left-color:#e74c3c}
 .panel8-scope .issue-card.sev-medium{border-left-color:#e67e22}
 .panel8-scope .issue-card.sev-low{border-left-color:#27ae60}
+.panel8-scope .issue-card{content-visibility:auto;contain-intrinsic-size:auto 340px}
 .panel8-scope .issue-card.resolved{opacity:.45;filter:grayscale(.4)}
 
 .panel8-scope .card-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
@@ -295,3 +296,14 @@
 .panel8-scope .btn-cache-clear:hover{background:#fdecea;border-color:#e74c3c;color:#c0392b}
 
 .panel8-scope footer{text-align:center;color:#bbb;font-size:.75em;padding:30px 0 20px}
+
+.p8-review-info{padding:8px 14px;font-size:.8rem;color:var(--muted);line-height:1.5;}
+.p8-review-tools,.p8-allow-actions{display:flex;flex-wrap:wrap;gap:6px;padding:6px 14px;}
+.p8-review-tools button,.p8-allow-actions button{padding:5px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);cursor:pointer;}
+.p8-review-badge{padding:3px 7px;border-radius:5px;background:#e8eef9;color:#214b80;font-size:.75rem;}
+.p8-review-reason{padding:6px 12px;font-size:.75rem;color:var(--muted);}
+#p8_dictionaryDialog{width:min(580px,90vw);max-height:80vh;overflow:auto;border:1px solid #ccc;border-radius:12px;padding:24px;font-family:inherit;}
+#p8_dictionaryDialog::backdrop{background:#0006;}
+#p8_dictionaryDialog label{display:block;margin:12px 0 6px;}
+#p8_dictionaryWords{width:100%;box-sizing:border-box;font:inherit;}
+#p8_dictionaryDialog button{padding:6px 10px;margin:4px;}

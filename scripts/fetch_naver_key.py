@@ -6,6 +6,8 @@ import re
 import urllib.request
 import os
 import json
+import sys
+from urllib.parse import urlencode
 from datetime import datetime, timezone, timedelta
 
 SEARCH_URL = (
@@ -17,6 +19,21 @@ UA = (
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 )
 OUT_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "naver-speller-key.js")
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
+
+def validate_key(key):
+    # A fixed synthetic sentence only; never send a user's manuscript here.
+    query = urlencode({'q': '안녕하세요.', 'where': 'nexearch', 'color_blindness': 0, 'passportKey': key})
+    req = urllib.request.Request('https://m.search.naver.com/p/csearch/ocontent/util/SpellerProxy?' + query,
+                                 headers={'User-Agent': UA, 'Referer': SEARCH_URL})
+    with urllib.request.urlopen(req, timeout=15) as res:
+        data = json.load(res)
+    message = data.get('message', {})
+    if message.get('error') or not isinstance(message.get('result'), dict) or 'html' not in message['result']:
+        raise RuntimeError('새 키의 검사 응답 검증 실패')
 
 
 def fetch_passport_key():
@@ -32,9 +49,10 @@ def fetch_passport_key():
 def main():
     try:
         key = fetch_passport_key()
+        validate_key(key)
     except Exception as e:
-        print(f"[naver-key] 키 추출 실패: {e} — 기존 파일 유지")
-        return  # 실패 시 기존 키 파일 유지, 파이프라인 중단하지 않음
+        print(f"[naver-key] 키 갱신 실패 ({type(e).__name__}) — 기존 파일 유지")
+        raise SystemExit(1)
 
     kst = datetime.now(timezone(timedelta(hours=9)))
     data = {
@@ -45,7 +63,7 @@ def main():
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     with open(OUT_PATH, "w", encoding="utf-8") as f:
         f.write(js)
-    print(f"[naver-key] passportKey={key[:8]}... saved ({kst.strftime('%Y-%m-%d %H:%M')})")
+    print(f"[naver-key] 검사 응답 검증 후 저장 완료 ({kst.strftime('%Y-%m-%d %H:%M')} KST)")
 
 
 if __name__ == "__main__":

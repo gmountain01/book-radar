@@ -107,7 +107,7 @@ function _topicChips(topics, max) {
   return '<div class="p24-topic-chips">' + html + '</div>';
 }
 
-function render() {
+function render(resultsOnly) {
   var el = document.getElementById('p24Content');
   if (!el) return;
 
@@ -115,37 +115,31 @@ function render() {
     el.innerHTML = '<div style="padding:2rem;text-align:center;color:#888;">데이터 없음</div>';
     return;
   }
-  if (!filtered.length) {
-    el.innerHTML = '<div style="padding:2rem;text-align:center;color:#888;">검색 결과 없음</div>';
-    return;
-  }
 
-  var allPubs = [];
-  var pubSet = {};
-  allAuthors.forEach(function(a) { a.pubs.forEach(function(p) { if (!pubSet[p]) { pubSet[p] = true; allPubs.push(p); } }); });
-  allPubs.sort();
+  var html = "";
+  if (!resultsOnly) {
+    var allPubs = [];
+    var pubSet = {};
+    allAuthors.forEach(function(a) { a.pubs.forEach(function(p) { if (!pubSet[p]) { pubSet[p] = true; allPubs.push(p); } }); });
+    allPubs.sort();
 
-  var totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  var start = page * PAGE_SIZE;
-  var pageItems = filtered.slice(start, start + PAGE_SIZE);
+    var sortBtns = [
+      { key: 'count', label: '권수' },
+      { key: 'totalDays', label: '등장일수' },
+      { key: 'bestRank', label: '최고순위' },
+      { key: 'name', label: '이름' },
+      { key: 'pubs', label: '출판사수' }
+    ];
 
-  var sortBtns = [
-    { key: 'count', label: '권수' },
-    { key: 'totalDays', label: '등장일수' },
-    { key: 'bestRank', label: '최고순위' },
-    { key: 'name', label: '이름' },
-    { key: 'pubs', label: '출판사수' }
-  ];
-
-  var html = '<div class="p24-wrap">';
-  html += '<div class="p24-header"><h2>저자 목록</h2>';
-  html += '<span class="p24-stats">' + allAuthors.length + '명 저자 · ' + (window._AUTHORS_DATA ? window._AUTHORS_DATA.totalBooks : allAuthors.length) + '권 도서';
-  if (filtered.length !== allAuthors.length) html += ' · 필터 ' + filtered.length + '명';
-  var _gen = _authGenerated();
-  if (_gen) {
-    var _newCnt = allAuthors.filter(_isNewAuthor).length;
-    html += ' · <span class="p24-updated" title="YES24 베스트셀러 기준 매일 자동 갱신">갱신 ' + escHtml(_gen) + '</span>';
-    if (_newCnt) html += ' · <button class="p24-new-chip' + (newOnly ? ' active' : '') + '" onclick="p24_toggleNew()" title="최근 ' + NEW_DAYS + '일 내 처음 베스트셀러에 든 저자">🆕 이번 주 신규 ' + _newCnt + '명' + (newOnly ? ' ✕' : '') + '</button>';
+    html = '<div class="p24-wrap">';
+    html += '<div class="p24-header"><h2>저자 목록</h2>';
+    html += '<span class="p24-stats">' + allAuthors.length + '명 저자 · ' + (window._AUTHORS_DATA ? window._AUTHORS_DATA.totalBooks : allAuthors.length) + '권 도서';
+    html += '<span id="p24-filter-count">' + (filtered.length !== allAuthors.length ? ' · 필터 ' + filtered.length + '명' : '') + '</span>';
+    var _gen = _authGenerated();
+    if (_gen) {
+      var _newCnt = allAuthors.filter(_isNewAuthor).length;
+      html += ' · <span class="p24-updated" title="YES24 베스트셀러 기준 매일 자동 갱신">갱신 ' + escHtml(_gen) + '</span>';
+      if (_newCnt) html += ' · <button class="p24-new-chip' + (newOnly ? ' active' : '') + '" onclick="p24_toggleNew()" title="최근 ' + NEW_DAYS + '일 내 처음 베스트셀러에 든 저자">🆕 이번 주 신규 ' + _newCnt + '명' + (newOnly ? ' ✕' : '') + '</button>';
   }
   html += '</span></div>';
 
@@ -158,7 +152,7 @@ function render() {
   html += '<div id="p24-track-results"></div>';
 
   html += '<div class="p24-toolbar">';
-  html += '<input class="p24-search" type="text" placeholder="저자명, 도서명, 출판사 검색…" value="' + escHtml(searchQ) + '" oninput="p24_onSearch(this.value)">';
+  html += '<input class="p24-search" type="text" placeholder="저자명, 도서명, 출판사 검색…" value="' + escHtml(searchQ) + '" oninput="p24_onSearch(this.value,event.isComposing)" oncompositionend="p24_onSearch(this.value,false)">';
   html += '<select class="p24-select" onchange="p24_onPubFilter(this.value)"><option value="">전체 출판사</option>';
   allPubs.forEach(function(p) { html += '<option value="' + escHtml(p) + '"' + (p === pubFilter ? ' selected' : '') + '>' + escHtml(p) + '</option>'; });
   html += '</select>';
@@ -172,6 +166,12 @@ function render() {
   });
   html += '</div>';
   html += '</div>';
+
+  html += '<div id="p24-list-results">';
+  }
+  var totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  var start = page * PAGE_SIZE;
+  var pageItems = filtered.slice(start, start + PAGE_SIZE);
 
   html += '<div class="p24-table-wrap"><table class="p24-table"><thead><tr>';
   html += '<th style="width:40px">#</th><th>저자</th><th style="width:55px">권수</th><th>출판사</th><th style="width:70px">최고순위</th><th style="width:70px">등장일수</th><th>도서 목록</th><th style="width:40px"></th>';
@@ -213,6 +213,7 @@ function render() {
     html += '</tr>';
   });
 
+  if (!filtered.length) html += '<tr><td colspan="8" style="padding:2rem;text-align:center;">검색 결과 없음 — 검색어나 필터를 변경하세요.</td></tr>';
   html += '</tbody></table></div>';
 
   if (totalPages > 1) {
@@ -226,40 +227,30 @@ function render() {
     html += '</div>';
   }
 
-  html += '</div>';
+  if (resultsOnly) {
+    document.getElementById('p24-filter-count').textContent = filtered.length !== allAuthors.length ? ' · 필터 ' + filtered.length + '명' : '';
+    document.getElementById('p24-list-results').innerHTML = html;
+    return;
+  }
+  html += '</div></div>';
   el.innerHTML = html;
   _renderTrackResults();  // 리렌더 시 추적 결과·차트 복원
 }
 
 // ━━━ 도서 순위 추적 (YES24 일별 아카이브) ━━━
+var _trackRequest = 0;
+var _searchTimer = null;
 var _trackQ = '';
 var _trackResults = null;   // [{title, author, publisher, series:[{date,rank}]}]
 var _trackCharts = [];
 var _bookIndex = null;      // "title||author" → 엔트리 (아카이브 1회 스캔)
 
 // panel25 ensureArchiveLoaded와 동일 전역(window._YES24_ARCHIVE)·스크립트 태그 공유 — 이중 로드 방지
-function _ensureArchive(cb) {
-  if (window._YES24_ARCHIVE && window._YES24_ARCHIVE.snapshots) { cb(); return; }
-  var existing = document.querySelector('script[data-yes24-archive]');
-  if (existing) {  // panel25가 이미 로딩 중 — 폴링으로 대기
-    var n = 0;
-    var t = setInterval(function() {
-      if (window._YES24_ARCHIVE || ++n > 100) { clearInterval(t); cb(); }
-    }, 100);
-    return;
-  }
-  var script = document.createElement('script');
-  script.src = 'data/yes24/archive.js?d=' + new Date().toISOString().slice(0, 10);
-  script.setAttribute('data-yes24-archive', '1');
-  script.onload = cb;
-  script.onerror = function() { console.warn('[panel24] archive.js 로드 실패'); cb(); };
-  document.head.appendChild(script);
-}
-
 function _buildBookIndex() {
   if (_bookIndex) return _bookIndex;
+  var snaps = (window._YES24_ARCHIVE || {}).snapshots;
+  if (!snaps) return null;
   _bookIndex = {};
-  var snaps = (window._YES24_ARCHIVE || {}).snapshots || {};
   Object.keys(snaps).sort().forEach(function(d) {
     snaps[d].forEach(function(it) {
       if (!it.title) return;
@@ -276,7 +267,10 @@ window.p24_trackSearch = function(q) {
   q = (q || '').trim();
   if (q.length < 2) { showToast('2글자 이상 입력하세요.', 'yellow'); return; }
   _trackQ = q;
-  _ensureArchive(function() {
+  var request = ++_trackRequest;
+  loadYes24Archive(function(error) {
+    if (request !== _trackRequest) return;
+    if (error) { showToast('순위 데이터를 불러오지 못했습니다. 추적 버튼으로 다시 시도하세요.', 'yellow'); return; }
     var idx = _buildBookIndex();
     var ql = q.toLowerCase();
     var matches = [];
@@ -291,7 +285,7 @@ window.p24_trackSearch = function(q) {
   });
 };
 
-window.p24_trackClear = function() { _trackQ = ''; _trackResults = null; render(); };
+window.p24_trackClear = function() { ++_trackRequest; _trackQ = ''; _trackResults = null; render(); };
 
 function _renderTrackResults() {
   var box = document.getElementById('p24-track-results');
@@ -332,7 +326,12 @@ function _renderTrackResults() {
 }
 
 window.p24_toggleNew = function() { newOnly = !newOnly; applyFilterSort(); render(); };
-window.p24_onSearch = function(v) { searchQ = v; applyFilterSort(); render(); };
+window.p24_onSearch = function(v, composing) {
+  searchQ = v;
+  clearTimeout(_searchTimer);
+  if (composing) return;
+  _searchTimer = setTimeout(function() { applyFilterSort(); render(true); }, 150);
+};
 window.p24_onPubFilter = function(v) { pubFilter = v; applyFilterSort(); render(); };
 window.p24_onTopicFilter = function(v) { topicFilter = v; applyFilterSort(); render(); };
 

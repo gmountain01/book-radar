@@ -32,6 +32,16 @@ jobs:
               done
           echo "문법 검사 통과"
 
-      # 2) 스모크 테스트: parseAiJson 단위 + panel8 교정 픽스처 40건
+      # 2) JSON, 교정 60건, 오탐 정책, 저자 검색, 시장 피드 회귀 테스트
       - name: 스모크 테스트
         run: node scripts/run_tests.js
+
+  naver-key:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 네이버 키 검증 및 실패 시 기존 파일 보존
+        run: python -m unittest discover -s scripts -p test_naver_key.py -v

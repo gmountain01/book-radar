@@ -423,3 +423,7 @@
 .p23-md-details>summary{cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);padding:.3rem 0;list-style:revert;}
 .p23-md-details[open]>summary{color:var(--text);margin-bottom:.4rem;}
 @media (max-width:640px){.p23-chart-oppmap{height:340px;}.p23-opp-card{flex-wrap:nowrap;}}
+
+.p23-feed-pages{display:flex;align-items:center;justify-content:center;gap:16px;padding:20px 0;color:var(--muted);font-size:13px;}
+.p23-feed-pages button{padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;}
+.p23-feed-pages button:disabled{opacity:.4;cursor:default;}

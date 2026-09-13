@@ -144,10 +144,10 @@ select{background:var(--surface);}
 }
 .sidebar.collapsed .nav-item.active { border-left-color: transparent !important; }
 /* 마우스 호버 시 자동 확장 */
-.sidebar.collapsed:hover { width: var(--sb-w-full, 220px); }
-.sidebar.collapsed:hover .nav-section { opacity: 1; pointer-events: auto; }
-.sidebar.collapsed:hover .nav-label { display: inline; }
-.sidebar.collapsed:hover .nav-item {
+.sidebar.collapsed:not(.nav-dismissed):hover { width: var(--sb-w-full, 220px); }
+.sidebar.collapsed:not(.nav-dismissed):hover .nav-section { opacity: 1; pointer-events: auto; }
+.sidebar.collapsed:not(.nav-dismissed):hover .nav-label { display: inline; }
+.sidebar.collapsed:not(.nav-dismissed):hover .nav-item {
   padding: .45rem .9rem .45rem 1rem;
   justify-content: flex-start;
   gap: .5rem;
@@ -155,8 +155,8 @@ select{background:var(--surface);}
   border-radius: 0 6px 6px 0;
   margin: 1px .5rem 1px 0;
 }
-.sidebar.collapsed:hover .nav-item.active { border-left-color: var(--accent) !important; }
-.sidebar.collapsed:hover .sidebar-toggle-icon { transform: none; }
+.sidebar.collapsed:not(.nav-dismissed):hover .nav-item.active { border-left-color: var(--accent) !important; }
+.sidebar.collapsed:not(.nav-dismissed):hover .sidebar-toggle-icon { transform: none; }
 .nav-label { white-space: nowrap; overflow: hidden; transition: opacity .15s; }
 .main-content { transition: margin-left .2s ease; flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;margin-left:var(--sb-w,0); }
 
@@ -828,10 +828,10 @@ button { font-family: inherit; }
     margin: 1px 6px; border-radius: 6px;
     border-left-color: transparent !important;
   }
-  .sidebar.collapsed:hover { width: var(--sb-w-full, 220px); }
-  .sidebar.collapsed:hover .nav-section { opacity: 1; pointer-events: auto; }
-  .sidebar.collapsed:hover .nav-label { display: inline; }
-  .sidebar.collapsed:hover .nav-item {
+  .sidebar.collapsed:not(.nav-dismissed):hover { width: var(--sb-w-full, 220px); }
+  .sidebar.collapsed:not(.nav-dismissed):hover .nav-section { opacity: 1; pointer-events: auto; }
+  .sidebar.collapsed:not(.nav-dismissed):hover .nav-label { display: inline; }
+  .sidebar.collapsed:not(.nav-dismissed):hover .nav-item {
     padding: .45rem .9rem .45rem 1rem; justify-content: flex-start;
     gap: .5rem; margin: 1px .5rem 1px 0; border-radius: 0 6px 6px 0;
   }
@@ -917,3 +917,8 @@ button { font-family: inherit; }
 /* 기획 보드 뱃지 팝 애니메이션 (v2.7.5) */
 @keyframes badgePop { 0%{transform:scale(1)} 40%{transform:scale(1.5)} 100%{transform:scale(1)} }
 .badge-pop { animation: badgePop .45s ease; }
+
+/* Navigation clicks close hover expansion immediately, including over heavy panels. */
+@media (min-width: 769px) {
+  .sidebar.collapsed.nav-dismissed { width: 52px; transition: none; }
+}

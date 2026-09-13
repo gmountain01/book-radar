@@ -39,11 +39,16 @@ jobs:
           MY_PUBLISHER: ${{ vars.MY_PUBLISHER }}
         run: python scripts/generate_report.py
 
+      - name: Fetch Aladin new books (신간 저자 소스)
+        run: python scripts/fetch_aladin_new.py
+        continue-on-error: true # 알라딘 실패해도 기존 스냅샷으로 저자 목록 갱신 계속
+
       - name: Build author list (archive.json 기반)
         run: python scripts/build_authors.py
 
       - name: Fetch Naver speller passportKey
         run: python scripts/fetch_naver_key.py
+        continue-on-error: true # 검증 실패는 단계에 표시하되 다른 데이터 갱신은 계속
 
       - name: Build report index
         run: python scripts/build_reports.py
