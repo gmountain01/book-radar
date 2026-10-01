@@ -257,6 +257,9 @@ function _buildBookIndex() {
       var key = it.title + '||' + (it.author || '');
       var e = _bookIndex[key];
       if (!e) e = _bookIndex[key] = { title: it.title, author: it.author || '', publisher: it.publisher || '', series: [] };
+      // 같은 날 중복 등장(가격 판본 등)은 1건으로 — 더 좋은 순위 유지
+      var last = e.series[e.series.length - 1];
+      if (last && last.date === d) { if (it.rank && (!last.rank || it.rank < last.rank)) last.rank = it.rank; return; }
       e.series.push({ date: d, rank: it.rank || 0 });
     });
   });

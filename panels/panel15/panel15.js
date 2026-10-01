@@ -122,7 +122,8 @@ window.fmAiDraft = async function() {
   if (!apiKey) { alert('통합현황 또는 개발자 콘솔에서 Claude API 키를 설정해주세요.'); return; }
   var tab = TABS.find(function(t) { return t.key === activeTab; });
   if (!tab) return;
-  if (data[activeTab] && data[activeTab].trim().length > 20) {
+  var key = tab.key; // 생성 중 탭 전환 대비 — 호출 시점 탭에 저장
+  if (data[key] && data[key].trim().length > 20) {
     if (!confirm('현재 "' + tab.title + '" 탭에 이미 내용이 있습니다.\nAI 초안으로 덮어쓰시겠습니까?')) return;
   }
 
@@ -147,7 +148,7 @@ window.fmAiDraft = async function() {
   };
 
   var prompt = bookInfo ? '[도서 정보]\n' + bookInfo + '\n' : '';
-  prompt += tabPrompts[activeTab] || '이 섹션의 초안을 작성하라.';
+  prompt += tabPrompts[key] || '이 섹션의 초안을 작성하라.';
   prompt += '\n\n[글쓰기 원칙] 존댓말. AI투 문장 금지(~할 수 있습니다, 혁신적인 등). 저자가 직접 쓴 것 같은 자연스러운 톤.';
   prompt += '\n순수 텍스트만 출력하라. JSON이나 마크다운 금지.';
 
@@ -155,7 +156,7 @@ window.fmAiDraft = async function() {
     showToast('"' + tab.title + '" AI 초안 생성 중…', 'blue');
     var raw = await callClaudeApi({ apiKey: apiKey, model: 'claude-haiku-4-5-20251001', prompt: prompt, system: 'IT 도서 저자. 한국어. 자연스러운 문체.', maxTokens: 2000, noPersona: true });
     if (raw && raw.trim()) {
-      data[activeTab] = raw.trim();
+      data[key] = raw.trim();
       save(); render();
       showToast('"' + tab.title + '" AI 초안 완성', 'green');
     }

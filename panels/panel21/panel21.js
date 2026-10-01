@@ -35,6 +35,7 @@ var FONTS = [
 ];
 
 var _file = null;
+var _busy = false; // 생성 중 새 파일 투입 시 결과 덮어쓰기·중복 API 호출 방지
 var _parsed = null; // {elements, stats}
 var _pages = [];    // generated HTML pages
 var _curPage = 0;
@@ -93,6 +94,7 @@ root.addEventListener('drop', function(e){
 });
 
 function _handleFile(f){
+  if(_busy){ alert('시안 생성 중입니다. 완료 후 다시 시도하세요.'); return; }
   var ext = f.name.split('.').pop().toLowerCase();
   if(ext !== 'docx' && ext !== 'hwpx'){
     alert('DOCX 또는 HWPX 파일만 지원합니다.');
@@ -1222,7 +1224,7 @@ function _buildCompareHtml(variants, htmls){
    메인 파이프라인
    ══════════════════════════════════════════════ */
 
-window.p21_generate = async function(){
+var _p21Run = async function(){
   if(!_file) return;
   document.getElementById('p21_empty').style.display = 'none';
   document.getElementById('p21_result').style.display = 'none';
@@ -1336,6 +1338,11 @@ window.p21_generate = async function(){
     _setProgress(0, '오류: '+e.message);
     alert('오류: '+e.message);
   }
+};
+window.p21_generate = async function(){
+  if(_busy) return;
+  _busy = true;
+  try { await _p21Run(); } finally { _busy = false; }
 };
 
 /* ── 미리보기/인쇄/다운로드 ── */

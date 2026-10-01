@@ -1157,7 +1157,7 @@ async function p16_aiEnhance() {
       });
     }
     _render();
-    _setStatus('AI 정제 완료: ' + changes + '건 변경');
+    _setStatus(result ? 'AI 정제 완료: ' + changes + '건 변경' : 'AI 응답 해석 실패 — 다시 시도하세요 (용어가 많으면 응답이 잘릴 수 있음)');
   } catch(e) {
     alert('AI 정제 오류: ' + e.message);
     _setStatus('AI 정제 실패');

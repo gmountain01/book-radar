@@ -268,7 +268,10 @@ def compute_insights(archive: dict) -> dict:
             if not t:
                 continue
             if it.get("rank"):
-                series[t].append((o, it["rank"]))
+                if series[t] and series[t][-1][0] == o:   # 같은 날 중복 등장(판본 등)은 더 좋은 순위 1건
+                    series[t][-1] = (o, min(series[t][-1][1], it["rank"]))
+                else:
+                    series[t].append((o, it["rank"]))
             if t not in info:
                 info[t] = it.get("publisher", "") or "(미상)"
     recent_start = date.fromisoformat(dates[-1]).toordinal() - MOMENTUM_WINDOW + 1
@@ -793,7 +796,7 @@ def generate_fallback_insights(archive: dict) -> str:
         )
 
     # 2. 상승 트렌드 카테고리
-    rising = [t for t in topic_stats if t[4] == "📈 상승"]
+    rising = [t for t in topic_stats if t[4] == "📈 상승" and t[0] != "기타"]
     if rising:
         names = "·".join(t[0] for t in rising[:3])
         insights.append(

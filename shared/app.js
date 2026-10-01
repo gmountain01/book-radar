@@ -317,11 +317,12 @@ function safeLSSet(key, value) {
 }
 
 /**
- * localStorage GC — _cache_, _p8_, _p10_, _p7_ 접두사 캐시 항목 중
+ * localStorage GC — 재생성 가능한 캐시 항목 중
  * 가장 오래된 것부터 삭제해 공간 확보
  */
 function _gcLocalStorage() {
-  const CACHE_PREFIXES = ['_cache_', '_p8_', '_p10_', '_p7_', 'p8_', 'p10_', 'p7_', 'ub_best', 'ub_lecture', 'ub_planned', 'ub_best_gs', 'ub_lecture_gs'];
+  // 재생성 가능한 캐시만 대상 — 사용자 데이터(ub_*·설정·원고)는 지우지 않음
+  const CACHE_PREFIXES = ['pf_v3_', 'yt_apicache_', 'yt_search_cache', 'yt_trend_', 'kw_taxonomy_', '_cache_'];
   const entries = [];
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
@@ -780,7 +781,10 @@ window.getMyPub = function() { return myPub; };
 var _activePanel = 0;
 function switchTab(i,btn){
   if(!btn || !btn.classList) return;
-  if(btn.classList.contains('locked'))return;
+  if(btn.classList.contains('locked')){
+    if (typeof showToast === 'function') showToast('🔒 잠긴 메뉴입니다 — 잠금 해제 후 이용하세요', 'red');
+    return false; // 호출부가 '전달됨' 토스트를 건너뛰도록
+  }
   // Dismiss hover expansion before activating the selected panel.
   var sidebar = document.getElementById('mainSidebar');
   if (window.innerWidth <= 768) {
@@ -2859,7 +2863,7 @@ function dlTemplate(){
 
 // ━━━ 세션 데이터 내보내기/가져오기 ━━━
 function exportSession() {
-  var EXCLUDE_KEYS = ['ai-api-key-enc', 'ai-api-iv'];
+  var EXCLUDE_KEYS = ['ub_claude_ak', 'ub_apikey', 'p11_openai_key', 'p17_openai_key', 'p11_extra_yt_keys']; // API 키는 세션 파일로 주고받지 않음
   var data = {};
   for (var i = 0; i < localStorage.length; i++) {
     var key = localStorage.key(i);
@@ -2902,7 +2906,7 @@ function importSession(input) {
         return;
       }
       var keys = Object.keys(parsed.data);
-      var EXCLUDE_KEYS = ['ai-api-key-enc', 'ai-api-iv'];
+      var EXCLUDE_KEYS = ['ub_claude_ak', 'ub_apikey', 'p11_openai_key', 'p17_openai_key', 'p11_extra_yt_keys']; // API 키는 세션 파일로 주고받지 않음
       for (var i = 0; i < keys.length; i++) {
         if (EXCLUDE_KEYS.indexOf(keys[i]) !== -1) continue;
         safeLSSet(keys[i], parsed.data[keys[i]]);

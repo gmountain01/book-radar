@@ -43,6 +43,28 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     target = OUT_DIR / f"{ymd}_yes24_it_bestseller.xlsx"
 
+    # 부분 내보내기(200행 미만) 방지: 검증 실패 시 1회 재시도, 그래도 미달이면 파일 삭제 후 실패 종료
+    # (부분 파일이 남으면 날짜 dedup 때문에 영구 보존되어 순위 이탈로 오인됨)
+    for attempt in (1, 2):
+        _download(target, show)
+        rows = _count_rows(target)
+        print(f"저장됨: {target}  ({target.stat().st_size:,} bytes, {rows}행)")
+        if rows >= PAGE_SIZE:
+            break
+        print(f"⚠ {rows}행 < {PAGE_SIZE}행 — 부분 내보내기 의심 (시도 {attempt}/2)")
+    else:
+        target.unlink(missing_ok=True)
+        sys.exit("YES24 엑셀 행 수 미달 — 파일 삭제, 수집 실패 처리")
+
+    if "--no-upload" not in sys.argv:
+        upload_to_drive(target)
+
+def _count_rows(target: Path) -> int:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from generate_report import parse_xlsx
+    return len(parse_xlsx(target.read_bytes()))
+
+def _download(target: Path, show: bool):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=not show)
         ctx = browser.new_context(
@@ -55,6 +77,10 @@ def main():
         page.goto("https://www.yes24.com/Main/default.aspx", wait_until="domcontentloaded")
         page.goto(LIST_URL, wait_until="domcontentloaded")
         page.get_by_text("엑셀로 받기").first.wait_for(timeout=30000)
+        try:
+            page.wait_for_load_state("networkidle", timeout=15000)  # 목록 렌더 완료 대기
+        except Exception:
+            pass
 
         # 전체선택 후 엑셀 내보내기 (선택 없이도 되면 무해)
         try:
@@ -66,11 +92,6 @@ def main():
             page.get_by_text("엑셀로 받기").first.click()
         dl.value.save_as(str(target))
         browser.close()
-
-    print(f"저장됨: {target}  ({target.stat().st_size:,} bytes)")
-
-    if "--no-upload" not in sys.argv:
-        upload_to_drive(target)
 
 def upload_to_drive(target: Path):
     # rclone 최초 1회 설정:

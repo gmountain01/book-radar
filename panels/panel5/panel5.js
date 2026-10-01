@@ -476,7 +476,6 @@ ${excerpt}
   "diff": "차별화 포인트",
   "price": "예상 정가",
   "pages": "예상 페이지",
-  "toc": [{"num":"1장","title":"장 제목","sub":"소제목"}],
   "goals": ["베스트셀러 진입", "시리즈 확장"],
   "schedule": "원고 제출 일정"
 }`;
@@ -492,12 +491,6 @@ ${excerpt}
     sv('pf-concept', r.concept); sv('pf-reader-core', r.reader_core);
     sv('pf-reader-ext', r.reader_ext); sv('pf-diff', r.diff);
     sv('pf-price', r.price); sv('pf-pages', r.pages);
-    // 목차 채우기
-    if (r.toc && r.toc.length) {
-      document.getElementById('ptoc-rows').innerHTML = '';
-      pTocCnt = 0;
-      r.toc.forEach(t => pAddToc({ num: t.num, title: t.title, sub: t.sub || '' }));
-    }
     propRender();
     showToast('기획안 파일 분석 완료! 내용을 확인하고 수정해주세요.', 'green');
   } catch (err) {
@@ -634,7 +627,7 @@ if (!window._switchTab5Hooked) {
 window._switchTab5Hooked = true;
 const _origSwitchTab5 = window.switchTab;
 window.switchTab = function(i, btn) {
-  if (typeof _origSwitchTab5 === 'function') _origSwitchTab5(i, btn);
+  if (typeof _origSwitchTab5 === 'function' && _origSwitchTab5(i, btn) === false) return false; // 잠긴 탭: 전환 실패 전파
   if (i === 5) {
     initPropTab();
     renderPropCats();

@@ -170,7 +170,7 @@ def build_from_archive(archive: dict, aladin_books: list = None) -> dict:
                 'title': bk['title'],
                 'pub': bk['pub'],
                 'bestRank': bk['bestRank'],
-                'days': bk['appearances'],
+                'days': len(set(bk['dates'])) if bk['dates'] else bk['appearances'],  # 같은 날 중복 등장 제외
                 'lastDate': sorted(bk['dates'])[-1] if bk['dates'] else '',
                 'new': is_new,
                 'pubDate': bk.get('pubDate', ''),

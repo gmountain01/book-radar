@@ -1438,7 +1438,8 @@ function checkSurface(extracted) {
           if (!isClearParticleDuplicate(m[0], text, m.index)) continue;
           const found = m[0].slice(0, 60);
           const fix = makeParticleFix(m[0], text, m.index);
-          issues.push({ type, severity, page, found, start:m.index, ruleId:type + ':' + pat.source,
+          // anchor: 원고 전체 치환 시 받침이 다른 같은 조사쌍끼리 섞이지 않도록 앞 글자를 붙여 치환(_getCorrections)
+          issues.push({ type, severity, page, found, start:m.index, anchor: text[m.index - 1] || '', ruleId:type + ':' + pat.source,
             suggestion: fix ? `→ "${fix}" ${sugg}` : sugg,
             description: `${type}: '${found}'` });
         }
@@ -3621,7 +3622,8 @@ function _getCorrections() {
     if (allIssues.some(other => (other.found || '').includes(iss.found) && P8Review.allowed(other, _reviewSettings, currentFileKey || '', _ignoredOnce))) return;
     const repl = _cleanSuggestion(iss);
     if (repl && iss.found !== repl) {
-      list.push({ found: iss.found, repl, page: iss.page });
+      const a = iss.anchor || '';
+      list.push({ found: a + iss.found, repl: a + repl, page: iss.page });
     }
   });
   list.sort((a, b) => b.found.length - a.found.length);
@@ -3883,6 +3885,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // ──────────────────────────────────────────────
   // AI 재검사 (결과 화면에서 API 키 입력 후 재실행)
   // ──────────────────────────────────────────────
+  // 재검사 경로 공통 마무리: ctx 부여 + 정상 경로와 같은 정렬 + 해결됨 상태를 인덱스가 아닌 발생 키로 이전
+  // (배열 순서가 바뀌면 인덱스 기반 해결됨이 다른 항목으로 옮겨가 미승인 수정이 원고에 적용되던 문제 방지)
+  function _rebuildIssues(issues, extracted) {
+    const resolvedKeys = new Set([...resolvedIndices].map(i => allIssues[i]).filter(Boolean).map(P8Review.occurrence));
+    const pageTexts = {};
+    extracted.pages.forEach(p => { pageTexts[p.page] = p.text; });
+    const sevOrd = { high:0, medium:1, low:2, info:3 };
+    allIssues = issues.map(iss => ({ ...iss, ctx: getCtx(pageTexts[iss.page] || '', iss.found || '', null, iss.start) }));
+    allIssues.sort((a,b) => (a.page - b.page) || (sevOrd[a.severity]??9) - (sevOrd[b.severity]??9));
+    resolvedIndices.clear();
+    allIssues.forEach((iss, i) => { if (resolvedKeys.has(P8Review.occurrence(iss))) resolvedIndices.add(i); });
+  }
+
   async function p8_rerunAI() {
     // 1. API 키 확인
     const noticeInp = document.getElementById('p8_noticeKeyInp');
@@ -3960,7 +3975,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!iss.found || !_ct.has(iss.type)) return true;
       return !_aiFs.has(iss.page + '|' + iss.found.trim());
     });
-    allIssues = [...dedupSurface, ...structural, ...linguisticIssues];
+    _rebuildIssues([...dedupSurface, ...structural, ...linguisticIssues], extracted);
 
     // 7. 캐시 갱신
     if (cacheKey) {
@@ -4060,7 +4075,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const key = `${iss.page}|${iss.found}`;
       if (!existingKeys.has(key)) { kept.push(iss); existingKeys.add(key); }
     }
-    allIssues = kept;
+    _rebuildIssues(kept, extracted);
 
     // 6. 캐시 갱신
     if (cacheKey && cached) {

@@ -744,7 +744,7 @@ function openMeetingFromProposal() {
   const sv = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
 
   // 기본 정보
-  const author = gv('pf-author-prop');
+  const author = gv('pf-author') || gv('pf-author-prop'); // panel3(저자 제안서) 버튼에서 호출 — panel3 필드 우선
   sv('m-author', author);
   sv('m-editor', gv('pf-editor'));
 
@@ -868,7 +868,7 @@ function showConfirmModal(title, bodyHtml, onConfirm) {
 }
 
 function confirmAndGenerateProposal() {
-  const author = document.getElementById('pf-author-prop')?.value || '미입력';
+  const author = document.getElementById('pf-author')?.value || document.getElementById('pf-author-prop')?.value || '미입력';
   const cat = (typeof _propSelectedCat !== 'undefined' && _propSelectedCat) || window._lastCatName || '미선택';
   const editor = document.getElementById('pf-editor')?.value || '미입력';
   showConfirmModal(
@@ -1029,7 +1029,7 @@ window.addEventListener('resize', updateHdrHeight);
 // 탭 전환 시에도 재측정 + panel6 진입 시 렌더링/컨텍스트 바 초기화 (단일 래핑)
 const _origSwitchTab6 = window.switchTab;
 window.switchTab = function(i, btn) {
-  if (typeof _origSwitchTab6 === 'function') _origSwitchTab6(i, btn);
+  if (typeof _origSwitchTab6 === 'function' && _origSwitchTab6(i, btn) === false) return false; // 잠긴 탭: 전환 실패 전파
   requestAnimationFrame(updateHdrHeight);
   if (i === 6) { setMeetDocMode('brief'); updateMeetCtxBar(); }
 };

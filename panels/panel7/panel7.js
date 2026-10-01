@@ -2129,7 +2129,7 @@ let _trendInterval = setInterval(() => loadTrendKeywords(true), 30 * 60 * 1000);
 (function(){
   const _origSwitchTabYT = window.switchTab;
   window.switchTab = function(i, btn){
-    _origSwitchTabYT(i, btn);
+    if(_origSwitchTabYT(i, btn) === false) return false; // 잠긴 탭: 전환 실패 전파
     if(i === 7){
       if(typeof loadTrendKeywords === "function") loadTrendKeywords();
       // 검색 결과 캐시 복원 (세션 데이터가 비어있을 때만)

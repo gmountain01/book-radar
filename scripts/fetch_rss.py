@@ -7,6 +7,7 @@
 - data/rss/feeds.js: 최신 스냅샷 (window._RSS_FEEDS)
 """
 import hashlib
+import html
 import json
 import os
 import re
@@ -137,15 +138,35 @@ def extract_keywords(title: str, summary: str) -> list[str]:
         "벡터": "Vector DB", "임베딩": "Embeddings",
         "쿠버네티스": "Cloud/DevOps", "도커": "Cloud/DevOps",
         "보안": "Security", "해킹": "Security",
-        "n8n": "Automation", "make": "Automation",
+        "n8n": "Automation", "make.com": "Automation",
         "챗봇": "Chatbot", "chatbot": "Chatbot",
         "sora": "Video AI", "영상 ai": "Video AI", "이미지 생성": "Image AI",
     }
     found = set()
     for pat, kw in KW_MAP.items():
-        if pat in text:
+        if _kw_regex(pat).search(text):
             found.add(kw)
     return sorted(found)
+
+
+# 영문 키워드는 단어 경계로 매칭(storage→rag, sagemaker→make 같은 부분 일치 오탐 차단).
+# 어간 패턴은 앞 경계만, 'gpt'는 chatgpt 포함을 위해 부분 일치, 한글 포함 패턴은 기존대로 부분 일치.
+_KW_STEMS = {"fine-tun", "fine tun", "image generat", "quantiz", "automat", "deploy", "robot", "vibe cod"}
+_KW_RE_CACHE: dict = {}
+
+
+def _kw_regex(pat: str):
+    r = _KW_RE_CACHE.get(pat)
+    if r is None:
+        esc = re.escape(pat)
+        if not pat.isascii() or pat == "gpt":
+            r = re.compile(esc)
+        elif pat in _KW_STEMS:
+            r = re.compile(r"\b" + esc)
+        else:
+            r = re.compile(r"\b" + esc + r"s?\b")
+        _KW_RE_CACHE[pat] = r
+    return r
 
 
 def scrape_anthropic_news(html: str) -> list[dict]:
@@ -250,7 +271,7 @@ def parse_feed(xml_text: str) -> list[dict]:
         for item_el in channel.findall("item"):
             title = (item_el.findtext("title") or "").strip()
             link = (item_el.findtext("link") or "").strip()
-            pub = item_el.findtext("pubDate") or item_el.findtext("dc:date") or ""
+            pub = item_el.findtext("pubDate") or item_el.findtext("{http://purl.org/dc/elements/1.1/}date") or ""
             desc = re.sub(r"<[^>]+>", "", (item_el.findtext("description") or ""))[:300].strip()
             items.append({"title": title, "link": link, "date": parse_rss_date(pub), "summary": desc})
 
@@ -335,7 +356,7 @@ def compute_weekly_trends(archive: dict) -> list[dict]:
             continue
         try:
             dt = datetime.strptime(a["date"][:10], "%Y-%m-%d")
-            week = dt.strftime("%Y-W%V")
+            week = dt.strftime("%G-W%V")  # ISO 연도(%G) — 연초 W53이 다음 해로 붙는 오류 방지
         except ValueError:
             continue
         w = SOURCE_WEIGHT.get(a.get("source", ""), 1.0)
@@ -353,7 +374,8 @@ def compute_weekly_trends(archive: dict) -> list[dict]:
             val = int(round(capped_total))
             if val > 0:
                 kw_final[kw] = val
-        top = sorted(kw_final.items(), key=lambda x: -x[1])[:15]
+        # 전체 저장(상위 N 자르기 금지) — 잘린 키워드가 0으로 읽혀 가짜 '신규'/'-100%'가 생긴다. 표시 측에서 자른다.
+        top = sorted(kw_final.items(), key=lambda x: -x[1])
         trends.append({"week": wk, "keywords": {k: v for k, v in top}})
     return trends
 
@@ -403,6 +425,9 @@ def main():
             items = scrape_github_trending(raw)
         else:
             items = parse_feed(raw)
+        for it in items:  # HTML 엔티티(&quot; 등) 디코드 — 화면에서 이중 이스케이프되어 그대로 보이던 문제
+            it["title"] = html.unescape(it.get("title", ""))
+            it["summary"] = html.unescape(it.get("summary", ""))
         added = merge_into_archive(archive, feed_conf, items)
         total_added += added
         print(f"{len(items)}건 (신규 {added}건)")
@@ -412,6 +437,14 @@ def main():
     for a in archive["articles"]:
         if "source_type" not in a:
             a["source_type"] = SOURCE_TYPE.get(a.get("source", ""), "media")
+        # 날짜 없는 피드(요즘IT 등)는 수집일로 대체 — 트렌드 집계 누락 방지
+        if not a.get("date") and a.get("first_seen"):
+            a["date"] = a["first_seen"]
+        if "&" in a.get("title", "") + a.get("summary", ""):
+            a["title"] = html.unescape(a.get("title", ""))
+            a["summary"] = html.unescape(a.get("summary", ""))
+        # 키워드 규칙 변경을 과거 기사에도 반영(결정적 재계산)
+        a["keywords"] = extract_keywords(a.get("title", ""), a.get("summary", ""))
 
     # ── 통계 계산 ──
     archive["weekly_trends"] = compute_weekly_trends(archive)

@@ -1518,7 +1518,7 @@ window.kwSendToProposal = function(idx) {
   }
 
   // panel5로 이동
-  window.switchTab(5, document.getElementById('tab5'));
+  if (window.switchTab(5, document.getElementById('tab5')) === false) return;
   if (typeof propRender === 'function') propRender();
   if (typeof showToast === 'function') showToast('키워드 기획 초안이 출판 기획서로 전달되었습니다.', 'green');
 };

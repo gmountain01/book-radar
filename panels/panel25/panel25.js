@@ -185,18 +185,26 @@ var TOPIC_KW = {
   "로봇/IoT/하드웨어": ["로봇", "아두이노", "라즈베리", "iot", "반도체", "하드웨어", "임베디드"],
   "블록체인/Web3": ["블록체인", "web3", "nft", "솔리디티", "이더리움"]
 };
-// 아이템 텍스트 → 19개 주제명 매핑 (첫 매칭). 실패 시 ''
+// 아이템 텍스트 → 19개 주제명 매핑 (최다 적중, concept 가중 3배). 'AI/LLM 일반'은 다른 주제가 없을 때만. 실패 시 ''
+// 영문 키워드는 단어 경계 매칭 — 'maintainable'⊃'ai' 같은 부분 일치 오탐 방지
+function _topicHits(text, kw) {
+  kw = kw.toLowerCase();
+  if (!/^[a-z0-9 .+#-]+$/.test(kw)) return text.split(kw).length - 1;
+  var re = new RegExp('(^|[^a-z0-9])' + kw.replace(/[.+#-]/g, '\\$&') + '(?![a-z0-9])', 'g');
+  return (text.match(re) || []).length;
+}
 function _mapItemToTopic(item) {
   if (!item) return '';
-  var text = ((item.concept || '') + ' ' + (item.targetLevel || '') + ' ' + (item.rationale || '')).toLowerCase();
-  var names = Object.keys(TOPIC_KW);
-  for (var i = 0; i < names.length; i++) {
-    var kws = TOPIC_KW[names[i]];
-    for (var j = 0; j < kws.length; j++) {
-      if (text.indexOf(kws[j].toLowerCase()) >= 0) return names[i];
-    }
-  }
-  return '';
+  var concept = (item.concept || '').toLowerCase();
+  var rest = ((item.targetLevel || '') + ' ' + (item.rationale || '')).toLowerCase();
+  var best = '', bestScore = 0, generalScore = 0;
+  Object.keys(TOPIC_KW).forEach(function(name) {
+    var score = 0;
+    TOPIC_KW[name].forEach(function(kw) { score += _topicHits(concept, kw) * 3 + _topicHits(rest, kw); });
+    if (name === 'AI/LLM 일반') { generalScore = score; return; }
+    if (score > bestScore) { best = name; bestScore = score; }
+  });
+  return best || (generalScore ? 'AI/LLM 일반' : '');
 }
 
 // ── [작업1] 리포트 핵심 섹션 추출 (통계 테이블 제외, 인사이트·기획 아이템·액션만) ──
@@ -1283,10 +1291,10 @@ async function _refineAndSend(idx, target) {
 function _doSwitch(target, concept) {
   var label = (concept || '').length > 20 ? concept.substring(0, 20) + '…' : concept;
   if (target === 'proposal') {
-    switchTab(3, document.getElementById('tab3'));
+    if (switchTab(3, document.getElementById('tab3')) === false) return;
     showToast('"' + label + '" → 저자 제안서로 전달', 'green');
   } else {
-    switchTab(5, document.getElementById('tab5'));
+    if (switchTab(5, document.getElementById('tab5')) === false) return;
     showToast('"' + label + '" → 출판 기획서로 전달', 'green');
   }
 }

@@ -92,6 +92,7 @@ function load() {
     }
   } catch(e) { console.warn('[panel12] load() 목차 데이터 파싱 실패', e); }
   if (!sections.length) sections = _defaultSections();
+  if (activeIdx >= sections.length) activeIdx = 0; // 목차 적용으로 섹션 수가 줄면 저장 대상 유실 방지
 }
 
 function _defaultSections() {

@@ -337,7 +337,8 @@ function _getDateCutoff() {
   if (_dateRange === '1w') now.setDate(now.getDate() - 7);
   else if (_dateRange === '1m') now.setMonth(now.getMonth() - 1);
   else if (_dateRange === '3m') now.setMonth(now.getMonth() - 3);
-  return now.toISOString().substring(0, 10);
+  // 로컬 날짜 조립 — toISOString(UTC)은 KST 09시 전 하루 밀림
+  return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
 }
 
 function filterAndRender() {
@@ -450,7 +451,7 @@ function renderTrend() {
 
   // ── 0. 요약 카드 — 판단형 지표 (허영 절대치 → 이번 주 변화 중심) ──
   var h = '<div class="p23-trend-summary">' +
-    '<div class="p23-stat-card"><div class="p23-stat-num">' + wk.thisWeek + ' ' + _statDelta(wk.delta) + '</div><div class="p23-stat-label">이번 주 기사 (전주 대비)</div></div>' +
+    '<div class="p23-stat-card"><div class="p23-stat-num">' + wk.thisWeek + ' ' + _statDelta(wk.delta) + '</div><div class="p23-stat-label">이번 주 기사 (' + (sd.isInProgress ? '진행 중 · ' : '') + '전주 대비)</div></div>' +
     '<div class="p23-stat-card"><div class="p23-stat-num">' + sd.surging.length + '</div><div class="p23-stat-label">🔥 급상승 키워드</div></div>' +
     '<div class="p23-stat-card"><div class="p23-stat-num">' + _p23Signals.length + '</div><div class="p23-stat-label">📗 기회 신호</div></div>' +
     '<div class="p23-stat-card"><div class="p23-stat-num">' + newKw + '</div><div class="p23-stat-label">🆕 신규 키워드</div></div>' +
@@ -476,9 +477,9 @@ function renderTrend() {
   h += '<h3 class="p23-section-title">주간 키워드 트렌드 테이블 (pt)' +
        '<span class="p23-info-tip" title="가중 지수(pt): 커뮤니티 2.0배 ~ 벤더 0.5배로 소스 신뢰도를 반영한 집계값입니다. 실제 기사 건수가 아닙니다.">ⓘ</span></h3>';
   h += '<div class="p23-trend-table-wrap"><table class="p23-trend-table"><thead><tr><th>키워드</th>';
-  trends.forEach(function(w) { h += '<th>' + w.week.replace('2026-','') + '</th>'; });
+  trends.forEach(function(w) { h += '<th>' + w.week.replace(/^\d{4}-/,'') + '</th>'; });
   h += '<th>추세</th></tr></thead><tbody>';
-  allKw.forEach(function(kw) {
+  allKw.slice(0, 25).forEach(function(kw) {
     var vals = trends.map(function(w) { return w.keywords[kw] || 0; });
     var trend = calcTrend(vals);
     h += '<tr><td class="p23-kw-name">' + esc(kw) + '</td>';
@@ -687,7 +688,7 @@ function _renderTrendChart(trends, allKw) {
   if (!canvas || !window.Chart) return;
   if (_trendChart) { _trendChart.destroy(); _trendChart = null; }
 
-  var labels = trends.map(function(w){ return w.week.replace('2026-',''); });
+  var labels = trends.map(function(w){ return w.week.replace(/^\d{4}-/,''); });
   var top8 = allKw.slice(0, 8);
 
   // 초기 토글 상태
@@ -747,11 +748,11 @@ function _mdTrunc(t, n) { t = t || ''; return t.length > n ? t.slice(0, n - 1) +
 
 function _marketDynamicsHtml() {
   var D = window.YES24_INSIGHTS;
-  var h = '<h3 class="p23-section-title">📊 시장 역학 <span class="p23-info-tip" title="YES24 종합 베스트셀러 순위 데이터로 계산한 순위 모멘텀·변동성·출판사 집중도입니다. 매일 자동 갱신됩니다.">ⓘ</span></h3>';
+  var h = '<h3 class="p23-section-title">📊 시장 역학 <span class="p23-info-tip" title="YES24 IT 베스트셀러 순위 데이터로 계산한 순위 모멘텀·변동성·출판사 집중도입니다. 매일 자동 갱신됩니다.">ⓘ</span></h3>';
   if (!D || typeof D !== 'object' || !D.momentum) {
     return h + '<div class="p23-empty"><div class="p23-empty-text">데이터가 아직 없습니다</div><div class="p23-empty-sub">YES24 순위 인사이트는 매일 자동 갱신됩니다.</div></div>';
   }
-  h += '<div class="p23-md-note">YES24 종합 베스트셀러 순위(최근 ' + (D.window_days || 30) + '일 기준) · 데이터 기준일 ' + esc(D.generated || '') + '</div>';
+  h += '<div class="p23-md-note">YES24 IT 베스트셀러 순위(최근 ' + (D.window_days || 30) + '일 기준) · 데이터 기준일 ' + esc(D.generated || '') + '</div>';
 
   var O = D.opportunity || { top: [], topics: [] };
 
@@ -1105,7 +1106,7 @@ function renderSourceHeatmap(articles, trends) {
   });
 
   var h = '<div class="p23-heatmap-wrap"><table class="p23-heatmap"><thead><tr><th>소스</th>';
-  weeks.forEach(function(w){ h += '<th>' + w.replace('2026-','') + '</th>'; });
+  weeks.forEach(function(w){ h += '<th>' + w.replace(/^\d{4}-/,'') + '</th>'; });
   h += '</tr></thead><tbody>';
   sources.forEach(function(src) {
     var info = sourceNames[src];

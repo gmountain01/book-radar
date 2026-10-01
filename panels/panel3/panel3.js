@@ -81,10 +81,10 @@ function pAddDiscuss(d={}){
   row.className='discuss-row-p';row.id='pdiscuss-'+i;
   row.innerHTML=`<div style="display:flex;gap:.35rem;margin-bottom:.35rem;align-items:center;">
     <span style="font-size:.7rem;font-weight:700;color:var(--muted);width:18px;flex-shrink:0;">${i+1}</span>
-    <input type="text" id="pd-title-${i}" value="${d.title||''}" placeholder="아이템 제목" oninput="pRender()" style="flex:1;">
+    <input type="text" id="pd-title-${i}" value="${escHtml(d.title||'')}" placeholder="아이템 제목" oninput="pRender()" style="flex:1;">
     <button class="pdel" onclick="pDelDiscuss(${i})">✕</button>
   </div>
-  <textarea id="pd-desc-${i}" oninput="pRender()" style="min-height:48px;">${d.desc||''}</textarea>`;
+  <textarea id="pd-desc-${i}" oninput="pRender()" style="min-height:48px;">${escHtml(d.desc||'')}</textarea>`;
   document.getElementById('pdiscuss-rows').appendChild(row);
   pRender();
 }
@@ -95,9 +95,9 @@ function pAddToc(d={}){
   const i=pTocCnt++;
   const row=document.createElement('div');
   row.className='toc-row-p';row.id='ptoc-'+i;
-  row.innerHTML=`<input class="pch-num" type="text" id="ptc-num-${i}" value="${d.num||''}" placeholder="장" oninput="pRender()">
-    <input class="pch-title" type="text" id="ptc-title-${i}" value="${d.title||''}" placeholder="제목" oninput="pRender()">
-    <input class="pch-sub" type="text" id="ptc-sub-${i}" value="${d.sub||''}" placeholder="소제목" oninput="pRender()">
+  row.innerHTML=`<input class="pch-num" type="text" id="ptc-num-${i}" value="${escHtml(d.num||'')}" placeholder="장" oninput="pRender()">
+    <input class="pch-title" type="text" id="ptc-title-${i}" value="${escHtml(d.title||'')}" placeholder="제목" oninput="pRender()">
+    <input class="pch-sub" type="text" id="ptc-sub-${i}" value="${escHtml(d.sub||'')}" placeholder="소제목" oninput="pRender()">
     <label title="강조" style="display:flex;align-items:center;flex-shrink:0;cursor:pointer;padding:0 2px;">
       <input type="checkbox" id="ptc-hl-${i}" ${d.hl?'checked':''} onchange="pRender()" style="width:14px;height:14px;cursor:pointer;accent-color:#E8401C;">
     </label>
