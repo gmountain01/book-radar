@@ -2555,40 +2555,12 @@ async function callClaude(apiKey, text, rulesContext = '') {
  * Claude 응답에서 JSON 파싱 — 마크다운 코드블록, 앞뒤 텍스트, 제어문자 등 방어 처리
  */
 /**
- * suggestion과 found가 실질적으로 같은지 확인.
- * 공백·구두점 제거 후 비교 — AI가 원문을 그대로 반환하는 경우를 걸러낸다.
+ * suggestion이 found를 그대로 돌려준 것인지 확인 (연속 공백만 합쳐 비교).
+ * 띄어쓰기·한 글자 오타 수정은 원문과 거의 같으므로 유사도로 거르면 안 된다.
  */
 function _isSameSuggestion(found, suggestion) {
-  const norm = s => s.replace(/[\s\u00A0.,!?·…。、()\[\]「」『』""'']/g, '').toLowerCase();
-  const f = norm(found);
-  const s = norm(suggestion);
-  if (!f || !s) return false;
-  if (f === s) return true;
-  // 한쪽이 다른쪽을 포함하고 15% 이내로만 길면 실질 동일 취급
-  if (s.includes(f) && s.length <= f.length * 1.15) return true;
-  if (f.includes(s) && f.length <= s.length * 1.15) return true;
-  // Levenshtein 편집 거리 (짧은 문자열에서만 — 성능 제한)
-  const longer = f.length >= s.length ? f : s;
-  const shorter = f.length < s.length ? f : s;
-  if (longer.length === 0) return true;
-  if (longer.length > 200) {
-    // 긴 텍스트는 n-gram 유사도로 근사
-    const ngram = (t, n) => { const s = new Set(); for (let i = 0; i <= t.length - n; i++) s.add(t.slice(i, i + n)); return s; };
-    const a = ngram(f, 3), b = ngram(s, 3);
-    let common = 0; a.forEach(g => { if (b.has(g)) common++; });
-    return (common / Math.max(a.size, b.size)) >= 0.9;
-  }
-  // 편집 거리 (O(n*m), 200자 이내만)
-  const prev = Array.from({ length: shorter.length + 1 }, (_, i) => i);
-  for (let i = 1; i <= longer.length; i++) {
-    const curr = [i];
-    for (let j = 1; j <= shorter.length; j++) {
-      curr[j] = longer[i - 1] === shorter[j - 1] ? prev[j - 1] : 1 + Math.min(prev[j - 1], prev[j], curr[j - 1]);
-    }
-    prev.splice(0, prev.length, ...curr);
-  }
-  const dist = prev[shorter.length];
-  return (1 - dist / longer.length) >= 0.9;
+  const norm = s => s.replace(/\s+/g, ' ').trim();
+  return norm(found) === norm(suggestion);
 }
 
 // shared/app.js parseAiJson으로 위임 (FIX-30). window.parseAiJson 폴백 방어.

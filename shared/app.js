@@ -1241,9 +1241,10 @@ async function _fetchAppsScript(url) {
   try {
     resp = await fetch(url, { cache: 'no-store' });
   } catch(e) {
+    // 404(배포 삭제·보관)·권한 오류 응답에는 CORS 헤더가 없어 브라우저에선 모두 이 예외로 보인다
     throw new Error(
-      'Apps Script 접근 실패 (네트워크/CORS).\n' +
-      '스크립트 배포 설정: 실행 대상 "나", 액세스 권한 "모든 사용자(익명 포함)"으로 재배포 후 다시 시도하세요.'
+      'Apps Script 접근 실패 — 배포가 삭제·보관되었거나(URL 무효) 접근 권한이 막혔습니다.\n' +
+      'Apps Script에서 새 배포(실행: 나, 액세스: 모든 사용자)를 만들고 바뀐 /exec URL을 입력하세요.'
     );
   }
   if (!resp.ok) throw new Error('Apps Script HTTP ' + resp.status);
@@ -1444,7 +1445,7 @@ function changeGsSource(type) {
 
 // Google Sheets 기본 URL — Apps Script 웹앱 방식
 const DEFAULT_SHEET_URLS = {
-  best:    'https://script.google.com/macros/s/AKfycbx0PRidfgLM41CLKyM6zmaNkf9_r-a3EZGxU9qicd-a_-i8K0xGGV2XH64geJwQ6k7d/exec',
+  best:    '',  // 기본은 CI가 매일 수집한 최신 순위(YES24_META.latest). 시트 URL은 직접 입력 시에만
   lecture: 'https://script.google.com/macros/s/AKfycbxNJHvbUpc7ceInJUcsb6aX3csS5t0och-or8PTfOEeIf99XAZpe455laF4TBgwD2fa/exec'
 };
 
@@ -1496,19 +1497,22 @@ async function loadDefaults(){
   setLoading('lecture', true);
 
   const [bestResult, lectureResult] = await Promise.allSettled([
-    fetchSheetAsCsv(bestUrl),
+    bestUrl ? fetchSheetAsCsv(bestUrl) : Promise.reject(null),
     fetchSheetAsCsv(lectureUrl),
   ]);
 
-  // 베스트셀러 결과 처리
+  // 베스트셀러 결과 처리 — 직접 입력한 시트 > 매일 수집 최신 순위 > 업로드 캐시·내장 파일
+  const latest = window.YES24_META && window.YES24_META.latest;
+  const latestName = 'YES24 IT 일간 베스트 ' + ((window.YES24_META || {}).last_date || '');
   if (bestResult.status === 'fulfilled') {
     await handleBestData(bestResult.value, 'Google Sheets (베스트셀러)');
     safeLSSet(LS_KEYS.bestSheetUrl, bestUrl);
   } else {
-    console.warn('[loadDefaults] 베스트셀러 시트 로드 실패:', bestUrl, bestResult.reason);
-    showToast('⚠️ 베스트셀러 시트 불러오기 실패\n' + bestResult.reason.message, 'red');
-    const src = loadFromLS(LS_KEYS.best) || {b64: DEFAULT_FILES.best.b64, name: DEFAULT_FILES.best.name};
-    await handleBestData(readB64(src.b64), src.name);
+    if (bestResult.reason) console.warn('[loadDefaults] 베스트셀러 시트 로드 실패:', bestUrl, bestResult.reason);
+    const src = latest && latest.length > 1 ? null : (loadFromLS(LS_KEYS.best) || {b64: DEFAULT_FILES.best.b64, name: DEFAULT_FILES.best.name});
+    const name = src ? src.name : latestName;
+    if (bestResult.reason) showToast('⚠️ 베스트셀러 시트 불러오기 실패 — ' + name + '로 표시합니다\n' + bestResult.reason.message, 'red');
+    await handleBestData(src ? readB64(src.b64) : latest.map(r => r.map(String)), name);
   }
   setLoading('best', false);
 
@@ -1518,8 +1522,8 @@ async function loadDefaults(){
     safeLSSet(LS_KEYS.lectureSheetUrl, lectureUrl);
   } else {
     console.warn('[loadDefaults] 강의 시트 로드 실패:', lectureUrl, lectureResult.reason);
-    showToast('⚠️ 강의 시트 불러오기 실패\n' + lectureResult.reason.message, 'red');
     const src = loadFromLS(LS_KEYS.lecture) || {b64: DEFAULT_FILES.lecture.b64, name: DEFAULT_FILES.lecture.name};
+    showToast('⚠️ 강의 시트 불러오기 실패 — 이전 데이터(' + src.name + ')로 표시합니다\n' + lectureResult.reason.message, 'red');
     await handleLectureData(readB64(src.b64), src.name);
   }
   setLoading('lecture', false);
