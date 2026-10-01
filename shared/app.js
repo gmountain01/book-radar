@@ -1334,7 +1334,9 @@ function _fetchSheetViaJsonp(fileId, gid) {
     };
 
     script.onerror = () => { cleanup(); reject(new Error('JSONP 스크립트 로드 실패')); };
-    script.src = `https://docs.google.com/spreadsheets/d/${fileId}/gviz/tq?tqx=reqId:1;out:json&callback=${cbName}&gid=${gid}`;
+    // gviz는 callback= 파라미터를 무시하고 tqx의 responseHandler로 콜백 이름을 받는다.
+    // headers=1: 열 타입이 섞인 시트에서 첫 줄을 제목으로 못 알아보고 A·B·C 라벨을 주는 문제 방지
+    script.src = `https://docs.google.com/spreadsheets/d/${fileId}/gviz/tq?tqx=reqId:1;out:json;responseHandler:${cbName}&gid=${gid}&headers=1`;
     document.head.appendChild(script);
   });
 }
@@ -1443,10 +1445,11 @@ function changeGsSource(type) {
   setTimeout(() => document.getElementById(type === 'best' ? 'gs-url-best' : 'gs-url-lecture')?.focus(), 80);
 }
 
-// Google Sheets 기본 URL — Apps Script 웹앱 방식
+// Google 드라이브 기본 URL — "링크가 있는 모든 사용자" 공유 (YES24는 드라이브의 xlsx, 강의는 구글 시트)
+// https(GitHub Pages)에선 gviz CSV fetch, file://에선 JSONP 폴백으로 읽는다
 const DEFAULT_SHEET_URLS = {
-  best:    '',  // 기본은 CI가 매일 수집한 최신 순위(YES24_META.latest). 시트 URL은 직접 입력 시에만
-  lecture: 'https://script.google.com/macros/s/AKfycbxNJHvbUpc7ceInJUcsb6aX3csS5t0och-or8PTfOEeIf99XAZpe455laF4TBgwD2fa/exec'
+  best:    'https://docs.google.com/spreadsheets/d/1TQdd8_vrK0kBOOo1GiFe7oLMOfOTZo0w/edit',
+  lecture: 'https://docs.google.com/spreadsheets/d/1-nFqCxocRz57aFQM6RZNlS4qIpOhkwG09mhh6LUFlaM/edit'
 };
 
 // localStorage 키
@@ -1497,22 +1500,19 @@ async function loadDefaults(){
   setLoading('lecture', true);
 
   const [bestResult, lectureResult] = await Promise.allSettled([
-    bestUrl ? fetchSheetAsCsv(bestUrl) : Promise.reject(null),
+    fetchSheetAsCsv(bestUrl),
     fetchSheetAsCsv(lectureUrl),
   ]);
 
-  // 베스트셀러 결과 처리 — 직접 입력한 시트 > 매일 수집 최신 순위 > 업로드 캐시·내장 파일
-  const latest = window.YES24_META && window.YES24_META.latest;
-  const latestName = 'YES24 IT 일간 베스트 ' + ((window.YES24_META || {}).last_date || '');
+  // 베스트셀러 결과 처리
   if (bestResult.status === 'fulfilled') {
     await handleBestData(bestResult.value, 'Google Sheets (베스트셀러)');
     safeLSSet(LS_KEYS.bestSheetUrl, bestUrl);
   } else {
-    if (bestResult.reason) console.warn('[loadDefaults] 베스트셀러 시트 로드 실패:', bestUrl, bestResult.reason);
-    const src = latest && latest.length > 1 ? null : (loadFromLS(LS_KEYS.best) || {b64: DEFAULT_FILES.best.b64, name: DEFAULT_FILES.best.name});
-    const name = src ? src.name : latestName;
-    if (bestResult.reason) showToast('⚠️ 베스트셀러 시트 불러오기 실패 — ' + name + '로 표시합니다\n' + bestResult.reason.message, 'red');
-    await handleBestData(src ? readB64(src.b64) : latest.map(r => r.map(String)), name);
+    console.warn('[loadDefaults] 베스트셀러 시트 로드 실패:', bestUrl, bestResult.reason);
+    const src = loadFromLS(LS_KEYS.best) || {b64: DEFAULT_FILES.best.b64, name: DEFAULT_FILES.best.name};
+    showToast('⚠️ 베스트셀러 시트 불러오기 실패 — 이전 데이터(' + src.name + ')로 표시합니다\n' + bestResult.reason.message, 'red');
+    await handleBestData(readB64(src.b64), src.name);
   }
   setLoading('best', false);
 

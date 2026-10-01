@@ -389,11 +389,6 @@ def save_archive(archive: dict):
     meta = {"last_date": archive.get("last_date", ""),
             "total_days": archive.get("total_days", 0),
             "missing_days": len(_missing_dates(archive))}
-    # 통합 현황 베스트셀러 기본 데이터 — 최신 하루치 순위(handleBestData가 읽는 행 배열)
-    last = archive.get("snapshots", {}).get(meta["last_date"], [])
-    meta["latest"] = [["순위", "상품명", "저자", "출판사", "판매가"]] + [
-        [b.get("rank", ""), b.get("title", ""), b.get("author", ""), b.get("publisher", ""), b.get("price", "")]
-        for b in last]
     with open(os.path.join(YES24_DIR, "meta.js"), "w", encoding="utf-8") as f:
         f.write("window.YES24_META = ")
         json.dump(meta, f, ensure_ascii=False)
