@@ -27,3 +27,12 @@ desktop.ini
 # 빌드 산출물
 *.exe
 *.log
+
+# 교정 평가 실행 산출물
+eval/proofread/results/
+eval/proofread/seeded.json
+# 평가용 원고와 그 본문 사본 — 비공개(로컬에만 보관)
+eval/proofread/원고/
+eval/proofread/source.md
+eval/proofread/source.json
+eval/proofread/source_md.json

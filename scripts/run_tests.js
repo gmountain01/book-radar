@@ -142,20 +142,23 @@ function testProofreadFixtures(sandbox) {
 }
 
 // ── 실행 ─────────────────────────────────────────────────────
+const SCRIPTS = [
+  'shared/config.js',
+  'shared/api-keys.js', // gitignore — CI에는 없을 수 있음 (선택)
+  'shared/app.js',
+  'panels/panel8/loanword-data.js',
+  'panels/panel8/교정규칙.js',
+  'panels/panel8/test-fixtures.js',
+  'libs/es-hangul/browser.js',
+  'panels/panel8/hwp5.js',
+  'panels/panel8/review-policy.js',
+  'panels/panel8/korean-style.js',
+  'panels/panel8/panel8.js',
+];
+
 function main() {
   const sandbox = makeSandbox();
-  const scripts = [
-    'shared/config.js',
-    'shared/api-keys.js', // gitignore — CI에는 없을 수 있음 (선택)
-    'shared/app.js',
-    'panels/panel8/loanword-data.js',
-    'panels/panel8/교정규칙.js',
-    'panels/panel8/test-fixtures.js',
-    'libs/es-hangul/browser.js',
-    'panels/panel8/review-policy.js',
-    'panels/panel8/korean-style.js',
-    'panels/panel8/panel8.js',
-  ];
+  const scripts = SCRIPTS;
   console.log('스크립트 로드 (런타임 top-level 오류도 함께 검증):');
   for (const s of scripts) {
     if (!fs.existsSync(path.join(ROOT, s))) { console.log('  - ' + s + ' 없음 (건너뜀)'); continue; }
@@ -177,4 +180,6 @@ function main() {
   process.exit(failures ? 1 : 0);
 }
 
-main();
+// eval/proofread/run_eval.js가 같은 샌드박스를 재사용
+module.exports = { makeSandbox, loadScript, SCRIPTS, ROOT };
+if (require.main === module) main();

@@ -405,9 +405,55 @@ function _joinItemsWithSpacing(items) {
  * - 이전 줄이 마침표/물음표/느낌표/콜론으로 끝남 → 문장 끝 (\n)
  * - 그 외 → 강제 개행 → 공백으로 연결 (문장 이어붙이기)
  */
+// 고정폭(코드) 글꼴 판별 — pdf.js가 FixedPitch 플래그를 주면 그대로 쓰고,
+// 아니면 같은 글꼴의 영문 조각들이 길이와 무관하게 글자당 폭이 일정한지(±4%)로 판단한다.
+// ponytail: 페이지 단위 판단이라 한 쪽에 코드 줄이 1개뿐이면 놓친다(문서 단위 누적으로 확장 가능).
+function _markMonoItems(content) {
+  const styles = content.styles || {};
+  const ratios = {};
+  for (const it of content.items) {
+    const s = (it.str || '').trim();
+    const fs = it.transform ? Math.abs(it.transform[0]) : 0;
+    // 한글·한자가 없는 조각만(전각 글자는 고정폭처럼 보여 판별을 흐린다). 유니코드 하이픈 등은 허용
+    if (s.length >= 3 && !/[ᄀ-ᇿ㄰-㆏가-힣぀-ヿ一-鿿]/.test(s) && fs && it.width) {
+      (ratios[it.fontName] ||= []).push(it.width / (it.str.length * fs));
+    }
+  }
+  const mono = {};
+  for (const [font, rs] of Object.entries(ratios)) {
+    const st = styles[font] || {};
+    if (st.fontFamily === 'monospace') { mono[font] = true; continue; }
+    if (rs.length < 2) continue;
+    const mean = rs.reduce((a, b) => a + b, 0) / rs.length;
+    mono[font] = (Math.max(...rs) - Math.min(...rs)) / mean < 0.04;
+  }
+  for (const it of content.items) it.mono = !!mono[it.fontName] || (styles[it.fontName] || {}).fontFamily === 'monospace';
+}
+
+// ── PDF 줄 → Markdown 표시 ──
+// 고정폭 글꼴 줄 = 코드(```로 묶고 줄바꿈 유지), 본문보다 큰 짧은 줄 = 제목(##/###), 글머리 기호 = 목록(-)
+function _stripMdPrefix(line) { return line.trim().replace(/^(?:#{1,6}|-)\s+/, ''); }
+function _isCodeLine(line) {
+  const its = (line.items || []).filter(it => it.str && it.str.trim());
+  return its.length > 0 && its.every(it => it.mono);
+}
+function _lineFontSize(line, fallback) {
+  const it = line.items && line.items[0];
+  return it && it.transform ? Math.abs(it.transform[0]) : fallback;
+}
+function _mdLine(line, bodyFontSize) {
+  const t = line.text.trim();
+  const fs = _lineFontSize(line, bodyFontSize);
+  if (t.length < 60 && !/[.!?:;。,]$/.test(t)) {
+    if (fs >= bodyFontSize * 1.4) return '## ' + t;
+    if (fs >= bodyFontSize * 1.15) return '### ' + t;
+  }
+  return t.replace(/^[•·▪◦●○■□]\s*/, '- ');
+}
+
 function _joinLinesSmartly(lines, pageH) {
   if (!lines.length) return '';
-  if (lines.length === 1) return lines[0].text;
+  if (lines.length === 1) return _isCodeLine(lines[0]) ? '```\n' + lines[0].text + '\n```' : _mdLine(lines[0], _lineFontSize(lines[0], 10));
   // 줄 간격(행간) 추정: 전체 줄 간격의 중앙값
   const gaps = [];
   for (let i = 1; i < lines.length; i++) {
@@ -427,8 +473,20 @@ function _joinLinesSmartly(lines, pageH) {
   fontSizes.sort(function(a, b) { return a - b; });
   var bodyFontSize = fontSizes.length ? fontSizes[Math.floor(fontSizes.length / 2)] : 10;
 
-  var parts = [lines[0].text];
-  for (var i = 1; i < lines.length; i++) {
+  var parts = [];
+  var inCode = false;
+  for (var i = 0; i < lines.length; i++) {
+    // 코드 줄: 공백으로 이어 붙이지 않고 줄 단위로 코드 블록에 담는다
+    if (_isCodeLine(lines[i])) {
+      parts.push((inCode ? '\n' : (i ? '\n' : '') + '```\n') + lines[i].text);
+      inCode = true;
+      continue;
+    }
+    if (inCode || i === 0) {
+      parts.push((inCode ? '\n```\n' : '') + _mdLine(lines[i], bodyFontSize));
+      inCode = false;
+      continue;
+    }
     var prevText = lines[i - 1].text.trimEnd();
     var yGap = Math.abs(lines[i - 1].y - lines[i].y);
 
@@ -451,11 +509,12 @@ function _joinLinesSmartly(lines, pageH) {
       /[.!?:;。]\s*$/.test(prevText) ||               // 문장 종결 부호
       /^[\s]*$/.test(prevText) ||                      // 빈 줄
       /^(Chapter|CHAPTER|Part|PART|\d+[.-]\d+|제\s*\d+)/.test(lines[i].text.trim()) || // 헤딩 시작
+      /^[•·▪◦●○■□]/.test(lines[i].text.trim()) ||    // 글머리 기호(목록 항목)
       fontSizeChanged ||                              // 폰트 크기 변화 (제목↔본문)
       boldChanged ||                                  // Bold → Regular 전환
       prevLooksHeading;                               // 이전 줄이 제목 형태
     if (isParagraphBreak) {
-      parts.push('\n' + lines[i].text);
+      parts.push('\n' + _mdLine(lines[i], bodyFontSize));
     } else {
       // 강제 개행 → 공백으로 연결
       // 한글-한글 사이에 불필요한 공백 방지
@@ -465,6 +524,7 @@ function _joinLinesSmartly(lines, pageH) {
       parts.push(needSpace ? ' ' + lines[i].text : lines[i].text);
     }
   }
+  if (inCode) parts.push('\n```');
   return parts.join('');
 }
 
@@ -729,10 +789,29 @@ function textToExtracted(filename, fullText) {
 async function extractDOCX(file) {
   if (typeof mammoth === 'undefined') throw new Error('mammoth.js 라이브러리를 로드할 수 없습니다. 인터넷 연결을 확인하세요.');
   const ab = await file.arrayBuffer();
-  const result = await mammoth.extractRawText({ arrayBuffer: ab });
-  if (!result.value || result.value.trim().length < 10)
+  // HTML로 받아 Markdown으로 — 제목·목록·표·코드 구조를 살린다.
+  // (mammoth.convertToMarkdown은 마침표·괄호에 \ 이스케이프를 넣어 교정 대조를 깨므로 쓰지 않음)
+  const result = await mammoth.convertToHtml({ arrayBuffer: ab });
+  const md = result.value ? _htmlToMd(result.value) : '';
+  if (!md || md.trim().length < 10)
     throw new Error('DOCX 파일에서 텍스트를 추출하지 못했습니다. 파일이 손상되지 않았는지 확인하세요.');
-  return textToExtracted(file.name, _compressForTokens(result.value));
+  return textToExtracted(file.name, _compressForTokens(md));
+}
+
+/** mammoth HTML → Markdown (블록 단위, 빈 줄로 구분) */
+function _htmlToMd(html) {
+  const body = new DOMParser().parseFromString(html, 'text/html').body;
+  const txt = el => el.textContent.replace(/\s+/g, ' ').trim();
+  const out = [];
+  for (const el of body.children) {
+    const tag = el.tagName.toLowerCase();
+    if (/^h[1-6]$/.test(tag)) out.push('#'.repeat(+tag[1]) + ' ' + txt(el));
+    else if (tag === 'ul' || tag === 'ol') out.push([...el.children].map((li, i) => (tag === 'ol' ? (i + 1) + '. ' : '- ') + txt(li)).join('\n'));
+    else if (tag === 'pre') out.push('```\n' + el.textContent.trim() + '\n```');
+    else if (tag === 'table') out.push([...el.querySelectorAll('tr')].map(tr => '| ' + [...tr.children].map(txt).join(' | ') + ' |').join('\n'));
+    else if (txt(el)) out.push(txt(el));
+  }
+  return out.join('\n\n');
 }
 
 /** HWPX (ZIP+XML) → JSZip으로 압축 풀고 hp:t 요소에서 텍스트 추출
@@ -755,6 +834,17 @@ async function extractHWPX(file) {
 
   if (!sectionFiles.length) throw new Error('HWPX 파일 내 본문 섹션을 찾을 수 없습니다.');
 
+  // 개요 문단 → Markdown 제목: header.xml의 paraPr에 <hh:heading type="OUTLINE" level="n"/>가 있으면 그 수준
+  const outlineLevel = {};
+  const headerFile = Object.keys(zip.files).find(n => /^Contents\/header\.xml$/i.test(n));
+  if (headerFile) {
+    const hx = await zip.files[headerFile].async('string');
+    for (const m of hx.matchAll(/<(?:hh:)?paraPr\s[^>]*\bid="(\d+)"[\s\S]*?<\/(?:hh:)?paraPr>/g)) {
+      const h = m[0].match(/<(?:hh:)?heading\s[^>]*type="OUTLINE"[^>]*\blevel="(\d+)"/);
+      if (h) outlineLevel[m[1]] = +h[1];
+    }
+  }
+
   let fullText = '';
   for (const fname of sectionFiles) {
     const xml = await zip.files[fname].async('string');
@@ -770,36 +860,26 @@ async function extractHWPX(file) {
     const lines = [];
     for (const pTag of paragraphs) {
       const tMatches = pTag.match(/<(?:hp:)?t(?:\s[^>]*)?>([^<]*)<\/(?:hp:)?t>/g) || [];
-      const lineText = tMatches.map(m => m.replace(/<[^>]+>/g, '')).join('');
-      if (lineText.trim()) lines.push(lineText.trim());
+      const lineText = tMatches.map(m => m.replace(/<[^>]+>/g, '')).join('').trim()
+        .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, '&');
+      if (!lineText) continue;
+      const pr = (pTag.match(/\bparaPrIDRef="(\d+)"/) || [])[1];
+      const lv = pr !== undefined ? outlineLevel[pr] : undefined;
+      lines.push(lv !== undefined ? '#'.repeat(Math.min(lv + 1, 6)) + ' ' + lineText : lineText.replace(/^[•·▪◦●○■□]\s*/, '- '));
     }
-    if (lines.length) fullText += lines.join('\n') + '\n\n';
+    // 문단을 빈 줄로 구분 — 줄바꿈 한 번이면 섹션 전체가 한 페이지로 뭉친다
+    if (lines.length) fullText += lines.join('\n\n') + '\n\n';
   }
   if (!fullText.trim()) throw new Error('HWPX 파일에서 텍스트를 추출하지 못했습니다.');
   return textToExtracted(file.name, _compressForTokens(fullText));
 }
 
-/**
- * HWP binary (OLE Compound Document) — 브라우저에서 신뢰 가능한 텍스트 추출 불가.
- * HWP 바이너리는 텍스트를 zlib 압축 OLE 스트림에 저장하므로
- * 바이트 스캔 방식은 OLE 메타데이터에서 우연히 일치하는 쓰레기 값을 반환한다.
- * → 잘못된 텍스트로 교정 검사를 수행하는 것보다 명확한 안내가 낫다.
- */
+/** HWP 5.x 바이너리 — hwp5.js(XLSX.CFB + DecompressionStream)로 문단 추출 */
 async function extractHWP(file) {
-  throw new Error(
-    'HWP 바이너리 파일은 브라우저에서 텍스트를 정확히 추출할 수 없습니다.\n\n' +
-    '■ 변환 방법 (택 1):\n' +
-    '① [권장] 한컴오피스 → 파일 → 다른 이름으로 저장 → "HWPX(.hwpx)" 선택\n' +
-    '   (교정 품질 가장 높음 — 서식·표·각주 모두 보존)\n' +
-    '② 한컴오피스 → 파일 → 내보내기 → PDF\n' +
-    '   (서식 보존되나 텍스트 추출 품질 PDF 의존)\n' +
-    '③ 한컴오피스 → 파일 → 다른 이름으로 저장 → "DOCX(.docx)"\n\n' +
-    '■ 한컴오피스가 없는 경우:\n' +
-    '④ 한컴오피스 뷰어(무료)에서 열기 → "다른 이름으로 저장 → HWPX"\n' +
-    '   https://www.hancom.com/viewer\n' +
-    '⑤ 한컴 스페이스(웹) → 업로드 → HWPX로 다운로드\n' +
-    '   https://space.hancom.com'
-  );
+  if (!window.P8Hwp5) throw new Error('HWP 추출기(hwp5.js)를 불러오지 못했습니다. 새로고침 후 다시 시도하세요.');
+  const paras = await window.P8Hwp5.extractParagraphs(await file.arrayBuffer());
+  // 문단마다 빈 줄로 구분해야 textToExtracted가 ~1500자 페이지로 나눈다
+  return textToExtracted(file.name, _compressForTokens(paras.filter(t => t.trim()).join('\n\n')));
 }
 
 /** DOC (구형 바이너리 Word) — mammoth.js 시도 → 바이너리 텍스트 추출 폴백 → 안내 */
@@ -867,6 +947,7 @@ async function extractPDF(file) {
     if (i % 10 === 0) await new Promise(r => setTimeout(r, 0));
     const pg = await pdf.getPage(i);
     const content = await pg.getTextContent();
+    _markMonoItems(content);
     const vp = pg.getViewport({ scale: 1 });
     const pageH = vp.height;
     const pageW = vp.width;
@@ -1045,7 +1126,7 @@ function _stripPdfRepeatingRegions(pages) {
       for (const pat of repeatingTop) {
         const parts = pat.split('|');
         for (const part of parts) {
-          const idx = newLines.findIndex(l => l.trim() === part);
+          const idx = newLines.findIndex(l => _stripMdPrefix(l) === part);
           if (idx !== -1 && idx <= 2) {
             newLines = [...newLines.slice(0, idx), ...newLines.slice(idx + 1)];
             removed++;
@@ -1059,7 +1140,7 @@ function _stripPdfRepeatingRegions(pages) {
         const parts = pat.split('|');
         for (const part of parts) {
           for (let i = newLines.length - 1; i >= Math.max(0, newLines.length - 3); i--) {
-            if (newLines[i].trim() === part) {
+            if (_stripMdPrefix(newLines[i]) === part) {
               newLines = [...newLines.slice(0, i), ...newLines.slice(i + 1)];
               removed++;
               break;
@@ -1410,7 +1491,22 @@ const TRANSITION_PATS = [
   [/달려\s*있다고\s*할\s*수\s*있습니다/g, '문단연결불량', 'low', '이 문장 이후 새 주제 전환 시 "한편"·"이와 달리" 등 전환어 삽입 권장'],
 ];
 
+// 규칙 검사에서 산문이 아닌 부분(코드 블록·인라인 코드·URL·MD 제목 기호)을 가린다.
+// 같은 길이의 '░'로 바꿔 글자 위치(start)를 보존 — 공백으로 바꾸면 '불필요한 공백' 규칙이 오탐한다.
+function _maskNonProse(text) {
+  const hide = s => s.replace(/[^\n]/g, '░');
+  return text
+    .replace(/```[\s\S]*?(?:```|$)/g, hide)
+    .replace(/`[^`\n]+`/g, hide)
+    .replace(/https?:\/\/[^\s)>\]]+/g, hide)
+    .replace(/^#{1,6}[ \t]/gm, hide);
+}
+function _maskedExtracted(extracted) {
+  return { ...extracted, pages: extracted.pages.map(p => ({ ...p, text: _maskNonProse(p.text || '') })) };
+}
+
 function checkSurface(extracted) {
+  extracted = _maskedExtracted(extracted);
   const issues = [];
 
   function addAll(pats, text, page) {
@@ -1843,6 +1939,7 @@ const COMMON_EN = new Set([
 ]);
 
 function checkTermConsistency(extracted) {
+  extracted = _maskedExtracted(extracted);
   const issues = [];
   // token key(소문자) → { variant 원문 → pages[] }
   const tokenMap = {};
@@ -2128,6 +2225,9 @@ rulesChunks = parseRulesIntoChunks(DEFAULT_RULES_MD);
 // 언어 검사 (Claude API)
 // ──────────────────────────────────────────────
 const SYS = `You are a professional Korean book editor with 15+ years in IT/tech publishing. Your writing philosophy: every sentence should sound like a real person wrote it, not a machine. Analyze the given text thoroughly and return ONLY valid JSON.
+
+[입력 형식] 원고는 Markdown으로 변환되어 있다. #은 제목, "- "는 목록, \`\`\` 블록과 \`인라인 코드\`는 코드다.
+코드·명령어·URL·파일명은 교정하지 말 것. found에는 #, - 같은 Markdown 기호를 넣지 말고 원고 글자만 그대로 복사할 것.
 
 [윤문 핵심 원칙]
 When suggesting rewrites (suggestion), follow these writing principles:
@@ -2547,7 +2647,9 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError, pagesOverrid
         // 컨텍스트 페이지 포함 범위 — AI가 이전 문맥에서 found를 가져왔을 때도 할루시네이션 오탐 방지
         const fullText = prevPage ? prevPage.text + '\n' + batchText : batchText;
         for (const iss of (parsed.issues || [])) {
-          const found = (iss.found || '').trim();
+          // AI가 Markdown 제목·목록 기호까지 복사해 오면 떼어 낸다(원고 대조·교정본 치환용)
+          const found = (iss.found || '').trim().replace(/^(?:#{1,6}|-)\s+/, '');
+          iss.found = found;
           // 할루시네이션 필터: found가 실제 텍스트에 없으면 제외
           if (!found || !fullText.includes(found)) continue;
           // 컨텍스트 전용 페이지 이슈는 건너뜀 (이미 이전 배치에서 처리됨)
@@ -4271,4 +4373,14 @@ document.addEventListener('DOMContentLoaded', () => {
   window.p8_runTests = p8_runTests;
   window.p8_computeTestResults = p8_computeTestResults;
   window.p8_downloadCorrected = p8_downloadCorrected;
+  // 교정에 사용한 Markdown 변환본 저장 — 추출이 제대로 됐는지(제목·코드·목록 구조) 사람이 확인하는 용도
+  window.p8_downloadMarkdown = function() {
+    const ex = _reviewExtracted || (getCache(currentFileKey || '') || {}).extracted;
+    if (!ex || !ex.pages || !ex.pages.length) { alert('변환된 원고가 없습니다. 먼저 검사를 실행하세요.'); return; }
+    const md = ex.pages.map(p => `<!-- p.${p.page} -->\n${p.text}`).join('\n\n');
+    const base = (ex.filename || 'manuscript').replace(/\.[^.]+$/, '');
+    _dlBlob(new Blob([md], { type: 'text/markdown;charset=utf-8' }), base + '.md');
+  };
+  // 교정율 평가(eval/proofread/run_eval.js)용 — 앱과 같은 검사 함수를 그대로 호출
+  window.__p8Eval = { checkSurface, checkTermConsistency, checkLinguistic, _cleanSuggestion, CROSS_TYPES, textToExtracted, _compressForTokens };
 })();
