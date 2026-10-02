@@ -156,7 +156,7 @@ const SCRIPTS = [
   'panels/panel8/panel8.js',
 ];
 
-function main() {
+async function main() {
   const sandbox = makeSandbox();
   const scripts = SCRIPTS;
   console.log('스크립트 로드 (런타임 top-level 오류도 함께 검증):');
@@ -172,7 +172,7 @@ function main() {
 
   testParseAiJson(sandbox);
   testProofreadFixtures(sandbox);
-  require('./test_proofread_review.js')(sandbox);
+  await require('./test_proofread_review.js')(sandbox);
   require('./test_author_search.js');
   require('./test_market_feed.js');
 
@@ -182,4 +182,4 @@ function main() {
 
 // eval/proofread/run_eval.js가 같은 샌드박스를 재사용
 module.exports = { makeSandbox, loadScript, SCRIPTS, ROOT };
-if (require.main === module) main();
+if (require.main === module) main().catch(e => { console.error(e); process.exit(1); });
