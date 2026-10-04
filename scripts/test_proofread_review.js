@@ -37,7 +37,7 @@ module.exports = async function(sandbox) {
     filters(){return {currentSev,activeResolvedFilter};},
     staleFilters(){currentSev='high';activeResolvedFilter='resolved';},
     set(issues){allIssues=issues;currentFileKey='test-book';resolvedIndices.clear();_ignoredOnce.clear();_reviewSettings=P8Review.empty();},
-    resolve(i){resolvedIndices.add(i);},corrections:_getCorrections,rewrite:_rewriteParticleRepeats,clean:_cleanSuggestion};\n`+code.slice(end);
+    resolve(i){resolvedIndices.add(i);},corrections:_getCorrections,rewrite:_rewriteParticleRepeats,clean:_cleanSuggestion,parseNaver:_parseNaverResult};\n`+code.slice(end);
   vm.runInContext(code,sandbox);
   const test=sandbox.__reviewTest;
   for (const word of ['차이가','나이가','고양이가','종이가','어린이가','먹이가','높이가','길이가','사이가','철수가이']) {
@@ -97,6 +97,13 @@ module.exports = async function(sandbox) {
   for (const sg of ['"~에서"로 바꾸세요','"함께" 또는 "같이" 하나만 사용','~할 때','단일 수동 또는 능동으로 변환','"하게 되"로 수정'])
     assert.equal(test.clean({source:'surface',suggestion:sg}),'',sg);
   assert.equal(test.clean({source:'surface',suggestion:'따라 하기 (본동사+본동사는 띄어 씀)'}),'따라 하기');
+  // 네이버가 사전에 없는 단어에 밑줄만 치고 같은 단어를 돌려주면 지적하지 않음 (실제 응답 형태)
+  { const ce=sandbox.document.createElement;
+    sandbox.document.createElement=()=>({set innerHTML(h){this.textContent=h.replace(/<[^>]+>/g,'');}});
+    const r=test.parseNaver({errata_count:2,origin_html:"<span class='result_underline'>에이전틱</span> AI를 <span class='result_underline'>됬다</span>",
+      html:"<em class='violet_text'>에이전틱</em> AI를 <em class='red_text'>됐다</em>"});
+    sandbox.document.createElement=ce;
+    assert.deepEqual(r.map(t=>t.found),['됬다'],JSON.stringify(r)); }
   // 외래어: 단어를 잘라 잡지 않고(와이파+이, 플라스+틱), 상표·다른 원어 고유명사는 건너뜀, 위치·앞뒤 글자로 안전 치환
   { const lwText='와이파이 8과 플라스틱 컵, 루스킨S, 옵사이드(Obside)를 쓴다. 홈 디렉토리를 지웠다. 디렉토리서비스는 다르다.';
     const lw=test.checkSurface({pages:[{page:1,text:lwText}]}).filter(i=>i.type==='외래어표기오류');
@@ -121,5 +128,19 @@ module.exports = async function(sandbox) {
   assert(rep.suggestion===fixed && !rep.noAutoReplace && !rep.needsRewrite && rep.description.includes('조사를 바꾸거나'));
   test.set([rep]);test.resolve(0);
   assert.deepEqual(test.corrections().map(c=>c.repl),[fixed],'Rewritten sentence replaces the whole sentence');
-  console.log('PASS: particle repeat — whole-sentence target, guidance never applied, AI rewrite applied');
+  // 키 없을 때 지시문을 수정안 칸에 되풀이하지 않음
+  const plain=test.checkSurface({pages:[{page:1,text:'첫 문장입니다. '+repSent}]}).find(i=>i.type==='조사중복');
+  assert.equal(plain.suggestion,'','Directive must not be repeated as the suggestion');
+  // 여러 줄 문장도 고친 문장을 예시로 받되 원고에는 자동 적용하지 않음 / 60건 넘어도 전부 처리(배치)
+  const longSent='그 값은 큰으로 바꾸고\n상으로 옮긴 뒤 적으로 다시 나눕니다.';
+  const ml=test.checkSurface({pages:[{page:1,text:'첫 문장입니다. '+longSent}]}).find(i=>i.type==='조사중복');
+  assert(ml && ml.needsRewrite && ml.rewritable===false && !ml.sentence.includes('\n'));
+  const many=[ml,...Array.from({length:69},()=>({...plain}))];
+  let calls=0;
+  sandbox.callClaudeApi=async opts=>{calls++;const items=JSON.parse(opts.prompt.slice(opts.prompt.indexOf('[')));return JSON.stringify(items.map(it=>({i:it.i,text:'고친 '+it.i})));};
+  try { assert.equal(await test.rewrite(many,'sk-ant-test'),70); } finally { sandbox.callClaudeApi=realApi; }
+  assert.equal(calls,2,'70 sentences → 2 batches');
+  assert(ml.suggestion==='고친 0' && ml.noAutoReplace,'Multi-line sentence: example only');
+  assert(many[69].suggestion && !many[69].noAutoReplace,'Sentences past 60 are rewritten too');
+  console.log('PASS: particle repeat — whole-sentence target, guidance never applied, AI rewrite applied, examples for multi-line, batches past 60');
 };
