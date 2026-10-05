@@ -2590,6 +2590,12 @@ function _isSameSuggestion(found, suggestion) {
   return norm(found) === norm(suggestion);
 }
 
+/** 조사중복 전용: 쉼표·띄어쓰기만 바뀐 문장은 고친 것이 아니다 (띄어쓰기·문장부호 지적에는 쓰지 말 것) */
+function _sameIgnoringPunct(a, b) {
+  const norm = s => String(s || '').replace(/[\s,.·…!?;:'"“”‘’()[\]\-]/g, '');
+  return norm(a) === norm(b);
+}
+
 // shared/app.js parseAiJson으로 위임 (FIX-30). window.parseAiJson 폴백 방어.
 function _parseClaudeJson(raw) {
   return (typeof parseAiJson === 'function' ? parseAiJson : window.parseAiJson)(raw);
@@ -2608,10 +2614,35 @@ async function _rewriteParticleRepeats(issues, apiKey) {
   return n;
 }
 
+/** 고친 문장에 같은 조사 반복이 아직 남았는지 (규칙 검사를 그대로 다시 돌려 확인) */
+function _stillRepeats(t, text) {
+  const key = (t.description || '').split(' 조사가')[0].split(' ')[0]; // "'를'" 또는 "다중조사"
+  return checkSurface({ pages: [{ page: 1, text: text.padEnd(20) }] })
+    .some(i => i.type === '조사중복' && (i.description || '').startsWith(key));
+}
+
 async function _rewriteParticleBatch(targets, apiKey) {
+  await _rewriteParticleCall(targets, apiKey, '');
+  // 고친 문장이 안 왔거나(쉼표·띄어쓰기만 바꿈) 반복이 남은 문장은 한 번 더 요청
+  const weak = targets.filter(t => t.needsRewrite || _stillRepeats(t, t.suggestion));
+  if (weak.length) await _rewriteParticleCall(weak, apiKey, '- 이전 시도에서 반복이 그대로 남았다. 쉼표만 넣지 말고 조사 자체를 바꾸거나 명사형·연결어미로 풀어라.\n');
+  // 두 번 다 실패하면 예시를 내지 않고 이유만 남긴다 (원문과 거의 같은 문장이 수정안처럼 보임)
+  for (const t of weak) {
+    if (t.needsRewrite) {
+      t.rewriteError = 'AI가 원문과 같은 문장(쉼표·띄어쓰기만 다름)을 돌려줬습니다. 예시 만들기로 다시 시도해 보세요.';
+    } else if (_stillRepeats(t, t.suggestion)) {
+      Object.assign(t, { suggestion: '', noAutoReplace: true, source: 'surface',
+        rewriteError: 'AI가 두 번 시도했지만 조사 반복을 줄이지 못했습니다. 예시 만들기로 다시 시도해 보세요.' });
+    }
+  }
+  return targets.filter(t => t.source === 'surface+ai' && t.suggestion).length;
+}
+
+async function _rewriteParticleCall(targets, apiKey, extra) {
   const sys = '너는 한국어 출판 교정자다. 각 문장에서 같은 조사가 반복되는 문제만 고친다.\n' +
     '- 뜻·용어·숫자·고유명사·종결어미(문체)는 그대로 둔다. 반복과 무관한 부분은 바꾸지 않는다.\n' +
-    '- 조사를 바꾸거나 어순을 다듬고, 꼭 필요할 때만 두 문장으로 나눈다.\n' +
+    '- 지적된 조사가 고친 문장에서 2회 이하가 되게 한다. 쉼표만 넣는 것은 고친 것이 아니다.\n' +
+    '- 조사를 바꾸거나 어순을 다듬고, 꼭 필요할 때만 두 문장으로 나눈다.\n' + extra +
     '- 출력은 JSON 배열만: [{"i": 번호, "text": "고친 문장"}]. 고칠 필요가 없으면 그 번호는 빼라.' +
     (_hasUserRules ? '\n\n## 사용자 교정 규칙 (최우선)\n' + _userRulesText : '');
   const items = targets.map((t, i) => ({ i, problem: t.description, text: t.sentence || t.found }));
@@ -2625,7 +2656,7 @@ async function _rewriteParticleBatch(targets, apiKey) {
   for (const r of list) {
     const t = targets[r && r.i];
     const text = r && typeof r.text === 'string' ? r.text.trim() : '';
-    if (!t || !text || _isSameSuggestion(t.sentence || t.found, text)) continue;
+    if (!t || !text || _sameIgnoringPunct(t.sentence || t.found, text)) continue;
     t.suggestion = text;          // 카드에는 원문 → 고친 문장 비교, 지시문은 description에 남음
     t.noAutoReplace = t.rewritable === false; // 긴·여러 줄 문장은 예시로만 (원고와 정확히 맞출 수 없음)
     t.needsRewrite = false;       // 캐시로 돌아와도 다시 호출하지 않음
@@ -2694,7 +2725,7 @@ async function checkLinguistic(extracted, apiKey, onBatch, onError, pagesOverrid
           if (prevPage && prevPage.text.includes(found) && !batchText.includes(found)) continue;
           // 동일 내용 필터: suggestion이 found와 실질적으로 같으면 제외
           const sugg = (iss.suggestion || '').trim();
-          if (sugg && _isSameSuggestion(found, sugg)) {
+          if (sugg && (_isSameSuggestion(found, sugg) || (iss.type === '조사중복' && _sameIgnoringPunct(found, sugg)))) {
             console.info(`[교정] suggestion≈found 제거 (${iss.type}): "${found.slice(0,40)}"`);
             continue;
           }
@@ -2855,7 +2886,7 @@ async function p8_startProofread() {
     surfaceIssues = [...checkSurface(extracted), ...checkTermConsistency(extracted)];
     surfaceIssues.forEach(i => {
       const r = rewritten.get(i.page + '|' + i.found);
-      if (r && i.type === '조사중복') Object.assign(i, { suggestion: r.suggestion, noAutoReplace: r.noAutoReplace, needsRewrite: false, source: r.source });
+      if (r && i.type === '조사중복' && !_sameIgnoringPunct(i.sentence || i.found, r.suggestion) && !_stillRepeats(i, r.suggestion)) Object.assign(i, { suggestion: r.suggestion, noAutoReplace: r.noAutoReplace, needsRewrite: false, source: r.source });
     });
     surfaceIssues = surfaceIssues.concat(old.filter(i => i.source === 'naver' && !/^맞춤법: '(.*)' → '\1'$/.test(i.description || '')));
     stepDone(2, `캐시 ⚡ ${surfaceIssues.length}건`);
@@ -3034,7 +3065,11 @@ async function p8_startProofread() {
     try {
       const n = await _rewriteParticleRepeats(surfaceIssues, apiKey);
       if (n) console.info(`[교정] 조사중복 수정 문장 ${n}건 생성`);
-    } catch (e) { console.warn('[교정] 조사중복 다시 쓰기 실패 — 지시문 유지', e); }
+    } catch (e) {
+      console.warn('[교정] 조사중복 다시 쓰기 실패 — 지시문 유지', e);
+      const why = String(e.message || e).split('\n')[0];
+      surfaceIssues.forEach(i => { if (i.type === '조사중복' && !i.suggestion) i.rewriteError = why; });
+    }
   }
 
   // ── Step 5: 결과 정리 ──
@@ -3509,7 +3544,8 @@ function renderIssues(issues, indices = new Map(allIssues.map((issue, index) => 
         </div>` : ''}
         ${!iss.alts && !hasSuggestion && iss.type === '조사중복' ? `<div class="diff-row diff-after">
           <span class="diff-label">수정안</span>
-          <span class="diff-content" style="color:#888;">고친 문장 예시는 Claude API 키를 등록하고 검사하면 AI가 만들어 줍니다.</span>
+          <span class="diff-content" style="color:#888;">${iss.rewriteError ? '예시 생성 실패: ' + esc(iss.rewriteError) : '아직 고친 문장 예시가 없습니다.'}</span>
+          <button class="btn-copy" onclick="p8_rewriteOne(${globalIdx}, this)" title="AI로 이 문장의 고친 예시 만들기">예시 만들기</button>
         </div>` : ''}
         ${iss.verifyUrl ? `<div class="diff-row" style="background:#fef3c7;border-left:3px solid #f59e0b;padding:4px 8px;margin-top:2px;border-radius:4px;">
           <span class="diff-label" style="color:#b45309;">검증</span>
@@ -3524,6 +3560,27 @@ function esc(s) {
   return String(s||'')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;');
+}
+
+/** 카드의 '예시 만들기' — 조사중복 문장 하나를 바로 AI로 고쳐 쓴다 (실패 이유를 카드에 표시) */
+async function p8_rewriteOne(globalIdx, btn) {
+  const iss = allIssues[globalIdx];
+  if (!iss) return;
+  let key = '';
+  try { key = (typeof loadApiKey === 'function' ? await loadApiKey() : '') || ''; } catch (e) { console.warn('[panel8] p8_rewriteOne: 키 로드 실패', e); }
+  if (!key) { const inp = document.getElementById('p8_apiKey'); key = inp ? inp.value.trim() : ''; }
+  if (!key.startsWith('sk-ant-')) {
+    alert('Claude API 키가 없습니다.\n\n교정 도우미의 API 키 칸에 sk-ant- 로 시작하는 키를 입력한 뒤 다시 눌러 주세요.');
+    return;
+  }
+  if (btn) { btn.disabled = true; btn.textContent = '만드는 중…'; }
+  iss.needsRewrite = true;
+  delete iss.rewriteError;
+  try {
+    if (!await _rewriteParticleRepeats([iss], key) && !iss.rewriteError) iss.rewriteError = 'AI가 원문과 같은 문장(쉼표·띄어쓰기만 다름)을 돌려줬습니다. 다시 눌러 보세요.';
+  } catch (e) { iss.rewriteError = String(e.message || e).split('\n')[0]; }
+  reviewHtmlCache.delete(document.getElementById('p8_issuesList'));
+  p8_applyFilters();
 }
 
 function p8_toggleResolve(globalIdx, btn) {
@@ -4426,6 +4483,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.p8_applyFilters = p8_applyFilters;
   window.p8_reset = p8_reset;
   window.p8_toggleResolve = p8_toggleResolve;
+  window.p8_rewriteOne = p8_rewriteOne;
   window.p8_copyText = p8_copyText;
   window.p8_filterSevChip = p8_filterSevChip;
   window.p8_filterResolved = p8_filterResolved;

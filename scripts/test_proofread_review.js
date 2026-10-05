@@ -142,5 +142,22 @@ module.exports = async function(sandbox) {
   assert.equal(calls,2,'70 sentences → 2 batches');
   assert(ml.suggestion==='고친 0' && ml.noAutoReplace,'Multi-line sentence: example only');
   assert(many[69].suggestion && !many[69].noAutoReplace,'Sentences past 60 are rewritten too');
+  // 쉼표만 넣어 반복이 남으면 한 번 더 요청
+  const weakRep=test.checkSurface({pages:[{page:1,text:'첫 문장입니다. '+repSent}]}).find(i=>i.type==='조사중복');
+  const comma='그 값은 큰으로 바꾸고, 상으로 옮긴 뒤 적으로 다시 나눕니다.';
+  let tries=0;
+  sandbox.callClaudeApi=async()=>JSON.stringify([{i:0,text:++tries===1?comma:fixed}]);
+  try { await test.rewrite([weakRep],'sk-ant-test'); } finally { sandbox.callClaudeApi=realApi; }
+  assert.equal(tries,2,'Comma-only rewrite must be retried');
+  assert.equal(weakRep.suggestion,fixed);
+  // 쉼표만 바꾼 문장은 처음부터 고친 것으로 치지 않고, 두 번 다 반복이 남으면 예시를 내지 않음
+  const stub=test.checkSurface({pages:[{page:1,text:'첫 문장입니다. '+repSent}]}).find(i=>i.type==='조사중복');
+  sandbox.callClaudeApi=async()=>JSON.stringify([{i:0,text:comma}]);
+  try { assert.equal(await test.rewrite([stub],'sk-ant-test'),0); } finally { sandbox.callClaudeApi=realApi; }
+  assert.equal(stub.suggestion,'','Comma-only rewrite must not be shown as an example');
+  const partial='그 값은 큰으로 바꾸고 상으로 옮긴 다음, 적으로 다시 나눕니다.'; // 반복 그대로
+  sandbox.callClaudeApi=async()=>JSON.stringify([{i:0,text:partial}]);
+  try { assert.equal(await test.rewrite([stub],'sk-ant-test'),0); } finally { sandbox.callClaudeApi=realApi; }
+  assert(stub.suggestion==='' && stub.noAutoReplace && /줄이지 못했/.test(stub.rewriteError),'Still-repeating rewrite must be dropped with a reason');
   console.log('PASS: particle repeat — whole-sentence target, guidance never applied, AI rewrite applied, examples for multi-line, batches past 60');
 };
