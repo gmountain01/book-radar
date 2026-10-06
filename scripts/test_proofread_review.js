@@ -159,5 +159,18 @@ module.exports = async function(sandbox) {
   sandbox.callClaudeApi=async()=>JSON.stringify([{i:0,text:partial}]);
   try { assert.equal(await test.rewrite([stub],'sk-ant-test'),0); } finally { sandbox.callClaudeApi=realApi; }
   assert(stub.suggestion==='' && stub.noAutoReplace && /줄이지 못했/.test(stub.rewriteError),'Still-repeating rewrite must be dropped with a reason');
+  // 문장을 '다음 단계'에서 자르지 않고, 반복 단어는 어절 전체로 보여 줌
+  const agent=test.checkSurface({pages:[{page:1,text:'첫 문장입니다. 에이전트는 계획을 세우고 행동을 선택하며 관찰을 바탕으로 다음 단계를 결정합니다.'}]}).find(i=>i.type==='조사중복');
+  assert(agent && agent.found.endsWith('다음 단계를 결정합니다.'),'Sentence must not be split after 다음: '+(agent&&agent.found));
+  assert(agent.description.includes('계획을, 행동을, 관찰을'),agent.description);
+  // AI가 답을 고쳐 쓰며 배열을 두 번 내도 마지막 배열을 읽음 / 빼 버리면 이유를 구분
+  const two=test.checkSurface({pages:[{page:1,text:'첫 문장입니다. '+repSent}]}).find(i=>i.type==='조사중복');
+  sandbox.callClaudeApi=async()=>'[{"i":0,"text":"'+repSent+'"}]\n잠깐, 다시 확인합니다.\n[{"i":0,"text":"'+fixed+'"}]';
+  try { assert.equal(await test.rewrite([two],'sk-ant-test'),1); } finally { sandbox.callClaudeApi=realApi; }
+  assert.equal(two.suggestion,fixed);
+  const om=test.checkSurface({pages:[{page:1,text:'첫 문장입니다. '+repSent}]}).find(i=>i.type==='조사중복');
+  sandbox.callClaudeApi=async()=>'[]';
+  try { await test.rewrite([om],'sk-ant-test'); } finally { sandbox.callClaudeApi=realApi; }
+  assert(/고칠 필요가 없는/.test(om.rewriteError),om.rewriteError);
   console.log('PASS: particle repeat — whole-sentence target, guidance never applied, AI rewrite applied, examples for multi-line, batches past 60');
 };

@@ -36,3 +36,8 @@ eval/proofread/원고/
 eval/proofread/source.md
 eval/proofread/source.json
 eval/proofread/source_md.json
+
+# 내용 검토 평가 — 원고 인용이 든 결과·사례 파일은 저장소에 넣지 않음
+eval/content/results/
+eval/content/*.json
+eval/content/*.md

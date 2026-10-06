@@ -145,6 +145,7 @@ function testProofreadFixtures(sandbox) {
 const SCRIPTS = [
   'shared/config.js',
   'shared/api-keys.js', // gitignore — CI에는 없을 수 있음 (선택)
+  'shared/usage-log.js',
   'shared/app.js',
   'panels/panel8/loanword-data.js',
   'panels/panel8/교정규칙.js',
@@ -173,6 +174,8 @@ async function main() {
   testParseAiJson(sandbox);
   testProofreadFixtures(sandbox);
   await require('./test_proofread_review.js')(sandbox);
+  await require('./test_structure_review.js');
+  await require('./test_usage_log.js')();
   require('./test_author_search.js');
   require('./test_market_feed.js');
 

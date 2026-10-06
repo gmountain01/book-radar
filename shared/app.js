@@ -298,21 +298,24 @@ window._hbKwClick = _hbKwClick;
 /**
  * localStorage 안전 저장 — 5MB 한도 초과 시 오래된 캐시 자동 정리 후 재시도
  */
-function safeLSSet(key, value) {
+function safeLSSet(key, value) { // 저장됐으면 true, 못 했으면 false (호출부가 실패를 알려야 할 때 씀)
   try {
     localStorage.setItem(key, value);
+    return true;
   } catch(e) {
     if (e.name === 'QuotaExceededError' || e.code === 22) {
       console.warn('[app] localStorage 한도 초과 — 캐시 정리 후 재시도');
       _gcLocalStorage();
       try {
         localStorage.setItem(key, value);
+        return true;
       } catch(e2) {
         console.warn('[app] localStorage 재시도 실패 — 저장 건너뜀', key, e2);
       }
     } else {
       console.warn('[app] localStorage 저장 실패', key, e);
     }
+    return false;
   }
 }
 
@@ -322,7 +325,7 @@ function safeLSSet(key, value) {
  */
 function _gcLocalStorage() {
   // 재생성 가능한 캐시만 대상 — 사용자 데이터(ub_*·설정·원고)는 지우지 않음
-  const CACHE_PREFIXES = ['pf_v3_', 'yt_apicache_', 'yt_search_cache', 'yt_trend_', 'kw_taxonomy_', '_cache_'];
+  const CACHE_PREFIXES = ['pf_v3_', 'p26_v1_', 'api_usage_v1', 'yt_apicache_', 'yt_search_cache', 'yt_trend_', 'kw_taxonomy_', '_cache_'];
   const entries = [];
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
@@ -330,7 +333,7 @@ function _gcLocalStorage() {
       try {
         const raw = localStorage.getItem(k);
         const parsed = JSON.parse(raw);
-        entries.push({ key: k, ts: parsed.ts || parsed.savedAt || 0 });
+        entries.push({ key: k, ts: parsed.ts || parsed.savedAt || parsed.cachedAt || 0 }); // pf_v3_·p26_v1_는 cachedAt에 저장
       } catch(_) {
         entries.push({ key: k, ts: 0 });
       }
@@ -427,7 +430,11 @@ function _cachedSystem(text) {
 
 // ━━━ 범용 Claude API 호출 ━━━
 // 모든 패널이 이 함수를 사용해야 함 (panel8·panel10 등)
-// opts: { apiKey, prompt, system?, model?, maxTokens?, temperature?, noPersona?, humanize? }
+// opts: { apiKey, prompt, system?, model?, maxTokens?, temperature?, noPersona?, humanize?, thinking?, tools?, full? }
+//   thinking: 예 {type:'adaptive'} — Sonnet 4.6 이상에서 확장 사고(켜면 temperature는 보내지 않음)
+//   tools: 서버 도구(예 웹 검색 {type:'web_search_20260209', name:'web_search', max_uses:5})
+//   full: true면 문자열 대신 { text, sources[{url,title,cited}], searchErrors[], searches, usage, stopReason } 반환
+//   usage: 사용량 기록 꼬리표 { task, batch, attempt, retryReason, runId } — 요청마다 UsageLog(shared/usage-log.js)에 한 건씩 남김
 //   humanize: 기본 true — 독자용 산문에 AI 티 억제 규칙(WRITING_HYGIENE) 적용.
 //             순수 데이터 추출/JSON만 뽑는 호출에서 불필요하면 false로 끌 수 있음(규칙은 자기-범위형이라 켜둬도 안전).
 async function callClaudeApi(opts) {
@@ -464,8 +471,27 @@ async function callClaudeApi(opts) {
       ];
     }
   }
-  if (opts.temperature !== undefined) body.temperature = opts.temperature;
+  if (opts.temperature !== undefined && !opts.thinking) body.temperature = opts.temperature;
+  if (opts.thinking) body.thinking = opts.thinking;
+  if (opts.tools) body.tools = opts.tools;
+  // 서버 도구(웹 검색)는 pause_turn으로 멈출 수 있다 — 받은 내용을 assistant로 붙여 이어서 요청(최대 3번)
+  var texts = [], sources = [], searchErrors = [], searches = 0, data, usageSum = null;
+  // 사용량 기록 — 키·본문은 남기지 않고 프롬프트 구간 길이·해시만(캐시 진단용)
+  var UL = typeof UsageLog !== 'undefined' ? UsageLog : null;
+  var tag = opts.usage || {};
+  var runId = tag.runId || (UL ? UL.activeRunId() : '');
+  var logCall = function (extra) {
+    if (!UL) return;
+    try {
+      UL.record(Object.assign({ runId: runId, task: tag.task || '기타', batch: tag.batch == null ? '' : tag.batch,
+        attempt: tag.attempt || 0, retryReason: tag.retryReason || '', part: turn, model: body.model,
+        at: _t0iso, ms: Date.now() - _t0, prompt: UL.promptMeta(body) }, extra));
+    } catch (e) { console.warn('[callClaudeApi] 사용량 기록 실패', e); }
+  };
+  var _t0 = 0, _t0iso = '';
+  for (var turn = 0; turn < 4; turn++) {
   var res;
+  _t0 = Date.now(); _t0iso = new Date().toISOString();
   try {
     res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -478,6 +504,8 @@ async function callClaudeApi(opts) {
       body: JSON.stringify(body)
     });
   } catch (e) {
+    // 응답을 못 받았으므로 사용량을 알 수 없음 — 비용 0으로 단정하지 않는다(usage: null)
+    logCall({ ok: false, status: 0, error: '네트워크 오류: ' + String(e.message || e).slice(0, 200), usage: null });
     throw new Error(
       'API 연결 실패 (네트워크 오류)\n\n' +
       '인터넷 연결을 확인하거나 잠시 후 다시 시도하세요.\n' +
@@ -492,20 +520,53 @@ async function callClaudeApi(opts) {
     } catch (e2) { console.warn('[app.js] callClaudeApi: 오류 응답 JSON 파싱 실패', e2); }
     if (res.status === 401 || res.status === 403) errMsg += '\n→ API 키가 올바른지 확인하세요.';
     else if (res.status === 429) errMsg += '\n→ 요청 한도 초과 — 잠시 후 재시도하세요.';
+    logCall({ ok: false, status: res.status, error: errMsg.split('\n')[0].slice(0, 300), usage: null });
     throw new Error(errMsg);
   }
-  var data = await res.json();
+  try { data = await res.json(); }
+  catch (e) { logCall({ ok: false, status: res.status, error: '응답 본문을 읽지 못함(JSON 아님)', usage: null }); throw new Error('API 응답을 읽지 못했습니다(JSON 아님)'); }
+  var u0 = data.usage;
+  if (u0) { // 이어 받기(pause_turn)가 있으면 턴별 사용량을 합산해 full 반환에 싣는다
+    usageSum = usageSum || { input_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0, output_tokens: 0 };
+    ['input_tokens', 'cache_creation_input_tokens', 'cache_read_input_tokens', 'output_tokens'].forEach(function (k) { usageSum[k] += u0[k] || 0; });
+  }
+  logCall({ ok: !data.error, status: res.status, respModel: data.model || '', stopReason: data.stop_reason || '', error: data.error ? String(data.error.message || '').slice(0, 300) : '',
+    usage: u0 ? { input: u0.input_tokens || 0, cacheWrite: u0.cache_creation_input_tokens || 0,
+      cw5m: u0.cache_creation ? (u0.cache_creation.ephemeral_5m_input_tokens || 0) : null,
+      cw1h: u0.cache_creation ? (u0.cache_creation.ephemeral_1h_input_tokens || 0) : null,
+      cacheRead: u0.cache_read_input_tokens || 0, output: u0.output_tokens || 0,
+      thinking: u0.output_tokens_details ? (u0.output_tokens_details.thinking_tokens || 0) : null, // 출력 중 사고 몫(출력에 포함돼 청구)
+      webSearches: u0.server_tool_use ? (u0.server_tool_use.web_search_requests || 0) : 0 } : null });
   if (data.error) throw new Error(data.error.message || 'Claude API 오류');
+  (data.content || []).forEach(function (b) {
+    if (b.type === 'text') {
+      texts.push(b.text || '');
+      (b.citations || []).forEach(function (c) { if (c.url) sources.push({ url: c.url, title: c.title || '', cited: c.cited_text || '' }); });
+    } else if (b.type === 'server_tool_use') searches++;
+    else if (b.type === 'web_search_tool_result') {
+      // 성공이면 content가 결과 목록, 실패면 오류 객체(HTTP 200으로 옴)
+      if (b.content && !Array.isArray(b.content) && b.content.error_code) searchErrors.push(b.content.error_code);
+    }
+  });
+  if (data.stop_reason === 'pause_turn' && turn < 3) {
+    body.messages = body.messages.concat([{ role: 'assistant', content: data.content }]);
+    continue;
+  }
+  break;
+  }
   if (data.usage) {
     var u = data.usage;
     console.log('[callClaudeApi] tokens:', u.input_tokens,
       'cache_read:', u.cache_read_input_tokens || 0,
       'cache_write:', u.cache_creation_input_tokens || 0);
   }
+  if (data.stop_reason === 'pause_turn') console.warn('[callClaudeApi] 서버 도구가 4번 이어 받은 뒤에도 끝나지 않아 부분 응답을 반환합니다.');
   if (data.stop_reason === 'max_tokens') {
     console.warn('[callClaudeApi] 응답이 max_tokens 한도로 잘렸습니다. 재시도하거나 maxTokens를 높이세요.');
   }
-  return stripInvisibles(data.content[0].text);
+  var text = stripInvisibles(texts.join(''));
+  if (opts.full) return { text: text, sources: sources, searchErrors: searchErrors, searches: searches, usage: usageSum, stopReason: data.stop_reason };
+  return text;
 }
 
 // ━━━ API 키 저장소 ━━━
@@ -2867,7 +2928,7 @@ function dlTemplate(){
 
 // ━━━ 세션 데이터 내보내기/가져오기 ━━━
 function exportSession() {
-  var EXCLUDE_KEYS = ['ub_claude_ak', 'ub_apikey', 'p11_openai_key', 'p17_openai_key', 'p11_extra_yt_keys']; // API 키는 세션 파일로 주고받지 않음
+  var EXCLUDE_KEYS = ['ub_claude_ak', 'ub_apikey', 'p11_openai_key', 'p17_openai_key', 'p11_extra_yt_keys', 'api_usage_v1']; // API 키는 세션 파일로 주고받지 않음. api_usage_v1은 이 브라우저의 진단 기록
   var data = {};
   for (var i = 0; i < localStorage.length; i++) {
     var key = localStorage.key(i);
