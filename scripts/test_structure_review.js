@@ -267,7 +267,8 @@ const ts = ac({ tier: 'A' }, { claim: { verdict: '유지' }, fix: { verdict: '�
 assert(ts.tier === 'A' && ts.check.techStatus === '출처 확인');
 const fh = ac({ tier: 'A', type: 'edit', id: 'n1', at: 'a', text: 'b' }, { claim: { verdict: '유지' }, fix: { verdict: '보류', reason: '원고 표기와 다름' } });
 assert(fh.fixHeld && !bookApplicable(fh), 'held fix is not auto-applied');
-assert.equal(ac({ tier: 'A' }, null).check.claim, '보류', 'missing verification never counts as verified');
+const uv = ac({ tier: 'A', type: 'edit', id: 'n1', at: 'a', text: 'b' }, null);
+assert(uv.unverified && uv.check.claim === '검증 못 함' && uv.tier === 'A' && !bookApplicable(uv), 'failed verification: tier kept, marked unverified, not auto-applied');
 
 // QA 2026-10-06 회귀: 코드 블록 안 '# 주석'은 제목이 아님(번호 줄 추정 모드도)
 const fenced = parseOutline('## [장] A\n본문\n```python\n# 데이터 불러오기\nimport x\n```\n### [절] B\n본문');

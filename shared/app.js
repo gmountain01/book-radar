@@ -434,6 +434,8 @@ function _cachedSystem(text) {
 //   thinking: 예 {type:'adaptive'} — Sonnet 4.6 이상에서 확장 사고(켜면 temperature는 보내지 않음)
 //   tools: 서버 도구(예 웹 검색 {type:'web_search_20260209', name:'web_search', max_uses:5})
 //   full: true면 문자열 대신 { text, sources[{url,title,cited}], searchErrors[], searches, usage, stopReason } 반환
+//   stream: SSE 스트리밍으로 받기. 생략하면 thinking·tools가 있거나 maxTokens ≥ 16000이면 자동(긴 요청이 중간 장비·Node fetch의 5분 제한에 걸리지 않게).
+//           사용량은 message_start(입력·캐시)와 마지막 message_delta(출력 누계)를 합쳐 한 번만 집계한다.
 //   usage: 사용량 기록 꼬리표 { task, batch, attempt, retryReason, runId } — 요청마다 UsageLog(shared/usage-log.js)에 한 건씩 남김
 //   humanize: 기본 true — 독자용 산문에 AI 티 억제 규칙(WRITING_HYGIENE) 적용.
 //             순수 데이터 추출/JSON만 뽑는 호출에서 불필요하면 false로 끌 수 있음(규칙은 자기-범위형이라 켜둬도 안전).
@@ -474,6 +476,8 @@ async function callClaudeApi(opts) {
   if (opts.temperature !== undefined && !opts.thinking) body.temperature = opts.temperature;
   if (opts.thinking) body.thinking = opts.thinking;
   if (opts.tools) body.tools = opts.tools;
+  var useStream = opts.stream !== undefined ? !!opts.stream : !!(opts.thinking || opts.tools || mt >= 16000);
+  if (useStream) body.stream = true;
   // 서버 도구(웹 검색)는 pause_turn으로 멈출 수 있다 — 받은 내용을 assistant로 붙여 이어서 요청(최대 3번)
   var texts = [], sources = [], searchErrors = [], searches = 0, data, usageSum = null;
   // 사용량 기록 — 키·본문은 남기지 않고 프롬프트 구간 길이·해시만(캐시 진단용)
@@ -523,8 +527,16 @@ async function callClaudeApi(opts) {
     logCall({ ok: false, status: res.status, error: errMsg.split('\n')[0].slice(0, 300), usage: null });
     throw new Error(errMsg);
   }
-  try { data = await res.json(); }
-  catch (e) { logCall({ ok: false, status: res.status, error: '응답 본문을 읽지 못함(JSON 아님)', usage: null }); throw new Error('API 응답을 읽지 못했습니다(JSON 아님)'); }
+  if (useStream) {
+    try { data = await _readSseMessage(res); }
+    catch (e) { // 스트림이 끊기면 출력 사용량을 알 수 없다 — 미확인으로 기록
+      logCall({ ok: false, status: res.status, error: '스트림 중단: ' + String(e.message || e).slice(0, 200), usage: null });
+      throw new Error('API 응답 스트림이 끊겼습니다 (' + (e.message || e) + ')');
+    }
+  } else {
+    try { data = await res.json(); }
+    catch (e) { logCall({ ok: false, status: res.status, error: '응답 본문을 읽지 못함(JSON 아님)', usage: null }); throw new Error('API 응답을 읽지 못했습니다(JSON 아님)'); }
+  }
   var u0 = data.usage;
   if (u0) { // 이어 받기(pause_turn)가 있으면 턴별 사용량을 합산해 full 반환에 싣는다
     usageSum = usageSum || { input_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0, output_tokens: 0 };
@@ -567,6 +579,54 @@ async function callClaudeApi(opts) {
   var text = stripInvisibles(texts.join(''));
   if (opts.full) return { text: text, sources: sources, searchErrors: searchErrors, searches: searches, usage: usageSum, stopReason: data.stop_reason };
   return text;
+}
+
+/** SSE 스트림을 비스트리밍 응답과 같은 모양({model, stop_reason, usage, content[]})으로 조립한다.
+ *  usage: message_start(입력·캐시 쓰기/읽기)에 마지막 message_delta(출력 누계·서버 도구 수)를 덮어써 한 번만 센다(중간 이벤트 합산 금지).
+ *  thinking 블록은 signature까지 보존해 pause_turn 이어 받기에 그대로 돌려줄 수 있게 한다. */
+async function _readSseMessage(res) {
+  var reader = res.body.getReader(), dec = new TextDecoder();
+  var buf = '', msg = { model: '', stop_reason: null, usage: null, content: [] }, blocks = [], errorEvt = null;
+  var handle = function (evt, d) {
+    if (evt === 'message_start') { msg.model = d.message.model || ''; msg.usage = Object.assign({}, d.message.usage || {}); }
+    else if (evt === 'content_block_start') {
+      var b = Object.assign({}, d.content_block);
+      if (b.type === 'text') { b.text = b.text || ''; b.citations = b.citations || []; }
+      else if (b.type === 'thinking') { b.thinking = b.thinking || ''; b.signature = b.signature || ''; }
+      else if (b.type === 'server_tool_use' || b.type === 'tool_use') { b._json = ''; }
+      blocks[d.index] = b;
+    } else if (evt === 'content_block_delta') {
+      var blk = blocks[d.index]; if (!blk) return;
+      var t = d.delta && d.delta.type;
+      if (t === 'text_delta') blk.text += d.delta.text || '';
+      else if (t === 'thinking_delta') blk.thinking += d.delta.thinking || '';
+      else if (t === 'signature_delta') blk.signature = (blk.signature || '') + (d.delta.signature || '');
+      else if (t === 'input_json_delta') blk._json += d.delta.partial_json || '';
+      else if (t === 'citations_delta' && d.delta.citation) blk.citations.push(d.delta.citation);
+    } else if (evt === 'content_block_stop') {
+      var done = blocks[d.index];
+      if (done && done._json !== undefined) { try { done.input = done._json ? JSON.parse(done._json) : (done.input || {}); } catch (e) { done.input = done.input || {}; } delete done._json; }
+    } else if (evt === 'message_delta') {
+      if (d.delta && d.delta.stop_reason) msg.stop_reason = d.delta.stop_reason;
+      if (d.usage) msg.usage = Object.assign(msg.usage || {}, d.usage); // 출력 누계 등은 마지막 값으로 덮어씀
+    } else if (evt === 'error') errorEvt = d.error || d;
+  };
+  for (;;) {
+    var r = await reader.read();
+    if (r.done) break;
+    buf += dec.decode(r.value, { stream: true });
+    var parts = buf.split('\n\n'); buf = parts.pop();
+    for (var i = 0; i < parts.length; i++) {
+      var evt = '', dataStr = '';
+      parts[i].split('\n').forEach(function (line) { if (line.indexOf('event:') === 0) evt = line.slice(6).trim(); else if (line.indexOf('data:') === 0) dataStr += line.slice(5).trim(); });
+      if (!dataStr) continue;
+      var d; try { d = JSON.parse(dataStr); } catch (e) { continue; }
+      handle(evt || d.type, d);
+    }
+  }
+  if (errorEvt) { var err = new Error(errorEvt.message || 'stream error'); err.streamError = errorEvt; throw err; }
+  msg.content = blocks.filter(Boolean);
+  return msg;
 }
 
 // ━━━ API 키 저장소 ━━━

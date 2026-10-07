@@ -176,6 +176,9 @@ async function main() {
   await require('./test_proofread_review.js')(sandbox);
   await require('./test_structure_review.js');
   await require('./test_usage_log.js')();
+  await require('./test_stream.js')();
+  await require('./test_proof_mismatch.js')();
+  await require('./test_subject_overload.js')();
   require('./test_author_search.js');
   require('./test_market_feed.js');
 

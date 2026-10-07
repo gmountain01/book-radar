@@ -27,6 +27,10 @@ module.exports = async function(sandbox) {
   assert(!policy.allowed({type:'사실오류',found:'파이토치'},settings,'bookB',new Set()));
   assert(!policy.allowed({type:'맞춤법',found:'파이토치 오류'},settings,'bookB',new Set()));
   for (const raw of ['null','{','[]','{"documents":{"x":null},"terms":4}']) assert(policy.parse(raw).terms);
+  // 원고별 허용은 파일 이름 키 — 예전 '이름__크기__수정시각' 키는 이름으로 합쳐진다(원고를 고쳐 올려도 허용 유지)
+  const mig = policy.parse('{"documents":{"bookA.docx__100__1":["x"],"bookA.docx":["y"],"bookA.docx__200__2":["x","z"]},"documentTerms":{"bookA.docx__5__6":["t"]}}');
+  assert.deepEqual(Object.keys(mig.documents), ['bookA.docx']); assert.deepEqual(mig.documents['bookA.docx'].sort(), ['x','y','z']);
+  assert.deepEqual(mig.documentTerms, {'bookA.docx':['t']});
   const prose=policy.proseOnly('본문이다.\n> 안녕하세요.\n```\n코드입니다.\n```\n“인용해요.”\n표 1 예시입니다.');
   assert(prose.includes('본문이다.'));assert(!/안녕하세요|코드입니다|인용해요|예시입니다/.test(prose));
 
@@ -36,7 +40,7 @@ module.exports = async function(sandbox) {
   code=code.slice(0,end)+`window.__reviewTest={checkSurface,_checkStyleConsistency,getCtx,p8_filterByTypes,p8_applyFilters,
     filters(){return {currentSev,activeResolvedFilter};},
     staleFilters(){currentSev='high';activeResolvedFilter='resolved';},
-    set(issues){allIssues=issues;currentFileKey='test-book';resolvedIndices.clear();_ignoredOnce.clear();_reviewSettings=P8Review.empty();},
+    set(issues){allIssues=issues;currentFileKey='test-book__1__1';currentDocKey='test-book';resolvedIndices.clear();_ignoredOnce.clear();_reviewSettings=P8Review.empty();},
     resolve(i){resolvedIndices.add(i);},corrections:_getCorrections,rewrite:_rewriteParticleRepeats,clean:_cleanSuggestion,parseNaver:_parseNaverResult};\n`+code.slice(end);
   vm.runInContext(code,sandbox);
   const test=sandbox.__reviewTest;

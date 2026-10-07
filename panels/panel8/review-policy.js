@@ -40,7 +40,9 @@
       const strings = x => Array.isArray(x) ? x.filter(v => typeof v === 'string').slice(0,500) : [];
       const maps = x => Object.fromEntries(Object.entries(x && typeof x === 'object' && !Array.isArray(x) ? x : {})
         .slice(0,100).map(([key,value]) => [key,strings(value)]));
-      return {common:strings(data.common), documents:maps(data.documents), terms:strings(data.terms), documentTerms:maps(data.documentTerms)};
+      // 원고별 허용·용어는 파일 이름으로 묶는다. 예전 버전은 '이름__크기__수정시각'으로 묶어 원고를 고쳐 올리면 허용이 사라졌다 → 이름 키로 합친다
+      const byName = m => { const out = {}; for (const [k, v] of Object.entries(m)) { const name = k.replace(/__\d+__\d+$/, ''); out[name] = [...new Set((out[name] || []).concat(v))]; } return out; };
+      return {common:strings(data.common), documents:byName(maps(data.documents)), terms:strings(data.terms), documentTerms:byName(maps(data.documentTerms))};
     } catch (_) { return empty(); }
   }
   function termsFor(settings, file) {

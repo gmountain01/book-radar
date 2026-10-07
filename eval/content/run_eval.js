@@ -34,8 +34,8 @@ function findings(rv) {
     claim: [x.question, x.basis, x.reason, x.problem, x.understood, x.kind].filter(Boolean).join(' | '),
     fix: [x.fix, x.text].filter(Boolean).join(' | '),
   });
-  (rv.items || []).forEach(x => push(x, 'item', x.held || x.tier === 'C' ? 'held' : 'active'));
-  (rv.proof || []).forEach(x => push(x, 'proof', x.held || x.fixHeld ? 'held' : 'active'));
+  (rv.items || []).forEach(x => push(x, 'item', x.unverified ? 'unverified' : x.held || x.tier === 'C' ? 'held' : 'active'));
+  (rv.proof || []).forEach(x => push(x, 'proof', x.unverified ? 'unverified' : x.held || x.fixHeld ? 'held' : 'active'));
   (rv.withdrawn || []).forEach(x => push(x, x.kind && rv.proof && rv.proof.includes(x) ? 'proof' : 'item', 'withdrawn'));
   return f;
 }
@@ -44,7 +44,7 @@ const hits = (f, c) => f.filter(x => all(c.loc, x.loc + ' ' + x.claim + ' ' + x.
 
 function grade(rv, cases) {
   const f = findings(rv);
-  const active = f.filter(x => x.state === 'active'), held = f.filter(x => x.state === 'held');
+  const active = f.filter(x => x.state === 'active'), held = f.filter(x => x.state === 'held' || x.state === 'unverified'), unverified = f.filter(x => x.state === 'unverified');
   const per = cases.map(c => {
     if (c.type === 'fact') {
       const fixed = hits(active, { ...c, fix: c.fix }).length + hits(held, { ...c, fix: c.fix }).length;
@@ -52,8 +52,9 @@ function grade(rv, cases) {
       return { id: c.id, type: c.type, desc: c.desc, outcome: fixed ? (hits(active, c).length ? '바로잡음' : '보류로 바로잡음') : polished ? '문장만 다듬음(오류 유지)' : '놓침' };
     }
     const a = hits(active, c), h = hits(held, c), w = hits(f.filter(x => x.state === 'withdrawn'), c);
-    if (c.type === 'bad') return { id: c.id, type: c.type, desc: c.desc, outcome: a.length ? '잘못된 지적 남음' : h.length ? '보류로 남음' : w.length ? '검증에서 철회' : '안 냄', n: a.length };
-    return { id: c.id, type: c.type, desc: c.desc, outcome: a.length ? '유지' : h.length ? '보류로 내려감' : w.length ? '검증에서 잘못 철회' : '놓침' };
+    const u = hits(unverified, c);
+    if (c.type === 'bad') return { id: c.id, type: c.type, desc: c.desc, outcome: a.length ? '잘못된 지적 남음' : u.length ? '검증 못 함으로 남음' : h.length ? '보류로 남음' : w.length ? '검증에서 철회' : '안 냄', n: a.length };
+    return { id: c.id, type: c.type, desc: c.desc, outcome: a.length ? '유지' : u.length ? '검증 못 함' : h.length ? '보류로 내려감' : w.length ? '검증에서 잘못 철회' : '놓침' };
   });
   const by = t => per.filter(p => p.type === t);
   return {
@@ -62,7 +63,7 @@ function grade(rv, cases) {
       goodKept: by('good').filter(p => p.outcome === '유지').length + '/' + by('good').length,
       badRemaining: by('bad').filter(p => p.outcome === '잘못된 지적 남음').length + '/' + by('bad').length,
       factFixed: by('fact').filter(p => /바로잡음/.test(p.outcome)).length + '/' + by('fact').length,
-      counts: { active: active.length, held: held.length, withdrawn: f.length - active.length - held.length,
+      counts: { active: active.length, held: held.length - unverified.length, unverified: unverified.length, withdrawn: f.length - active.length - held.length,
         A: (rv.items || []).filter(x => x.tier === 'A').length, B: (rv.items || []).filter(x => x.tier === 'B').length, C: (rv.items || []).filter(x => x.tier === 'C').length,
         proof: (rv.proof || []).length, rewritten: [...(rv.items || []), ...(rv.proof || [])].filter(x => x.fixRewritten).length,
         techUnverified: (rv.items || []).filter(x => x.check && x.check.tech && x.check.techStatus !== '출처 확인').length },
@@ -75,7 +76,7 @@ function report(label, g) {
   g.per.forEach(p => console.log(`  [${p.type}] ${p.id} ${p.desc} → ${p.outcome}`));
   const s = g.summary;
   console.log(`  올바른 지적 유지 ${s.goodKept} · 잘못된 지적 남음 ${s.badRemaining} · 기술 오류 바로잡음 ${s.factFixed}`);
-  console.log(`  지적 수 — 반영 대상 ${s.counts.active} · 보류 ${s.counts.held} · 철회 ${s.counts.withdrawn} (A ${s.counts.A} / B ${s.counts.B} / C ${s.counts.C}, 교정 ${s.counts.proof}, 수정안 다시 씀 ${s.counts.rewritten}, 출처 미확인 기술 ${s.counts.techUnverified})`);
+  console.log(`  지적 수 — 반영 대상 ${s.counts.active} · 보류 ${s.counts.held} · 검증 못 함 ${s.counts.unverified} · 철회 ${s.counts.withdrawn} (A ${s.counts.A} / B ${s.counts.B} / C ${s.counts.C}, 교정 ${s.counts.proof}, 수정안 다시 씀 ${s.counts.rewritten}, 출처 미확인 기술 ${s.counts.techUnverified})`);
 }
 
 async function main() {
