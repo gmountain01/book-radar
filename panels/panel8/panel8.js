@@ -362,12 +362,34 @@ function _splitItemsByCenter(items, centerX) {
   return { left: left, right: right };
 }
 
+// ── PDF 조판 경계 기록(①) ──
+// 공백·줄 연결이 어디서 생겼는지 남긴다: gap=조각 간격으로 넣은 공백, sp=줄 연결 때 넣은 공백, none=줄을 공백 없이 붙인 자리,
+// ws=PDF.js가 돌려준 공백만 있는 조각(PDF_KEEP_WS일 때). 기록은 본문을 바꾸지 않는다 — 같은 줄 데이터로 표식을 넣은 '그림자'
+// 텍스트를 한 번 더 만들고, 표식을 뺀 결과가 실제 본문과 같을 때만 page.joins로 채택한다(_extractJoins).
+let PDF_KEEP_WS = true;    // ①b 공백만 있는 조각 보존 — 샘플 1~3.pdf에서 글리프 대조 확인(2026-10-08). 끄면 예전 결과
+let PDF_USE_TAGS = true;   // ④ 구조 태그(Artifact 제외·P 문단 경계) — 태그 없는 PDF는 자동으로 기존 처리
+const _MARK_POOL = ['\uE000', '\uE001', '\uE002', '\uE003', '\uE010', '\uE011', '\uE012', '\uE013'];
+function _pickMarkers(items) { // 이 페이지 조각에 없는 사설 영역 문자 4개 — 원문에 같은 문자가 있으면 다른 후보, 모자라면 기록 포기
+  const all = items.map(it => it.str || '').join('');
+  const free = _MARK_POOL.filter(c => !all.includes(c));
+  return free.length >= 4 ? { gap: free[0], sp: free[1], none: free[2], ws: free[3] } : null;
+}
+function _markLine(l, M) { // 줄 텍스트에 gap·ws 표식을 넣은 그림자 줄(표식은 해당 공백 바로 뒤)
+  const g = new Set(l.gaps || []), w = new Set(l.ws || []);
+  let out = '';
+  for (let i = 0; i < l.text.length; i++) { out += l.text[i]; if (g.has(i)) out += M.gap; else if (w.has(i)) out += M.ws; }
+  return out;
+}
+
 /** 텍스트 아이템을 y좌표 기준으로 줄(line) 단위로 묶는다 */
-function groupTextIntoLines(items, yTol = 3) {
+function groupTextIntoLines(items, yTol = 3, stable) { // stable(④ 태그 모드): y로만 묶은 뒤 줄 안에서 x 정렬 — 조각 수가 달라도 순서가 같다
   const filtered = items.filter(it => it.str && it.str.trim());
+  // ①b 공백만 있는 조각은 정렬에 넣지 않는다 — 비교 함수가 y 허용치 안에서는 x로 정렬해 조각이 늘면 위첨자 줄의 순서가 바뀐다(1.pdf 10·26쪽). 뒤에 줄에 끼워 넣는다
+  const wsItems = PDF_KEEP_WS ? items.filter(it => it.str && !it.str.trim() && it.transform) : [];
   if (!filtered.length) return [];
-  // y 내림차순(위→아래) → 같은 y면 x 오름차순(왼→오른)
-  filtered.sort((a, b) => {
+  // y 내림차순(위→아래) → 같은 y면 x 오름차순(왼→오른). 이 비교는 y 허용치 때문에 전이적이지 않아 조각 수가 달라지면 위첨자 줄의 순서가 바뀔 수 있다(기존 동작 유지)
+  if (stable) filtered.sort((a, b) => b.transform[5] - a.transform[5]);
+  else filtered.sort((a, b) => {
     const dy = b.transform[5] - a.transform[5];
     return Math.abs(dy) > yTol ? dy : a.transform[4] - b.transform[4];
   });
@@ -375,25 +397,49 @@ function groupTextIntoLines(items, yTol = 3) {
   let cur = null;
   for (const it of filtered) {
     const y = it.transform[5], x = it.transform[4];
-    if (!cur || Math.abs(y - cur.y) > yTol) {
-      cur = { y, x, text: it.str, items: [it] };
+    // stable: y 내림차순이므로 바로 앞 조각(줄의 가장 낮은 y)과의 차로 묶는다 — 위첨자(+2.6)·기준선(0)·다른 글꼴(-0.5)이 한 줄로 이어진다
+    if (!cur || (stable ? cur.yMin - y > yTol : Math.abs(y - cur.y) > yTol)) {
+      cur = { y, x, text: it.str, items: [it], gaps: [], ws: [], para: it.para, paraEnd: it.para, yMin: y };
       lines.push(cur);
     } else {
+      cur.yMin = Math.min(cur.yMin, y);
       cur.items.push(it);
+      if (it.para != null) cur.paraEnd = it.para;
       // X좌표 간격으로 띄어쓰기 판단
-      cur.text = _joinItemsWithSpacing(cur.items);
+      cur.gaps = []; cur.ws = [];
+      cur.text = _joinItemsWithSpacing(cur.items, cur.gaps, cur.ws);
     }
+  }
+  if (stable) for (const l of lines) { // 줄 안에서 x 순서로 다시 세우고 문단 소속도 그 순서로
+    l.items.sort((a, b) => a.transform[4] - b.transform[4]);
+    l.x = l.items[0].transform[4]; l.para = l.items[0].para; l.paraEnd = l.items[l.items.length - 1].para;
+    for (const it of l.items) if (it.para != null) l.paraEnd = it.para;
+    l.gaps = []; l.ws = []; l.text = _joinItemsWithSpacing(l.items, l.gaps, l.ws);
+  }
+  if (wsItems.length) {
+    for (const w of wsItems) {
+      const line = lines.find(l => Math.abs(w.transform[5] - l.y) <= yTol);
+      if (!line || w.transform[4] <= line.items[0].transform[4]) continue; // 줄을 못 찾거나 줄 시작 앞이면 버린다
+      let k = line.items.findIndex(it => it.transform[4] > w.transform[4]); if (k < 0) k = line.items.length;
+      line.items.splice(k, 0, w); line._ws = true;
+    }
+    for (const l of lines) if (l._ws) { delete l._ws; l.gaps = []; l.ws = []; l.text = _joinItemsWithSpacing(l.items, l.gaps, l.ws); }
+    for (const l of lines) { const last = l.items[l.items.length - 1]; l.endsSpace = !!(last && !last.str.trim()); } // 줄 끝 공백 조각 → 줄 연결 때 공백
   }
   return lines;
 }
 
-/** 같은 줄의 텍스트 블록을 X좌표 간격 기반으로 연결 */
-function _joinItemsWithSpacing(items) {
+/** 같은 줄의 텍스트 블록을 X좌표 간격 기반으로 연결. gaps/ws(선택): 프로그램이 넣은 공백의 위치 기록(①) */
+function _joinItemsWithSpacing(items, gaps, ws) {
   if (items.length <= 1) return items[0]?.str || '';
   let result = items[0].str;
   for (let i = 1; i < items.length; i++) {
     const prev = items[i - 1];
     const curr = items[i];
+    if (PDF_KEEP_WS && !curr.str.trim()) { // 공백만 있는 조각(①b): 줄 끝이 아니고 아직 공백으로 끝나지 않을 때만 공백 하나 — 간격 공백과 겹치지 않는다
+      if (i < items.length - 1 && !/\s$/.test(result)) { if (ws) ws.push(result.length); result += ' '; }
+      continue;
+    }
     // 이전 블록의 끝 X = 시작X + 글자폭(width)
     const prevEndX = prev.transform[4] + (prev.width || 0);
     const currStartX = curr.transform[4];
@@ -407,6 +453,7 @@ function _joinItemsWithSpacing(items) {
     if (prevEndsSpace || currStartsSpace) {
       result += curr.str;
     } else if (gap > spaceThreshold) {
+      if (gaps) gaps.push(result.length);
       result += ' ' + curr.str;
     } else {
       result += curr.str;
@@ -457,19 +504,22 @@ function _lineFontSize(line, fallback) {
   const it = line.items && line.items[0];
   return it && it.transform ? Math.abs(it.transform[0]) : fallback;
 }
-function _mdLine(line, bodyFontSize) {
+function _mdLine(line, bodyFontSize, outText) { // outText(선택): 판정은 line.text로 하고 출력만 이 문자열(그림자 텍스트, ①)
   const t = line.text.trim();
+  const o = outText == null ? t : outText.trim();
   const fs = _lineFontSize(line, bodyFontSize);
   if (t.length < 60 && !/[.!?:;。,]$/.test(t)) {
-    if (fs >= bodyFontSize * 1.4) return '## ' + t;
-    if (fs >= bodyFontSize * 1.15) return '### ' + t;
+    if (fs >= bodyFontSize * 1.4) return '## ' + o;
+    if (fs >= bodyFontSize * 1.15) return '### ' + o;
   }
-  return t.replace(/^[•·▪◦●○■□]\s*/, '- ');
+  return o.replace(/^[•·▪◦●○■□]\s*/, '- ');
 }
 
-function _joinLinesSmartly(lines, pageH) {
+function _joinLinesSmartly(lines, pageH, M, fsLines) { // fsLines(선택): 본문 크기 추정에만 더하는 줄(④에서 뺀 Artifact 줄 — 제목 판정을 예전과 같게)
+  const emit = M ? (l => _markLine(l, M)) : (l => l.text); // M: 그림자 텍스트용 표식(①) — 판정은 line.text로, 출력만 표식 포함
+  const md = l => _mdLine(l, bodyFontSize, M ? emit(l) : undefined);
   if (!lines.length) return '';
-  if (lines.length === 1) return _isCodeLine(lines[0]) ? '```\n' + lines[0].text + '\n```' : _mdLine(lines[0], _lineFontSize(lines[0], 10));
+  if (lines.length === 1) return _isCodeLine(lines[0]) ? '```\n' + emit(lines[0]) + '\n```' : _mdLine(lines[0], _lineFontSize(lines[0], 10), M ? emit(lines[0]) : undefined);
   // 줄 간격(행간) 추정: 전체 줄 간격의 중앙값
   const gaps = [];
   for (let i = 1; i < lines.length; i++) {
@@ -482,24 +532,29 @@ function _joinLinesSmartly(lines, pageH) {
 
   // 본문 폰트 크기 추정: 전체 줄의 폰트 크기 중앙값
   var fontSizes = [];
-  for (var fi = 0; fi < lines.length; fi++) {
-    var fItem = lines[fi].items && lines[fi].items[0];
+  var fsAll = fsLines && fsLines.length ? lines.concat(fsLines) : lines;
+  for (var fi = 0; fi < fsAll.length; fi++) {
+    var fItem = fsAll[fi].items && fsAll[fi].items[0];
     if (fItem && fItem.transform) fontSizes.push(Math.abs(fItem.transform[0]));
   }
   fontSizes.sort(function(a, b) { return a - b; });
   var bodyFontSize = fontSizes.length ? fontSizes[Math.floor(fontSizes.length / 2)] : 10;
 
+  // ④ 줄 오른쪽 끝: 같은 단락이라도 오른쪽 여백에 한참 못 미쳐 끝난 줄(도비라 목록·시 형식의 강제 개행)은 잇지 않는다
+  var rightOf = function(l) { var r = 0; for (var k = 0; k < (l.items || []).length; k++) { var e = l.items[k].transform[4] + (l.items[k].width || 0); if (e > r) r = e; } return r; };
+  var colRight = 0;
+  for (var ri = 0; ri < lines.length; ri++) { var rr = rightOf(lines[ri]); if (rr > colRight) colRight = rr; }
   var parts = [];
   var inCode = false;
   for (var i = 0; i < lines.length; i++) {
     // 코드 줄: 공백으로 이어 붙이지 않고 줄 단위로 코드 블록에 담는다
     if (_isCodeLine(lines[i])) {
-      parts.push((inCode ? '\n' : (i ? '\n' : '') + '```\n') + lines[i].text);
+      parts.push((inCode ? '\n' : (i ? '\n' : '') + '```\n') + emit(lines[i]));
       inCode = true;
       continue;
     }
     if (inCode || i === 0) {
-      parts.push((inCode ? '\n```\n' : '') + _mdLine(lines[i], bodyFontSize));
+      parts.push((inCode ? '\n```\n' : '') + md(lines[i]));
       inCode = false;
       continue;
     }
@@ -520,7 +575,7 @@ function _joinLinesSmartly(lines, pageH) {
     var prevLooksHeading = prevText.length < 40 && !/[.!?:;。다요죠함됨음임]$/.test(prevText) && prevFS > bodyFontSize * 1.1;
 
     // 문단 구분 조건
-    var isParagraphBreak =
+    var heurBreak =
       yGap > paraThreshold ||                         // Y 간격 큼
       /[.!?:;。]\s*$/.test(prevText) ||               // 문장 종결 부호
       /^[\s]*$/.test(prevText) ||                      // 빈 줄
@@ -529,15 +584,31 @@ function _joinLinesSmartly(lines, pageH) {
       fontSizeChanged ||                              // 폰트 크기 변화 (제목↔본문)
       boldChanged ||                                  // Bold → Regular 전환
       prevLooksHeading;                               // 이전 줄이 제목 형태
+    // ④ 구조 태그: 두 줄 모두 문단(P 등) 소속을 알면 그것으로 — 같은 문단이면 잇고 다른 문단이면 나눈다.
+    // 같은 쪽 안에서 멀리 떨어진 줄(그림·단을 건너뜀)은 태그만으로 잇지 않는다. 공백 유무는 아래 판단 그대로(태그가 확정하지 않음).
+    var prevPara = lines[i - 1].paraEnd, curPara = lines[i].para;
+    var tagKnown = prevPara != null && curPara != null && yGap <= medianGap * 3;
+    var isParagraphBreak = heurBreak;
+    if (tagKnown) {
+      var curHead = /^#/.test(_mdLine(lines[i], bodyFontSize)), prevHead = /^#/.test(_mdLine(lines[i - 1], bodyFontSize)) && !fontSizeChanged;
+      var ragged = rightOf(lines[i - 1]) < colRight - prevFS * 2; // 앞 줄이 오른쪽 끝에 두 글자 이상 못 미침 = 강제 개행
+      // 같은 단락이고 앞 줄이 끝까지 찼을 때만 잇는다(두 줄 제목은 같은 크기면 예외). 제목처럼 보이는 줄은 앞 줄이 제목이 아니면 늘 새 줄(원어 라벨 뒤 제목 보존)
+      // 제목처럼 보이는 줄 앞 강제 나눔은 기존 판정도 나누던 자리에서만(기존에 없던 나눔을 만들지 않는다 — _mdLine의 짧은 줄 오판 노출 방지)
+      isParagraphBreak = !(prevPara === curPara && (!ragged || (prevHead && curHead)) && !(curHead && !prevHead && heurBreak));
+      if (!isParagraphBreak && heurBreak) { // 기존 판정이 나누던 자리: 공백 없이 붙게 될 한글-한글이면 기존대로 나눈다(1.pdf 28·30쪽 '이력도|관리되어야' — 줄 끝 공백은 PDF.js 조각에 없다)
+        var lc0 = prevText.slice(-1), fc0 = lines[i].text.trimStart().charAt(0);
+        if (/[가-힣]/.test(lc0) && /[가-힣]/.test(fc0) && prevText.length > 15 && !lines[i - 1].endsSpace) isParagraphBreak = true;
+      }
+    }
     if (isParagraphBreak) {
-      parts.push('\n' + _mdLine(lines[i], bodyFontSize));
+      parts.push('\n' + md(lines[i]));
     } else {
       // 강제 개행 → 공백으로 연결
       // 한글-한글 사이에 불필요한 공백 방지
       var lastChar = prevText.slice(-1);
       var firstChar = lines[i].text.trimStart().charAt(0);
-      var needSpace = !(/[가-힣]/.test(lastChar) && /[가-힣]/.test(firstChar) && prevText.length > 15);
-      parts.push(needSpace ? ' ' + lines[i].text : lines[i].text);
+      var needSpace = !(/[가-힣]/.test(lastChar) && /[가-힣]/.test(firstChar) && prevText.length > 15) || !!lines[i - 1].endsSpace;
+      parts.push(needSpace ? ' ' + (M ? M.sp : '') + emit(lines[i]) : (M ? M.none : '') + emit(lines[i]));
     }
   }
   if (inCode) parts.push('\n```');
@@ -683,6 +754,7 @@ async function extractFile(file, opts) {
     for (const p of result.pages) {
       if (p.text) p.text = stripInvisibles(p.text);
       if (p.lines && p.lines.length) p.lines = p.lines.map(l => typeof l === 'string' ? stripInvisibles(l) : l);
+      if ('_shadow' in p || '_marks' in p) _extractJoins(p); // ① PDF 조판 경계 — 본문 변형이 모두 끝난 뒤 위치를 확정
     }
   }
   if (review && result) {
@@ -1068,6 +1140,128 @@ async function extractDOC(file) {
   );
 }
 
+/** ④ 마크 콘텐츠·구조 트리로 조각에 꼬리표를 단다. 시작/종료 항목은 본문 조각이 아니므로 걸러 내고,
+ *  Artifact(쪽번호·러닝헤드) 안의 조각은 content.items에서 빼서 따로 돌려준다. 구조 트리의 문단 노드(P·LI·TD…)에
+ *  이어진 조각에는 para(문단 번호)를 단다 — 트리가 없거나 연결이 안 되면 para 없음(기존 처리로). */
+const _TAG_BLOCK = new Set(['P', 'H', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'LBody', 'Lbl', 'TD', 'TH', 'Caption', 'Formula', 'Code', 'BlockQuote', 'Note', 'Title', 'TOCI', 'Index']); // Figure 제외: 그림 안 라벨을 한 문단으로 묶지 않는다(기존 판정)
+async function _tagPdfItems(pg, content) {
+  const text = [], art = [], tagStack = [], mcStack = [];
+  let artDepth = 0;
+  for (const it of content.items) {
+    if (it.type === 'beginMarkedContentProps' || it.type === 'beginMarkedContent') {
+      const isArt = it.tag === 'Artifact';
+      tagStack.push(isArt); if (isArt) artDepth++;
+      mcStack.push(it.id || (mcStack.length ? mcStack[mcStack.length - 1] : null)); // 안쪽 범위는 바깥 mcid를 물려받는다
+      continue;
+    }
+    if (it.type === 'endMarkedContent') { if (tagStack.pop()) artDepth--; mcStack.pop(); continue; }
+    if (typeof it.str !== 'string') continue;
+    if (artDepth > 0) { it.artifact = true; art.push(it); continue; }
+    it.mcid = mcStack.length ? mcStack[mcStack.length - 1] : null;
+    text.push(it);
+  }
+  let tree = null;
+  try { tree = await pg.getStructTree(); } catch (e) { console.warn('[panel8] getStructTree 실패', e.message); }
+  const paraOf = new Map(); let paras = 0;
+  (function walk(node, block) {
+    if (!node) return;
+    let b = block;
+    if (node.role && _TAG_BLOCK.has(node.role)) b = ++paras;
+    if (node.type === 'content' && node.id && b) paraOf.set(node.id, b);
+    (node.children || []).forEach(c => walk(c, b));
+  })(tree, 0);
+  let matched = 0;
+  for (const it of text) { if (it.mcid && paraOf.has(it.mcid)) { it.para = paraOf.get(it.mcid); matched++; } }
+  content.items = text;
+  return { tagged: !!tree, paras, matched, total: text.length, artifacts: art };
+}
+
+/** ① 본문 변형이 모두 끝난 뒤 그림자 텍스트에서 표식을 빼며 위치를 기록. 표식을 뺀 결과가 본문과 다르면 기록하지 않는다 */
+function _extractJoins(p) {
+  const M = p._marks, sh = p._shadow;
+  delete p._marks; delete p._shadow;
+  if (!M || sh == null) { p.joins = null; return; }
+  const kinds = { [M.gap]: 'gap', [M.sp]: 'sp', [M.none]: 'none', [M.ws]: 'ws' };
+  let plain = ''; const joins = [];
+  for (const ch of stripInvisibles(sh)) {
+    const k = kinds[ch];
+    if (k) joins.push({ pos: k === 'none' ? plain.length : plain.length - 1, kind: k }); // none=붙인 자리(뒤 글자 index), 나머지=넣은 공백 index
+    else plain += ch;
+  }
+  if (plain === p.text) p.joins = joins;
+  else { p.joins = null; console.debug('[panel8] p.' + p.page + ' 조판 경계 기록 생략 — 그림자 텍스트 불일치'); }
+}
+
+/** PDF 한 쪽의 글자 조각 → 줄·본문·쪽번호·제목. tag(④)가 있으면 Artifact 줄은 본문에서 빼고 쪽번호 탐색에만 쓴다.
+ *  _shadow/_marks: 표식을 넣은 그림자 본문(①) — extractFile 끝에서 page.joins로 바뀌고 지워진다 */
+function _buildPdfPage(content, pageW, pageH, i, tag) {
+  _markMonoItems(content);
+  const artItems = tag ? tag.artifacts : [];
+  const M = _pickMarkers(content.items.concat(artItems));
+  // ── 펼침(스프레드) 감지 ──
+  const isSpread = _detectSpread(pageW, pageH, content.items);
+  let lines, text, shadow = null, bodyPageNum = null;
+  const bottomY = pageH * 0.12;
+  const centerX = pageW / 2;
+  const artH = isSpread && artItems.length ? _splitItemsByCenter(artItems, centerX) : { left: [], right: [] };
+  const artL = groupTextIntoLines(artH.left), artR = groupTextIntoLines(artH.right);
+  const artLines = isSpread ? artL.concat(artR) : (artItems.length ? groupTextIntoLines(artItems) : []);
+  const numOf = line => { if (!/^\s*\d+\s*$/.test(line.text)) return null; const n = parseInt(line.text.trim()); return n >= 1 && n <= 9999 ? n : null; };
+  const xOf = line => line.x || (line.items && line.items[0]?.transform?.[4]) || 0;
+
+  if (isSpread) {
+    // 좌/우 분리 → 각각 줄 그룹핑 → 합산
+    const halves = _splitItemsByCenter(content.items, centerX);
+    const linesL = groupTextIntoLines(halves.left, 3, !!tag);
+    const linesR = groupTextIntoLines(halves.right, 3, !!tag);
+    const textL = _joinLinesSmartly(linesL, pageH, null, artL);
+    const textR = _joinLinesSmartly(linesR, pageH, null, artR);
+    lines = linesL.concat(linesR);
+    text = textL + (textL && textR ? '\n' : '') + textR;
+    if (M) { const sL = _joinLinesSmartly(linesL, pageH, M, artL), sR = _joinLinesSmartly(linesR, pageH, M, artR); shadow = sL + (sL && sR ? '\n' : '') + sR; }
+    console.debug('[panel8] spread page ' + i + ': L=' + linesL.length +
+      ' lines, R=' + linesR.length + ' lines');
+
+    // 펼침 페이지 번호: 좌/우 각각 하단 단독 숫자 탐색(Artifact 줄 포함)
+    const _findPageNum = function(lineArr, regionLeftX, regionRightX) {
+      for (const line of lineArr) {
+        if (line.y <= bottomY) { const n = numOf(line), x = xOf(line); if (n && (x <= regionLeftX || x >= regionRightX)) return n; }
+      }
+      return null;
+    };
+    const leftNum = _findPageNum(linesL.concat(artL), pageW * 0.10, centerX * 0.80);
+    const rightNum = _findPageNum(linesR.concat(artR), centerX + (centerX * 0.20), pageW * 0.90);
+    bodyPageNum = leftNum || rightNum || null; // 양쪽 다 찾으면 왼쪽 쪽번호가 대표값
+  } else {
+    // 낱장 PDF: 기존 로직 유지
+    lines = groupTextIntoLines(content.items, 3, !!tag);
+    text = _joinLinesSmartly(lines, pageH, null, artLines);
+    if (M) shadow = _joinLinesSmartly(lines, pageH, M, artLines);
+
+    // 본문 페이지 번호: 하단 12% + 좌측 20%/우측 80% 영역의 단독 숫자(Artifact 줄 포함)
+    const leftX = pageW * 0.20;
+    const rightX = pageW * 0.80;
+    for (const line of lines.concat(artLines)) {
+      if (line.y <= bottomY) { const n = numOf(line), x = xOf(line); if (n && (x <= leftX || x >= rightX)) bodyPageNum = n; }
+    }
+  }
+
+  // 전체 폰트 크기 중앙값 (본문 기준) — Artifact 조각도 예전처럼 포함
+  const fsSizes = content.items.concat(artItems)
+    .filter(it => it.transform && it.str.trim())
+    .map(it => Math.abs(it.transform[0]))
+    .filter(fs => fs > 6 && fs < 50);
+  fsSizes.sort((a, b) => a - b);
+  const medianFS = fsSizes[Math.floor(fsSizes.length / 2)] || 11;
+
+  // 계층 헤딩 추출
+  const headings = extractHeadingsFromLines(lines, medianFS);
+
+  return { page: i, text, lines, headings, bodyPageNum, isSpread, _shadow: shadow, _marks: M,
+    artifacts: artLines.map(l => ({ text: l.text, y: Math.round(l.y) })), tagged: !!(tag && tag.tagged),
+    tagInfo: tag ? { paras: tag.paras, matched: tag.matched, total: tag.total } : null };
+}
+
 async function extractPDF(file) {
   if (typeof pdfjsLib === 'undefined' || !pdfjsLib.getDocument) {
     throw new Error(
@@ -1085,84 +1279,15 @@ async function extractPDF(file) {
     // 10페이지마다 UI 스레드 양보 — 브라우저 응답성 유지
     if (i % 10 === 0) await new Promise(r => setTimeout(r, 0));
     const pg = await pdf.getPage(i);
-    const content = await pg.getTextContent();
-    _markMonoItems(content);
-    const vp = pg.getViewport({ scale: 1 });
-    const pageH = vp.height;
-    const pageW = vp.width;
-    pg.cleanup(); // 렌더링 리소스 해제
-
-    // ── 펼침(스프레드) 감지 ──
-    const isSpread = _detectSpread(pageW, pageH, content.items);
-    let lines, text, bodyPageNum = null;
-
-    if (isSpread) {
-      // 좌/우 분리 → 각각 줄 그룹핑 → 합산
-      const centerX = pageW / 2;
-      const halves = _splitItemsByCenter(content.items, centerX);
-      const linesL = groupTextIntoLines(halves.left);
-      const linesR = groupTextIntoLines(halves.right);
-      const textL = _joinLinesSmartly(linesL, pageH);
-      const textR = _joinLinesSmartly(linesR, pageH);
-      lines = linesL.concat(linesR);
-      text = textL + (textL && textR ? '\n' : '') + textR;
-      console.debug('[panel8] spread page ' + i + ': L=' + linesL.length +
-        ' lines, R=' + linesR.length + ' lines');
-
-      // 펼침 페이지 번호: 좌/우 각각 하단 단독 숫자 탐색
-      const bottomY = pageH * 0.12;
-      let leftNum = null, rightNum = null;
-      const _findPageNum = function(lineArr, regionLeftX, regionRightX) {
-        for (const line of lineArr) {
-          if (line.y <= bottomY && /^\s*\d+\s*$/.test(line.text)) {
-            const x = line.x || (line.items && line.items[0]?.transform?.[4]) || 0;
-            if (x <= regionLeftX || x >= regionRightX) {
-              const n = parseInt(line.text.trim());
-              if (n >= 1 && n <= 9999) return n;
-            }
-          }
-        }
-        return null;
-      };
-      leftNum = _findPageNum(linesL, pageW * 0.10, centerX * 0.80);
-      rightNum = _findPageNum(linesR, centerX + (centerX * 0.20), pageW * 0.90);
-      bodyPageNum = leftNum || rightNum || null;
-      // 양쪽 다 찾으면 {left, right} 형태로도 저장 (참고용)
-      if (leftNum && rightNum) {
-        bodyPageNum = leftNum; // 대표값: 왼쪽 쪽번호
-      }
-    } else {
-      // 낱장 PDF: 기존 로직 유지
-      lines = groupTextIntoLines(content.items);
-      text = _joinLinesSmartly(lines, pageH);
-
-      // 본문 페이지 번호: 하단 12% + 좌측 20%/우측 80% 영역의 단독 숫자
-      const bottomY = pageH * 0.12;
-      const leftX = pageW * 0.20;
-      const rightX = pageW * 0.80;
-      for (const line of lines) {
-        if (line.y <= bottomY && /^\s*\d+\s*$/.test(line.text)) {
-          const x = line.x || (line.items && line.items[0]?.transform?.[4]) || 0;
-          if (x <= leftX || x >= rightX) {
-            const n = parseInt(line.text.trim());
-            if (n >= 1 && n <= 9999) bodyPageNum = n;
-          }
-        }
-      }
+    let content = null, tag = null;
+    if (PDF_USE_TAGS) { // ④ 구조 태그 — 실패하면 그 쪽은 기존 방식
+      try { content = await pg.getTextContent({ includeMarkedContent: true }); tag = await _tagPdfItems(pg, content); }
+      catch (e) { console.warn('[panel8] p.' + i + ' 구조 태그 읽기 실패 — 기존 방식으로', e.message); content = null; tag = null; }
     }
-
-    // 전체 폰트 크기 중앙값 (본문 기준)
-    const fsSizes = content.items
-      .filter(it => it.transform && it.str.trim())
-      .map(it => Math.abs(it.transform[0]))
-      .filter(fs => fs > 6 && fs < 50);
-    fsSizes.sort((a, b) => a - b);
-    const medianFS = fsSizes[Math.floor(fsSizes.length / 2)] || 11;
-
-    // 계층 헤딩 추출
-    const headings = extractHeadingsFromLines(lines, medianFS);
-
-    pages.push({ page: i, text, lines, headings, bodyPageNum, isSpread });
+    if (!content) content = await pg.getTextContent();
+    const vp = pg.getViewport({ scale: 1 });
+    pg.cleanup(); // 렌더링 리소스 해제
+    pages.push(_buildPdfPage(content, vp.width, vp.height, i, tag));
   }
 
   // TOC 추출 — outline 우선, 부족하면 텍스트 파싱
@@ -1205,7 +1330,7 @@ async function extractPDF(file) {
 
   // 토큰 절감: PDF 반복 머리글/바닥글 제거 + 텍스트 압축
   _stripPdfRepeatingRegions(pages);
-  for (const p of pages) { p.text = _compressForTokens(p.text); }
+  for (const p of pages) { p.text = _compressForTokens(p.text); if (p._shadow != null) p._shadow = _compressForTokens(p._shadow); }
 
   return { filename: file.name, total_pages: pdf.numPages, toc, pages, isPdfFile: true };
 }
@@ -1258,14 +1383,17 @@ function _stripPdfRepeatingRegions(pages) {
   for (const p of pages) {
     let text = p.text;
     const lines = text.split('\n');
-    let newLines = lines;
+    // 그림자 텍스트(①)는 줄 수가 같을 때만 같은 index로 함께 지운다(다르면 기록 포기)
+    const sh = p._shadow != null ? p._shadow.split('\n') : null;
+    if (sh && sh.length !== lines.length) { p._shadow = null; }
+    let newLines = lines.map((l, k) => ({ l, s: sh && sh.length === lines.length ? sh[k] : null }));
 
     // 상단 반복 제거 (첫 2줄 검사)
     if (repeatingTop.size) {
       for (const pat of repeatingTop) {
         const parts = pat.split('|');
         for (const part of parts) {
-          const idx = newLines.findIndex(l => _stripMdPrefix(l) === part);
+          const idx = newLines.findIndex(r => _stripMdPrefix(r.l) === part);
           if (idx !== -1 && idx <= 2) {
             newLines = [...newLines.slice(0, idx), ...newLines.slice(idx + 1)];
             removed++;
@@ -1279,7 +1407,7 @@ function _stripPdfRepeatingRegions(pages) {
         const parts = pat.split('|');
         for (const part of parts) {
           for (let i = newLines.length - 1; i >= Math.max(0, newLines.length - 3); i--) {
-            if (_stripMdPrefix(newLines[i]) === part) {
+            if (_stripMdPrefix(newLines[i].l) === part) {
               newLines = [...newLines.slice(0, i), ...newLines.slice(i + 1)];
               removed++;
               break;
@@ -1288,7 +1416,8 @@ function _stripPdfRepeatingRegions(pages) {
         }
       }
     }
-    p.text = newLines.join('\n').trim();
+    p.text = newLines.map(r => r.l).join('\n').trim();
+    if (p._shadow != null) p._shadow = newLines.map(r => r.s).join('\n').trim();
   }
   if (removed > 0) console.log(`[panel8] PDF 반복 머리글/바닥글 ${removed}건 제거 (토큰 절감)`);
 }
@@ -3421,7 +3550,7 @@ async function p8_startProofread() {
     filename: extracted.filename,
     total_pages: extracted.total_pages,
     toc: extracted.toc,
-    pages: extracted.pages.map(p => ({ page: p.page, text: p.text, bodyPageNum: p.bodyPageNum || null })),
+    pages: extracted.pages.map(p => ({ page: p.page, text: p.text, bodyPageNum: p.bodyPageNum || null, joins: p.joins || null })),
     isPdfFile: extracted.isPdfFile !== false,
   };
   setCache(fileKey, {
@@ -3628,7 +3757,7 @@ function renderResults(extracted, aiUsed, aiSkipped) {
   allIssues.forEach(iss => {
     if (!iss.reviewId) iss.reviewId = Date.now() + "-" + (++_reviewId);
     const page = (_reviewExtracted.pages || []).find(p => p.page === iss.page);
-    iss.review = P8Review.classify(iss, page && page.text);
+    iss.review = P8Review.classify(iss, page && page.text, page && page.joins); // joins: PDF 조판 경계(①) → ② 분류
   });
   const total = allIssues.length;
   const high = allIssues.filter(i=>i.severity==='high').length;
@@ -4044,7 +4173,7 @@ function p8_applyFilters() {
   if (type) activeTypeFilter = null;
 
   const reviewMode = (document.getElementById('p8_reviewMode') || {}).value || 'correction';
-  const counts = {correction:0,review:0,style:0}; let ignored = 0;
+  const counts = {correction:0,review:0,style:0,layout:0,extract:0}; let ignored = 0;
   const ignoredIssues = new Set(), indices = new Map(), visibleIssues = [];
   allIssues.forEach((i, index) => {
     indices.set(i, index);
@@ -4052,8 +4181,11 @@ function p8_applyFilters() {
     else { counts[(i.review || P8Review.classify(i)).level]++; visibleIssues.push(i); }
   });
   const reviewInfo = document.getElementById('p8_reviewInfo');
-  renderCategorySummary(_reviewAiUsed, visibleIssues);
-  if (reviewInfo) reviewInfo.textContent = '수정 권장 ' + counts.correction + ' · 문맥 확인 ' + counts.review + ' · 선택적 윤문 ' + counts.style + ' · 허용/제외 ' + ignored + ' (분류를 바꾸면 다른 제안도 볼 수 있습니다)';
+  // 조판·추출 확인/추출 영향(②)은 원고 오류 건수(카테고리 카드)에서 빼고 따로 센다 — 검토 분류 필터로 볼 수 있다
+  renderCategorySummary(_reviewAiUsed, visibleIssues.filter(i => !P8Review.isEdgeLevel((i.review || P8Review.classify(i)).level)));
+  if (reviewInfo) reviewInfo.textContent = '수정 권장 ' + counts.correction + ' · 문맥 확인 ' + counts.review + ' · 선택적 윤문 ' + counts.style
+    + (counts.layout || counts.extract ? ' · 조판·추출 확인 ' + counts.layout + ' · 추출 영향 ' + counts.extract : '')
+    + ' · 허용/제외 ' + ignored + ' (분류를 바꾸면 다른 제안도 볼 수 있습니다)';
   const filtered = allIssues.filter(i => {
     const isIgnored = ignoredIssues.has(i);
     if (reviewMode === 'ignored' ? !isIgnored : isIgnored) return false;
@@ -4169,12 +4301,15 @@ function _mergeSubjectAi(surfaceIssues, linguisticIssues) {
   });
 }
 
-/** 해결됨 이슈에서 교정 내용 수집 */
+/** 해결됨 이슈에서 교정 내용 수집. 조판·추출 확인/추출 영향(②)은 해결됨이어도 교정본에 넣지 않는다(_edgeSkipped에 건수) */
+let _edgeSkipped = 0;
 function _getCorrections() {
   const list = [];
+  _edgeSkipped = 0;
   resolvedIndices.forEach(idx => {
     const iss = allIssues[idx];
     if (!iss || !iss.found || iss.noAutoReplace || P8Review.allowed(iss, _reviewSettings, currentDocKey || '', _ignoredOnce)) return;
+    if (P8Review.isEdgeLevel((iss.review || P8Review.classify(iss)).level)) { _edgeSkipped++; return; }
     // Existing exporters replace matching text globally. Never let an approved
     // occurrence overwrite another occurrence the user explicitly excluded.
     if (allIssues.some(other => (other.found || '').includes(iss.found) && P8Review.allowed(other, _reviewSettings, currentDocKey || '', _ignoredOnce))) return;
@@ -4214,8 +4349,9 @@ async function p8_downloadCorrected() {
     return;
   }
   const corrs = _getCorrections();
+  if (_edgeSkipped) showToast('조판·추출 확인/추출 영향 ' + _edgeSkipped + '건은 교정본에 넣지 않습니다', 'orange');
   if (!corrs.length) {
-    alert('해결됨으로 표시된 이슈가 없습니다.\n이슈 카드의 [미해결] 버튼을 클릭하여 [해결됨]으로 변경하세요.');
+    alert('해결됨으로 표시된 이슈가 없습니다.\n이슈 카드의 [미해결] 버튼을 클릭하여 [해결됨]으로 변경하세요.' + (_edgeSkipped ? '\n(조판·추출 확인/추출 영향 ' + _edgeSkipped + '건은 자동 반영하지 않습니다)' : ''));
     return;
   }
 
@@ -4316,11 +4452,15 @@ function p8_exportDocx() {
   var wp = function(style, text) {
     return '<w:p><w:pPr><w:pStyle w:val="' + style + '"/></w:pPr><w:r><w:t xml:space="preserve">' + x(text) + '</w:t></w:r></w:p>';
   };
-  var reportIssues = allIssues.filter(iss => !P8Review.allowed(iss, _reviewSettings, currentDocKey || '', _ignoredOnce));
+  var allReport = allIssues.filter(iss => !P8Review.allowed(iss, _reviewSettings, currentDocKey || '', _ignoredOnce));
+  var lvOf = function(iss) { return (iss.review || P8Review.classify(iss)).level; };
+  var edgeIssues = allReport.filter(iss => P8Review.isEdgeLevel(lvOf(iss)));
+  var reportIssues = allReport.filter(iss => !P8Review.isEdgeLevel(lvOf(iss)));
   var fname = selectedFile ? selectedFile.name : '교정';
   var body = '';
   body += '<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="36"/></w:rPr><w:t>교정 보고서</w:t></w:r></w:p>';
-  body += wp('Normal', '파일: ' + fname + ' | 검토 제안 ' + reportIssues.length + '건 (허용/제외 ' + (allIssues.length - reportIssues.length) + '건 제외) | ' + new Date().toLocaleDateString('ko-KR'));
+  body += wp('Normal', '파일: ' + fname + ' | 검토 제안 ' + reportIssues.length + '건 (허용/제외 ' + (allIssues.length - allReport.length) + '건 제외'
+    + (edgeIssues.length ? ', 조판·추출 확인/추출 영향 ' + edgeIssues.length + '건은 아래 별도' : '') + ') | ' + new Date().toLocaleDateString('ko-KR'));
   body += '<w:p/>';
 
   // severity별 그룹
@@ -4340,6 +4480,16 @@ function p8_exportDocx() {
       body += '<w:p/>';
     });
   });
+  if (edgeIssues.length) { // ② 원고 오류로 확정하지 않은 항목 — 사람이 PDF 원문과 대조
+    body += '<w:p><w:r><w:rPr><w:b/><w:sz w:val="28"/></w:rPr><w:t xml:space="preserve">[조판·추출 확인 / 추출 영향] ' + edgeIssues.length + '건 — PDF 줄 연결·공백 삽입 지점에 걸친 지적, 원고 오류로 확정하지 않음</w:t></w:r></w:p>';
+    edgeIssues.forEach(function(iss, i) {
+      var rv = iss.review || P8Review.classify(iss);
+      body += wp('Normal', (i+1) + '. [p.' + (iss.page||'?') + '] ' + (iss.type||'') + ' [' + rv.label + ']');
+      body += wp('Normal', '   발견: ' + (iss.found||''));
+      body += wp('Normal', '   사유: ' + rv.reason);
+      body += '<w:p/>';
+    });
+  }
 
   zip.file('word/document.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + body + '</w:body></w:document>');
   zip.generateAsync({ type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }).then(function(blob) {
@@ -4848,5 +4998,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   // 교정율 평가(eval/proofread/run_eval.js)용 — 앱과 같은 검사 함수를 그대로 호출
   window.__p8Eval = { checkSurface, checkTermConsistency, checkLinguistic, _cleanSuggestion, CROSS_TYPES, textToExtracted, _compressForTokens,
-    _subjectCandidates, _subjectRecheck, _sameParticleRepeats, _mergeSubjectAi, _rewriteParticleRepeats, SUBJECT_OVERLOAD, SUBJECT_EXCLUDE };
+    _subjectCandidates, _subjectRecheck, _sameParticleRepeats, _mergeSubjectAi, _rewriteParticleRepeats, SUBJECT_OVERLOAD, SUBJECT_EXCLUDE,
+    // PDF 추출(①④) — 합성 조각으로 단위 테스트, 샘플 측정 때 플래그 전환
+    groupTextIntoLines, _joinLinesSmartly, _buildPdfPage, _stripPdfRepeatingRegions, _extractJoins, _tagPdfItems,
+    _setPdfFlags: o => { if (o && 'keepWs' in o) PDF_KEEP_WS = !!o.keepWs; if (o && 'useTags' in o) PDF_USE_TAGS = !!o.useTags; return { keepWs: PDF_KEEP_WS, useTags: PDF_USE_TAGS }; } };
 })();

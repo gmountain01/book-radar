@@ -170,6 +170,7 @@ function chapterText(ch) {
 //    구간마다 책 전체 목차를 함께 보내며, 다른 구간의 설명은 근거 수집 단계에서 원고 전체를 검색해 확인한다 ──
 const CHUNK_BUDGET = 120000; // 한 번에 보낼 본문 글자 수
 const SRC_LABEL = { mark: '원고 표시', style: '스타일 이름', format: '제목 서식·수준 추정', number: '번호 줄로 추정', guess: '추출 추정' };
+const HEAD_SURE = new Set(['mark', 'style']); // 수준 변경을 자동 반영해도 되는 근거: 원고에 적힌 [장]·[절] 표시, 워드·한글 제목 스타일
 const headLine = n => `⟦${n.id}⟧ ${'#'.repeat(Math.min(6, n.level + 1))} ${n.label} ${n.title} 〔근거: ${SRC_LABEL[n.src] || '추출 추정'}〕`;
 function bookText(outline) {
   const out = [];
@@ -593,6 +594,15 @@ function cleanBookReview(r, outline) {
     if (y.at) { const o = ownerOf(outline, y.id, y.at); if (o) y.id = o; else { y.at = ''; y.atMissing = true; } }
     candMeta(x, y, ok);
     if (!y.kind || y.kind === '기타') y.kind = { move: '순서·참조', delete: '중복', add: '누락', heading: '기타', edit: '기타' }[y.type];
+    // ③ 제목 수준 변경은 대상 제목의 수준 근거가 원고 표시·스타일 이름일 때만 자동 반영 후보. 추정(글자 크기·번호 줄·# 깊이)이면
+    // 확인 보류(H) — 번호가 있어도 그 책의 장·절·중 수준을 확정하지 않으므로 예외 없음. 제안은 사유와 함께 남긴다.
+    if (y.type === 'heading' && y.id) {
+      const n = outline.byId[y.id];
+      if (n && !HEAD_SURE.has(n.src)) {
+        y.levelUnsure = `이 제목의 수준은 ${SRC_LABEL[n.src] || '추출 추정'}이라 수준 변경을 자동 반영하지 않습니다 — 원고의 제목 표시·스타일로 확인하세요`;
+        y.tier = 'H';
+      }
+    }
     return y;
   });
   const notNeeded = (r && r.notNeeded || []).filter(x => x && x.feedback).map(x => ({ feedback: names(x.feedback), reason: names(x.reason), quote: String(x.quote || '').trim() }));
@@ -1471,6 +1481,7 @@ function bookResult(rv) {
         ${row('비교', x.compare)}
         ${row('사실 확인', x.verify, 'verify')}
       </dl>
+      ${x.levelUnsure ? `<p class="p26-warn">${esc(x.levelUnsure)}</p>` : ''}
       ${checkBlock(x)}
       <p class="p26-bi-foot">${apply ? '수락하면 목차 비교·재구성 원고에 반영됩니다' : x.unverified ? '수락하면 의견서에 들어갑니다(검증 못 함 — 자동 반영 안 함)' : x.fixHeld || x.held ? '수락하면 의견서에 들어갑니다(검증에서 보류 — 자동 반영 안 함)' : '수락하면 의견서에 들어갑니다(자동 반영할 위치·원문이 없음)'}</p>
       ${cf ? `<span class="p26-conflict">충돌 · ${esc(cf)}</span>` : ''}

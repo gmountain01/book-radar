@@ -179,6 +179,7 @@ async function main() {
   await require('./test_stream.js')();
   await require('./test_proof_mismatch.js')();
   await require('./test_subject_overload.js')();
+  await require('./test_pdf_extract.js')(sandbox, { pass, fail });
   require('./test_author_search.js');
   require('./test_market_feed.js');
 
