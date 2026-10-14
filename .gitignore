@@ -41,3 +41,10 @@ eval/proofread/source_md.json
 eval/content/results/
 eval/content/*.json
 eval/content/*.md
+
+# v2.17.0 프로필 연결 평가 산출물(지적 원문 인용 포함) — 저장소에 넣지 않음
+eval/profile/results/
+
+# 평가용 API 키 파일(저장소 밖에 두지만 안전장치)
+eval_key.txt
+*.key.txt

@@ -1,0 +1,135 @@
+/* panel28 — 병기 중복 찾기 */
+.panel28-scope {
+  /* 작은 글자용 짙은 색: 공통 상태색을 본문색과 섞어 대비 4.5:1 이상으로 맞춘다(새 색을 들이지 않는다) */
+  --p28-red: color-mix(in srgb, var(--red) 72%, var(--text));
+  --p28-green: color-mix(in srgb, var(--green) 65%, var(--text));
+  --p28-yellow: color-mix(in srgb, var(--yellow) 50%, var(--text));
+  --p28-sub: color-mix(in srgb, var(--muted) 80%, var(--text));
+}
+.panel28-scope .p28-wrap { max-width: 1040px; margin: 0 auto; padding: 32px 28px 48px; }
+.panel28-scope [hidden] { display: none !important; }
+.panel28-scope .p28-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); border: 0; white-space: nowrap; }
+.panel28-scope .p28-header h2 { margin: 0 0 6px; font-size: 1.35rem; font-weight: 700; letter-spacing: -.01em; }
+.panel28-scope .p28-header p { margin: 0 0 20px; color: var(--p28-sub); font-size: .86rem; line-height: 1.65; max-width: 760px; }
+.panel28-scope .p28-header p b { color: var(--text); font-weight: 600; }
+.panel28-scope .p28-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-xs); margin-bottom: 16px; }
+
+/* 키보드 초점 */
+.panel28-scope .p28-chip:focus-visible,
+.panel28-scope .p28-term summary:focus-visible,
+.panel28-scope .p28-card:has(#p28_file:focus-visible) .p28-drop,
+.panel28-scope .p28-card:has(#p28_file:focus-visible) .p28-btn { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 끌어 놓기 · 파일 한 줄 (원고 구조 검토와 같은 모양) */
+.panel28-scope .p28-drop { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 34px 20px; border: 2px dashed var(--border2); border-radius: 14px; background: var(--surface2); cursor: pointer; text-align: center; transition: border-color var(--transition), background var(--transition); }
+.panel28-scope .p28-drop:hover, .panel28-scope .p28-drop.over { border-color: var(--accent); background: var(--accent-light); }
+.panel28-scope .p28-drop-icon { font-size: 2rem; line-height: 1; }
+.panel28-scope .p28-drop-main { font-weight: 600; font-size: .95rem; }
+.panel28-scope .p28-drop-sub { font-size: .78rem; color: var(--p28-sub); }
+.panel28-scope .p28-fileline { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--surface2); border: 1px solid var(--border); }
+.panel28-scope .p28-file-icon { font-size: 1.3rem; }
+.panel28-scope .p28-file-name { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.panel28-scope .p28-file-name b { font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel28-scope .p28-file-name small { font-size: .74rem; color: var(--p28-sub); }
+.panel28-scope .p28-btn { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border: 1px solid var(--border2); border-radius: 8px; background: var(--surface); font-size: .8rem; cursor: pointer; white-space: nowrap; }
+.panel28-scope .p28-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* 숫자 타일 — 가장 먼저 읽힐 것은 '중복 몇 곳' 하나 */
+.panel28-scope .p28-tiles { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.panel28-scope .p28-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0; }
+.panel28-scope .p28-tile b { font-size: 1.5rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.panel28-scope .p28-tile span { font-size: .78rem; color: var(--p28-sub); line-height: 1.45; }
+.panel28-scope .p28-tile.yellow b { color: var(--p28-yellow); }
+.panel28-scope .p28-tile.lead { flex-direction: row; justify-content: flex-start; align-items: center; gap: 16px; padding: 16px 20px; }
+.panel28-scope .p28-tile.lead b { font-size: 2.5rem; letter-spacing: -.02em; }
+.panel28-scope .p28-tile.lead span { display: flex; flex-direction: column; gap: 1px; font-size: .8rem; }
+.panel28-scope .p28-tile.lead strong { font-size: .98rem; font-weight: 700; color: var(--text); }
+.panel28-scope .p28-tile.lead.red { background: var(--red-bg); border-color: var(--red-bd); }
+.panel28-scope .p28-tile.lead.red b { color: var(--p28-red); }
+.panel28-scope .p28-tile.lead.green { background: var(--green-bg); border-color: var(--green-bd); }
+.panel28-scope .p28-tile.lead.green b { color: var(--p28-green); }
+
+/* 형식 한계 알림(PDF·HWP 위첨자 추정, 닫히지 않은 코드 블록) */
+.panel28-scope .p28-warn { display: flex; gap: 8px; margin: 0 0 14px; padding: 10px 14px; border: 1px solid var(--yellow-bd); border-radius: 10px; background: var(--yellow-bg); font-size: .8rem; line-height: 1.6; }
+.panel28-scope .p28-warn i, .panel28-scope .p28-alert i { font-style: normal; color: var(--p28-yellow); flex: none; }
+
+/* 거르기 */
+.panel28-scope .p28-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.panel28-scope .p28-chip { font: inherit; font-size: .8rem; min-height: 36px; padding: 0 13px; border-radius: 999px; border: 1px solid var(--border2); background: var(--surface); color: var(--p28-sub); cursor: pointer; }
+.panel28-scope .p28-chip:hover { border-color: var(--accent); }
+.panel28-scope .p28-chip b { font-variant-numeric: tabular-nums; color: var(--text); }
+.panel28-scope .p28-chip.on { background: var(--accent-light); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+.panel28-scope .p28-chip.on b { color: inherit; }
+.panel28-scope .p28-toolbar input { margin-left: auto; width: 220px; min-height: 36px; padding: 0 12px; border: 1px solid var(--border2); border-radius: 10px; font: inherit; font-size: .84rem; background: var(--surface); }
+.panel28-scope .p28-toolbar input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+.panel28-scope .p28-note { margin: 0 0 14px; font-size: .76rem; color: var(--p28-sub); line-height: 1.6; }
+.panel28-scope .p28-empty { margin: 0; padding: 36px 20px; text-align: center; color: var(--p28-sub); font-size: .9rem; line-height: 1.7; border: 1px dashed var(--border2); border-radius: 12px; }
+
+/* 용어 카드 — 닫힌 한 줄: 용어 | 첫 병기 쪽 · 설명 · 중복(몇 곳·어느 쪽) */
+.panel28-scope .p28-term { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; }
+.panel28-scope .p28-term.has-dup { border-left: 4px solid var(--red); margin-bottom: 10px; box-shadow: var(--shadow-xs); }
+.panel28-scope .p28-term summary { display: flex; align-items: center; gap: 4px 14px; min-height: 44px; padding: 7px 14px; cursor: pointer; list-style: none; border-radius: 10px; }
+.panel28-scope .p28-term.has-dup summary { padding: 10px 14px 10px 11px; }
+.panel28-scope .p28-term summary:hover { background: var(--surface2); }
+.panel28-scope .p28-term summary::-webkit-details-marker { display: none; }
+.panel28-scope .p28-term summary::before { content: '▸'; flex: none; width: 12px; color: var(--muted); transition: transform var(--transition); }
+.panel28-scope .p28-term[open] summary::before { transform: rotate(90deg); }
+.panel28-scope .p28-name { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 2px 10px; flex-wrap: wrap; overflow-wrap: anywhere; }
+.panel28-scope .p28-ko { font-weight: 600; font-size: .95rem; }
+.panel28-scope .p28-term.has-dup .p28-ko { font-weight: 700; font-size: 1.02rem; }
+.panel28-scope .p28-en { font-size: .84rem; color: var(--p28-sub); }
+.panel28-scope .p28-badges { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 6px 10px; flex-wrap: wrap; font-size: .76rem; color: var(--p28-sub); }
+.panel28-scope .p28-where { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.panel28-scope .p28-badges em { font-style: normal; white-space: nowrap; }
+.panel28-scope .p28-badges em.yellow { color: var(--p28-yellow); font-weight: 600; }
+.panel28-scope .p28-badges em.red { padding: 3px 10px; border-radius: 999px; background: var(--red-bg); border: 1px solid var(--red-bd); color: var(--p28-red); font-weight: 700; font-size: .8rem; font-variant-numeric: tabular-nums; }
+.panel28-scope .p28-badges em.red span { font-weight: 500; }
+
+/* 나온 곳(시간 순서): [꼬리표 · 쪽 / 제목 경로] | 문장 */
+.panel28-scope .p28-occ { list-style: none; margin: 0; padding: 0 16px 6px 27px; }
+.panel28-scope .p28-row { display: grid; grid-template-columns: 200px 1fr; gap: 16px; align-items: start; padding: 12px 0; border-top: 1px solid var(--border); }
+.panel28-scope .p28-loc { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; min-width: 0; }
+.panel28-scope .p28-tag { font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--gray-bg); color: var(--p28-sub); white-space: nowrap; }
+.panel28-scope .p28-row.first .p28-tag { background: var(--green-bg); color: var(--p28-green); box-shadow: inset 0 0 0 1px var(--green-bd); }
+.panel28-scope .p28-row.dup .p28-tag { background: var(--red-bg); color: var(--p28-red); box-shadow: inset 0 0 0 1px var(--red-bd); }
+.panel28-scope .p28-page { font-size: .98rem; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.panel28-scope .p28-guess { font-size: .7rem; padding: 1px 6px; border: 1px dashed var(--border2); border-radius: 6px; color: var(--p28-sub); white-space: nowrap; cursor: help; }
+.panel28-scope .p28-loc small { flex-basis: 100%; font-size: .76rem; color: var(--p28-sub); line-height: 1.45; overflow-wrap: anywhere; }
+.panel28-scope .p28-path { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.panel28-scope .p28-path b { font-weight: 500; color: var(--text); }
+.panel28-scope .p28-body { min-width: 0; }
+.panel28-scope .p28-snip { margin: 0; font-size: .93rem; line-height: 1.75; overflow-wrap: anywhere; }
+.panel28-scope .p28-snip sup { line-height: 0; }
+/* 강조는 옆 글자를 밀지 않는다(가로 여백 0) — 원고 띄어쓰기가 달라 보이면 안 된다 */
+.panel28-scope .p28-snip mark { background: var(--gray-bg); color: inherit; padding: .14em 0; border-radius: 3px; font-weight: 600; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.panel28-scope .p28-row.first .p28-snip mark { background: var(--green-bg); box-shadow: inset 0 -2px 0 var(--green-bd); }
+.panel28-scope .p28-row.dup .p28-snip mark { background: var(--red-bg); text-decoration: underline wavy var(--red); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.panel28-scope .p28-row.head .p28-snip { color: var(--p28-sub); font-size: .88rem; }
+.panel28-scope .p28-def { margin: 6px 0 0; font-size: .8rem; line-height: 1.55; color: var(--p28-sub); }
+.panel28-scope .p28-def i { font-style: normal; font-weight: 700; margin-right: 5px; }
+.panel28-scope .p28-def.ok, .panel28-scope .p28-def.ok i { color: var(--p28-green); }
+.panel28-scope .p28-def.no { color: var(--text); }
+.panel28-scope .p28-def.no i { color: var(--p28-yellow); }
+.panel28-scope .p28-alert { display: inline-flex; flex-wrap: wrap; gap: 2px 6px; margin: 8px 0 0; padding: 5px 10px; border: 1px solid var(--yellow-bd); border-radius: 8px; background: var(--yellow-bg); font-size: .8rem; line-height: 1.55; overflow-wrap: anywhere; }
+.panel28-scope .p28-alert b { font-weight: 700; }
+
+@media (min-width: 769px) { /* 닫힌 카드를 훑을 때 오른쪽 정보가 세로 줄로 맞게 */
+  .panel28-scope .p28-where { min-width: 6.6em; text-align: right; }
+  .panel28-scope .p28-badges em:not(.red) { min-width: 5.4em; }
+  .panel28-scope .p28-badges em:last-child { min-width: 9.5em; text-align: center; }
+}
+@media (max-width: 768px) {
+  .panel28-scope .p28-wrap { padding: 20px 14px 40px; }
+  .panel28-scope .p28-card { padding: 14px; }
+  .panel28-scope .p28-tiles { grid-template-columns: 1fr 1fr; }
+  .panel28-scope .p28-tile.lead { grid-column: 1 / -1; }
+  .panel28-scope .p28-chip, .panel28-scope .p28-btn { min-height: 44px; }
+  .panel28-scope .p28-toolbar input { margin-left: 0; width: 100%; min-height: 44px; font-size: 16px; }
+  .panel28-scope .p28-term summary { flex-wrap: wrap; }
+  .panel28-scope .p28-name { flex-basis: calc(100% - 30px); }
+  .panel28-scope .p28-badges { flex: 1 1 100%; justify-content: flex-start; padding-left: 16px; }
+  .panel28-scope .p28-occ { padding: 0 14px 6px; }
+  .panel28-scope .p28-row { grid-template-columns: 1fr; gap: 6px; }
+  .panel28-scope .p28-loc small { flex-basis: auto; }
+  .panel28-scope .p28-path { flex-basis: 100% !important; -webkit-line-clamp: 2; }
+}

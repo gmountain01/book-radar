@@ -40,7 +40,7 @@ module.exports = async function(sandbox) {
   code=code.slice(0,end)+`window.__reviewTest={checkSurface,_checkStyleConsistency,getCtx,p8_filterByTypes,p8_applyFilters,
     filters(){return {currentSev,activeResolvedFilter};},
     staleFilters(){currentSev='high';activeResolvedFilter='resolved';},
-    set(issues){allIssues=issues;currentFileKey='test-book__1__1';currentDocKey='test-book';resolvedIndices.clear();_ignoredOnce.clear();_reviewSettings=P8Review.empty();},
+    set(issues){allIssues=issues;currentFileKey='test-book__1__1';currentDocKey='test-book';resolvedIndices.clear();_ignoredOnce.clear();_reviewSettings=P8Review.empty();issues.forEach(i=>{if(!i.critSig)i.critSig=buildCriteria().ruleSig;});}, // v2.17.0: 규칙 항목은 현재 규칙 지문이 있어야 교정본에 들어간다(같은 VM 복사본의 기준)
     resolve(i){resolvedIndices.add(i);},corrections:_getCorrections,rewrite:_rewriteParticleRepeats,clean:_cleanSuggestion,parseNaver:_parseNaverResult};\n`+code.slice(end);
   vm.runInContext(code,sandbox);
   const test=sandbox.__reviewTest;
@@ -101,6 +101,16 @@ module.exports = async function(sandbox) {
   for (const sg of ['"~에서"로 바꾸세요','"함께" 또는 "같이" 하나만 사용','~할 때','단일 수동 또는 능동으로 변환','"하게 되"로 수정'])
     assert.equal(test.clean({source:'surface',suggestion:sg}),'',sg);
   assert.equal(test.clean({source:'surface',suggestion:'따라 하기 (본동사+본동사는 띄어 씀)'}),'따라 하기');
+  // v2.17.1 수정안 정리 손실 수정 — '확인'·'하세요'가 든 실제 교정 문장은 보존, 편집 지시문은 계속 버림, 괄호 제거는 영문 병기·문장 중간 괄호를 건드리지 않음
+  assert.equal(test.clean({source:'ai',found:'조별 인원을 더하는 것을 통해 28명인지 확인하세요.',suggestion:'조별 인원을 더해 28명인지 확인하세요.'}),'조별 인원을 더해 28명인지 확인하세요.','c16: 원문을 고친 교정 문장 보존');
+  assert.equal(test.clean({source:'ai',found:'고르게 유지되어지는지 확인합니다',suggestion:'고르게 유지되는지 확인합니다'}),'고르게 유지되는지 확인합니다','c24');
+  for (const sg of ['원문 확인 필요','저자 확인 요청','확인 바람','문맥 확인','띄어쓰기 수정 필요',"'코덱스'로 통일하세요",'이 문장은 삭제하세요','[삭제 또는 위치 이동 권장] 이 문장은 무관하므로 옮기세요','해당 문장은 앞 절과 내용이 맞지 않습니다. 수정이 필요합니다'])
+    assert.equal(test.clean({source:'ai',found:'조별 인원을 더하는 것을 통해 28명인지 확인하세요.',suggestion:sg}),'','지시문은 버림: '+sg);
+  assert.equal(test.clean({source:'ai',found:'(prompt)요청 문장은 짧을수록 좋습니다.',suggestion:'요청 문장(prompt)은 짧을수록 좋습니다.'}),'요청 문장(prompt)은 짧을수록 좋습니다.','영문 병기와 뒤 문장 보존');
+  assert.equal(test.clean({source:'ai',found:'x',suggestion:'요청 문장(prompt)'}),'요청 문장(prompt)','영문 병기 단독 보존');
+  assert.equal(test.clean({source:'ai',found:'x',suggestion:'MoE(Mixture of Experts) 구조를 씁니다.'}),'MoE(Mixture of Experts) 구조를 씁니다.');
+  assert.equal(test.clean({source:'surface',suggestion:'초점 (한자어+한자어 사이시옷 없음)'}),'초점','한글 설명 괄호는 계속 제거');
+  assert.equal(test.clean({source:'surface',suggestion:'요청 문장(프롬프트)은 짧을수록 좋습니다.'}),'요청 문장(프롬프트)은 짧을수록 좋습니다.','문장 중간 괄호는 자르지 않음');
   // 네이버가 사전에 없는 단어에 밑줄만 치고 같은 단어를 돌려주면 지적하지 않음 (실제 응답 형태)
   { const ce=sandbox.document.createElement;
     sandbox.document.createElement=()=>({set innerHTML(h){this.textContent=h.replace(/<[^>]+>/g,'');}});

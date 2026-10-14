@@ -1,0 +1,1068 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root {color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html {scroll-padding-top:env(safe-area-inset-top,0px)}body {margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img {max-width:100%}[hidden]:not([hidden=until-found i]) {display:none!important}  /* 시안(HTML) 미리보기에서만 숨기는 그림 — 원고에는 그대로 둠 */
+  figure.pv-hide { display: none; }
+  /* C · 선생님 한마디: 말풍선 + 하늘색 아바타로 본문과 구분 */
+
+  /* B · 증상·바꿔 쓰기 태그와 제목 사이 여백 */
+  
+  /* 임시 삽화 ① 장 도입 삽화: 1쪽 아래 남는 높이를 채움 */
+  figure.illo { margin-top: 3mm; margin-bottom: 0; }
+  .illo-box { position: relative; display: grid; place-items: center; height: 40mm; border: .3mm dashed var(--rule); border-radius: 3mm; background: var(--tint); overflow: hidden; }
+  .illo-box svg { width: auto; height: 78%; max-width: 90%; }
+  .illo-box .illo-tag { position: absolute; left: 3mm; top: 2.4mm; padding: .5mm 2mm; border-radius: 99px; background: #fff; color: var(--c1); font: 700 6.5pt var(--f-label); letter-spacing: .03em; }
+  
+  /* 임시 삽화 ② 선생님 한마디 아바타(시리즈 공통 캐릭터) */
+  .voice-ic.avatar { width: 12mm !important; height: 12mm !important; padding: 0; overflow: hidden; border: 0 !important; background: var(--tint) !important; color: var(--c1) !important; }
+  
+  .voice-ic.avatar svg { width: 100%; height: 100%; display: block; }
+  .v-a .voice { grid-template-columns: 12mm 1fr !important; }
+  
+  /* ── 장 도입 헤더 축소: 완성 화면까지 1쪽에 들어가도록 ── */
+  #book.v-a .page.opener::before { height: 72mm; }
+  #book.v-a .ch-head { height: calc(72mm - var(--m-top)); padding-bottom: 4mm; }
+  #book.v-a .ch-label { margin-bottom: 1mm; }
+  #book.v-a .ch-big { font-size: 42pt; margin-bottom: 1.5mm; }
+  #book.v-a h1 { font-size: calc(var(--fs-h1) - 2pt); }
+  #book.v-a .meta { margin-top: 4mm; }
+  #book.v-a .meta .m { padding-top: 1.4mm; padding-bottom: 1.4mm; }
+
+  #book .page.opener h2 { margin-top: 7mm; }
+  #book .page.opener .voice { margin-top: 2.4mm; margin-bottom: 2.4mm; }
+
+  /* A·C 장 제목 한 줄 */
+  #book.v-a h1 { white-space: nowrap; }
+  
+  /* A · 장 번호와 제목을 한 줄로 */
+  #book.v-a .ch-text { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 4mm; }
+  #book.v-a .ch-label { flex-basis: 100%; }
+  #book.v-a .ch-big { margin: 0; line-height: 1; }
+  #book.v-a .page.opener::before { height: 62mm; }
+  #book.v-a .ch-head { height: calc(62mm - var(--m-top)); }
+  /* ── 장 도입 헤더 다시 키움(1절이 2쪽으로 넘어간 뒤) ── */
+  #book.v-a .page.opener::before { height: 84mm; }
+  #book.v-a .ch-head { height: auto; min-height: calc(84mm - var(--m-top)); padding-bottom: 6mm; }  /* 글꼴이 커져도 위로 잘리지 않게 아래로 늘어남 */
+  #book.v-a .page.opener::before { height: var(--band, 84mm); }
+  #book.v-a .ch-label { margin-bottom: 3mm; }
+  #book.v-a .ch-big { font-size: 64pt; }
+  #book.v-a h1 { font-size: var(--fs-h1); }
+  #book.v-a .meta { margin-top: 7mm; }
+  #book.v-a .meta .m { padding-top: 2.2mm; padding-bottom: 2.2mm; }
+
+  /* 장 도입 삽화는 작게 */
+  figure.illo { width: auto; margin: 7mm 0 0; }
+  figure.illo img { width: 100%; height: auto; display: block; border: 0; border-radius: 0; }
+  .illo-box { max-height: 52mm; }
+  /* 174mm 판형: A 장 번호·제목 한 줄, 정보 5칸 한 줄 유지 */
+  #book.v-a .ch-big { font-size: 54pt; }
+  #book.v-a .meta { grid-template-columns: .95fr .85fr .75fr .8fr 1.75fr; }
+  #book.v-a .meta .m { padding-right: 2mm; } #book.v-a .meta .m + .m { padding-left: 2.4mm; }
+  #book.v-a .meta dd { white-space: nowrap; }
+  figure.illo img { margin-left: auto; margin-right: auto; }
+
+  /* ── 파트 도비라 (2쪽) ── */
+  #book .page.part .part-cover { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 34mm 20mm 24mm 22mm; }
+  #book .part-cover .pc-label { font-family: var(--f-label); font-size: 9pt; font-weight: 800; letter-spacing: .4em; }
+  #book .part-cover .pc-no { line-height: .9; }
+  #book .part-cover .pc-title { margin: 0; font-family: var(--f-h1); font-weight: var(--w-h1); font-size: 30pt; line-height: 1.2; letter-spacing: -0.03em; border: 0; padding: 0; display: block; }
+  #book .part-cover .pc-sub { margin: 2.4mm 0 0; font-size: 12pt; font-weight: 600; }
+  #book .part-cover .pc-rule { display: block; width: 18mm; height: .9mm; margin: 7mm 0 6mm; }
+  #book .part-cover .pc-desc { margin: 0; max-width: 104mm; font-size: 9.4pt; line-height: 1.85; text-align: left; word-break: keep-all; }
+  #book .part-cover .pc-list { margin-top: auto; padding-top: 4mm; }
+  #book .part-cover .pc-list-h { font-family: var(--f-label); font-size: 7.5pt; font-weight: 800; letter-spacing: .08em; margin-bottom: 2.4mm; }
+  #book .part-cover ul { list-style: none; margin: 0; padding: 0; }
+  #book .part-cover li::before { content: none; display: none; }
+  #book.v-a .part-cover .pc-title { color: #fff; font-family: "Noto Serif KR", serif; font-weight: 900; }
+  #book .part-cover li { padding-left: 0; display: flex; align-items: baseline; gap: 3mm; padding: 2.2mm 0; font-size: 10pt; font-weight: 600; }
+  #book .part-cover .pc-cn { font-family: var(--f-label); font-weight: 800; font-size: 9pt; min-width: 9mm; }
+  /* A 교과서: 남색 전면, 겨자색 숫자, 명조 제목 */
+  #book.v-a .page.part { background: var(--c1); }
+  #book.v-a .part-cover { color: #fff; }
+  #book.v-a .part-cover .pc-label, #book.v-a .part-cover .pc-cn, #book.v-a .part-cover .pc-list-h { color: var(--c2); }
+  #book.v-a .part-cover .pc-no { margin: 1mm 0 10mm -1mm; font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 110pt; color: var(--c2); }
+  #book.v-a .part-cover .pc-sub { color: rgba(255,255,255,.82); }
+  #book.v-a .part-cover .pc-rule { background: var(--c2); }
+  #book.v-a .part-cover .pc-desc { color: rgba(255,255,255,.78); }
+  #book.v-a .part-cover .pc-list { border-top: .3mm solid rgba(255,255,255,.28); }
+  #book.v-a .part-cover li { border-bottom: .25mm solid rgba(255,255,255,.16); }
+  /* B 연습장: 초록 모눈, 코랄 동그라미 숫자, 형광펜 제목 */
+
+  /* C 산뜻: 위쪽 하늘색 면 + 레몬 띠, 흰 큰 숫자 */
+
+  /* STEP 제목: 종류 라벨 없이 번호 옆에 한 줄로 */
+  #book h3.step .step-title { grid-row: 1 / span 2; align-self: center; }
+  /* B · 라벨 구분: 요청 프롬프트=상자 위에 붙은 탭, 바꿔 쓰기=테두리만 있는 각진 배지, 증상=코랄 알약(그대로) */
+
+  /* 13_06: 원본 맨 위에 반쯤 잘린 줄(합계·다시 섞기 버튼)이 있어 시안에서만 가림 */
+  #book img.crop-top { aspect-ratio: 694 / 840; height: auto; object-fit: cover; object-position: bottom; }
+  /* STEP 과정 번호: 01, 02 … 두 자리, 색상·굵게 */
+  #book p.act { padding-left: 7.5mm; }
+  #book .in-act { margin-left: 7.5mm; }
+  #book .act-n { font-weight: 900; font-size: 1.08em; letter-spacing: -0.02em; line-height: inherit; }
+  /* 절 번호를 13.1 형식으로 */
+  #book.v-a .h2-n { width: auto; min-width: 10mm; padding: 0 2.4mm; font-size: 12.5pt; letter-spacing: -0.01em; }
+
+  /* 파트 도비라 자리(1·2쪽) */
+  #book .page.blank .blank-note { position: absolute; inset: 18mm; display: grid; place-content: center; gap: 2mm; text-align: center; border: .3mm dashed var(--rule); border-radius: 3mm; color: var(--muted); font-family: var(--f-label); }
+  #book .page.blank .blank-note b { font-size: 12pt; color: var(--ink2); letter-spacing: .04em; }
+  #book .page.blank .blank-note span { font-size: 8pt; }
+
+  /* ── 주의 박스: 팁보다 한 단계 강하게 ── */
+  #book .warn { position: relative; }
+  #book .warn > b { gap: 2mm; color: var(--ink); }
+  #book .warn .lbl { display: inline-flex; align-items: center; gap: .8mm; padding: .4mm 2mm .4mm 1.5mm; border-radius: 99px; background: var(--warn); color: #fff; font-style: normal; font-size: 7pt; font-weight: 800; letter-spacing: .04em; line-height: 1.5; }
+  #book .warn .lbl .ic { color: #fff; width: 1.05em; height: 1.05em; stroke-width: 2.3; }
+  #book .warn p strong { color: var(--warn); font-weight: 700; }
+  #book.v-a .warn { padding: 2.6mm 3.4mm 2.8mm 4.2mm; background: var(--warn-tint); border-left: 1.2mm solid var(--warn); border-radius: 0 1.2mm 1.2mm 0; }
+
+  
+</style></head><body>
+<title>책 미리보기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;900&family=Nanum+Gothic:wght@400;700;800&family=Jua&family=Nanum+Pen+Script&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Hahmlet:wght@400;600;800&family=Gothic+A1:wght@400;500;700;800&display=swap">
+<style>
+  /* 레이아웃: 크라운판 176×248 펼침 한 장씩. 같은 원고를 네 가지 본문 체계(A~D)로 흘려 비교한다.
+     종이 위 색은 인쇄물이라 시안마다 고정, 책상·조작 막대만 화면 테마를 따른다.
+     제목 크기·여백은 스크립트의 VARIANTS 설정이 CSS 변수로 넣고, 스펙 패널도 같은 값을 읽는다. */
+  :root {
+    --page-w: 174mm; --page-h: 232mm;  /* 크라운 변형판 174×232 */
+    --m-top: 21mm; --m-bottom: 22mm; --m-inner: 21mm; --m-outer: 18mm;
+    --desk: #e3e5ea; --bar: #ffffff; --bar-fg: #1d2230; --bar-muted: #6b7080; --bar-line: #d3d6df; --btn: #f2f3f6; --btn-on: #1d2230; --btn-on-fg: #ffffff; --shadow: rgba(29,34,48,.18);
+    --ui: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --desk: #16181d; --bar: #21242b; --bar-fg: #e8eaf0; --bar-muted: #9aa0ae; --bar-line: #353944; --btn: #2c3039; --btn-on: #e8eaf0; --btn-on-fg: #16181d; --shadow: rgba(0,0,0,.55); color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --desk: #16181d; --bar: #21242b; --bar-fg: #e8eaf0; --bar-muted: #9aa0ae; --bar-line: #353944; --btn: #2c3039; --btn-on: #e8eaf0; --btn-on-fg: #16181d; --shadow: rgba(0,0,0,.55); color-scheme: dark; }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--desk); color: var(--bar-fg); font-family: var(--ui); overflow: hidden; }
+  #stage { height: 100%; padding: 16px; display: flex; justify-content: center; align-items: flex-start; }
+  #book.ready .spread:not(.on) { display: none; }
+  #book { width: calc(var(--page-w) * 2); flex: none; }
+  .spread { display: flex; }
+  .page { box-shadow: 0 4px 22px var(--shadow); }
+  .page.filler { visibility: hidden; }
+
+  /* ───────── 시안별 색·서체 토큰 (종이 위, 고정) ───────── */
+  #book { --paper:#fff; --c1:#1f3a68; --c2:#e3a21a; --tint:#eef2f8; --tint2:#fdf4df; --warn:#c2452d; --warn-tint:#fbede9; --ink:#1c2233; --ink2:#474f63; --muted:#8b92a3; --rule:#d5dae4; --on-c1:#fff; --wing:0mm; }
+  #book.v-a { --c1:#1f3a68; --c2:#e0a01a; --tint:#eef2f8; --tint2:#fdf4df; --ink:#1c2233; --ink2:#474f63; --muted:#8b92a3; --rule:#d5dae4; }
+
+  /* ───────── 공통 쪽 구조 ───────── */
+  .page { position: relative; width: var(--page-w); height: var(--page-h); background: var(--paper); color: var(--ink); overflow: hidden;
+          font-family: var(--f-body); font-size: var(--fs-body); line-height: var(--lh-body); letter-spacing: -0.01em; word-break: keep-all; overflow-wrap: break-word; }
+  .page.left { padding: var(--m-top) var(--m-inner) var(--m-bottom) var(--m-outer); }
+  .page.right { padding: var(--m-top) var(--m-outer) var(--m-bottom) var(--m-inner); }
+  .body { position: relative; z-index: 1; height: 100%; overflow: hidden; display: flow-root; padding-left: var(--wing); }
+  .page::after { content: ""; position: absolute; top: 0; bottom: 0; width: 10mm; pointer-events: none; z-index: 2; }
+  .page.left::after { right: 0; background: linear-gradient(to right, transparent, rgba(20,24,34,.07)); }
+  .page.right::after { left: 0;  background: linear-gradient(to left,  transparent, rgba(20,24,34,.07)); }
+  .page.filler { background: #f5f6f8; }
+  .page.filler .body { display: grid; place-items: center; color: #9aa0ae; font-size: 8pt; padding-left: 0; }
+
+  .running { position: absolute; z-index: 1; top: 10.5mm; display: flex; gap: 2.2mm; align-items: baseline; font-family: var(--f-label); font-size: 6.8pt; color: var(--muted); letter-spacing: 0; }
+  .running .rn { font-weight: 700; color: var(--c1); letter-spacing: .06em; }
+  .folio { position: absolute; z-index: 1; bottom: 10.5mm; font-family: var(--f-label); font-size: 7.5pt; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .left .folio { left: var(--m-outer); }
+  .right .folio { right: var(--m-outer); }
+  /* 하시라: 쪽 번호 옆 하단에 둔다 (왼쪽 쪽은 부, 오른쪽 쪽은 장) */
+  .running { top: auto; bottom: 10.6mm; }
+  .left .running { left: calc(var(--m-outer) + 7mm); }
+  .right .running { right: calc(var(--m-outer) + 7mm); }
+  .running::before { content: ""; align-self: center; width: .25mm; height: 2.6mm; background: var(--rule); order: -1; }
+  .right .running::before { order: 9; }
+  .tab { position: absolute; z-index: 1; top: 34mm; width: 6.5mm; height: 17mm; background: var(--c1); color: var(--on-c1); display: grid; place-items: center; font-family: var(--f-label); font-size: 7.5pt; font-weight: 700; }
+  .left .tab { display: none; } .right .tab { right: 0; }  /* 측면 탭은 오른쪽 쪽에만 */
+  .page.opener .tab { display: none; }
+
+  .ic { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.18em; }
+
+  /* 제목 위계 — 크기·여백은 변수 */
+  h1 { margin: 0; font-family: var(--f-h1); font-weight: var(--w-h1); font-size: var(--fs-h1); line-height: 1.3; letter-spacing: -0.035em; text-wrap: balance; }
+  h2 { margin: var(--h2-b) 0 var(--h2-a); font-family: var(--f-h2); font-weight: var(--w-h2); font-size: var(--fs-h2); line-height: 1.35; letter-spacing: -0.03em; }
+  h3 { margin: var(--h3-b) 0 var(--h3-a); font-family: var(--f-h3); font-weight: var(--w-h3); font-size: var(--fs-h3); line-height: 1.45; letter-spacing: -0.025em; }
+  h4 { margin: var(--h4-b) 0 var(--h4-a); font-family: var(--f-h4); font-weight: var(--w-h4); font-size: var(--fs-h4); line-height: 1.5; letter-spacing: .01em; display: flex; align-items: center; gap: 1.6mm; }
+  h5 { margin: var(--h5-b) 0 var(--h5-a); font-family: var(--f-h5); font-weight: var(--w-h5); font-size: var(--fs-h5); line-height: 1.5; letter-spacing: 0; color: #8a5a00; display: flex; align-items: baseline; gap: 1.4mm; }
+  h5::before { content: ""; flex: none; width: 1.5mm; height: 1.5mm; background: var(--c2); transform: translateY(-.15em); }  /* 소소: 본문보다 조금 큰 굵은 짙은 겨자색 글자 + 겨자색 네모 — 남색인 소와 색으로 갈린다 */
+  h2 + h3, h3 + h4, h4 + h5, h2 + p, h3 + p, h4 + p, h5 + p { margin-top: 0; }
+  h2 + h3 { margin-top: var(--hh); }
+  h3 + h4 { margin-top: 2.2mm; } h4 + h5 { margin-top: 1.6mm; }  /* 제목이 연달아 올 때도 단계가 보이게 조금 띄운다(예전에는 0) */
+  .body > :first-child { margin-top: 0 !important; }
+  .step-no b, .step-no small { font: inherit; }
+
+  p { margin: 0 0 var(--p-gap); text-align: justify; }
+  .lead { color: var(--ink2); }
+  ul, figure, .tbl, .request, .tip, .warn, .voice, .info { margin-top: var(--blk); margin-bottom: var(--blk); }
+  ul { padding: 0; list-style: none; }
+  ul li { position: relative; padding-left: 4mm; margin-bottom: .5mm; }
+  ul li::before { content: ""; position: absolute; left: .4mm; top: .7em; width: 1.4mm; height: 1.4mm; border-radius: 50%; background: var(--c1); transform: translateY(-50%); }
+  ul.checklist li { padding-left: 5mm; }
+  /* 확인 상자: TIP처럼 머리에 이름을 단다 (이름은 전 장 고정) */
+  .chk { margin-top: var(--blk); margin-bottom: var(--blk); break-inside: avoid; font-size: calc(var(--fs-body) - .4pt); }
+  .chk b { display: flex; align-items: center; gap: 1.6mm; margin-bottom: 1mm; font-size: calc(var(--fs-body) - .4pt); color: var(--ink); }
+  .chk .lbl { color: var(--c1); }
+  .chk ul.checklist { margin: 0; }
+  ul.checklist li::before { left: 0; width: 2.7mm; height: 2.7mm; border-radius: .5mm; background: var(--paper); border: .3mm solid var(--c1); }
+
+  .tbl { width: 100%; border-collapse: collapse; font-size: calc(var(--fs-body) - 1.1pt); line-height: 1.5; }
+  .tbl th, .tbl td { padding: 1.3mm 1.6mm; text-align: left; vertical-align: top; border-bottom: .2mm solid var(--rule); }
+  .tbl thead th { font-family: var(--f-label); font-size: 7.2pt; font-weight: 700; color: var(--c1); white-space: nowrap; border-bottom: .45mm solid var(--c1); }
+  .tbl td.num { width: 7mm; }
+  .tbl .circ { display: inline-grid; place-items: center; width: 4.2mm; height: 4.2mm; border-radius: 50%; background: var(--c1); color: var(--on-c1); font-family: var(--f-label); font-size: 7pt; font-weight: 700; }
+  .tbl .chip { font-family: var(--f-label); font-size: 7pt; font-weight: 700; color: var(--c1); white-space: nowrap; }
+  .tbl td.strong { font-weight: 700; }
+  .tbl td.after { color: var(--c1); }
+  .tbl tr.total td { border-top: .45mm solid var(--ink); border-bottom: 0; font-weight: 700; }
+
+  .request { position: relative; break-inside: avoid; }
+  .request-bar { display: flex; align-items: center; gap: 1.6mm; font-family: var(--f-label); font-size: 7.2pt; font-weight: 700; letter-spacing: .03em; }
+  .request-bar span:last-child { margin-left: auto; font-weight: 400; opacity: .75; }
+  .request p { margin: 0; text-align: left; font-weight: 500; }
+  .tip, .warn { font-size: calc(var(--fs-body) - .8pt); line-height: 1.65; }
+  .tip b, .warn b { display: flex; align-items: center; gap: 1.6mm; margin-bottom: .6mm; font-size: calc(var(--fs-body) - .4pt); }
+  .tip p, .warn p, .voice p { margin: 0; text-align: left; }
+  .warn q { quotes: "“" "”"; font-weight: 700; }
+  .voice { position: relative; font-size: calc(var(--fs-body) - .5pt); line-height: 1.7; color: var(--ink2); }
+  .voice b { display: block; font-family: var(--f-label); font-size: 7pt; font-weight: 700; color: var(--c1); letter-spacing: .03em; }
+
+  figure img { display: block; max-width: 100%; height: auto; border: .2mm solid var(--rule); border-radius: 1.5mm; }
+  .shot { display: grid; place-items: center; height: 40mm; border-radius: 1.5mm; border: .3mm dashed var(--c1); background: var(--tint); color: var(--c1); font-size: 7.6pt; opacity: .85; }
+
+  .lbl { font-style: normal; font-family: var(--f-label); font-size: 7pt; font-weight: 800; letter-spacing: .06em; }
+  .tip .lbl, .tip b .ic { color: var(--c1); }
+  .warn .lbl, .warn b .ic { color: var(--warn); }
+  :is(h2, h3, h4, h5) + :is(ul, figure, .tbl, .request, .tip, .warn, .voice) { margin-top: 0; }
+  .v-a .ch-head { grid-template-areas: "text art"; }
+  .v-a .ch-no { display: none; }
+  .v-a .ch-text .ch-big { display: block; }
+    
+  .ch-big { display: none; }
+  /* 진행 과정 번호: 1) 2) 3) — STEP마다 다시 1부터. 딸린 화면·요청 문장은 번호 뒤 글줄에 맞춰 들여 묶는다 */
+  p.act { position: relative; padding-left: 6mm; }
+  .act-n { position: absolute; left: 0; top: 0; font-family: var(--f-label); font-weight: 800; color: var(--c1); letter-spacing: 0; }
+  .in-act { margin-left: 6mm; }
+  p.act + .in-act { margin-top: 1.6mm; }
+  
+  .h4-in { display: inline-flex; align-items: center; gap: 1.4mm; }
+  /* 장 도입 헤더 안의 정보 줄: 위 4칸 + 아래 학생 정보 한 줄. 색은 띠 위/종이 위에 맞춰 시안별 토큰으로 */
+  .meta { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr .95fr .8fr .85fr 1.6fr; margin: 7mm 0 0; border-top: .25mm solid var(--meta-line); border-bottom: .25mm solid var(--meta-line); font-size: 8pt; line-height: 1.5; }
+  .meta .m { padding: 2mm 3mm 2mm 0; min-width: 0; }
+  .meta .m + .m { padding-left: 3mm; border-left: .25mm solid var(--meta-line); }
+  .meta .m.wide { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 3mm; padding-left: 0; border-left: 0; border-top: .25mm solid var(--meta-line); }
+  .meta dt { margin-bottom: .6mm; font-family: var(--f-label); font-size: 6.6pt; font-weight: 700; letter-spacing: .06em; color: var(--meta-label); }
+  .meta .m.wide dt { margin: 0; flex: none; }
+  .meta dd { margin: 0; font-weight: 500; color: var(--meta-fg); }
+  .meta .stars i { color: var(--meta-empty); }
+  .meta .stars i.on { color: var(--c2); }
+  .meta .flag { margin: 0; background: var(--warn); border-color: var(--warn); color: #fff; }
+  .v-a .meta { --meta-line: rgba(255,255,255,.28); --meta-label: var(--c2); --meta-fg: #fff; --meta-empty: rgba(255,255,255,.28); }
+  
+  .v-a .ch-text { color: #fff; }
+  /* ───── 절·중 위계 정리: 절 > STEP(중) ≥ 일반 중 ─────
+     절: 가장 크고 굵은 선·번호. STEP: 일반 중 크기에 번호 배지만 더해 구분(띠·카드 없음). */
+  #book h3.step { display: grid; grid-template-columns: auto 1fr; column-gap: 2.6mm; row-gap: .3mm; align-items: center; margin-bottom: 2.4mm; padding: 0 0 1.6mm; background: none; border: 0; break-after: avoid; }
+  #book h3.step::before { display: none; }
+  #book h3.step .step-meta { display: contents; }
+  #book h3.step .step-no { grid-row: 1 / span 2; grid-column: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; padding: 0; border-radius: 0; background: none; }
+  #book h3.step .step-no small { font-size: 5.4pt; font-weight: 700; letter-spacing: .12em; writing-mode: horizontal-tb; transform: none; }
+  #book h3.step .step-no b { font-size: 12pt; margin-top: .3mm; }
+  #book h3.step .step-kind { grid-row: 1; grid-column: 2; align-self: end; font-size: 7pt; font-weight: 700; letter-spacing: .03em; }
+  #book h3.step .step-title { grid-row: 2; grid-column: 2; align-self: start; display: block; font-size: calc(var(--fs-h3) + .5pt); }
+
+  /* A */
+  #book.v-a h2 { padding-bottom: 2.4mm; border-bottom-width: .8mm; gap: 3mm; }
+  #book.v-a .h2-n { width: 10mm; height: 10mm; font-size: 13pt; }
+  #book.v-a h3.step { border-bottom: .25mm dotted var(--c1); }
+  #book.v-a h3.step .step-no { width: 9mm; height: 9mm; border-radius: 1.2mm; background: var(--c1); color: #fff; font-family: "Noto Sans KR", sans-serif; }
+  #book.v-a h3.step .step-no small { color: var(--c2); }
+  #book.v-a h3.step .step-kind { color: var(--c1); font-family: "Noto Sans KR", sans-serif; }
+  #book.v-a h3.step .step-title { color: var(--ink); }
+
+  /* B */
+
+  /* C */
+
+  /* ═════ 장 도입 구조 재설계: B = 세로 띠, C = 타이포 중심 (A는 가로 띠 유지) ═════ */
+  /* B · 세로 띠: 바깥쪽 50mm 초록 기둥에 장 번호와 정보를 세로로 쌓고, 제목·도입은 오른쪽 */
+
+  /* 장 도입 공통 */
+  .ch-head { position: relative; }
+  .ch-label { font-family: var(--f-label); font-size: 7.2pt; font-weight: 700; letter-spacing: .14em; }
+  .ch-no { font-variant-numeric: lining-nums; line-height: .85; }
+  .ch-art svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .info { font-size: calc(var(--fs-body) - .8pt); line-height: 1.55; }
+  .info-row { display: grid; grid-template-columns: 18mm 1fr; column-gap: 3mm; padding: 1.5mm 0; align-items: baseline; }
+  .info-row dt { font-family: var(--f-label); font-size: 7pt; font-weight: 700; color: var(--muted); }
+  .info-row dd { margin: 0; }
+  .info-pair { display: grid; grid-template-columns: 1fr 1fr; column-gap: 5mm; }
+  .dots { display: inline-flex; gap: 1mm; vertical-align: -0.2mm; margin-right: 1.5mm; }
+  .dots i { width: 2.2mm; height: 2.2mm; border-radius: 50%; border: .3mm solid var(--c1); }
+  .dots i.on { background: var(--c1); }
+  .dots-text { font-size: 7pt; color: var(--muted); }
+  .info .info-pair > .info-row + .info-row { border-top: 0 !important; }
+  .stars { display: inline-flex; gap: .4mm; font-size: 9pt; line-height: 1; letter-spacing: 0; }
+  .stars i { font-style: normal; color: var(--rule); }
+  .stars i.on { color: var(--c1); }
+  .time { display: flex; align-items: center; gap: 2.4mm; flex-wrap: wrap; }
+  .t-item { display: inline-flex; align-items: baseline; gap: 1.2mm; }
+  .t-item em { font-style: normal; font-family: var(--f-label); font-size: 6.6pt; font-weight: 700; letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
+  .t-val { font-weight: 700; color: var(--ink2); font-variant-numeric: tabular-nums; }
+  .t-item.after em { color: var(--c1); }
+  .t-item.after .t-val { color: var(--c1); }
+  .t-arrow { width: 5mm; height: .3mm; background: var(--rule); position: relative; }
+  .t-arrow::after { content: ""; position: absolute; right: 0; top: 50%; width: 1.4mm; height: 1.4mm; border-top: .3mm solid var(--rule); border-right: .3mm solid var(--rule); transform: translate(0, -50%) rotate(45deg); }
+  .t-note { padding-left: 2.4mm; border-left: .25mm solid var(--rule); font-size: 7.2pt; color: var(--muted); }
+  .flag { display: inline-block; padding: 0 1.6mm; margin-right: 1.6mm; border: .25mm solid var(--warn); color: var(--warn); border-radius: .8mm; font-size: 7pt; font-weight: 700; line-height: 1.6; }
+
+  /* 그림 요소(장 도입 일러스트) 기본 */
+  .art-sheet { fill: #fff; } .art-line { stroke-width: 1.6; stroke-linecap: round; } .art-arrow { fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .art-btn-t { font-family: var(--f-label); font-size: 7.5px; font-weight: 700; }
+
+  /* ═════════ A · 교과서형 ═════════ */
+  .v-a .page.opener::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 98mm; background: var(--c1); }
+  .v-a .ch-head { height: calc(98mm - var(--m-top)); display: grid; grid-template-columns: 1fr; gap: 0; align-content: end; padding-bottom: 6mm; color: #fff; }
+  .v-a .ch-label { color: var(--c2); margin-bottom: 2mm; }
+  .v-a .ch-big { font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 64pt; line-height: .85; margin-bottom: 3mm; }
+  .v-a .ch-art { align-self: end; margin-bottom: -8mm; }
+  .v-a .lead:first-of-type { margin-top: 8mm; }
+  .v-a .info { background: var(--tint); border-radius: 1.5mm; padding: 2.5mm 3.5mm; }
+  .v-a .info dt { color: var(--c1); }
+  .v-a .info-row + .info-row, .v-a .info-pair + .info-row, .v-a .info-pair + .info-pair { border-top: .2mm solid #d7deea; }
+  .v-a .art-line { stroke: #c9d3e4; } .v-a .art-num { fill: #e3e8f1; } .v-a .art-hl { fill: var(--c2); opacity: .55; }
+  .v-a .art-btn { fill: var(--c2); } .v-a .art-btn-t { fill: var(--c1); } .v-a .art-arrow { stroke: rgba(255,255,255,.7); }
+  .v-a .art-grp { fill: none; stroke: #c9d3e4; stroke-width: 1; } .v-a .dot-m { fill: var(--c1); } .v-a .dot-f { fill: var(--c2); } .v-a .art-flag { fill: var(--c2); }
+  .v-a h2 { display: flex; align-items: center; gap: 2.6mm; padding-bottom: 2mm; border-bottom: .4mm solid var(--c1); color: var(--c1); }
+  .v-a .h2-n { display: grid; place-items: center; width: 7.5mm; height: 7.5mm; flex: none; background: var(--c1); color: #fff; font-family: "Noto Sans KR", sans-serif; font-size: 11pt; font-weight: 700; }
+  .v-a h3 { display: flex; align-items: baseline; gap: 2.2mm; }
+  .v-a h3::before { content: ""; flex: none; width: 1.6mm; height: 1em; background: var(--c2); transform: translateY(.12em); }
+  .v-a h3.step { display: block; padding-bottom: 1.8mm; border-bottom: .25mm dotted var(--c1); }
+  .v-a h3.step::before, .v-a h3.trouble::before, .v-a h3.apply::before { display: none; }
+  .v-a .step-meta { display: flex; align-items: center; gap: 2mm; margin-bottom: 1mm; font-family: "Noto Sans KR", sans-serif; }
+  .v-a .step-no { padding: .3mm 2mm; background: var(--c1); color: #fff; border-radius: 99px; font-size: 7.4pt; font-weight: 700; letter-spacing: .04em; }
+  .v-a .step-kind { font-size: 7.6pt; font-weight: 700; color: var(--c1); }
+  .v-a .step-title { display: block; font-size: calc(var(--fs-h3) + .6pt); }
+  .v-a .tag { display: inline-flex; align-items: center; gap: 1mm; padding: .2mm 1.6mm; border-radius: 99px; font-family: "Noto Sans KR", sans-serif; font-size: 7pt; font-weight: 700; color: #fff; background: var(--c1); transform: translateY(-.2em); }
+  .v-a h3.trouble .tag { background: var(--warn); }
+  .v-a h4 { color: var(--c1); }
+  .v-a h4 .ic { color: var(--c2); stroke-width: 2.4; }
+  .v-a .request { border: .35mm solid var(--c1); border-radius: 1.2mm; overflow: hidden; }
+  .v-a .request-bar { padding: .9mm 3mm; background: var(--c1); color: #fff; }
+  .v-a .request p { padding: 2.3mm 3.2mm 2.5mm; }
+  .v-a .tip { padding: 2.4mm 3.2mm; background: var(--tint2); border-radius: 1.2mm; }
+  .v-a .tip b .ic { color: var(--c2); stroke-width: 2.2; }
+  .v-a .warn { padding: 2.4mm 3.2mm; background: var(--warn-tint); border-radius: 1.2mm; }
+  .v-a .voice { display: grid; grid-template-columns: 9mm 1fr; gap: 2.4mm; align-items: start; }
+  .v-a .voice-ic { display: grid; place-items: center; width: 9mm; height: 9mm; border-radius: 50%; background: var(--tint); color: var(--c1); font-size: 13pt; }
+  .v-a .voice-body { position: relative; padding: 1.8mm 3mm; border: .25mm solid var(--rule); border-radius: 2mm; }
+  .v-a .voice-body::before { content: ""; position: absolute; left: -1.5mm; top: 3mm; width: 2.6mm; height: 2.6mm; background: #fff; border-left: .25mm solid var(--rule); border-bottom: .25mm solid var(--rule); transform: rotate(45deg); }
+  .v-a .tbl thead th { background: var(--tint); border-bottom-width: .35mm; }
+  .v-a .chk { background: var(--tint); padding: 2.4mm 3.2mm 1.8mm; border-radius: 1.2mm; }
+  .v-a .chk b .ic { color: var(--c1); stroke-width: 2.2; }
+
+  /* ═════════ B · 연습장형 ═════════ */
+
+  /* ═════════ C · 차분형 (아래 블록) ═════════ */
+
+  /* ───────── 조작 막대 · 스펙 패널 ───────── */
+  nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--bar); border-top: 1px solid var(--bar-line); color: var(--bar-fg); font-size: 13px; }
+  nav button { padding: 7px 12px; border: 1px solid var(--bar-line); border-radius: 6px; background: var(--btn); color: var(--bar-fg); font: inherit; cursor: pointer; }
+  nav button:disabled { opacity: .35; cursor: default; }
+  nav button:focus-visible { outline: 2px solid #2f5bd3; outline-offset: 2px; }
+  #where { min-width: 104px; text-align: center; font-variant-numeric: tabular-nums; }
+  nav .sep { width: 1px; height: 22px; background: var(--bar-line); }
+
+  /* ═════════ C · 산뜻형: 하늘색 + 레몬 노랑, 장식 최소, 굵은 고딕 ═════════ */
+
+  /* C · 차분형 보강: 색 면을 몇 군데에만 더해 밋밋함을 덜어 냄 */
+
+  /* 174×232 판형: 파트 도비라 여백·숫자 크기 줄임 */
+  #book .page.part .part-cover { padding-top: 24mm; padding-bottom: 20mm; }
+  #book.v-a .part-cover .pc-no { font-size: 92pt; margin-bottom: 7mm; }
+
+  #book .part-cover .pc-rule { margin: 5mm 0 4.5mm; }
+  #book .part-cover .pc-list { padding-top: 3mm; }
+  
+  /* ═════════ 일반 원고용 블록 (원고 올리기 뷰어) ═════════ */
+  .ch-no:empty, .ch-big:empty, .tab:empty, .running:empty { display: none !important; }
+  #book.v-a h1 { white-space: normal; flex: 1 1 60%; min-width: 0; }
+  #book.v-a .h2-n { width: auto; min-width: 10mm; padding: 0 2.4mm; white-space: nowrap; font-size: 12.5pt; }
+  sup, sub { font-size: .62em; line-height: 0; color: var(--ink2); letter-spacing: 0; font-weight: 400; }
+  code { font-family: "IBM Plex Mono", monospace; font-size: .92em; background: var(--tint); padding: 0 .8mm; border-radius: .6mm; letter-spacing: 0; }
+  pre.code { margin: var(--blk) 0; padding: 2.4mm 3.2mm; background: #f5f6f8; border-left: .8mm solid var(--c1); border-radius: 0 1.2mm 1.2mm 0; font: 7.6pt/1.6 "IBM Plex Mono", monospace; white-space: pre-wrap; overflow-wrap: anywhere; letter-spacing: 0; text-align: left; }
+  p.code-t { margin: var(--blk) 0 0; font-family: var(--f-label); font-size: 7.2pt; font-weight: 700; color: var(--c1); text-align: left; }
+  p.code-t + pre.code { margin-top: 1mm; }
+  blockquote { margin: var(--blk) 0; padding: .6mm 0 .6mm 3.4mm; border-left: .8mm solid var(--rule); color: var(--ink2); }
+  blockquote p:last-child { margin-bottom: 0; }
+  .box { margin: var(--blk) 0; padding: 2.6mm 3.4mm; background: var(--tint); border-radius: 1.2mm; font-size: calc(var(--fs-body) - .4pt); }
+  .box > b { display: block; margin-bottom: .8mm; color: var(--c1); }
+  .box p { margin: 0 0 .8mm; text-align: left; }
+  .box ul { margin: .6mm 0; }
+  .box > :last-child { margin-bottom: 0; }
+  figure img { margin-left: auto; margin-right: auto; max-height: 150mm; object-fit: contain; }
+  figure.dia img { border: 0; border-radius: 0; }
+  figure .shot { height: 30mm; }
+  .cap { margin: 1.6mm 0 0; text-align: center; font-family: var(--f-label); font-size: 7.4pt; line-height: 1.5; color: var(--ink2); }
+  p.cap { margin: 1.2mm 0 var(--blk); }
+  ul ul { margin: .6mm 0; }
+  ul.toc { margin: 6mm 0 0; padding: 3mm 0 0; border-top: .25mm solid var(--rule); }
+  ul.toc li { padding-left: 0; margin-bottom: 1.2mm; font-weight: 500; color: var(--c1); }
+  ul.toc li::before { display: none; }
+  .tip.one { display: flex; align-items: baseline; gap: 2mm; }
+  .tip.one > b { margin: 0; flex: none; }
+  .in-corner { margin-top: 0 !important; margin-bottom: 0 !important; padding: 1mm 4mm; background: var(--tint2); }
+  p.in-corner, ul.in-corner { font-size: calc(var(--fs-body) - .4pt); }
+  ul.in-corner li { margin-left: 0; }
+  .corner-h { display: flex; align-items: center; gap: 2mm; margin-top: var(--blk) !important; padding-top: 2.6mm; padding-bottom: 1.6mm; border-top: .8mm solid var(--c2); font-family: var(--f-h3); font-weight: 700; font-size: 10.5pt; line-height: 1.45; color: var(--ink); }
+  .corner-h .lbl { flex: none; padding: .3mm 2.2mm; border-radius: 99px; background: var(--c2); color: #fff; font-size: 7pt; }
+  .corner-end { padding-bottom: 3mm; margin-bottom: var(--blk) !important; }
+  p.split-a { text-align-last: justify; margin-bottom: 0; }
+  #book .part-cover .pc-desc + .pc-desc { margin-top: 2.4mm; }
+
+  /* ───────── 왼쪽 올리기 패널 (저장한 웹 파일에는 들어가지 않는다) ───────── */
+  #side { position: fixed; left: 0; top: 0; bottom: 0; z-index: 11; width: 320px; overflow: auto; padding: 18px 16px 24px; background: var(--bar); color: var(--bar-fg); border-right: 1px solid var(--bar-line); font-size: 13px; line-height: 1.6; word-break: keep-all; }
+  body.has-side #stage { padding-left: calc(320px + 16px); }
+  body.has-side nav { left: 320px; }
+  #side h1 { margin: 0 0 12px; font-size: 16px; }
+  #side h2 { margin: 16px 0 4px; font-size: 12px; color: var(--bar-muted); letter-spacing: .04em; }
+  #side p { margin: 0 0 4px; }
+  #side .dim { color: var(--bar-muted); }
+  #side .bad, #status.bad { color: #d9480f; }
+  #drop { display: grid; gap: 2px; padding: 20px 14px; border: 2px dashed var(--bar-line); border-radius: 10px; background: var(--btn); text-align: center; cursor: pointer; }
+  #drop.over { border-color: #1f6fd1; background: rgba(31,111,209,.1); }
+  #drop b { font-size: 14px; }
+  #drop small, #drop span { color: var(--bar-muted); }
+  #trimrow { display: grid; gap: 4px; margin-top: 12px; font-size: 12px; font-weight: 600; color: var(--bar-muted); }
+  #trim { width: 100%; padding: 7px 8px; border: 1px solid var(--bar-line); border-radius: 6px; background: var(--btn); color: var(--bar-fg); font: inherit; font-size: 13px; }
+  #status { min-height: 1.6em; margin: 8px 0 0 !important; font-weight: 600; }
+  #tools { display: grid; gap: 6px; margin-top: 10px; }
+  #side button { padding: 8px 12px; border: 1px solid var(--bar-line); border-radius: 6px; background: var(--btn); color: var(--bar-fg); font: inherit; cursor: pointer; }
+  #side button.primary { border-color: #1f6fd1; background: #1f6fd1; color: #fff; font-weight: 700; }
+  #side button:focus-visible, #drop:focus-within { outline: 2px solid #2f5bd3; outline-offset: 2px; }
+  .toc-nav { list-style: none; margin: 0; padding: 0; max-height: 44vh; overflow: auto; border: 1px solid var(--bar-line); border-radius: 8px; }
+  .toc-nav button { display: block; width: 100%; padding: 4px 8px !important; border: 0 !important; border-radius: 0 !important; background: none !important; text-align: left; }
+  .toc-nav button:hover { background: var(--btn) !important; }
+  .toc-nav .l0 button { font-weight: 800; }
+  .toc-nav .l1 button { font-weight: 700; padding-left: 14px !important; }
+  .toc-nav .l2 button { padding-left: 26px !important; color: var(--bar-muted); }
+  #side details { margin-top: 14px; }
+  #side summary { cursor: pointer; font-weight: 600; }
+  #md { width: 100%; height: 260px; margin: 8px 0 6px; padding: 8px; border: 1px solid var(--bar-line); border-radius: 6px; background: var(--btn); color: var(--bar-fg); font: 12px/1.5 "IBM Plex Mono", monospace; resize: vertical; }
+  #side pre.rules { margin: 8px 0 0; padding: 10px; border-radius: 6px; background: var(--btn); font: 11.5px/1.6 "IBM Plex Mono", monospace; white-space: pre-wrap; }
+  #empty { position: fixed; inset: 0 0 0 320px; display: grid; place-content: center; gap: 6px; text-align: center; color: var(--bar-muted); pointer-events: none; }
+  #empty b { font-size: 18px; color: var(--bar-fg); }
+  #empty[hidden] { display: none; }
+
+  /* 인쇄 · PDF: 책 쪽만, 판형 그대로 한 쪽씩 */
+  @media print {
+    html, body { height: auto; overflow: visible; background: #fff; }
+    #side, nav, #empty { display: none !important; }
+    #stage { display: block; height: auto; padding: 0 !important; }
+    #book { zoom: 1 !important; width: auto; }
+    #book .spread { display: block !important; }
+    .page { box-shadow: none; }
+    .page + .page, .spread + .spread > .page:first-child { break-before: page; }  /* 마지막 쪽 뒤에 빈 쪽이 생기지 않게 앞에서 나눈다 */
+    .page::after { display: none; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }  /* 디자인이 대부분 바탕색이라 인쇄 창의 '배경 그래픽'이 꺼져 있어도 그대로 찍히게 */
+  }
+</style>
+<style id="pagesize">@page { size: 174mm 232mm; margin: 0; }</style>
+
+<aside id="side">
+  <h1>원고 조판 보기</h1>
+  <label id="drop" for="file"><b>원고 파일 올리기</b><span>여기에 끌어다 놓거나 눌러서 고르세요</span><small>.docx · .md · .txt<br>그림 파일을 함께 올리면 파일 이름으로 연결합니다</small></label>
+  <input id="file" type="file" multiple accept=".docx,.md,.markdown,.txt,image/*" hidden>
+  <label id="trimrow">판형
+    <select id="trim">
+      <option value="174x232">크라운 변형판 · 174 × 232 (기본)</option>
+      <option value="128x188">B6 (4×6판) · 128 × 188</option>
+      <option value="148x210">A5 (국판) · 148 × 210</option>
+      <option value="136x200">A5 변형 · 136 × 200</option>
+      <option value="152x225">신A5 (신국판) · 152 × 225</option>
+      <option value="152x205">신국판 변형 · 152 × 205</option>
+      <option value="170x245">18절판 (크라운판) · 170 × 245</option>
+      <option value="182x257">B5 (4×6배판) · 182 × 257</option>
+      <option value="210x297">A4 (국배판) · 210 × 297</option>
+    </select>
+  </label>
+  <p id="status" role="status"></p>
+  <div id="tools" hidden>
+    <button id="save" class="primary" type="button">웹 파일로 저장 (.html)</button>
+    <button id="savemd" type="button">변환된 MD 내려받기</button>
+  </div>
+  <section id="info"></section>
+  <details id="mdbox" hidden><summary>변환된 MD 보기 · 고치기</summary>
+    <textarea id="md" spellcheck="false" aria-label="변환된 마크다운"></textarea>
+    <button id="rebuild" type="button">고친 내용으로 다시 조판</button>
+  </details>
+  <details><summary>MD 작성 규칙</summary>
+<pre class="rules">[파트] 첫째 마당. 제목      (PART 2 제목도 가능)
+[장] 3장 제목
+[절] 3-1 제목
+[중] 중제목
+[소] 소제목
+[소소] 소소제목
+[본문] 제목처럼 보이지만 본문인 줄
+
+# 만 써도 됩니다. 가장 얕은 #이 장,
+그 아래가 차례로 절 · 중 · 소 · 소소입니다.
+"3장 …", "3-1 …", "STEP 1 …"처럼
+문구가 있으면 그 단계로 봅니다.
+
+[TIP] 팁 한 줄        [주의] 주의할 점
+[박스]                [코너] [한 걸음 더!] 제목
+박스 안 첫 줄          코너 본문 …
+박스 안 둘째 줄        [/코너]
+
+![설명](그림.png){width=70%}
+[캡션] 그림 설명
+```프롬프트
+AI에게 넣을 문장
+```
+- [ ] 체크리스트 항목
+[새쪽]  다음 블록을 새 쪽에서 시작</pre>
+  </details>
+</aside>
+<div id="empty" hidden><b>원고를 올리면 여기에 책으로 보입니다</b><span>왼쪽에서 docx · md · txt 파일을 올려 주세요</span></div>
+<div id="stage"><div id="book"></div></div>
+<nav>
+  <button id="prev" type="button" aria-label="이전 펼침">◀</button>
+  <span id="where"></span>
+  <button id="next" type="button" aria-label="다음 펼침">▶</button>
+  <span class="sep"></span>
+  <button id="print" type="button">인쇄 · PDF</button>
+</nav>
+<template id="src"></template>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8 10.5h8"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.2v.1"/></symbol>
+  <symbol id="i-teacher" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20.5c.9-4 3.7-6 7-6s6.1 2 7 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="m8 12.2 2.8 2.8L16.5 9"/></symbol>
+  <symbol id="i-cursor" viewBox="0 0 24 24"><path d="M5 4.5 11 20l2.3-6.7L20 11z"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5l3 3 5.8-5.8a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/></symbol>
+</svg>
+
+<script>
+  // 변환기는 대시보드가 넘긴 ?v= 를 그대로 붙여 받는다(캐시 갱신). 저장한 웹 파일에는 #side가 없어 받지 않는다
+  if (document.getElementById("side")) for (const f of ["md2book.js", "docx2md.js"]) document.write(`<script src="${f}${location.search}"><\/script>`);
+  if (parent !== window) document.documentElement.dataset.theme = "light";  // 대시보드 안에서는 밝은 화면에 맞춘다
+</script>
+<script>
+  /* 본문 체계: 서체·크기(pt)·여백(mm). 이 값이 CSS 변수가 된다. (시안 A · 교과서형 하나만 쓴다) */
+  const VARIANTS = {
+    a: { body: { f: "Noto Sans KR", size: 9.2, lh: 1.75 }, label: "Noto Sans KR",
+         h1: { f: "Noto Serif KR", w: 900, size: 21 },
+         h2: { f: "Noto Serif KR", w: 900, size: 17, b: 12, a: 5 },
+         h3: { f: "Noto Serif KR", w: 900, size: 12.5, b: 8, a: 2.6 },   // 제목 크기는 본문(9.2pt)보다 단계마다 분명히 크게: 절 17 > 중 12.5 > 소 10.4 > 소소 9.8
+         h4: { f: "Noto Sans KR", w: 700, size: 10.4, b: 5.5, a: 1.6 },
+         h5: { f: "Noto Sans KR", w: 700, size: 9.8, b: 4, a: 1.2 },  // 간격: 위는 단계가 높을수록 넓게(절 12 > 중 8 > 소 5.5 > 소소 4mm), 아래는 좁게 — 제목이 앞 글과 떨어지고 제 본문에 붙는다
+         p: 2.6, blk: 3, hh: 3 }  // p: 단락 사이 여백(mm) — 본문 한 줄(약 5.7mm)의 절반 가까이 띄워 단락이 바뀌는 것이 보이게(예전 1.6)
+  };
+  const FIRST_FOLIO = 1;  // 좌수 배치: 1쪽이 왼쪽
+  let CH = "", CHTITLE = "", PARTLBL = "";  // 지금 조판 중인 장 번호·장 제목·파트 이름(면주·측면 탭용)
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const book = document.getElementById("book");
+  const SRC = document.getElementById("src");
+  let bodies = [], cur = 0, vkey = "a";
+
+  const icon = id => `<svg class="ic" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+
+  /* 원고 구조에 그림 요소를 덧붙인다 */
+  function decorate(root) {
+    let n = 0, ch = "";
+    [...root.children].forEach(el => {
+      if (el.classList.contains("ch-head")) { ch = el.dataset.ch; n = 0; }
+      else if (el.tagName === "H2") { n++; el.innerHTML = `<span class="h2-n">${esc(el.dataset.n || (ch ? ch + "." : "") + n)}</span><span class="h2-t">${esc(el.textContent)}</span>`; }
+    });
+    root.querySelectorAll("h3:not(.step)").forEach(h => {
+      const tag = h.classList.contains("trouble") ? `<span class="tag">${icon("wrench")}증상</span>` : h.classList.contains("apply") ? `<span class="tag">${icon("shuffle")}바꿔 쓰기</span>` : "";
+      h.innerHTML = `${tag}<span class="h3-t">${esc(h.textContent)}</span>`;
+    });
+    root.querySelectorAll("h4").forEach(h => { h.innerHTML = `<span class="h4-in"><span>${esc(h.textContent)}</span></span>`; });
+    root.querySelectorAll("ul.checklist").forEach(ul => {
+      const box = document.createElement("div"); box.className = "chk";
+      box.innerHTML = `<b>${icon("check")}<em class="lbl">CHECK</em><span>확인해 보세요</span></b>`;
+      ul.replaceWith(box); box.append(ul);
+    });
+    root.querySelectorAll(".request-bar span:first-child").forEach(s => s.insertAdjacentHTML("afterbegin", icon("chat")));
+    root.querySelectorAll(".tip > b").forEach(b => {
+      const t = b.textContent, box = b.parentElement;
+      if (!t && box.children.length === 2 && box.children[1].tagName === "P") box.classList.add("one");  // 제목 없는 한 줄 팁은 이름표 옆에 바로
+      b.innerHTML = `${icon("bulb")}<em class="lbl">${esc(box.dataset.lbl || "TIP")}</em><span>${esc(t)}</span>`;
+    });
+    root.querySelectorAll(".warn > b").forEach(b => b.innerHTML = `<em class="lbl">${icon("alert")}주의</em><span>${esc(b.textContent)}</span>`);
+    root.querySelectorAll(".voice").forEach(v => { const inner = v.innerHTML; v.innerHTML = `<span class="voice-ic avatar" title="임시 삽화 · 시리즈 공통 선생님 캐릭터"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 41c1-8 7-12 15-12s14 4 15 12z" fill="currentColor"/><rect x="17" y="25" width="6" height="5" fill="#f1c4a6"/><circle cx="20" cy="18" r="8.5" fill="#f6d2b8"/><path d="M10.5 19c0-7 4.2-11 9.5-11s9.5 4 9.5 11c-1.6-3.6-4-5.4-7-6-2.4 2-6.4 3.6-12 6z" fill="#3a2a22"/><path d="M10.5 19c-.3 4 .5 7 2 8.5V19zM29.5 19c.3 4-.5 7-2 8.5V19z" fill="#3a2a22"/><circle cx="17" cy="19.5" r="1" fill="#3a2a22"/><circle cx="23" cy="19.5" r="1" fill="#3a2a22"/><path d="M17.8 23q2.2 1.4 4.4 0" stroke="#3a2a22" stroke-width="1" fill="none" stroke-linecap="round"/></svg></span><div class="voice-body">${inner}</div>`; });
+    root.querySelectorAll("p.act").forEach(p => p.insertAdjacentHTML("afterbegin", `<span class="act-n">${esc(String(p.dataset.n || "").padStart(2, "0"))}</span>`));
+    let inAct = false;
+    [...root.children].forEach(el => {
+      if (el.classList.contains("act")) inAct = true;
+      else if (inAct && (el.tagName === "FIGURE" || el.classList.contains("request"))) el.classList.add("in-act");
+      else inAct = false;
+    });
+    root.querySelectorAll("h1").forEach(h => { h.innerHTML = `<span>${h.innerHTML}</span>`; });
+  }
+
+  /* 파트(마당) 도비라 */
+  function partCover(el, chapters) {
+    const d = el.dataset, word = d.kind === "마당" ? "마당" : "파트";
+    const li = chapters.map(([n, t]) => `<li><span class="pc-cn">${esc(n)}</span><span class="pc-ct">${esc(t)}</span></li>`).join("");
+    return `<div class="part-cover" data-oi="${esc(d.oi)}"><div class="pc-head"><div class="pc-label">${esc(d.kind === "마당" ? d.label : "PART")}</div><div class="pc-no">${esc(d.no)}</div></div>`
+      + `<div class="pc-main"><h2 class="pc-title">${esc(d.title)}</h2>${d.sub ? `<p class="pc-sub">${esc(d.sub)}</p>` : ""}<span class="pc-rule"></span>${[...el.children].map(p => `<p class="pc-desc">${p.innerHTML}</p>`).join("")}</div>`
+      + (li ? `<div class="pc-list"><div class="pc-list-h">이 ${word}에서 다루는 장</div><ul>${li}</ul></div>` : "") + `</div>`;
+  }
+  function addPage(extra = "") {
+    const n = bodies.length, left = n % 2 === 0;
+    if (left) {
+      if (book.lastElementChild) book.lastElementChild.style.display = "none";  // 끝난 펼침은 조판하는 동안 숨겨 둔다(긴 원고 속도)
+      book.insertAdjacentHTML("beforeend", '<div class="spread"></div>');
+    }
+    const run = left ? (PARTLBL ? `<span class="rn">${esc(PARTLBL)}</span>` : "") : (CHTITLE ? `<span>${esc(CHTITLE)}</span>` : "") + (CH ? `<span class="rn">CHAPTER ${esc(CH)}</span>` : "");
+    book.lastElementChild.insertAdjacentHTML("beforeend",
+      `<section class="page ${left ? "left" : "right"} ${extra}"><div class="running">${run}</div><div class="tab">${esc(CH)}</div><div class="body"></div><div class="folio">${n + FIRST_FOLIO}</div></section>`);
+    const body = book.lastElementChild.lastElementChild.querySelector(".body");
+    bodies.push(body);
+    return body;
+  }
+
+  /* 캡처 크기 자동 조정: 넘칠 때는 줄여서(최소 62%) 같은 쪽에 넣고,
+     쪽을 넘길 때는 그 쪽의 캡처를 키워(판면 폭·원래 크기의 140%까지) 아래 여백을 메운다 */
+  const fits = body => body.scrollHeight <= body.clientHeight + 1;
+  let TH = { single: 0.62, group: 0.65 };  // 줄이기 하한 — 시안마다 여러 값으로 쪽을 나눠 보고 여백이 가장 적은 쪽을 고른다
+  const TH_CANDIDATES = [{ single: 0.62, group: 0.65 }, { single: 0.55, group: 0.6 }, { single: 0.5, group: 0.55 }];
+  function gapScore() {
+    let sum = 0; const bs = bodies.filter(b => b.lastElementChild);
+    bs.slice(0, -1).forEach(b => { sum += Math.max(0, b.getBoundingClientRect().bottom - b.lastElementChild.getBoundingClientRect().bottom); });
+    return sum + bs.length * 200;  // 쪽수가 늘어나는 것도 손해로 계산
+  }
+  /* 짝 캡처(같은 단계의 두 장): 같은 쪽에 있으면 폭 또는 높이를 맞춰 함께 줄이고 키운다 */
+  const partner = (img, body) => img.dataset.pair ? [...body.querySelectorAll(`img[data-pair="${img.dataset.pair}"]`)].find(x => x !== img) || null : null;
+  const ratioOf = im => (im.naturalHeight && im.naturalWidth) ? im.naturalWidth / im.naturalHeight : im.offsetWidth / im.offsetHeight;
+  function equalize(body) {
+    const done = new Set();
+    body.querySelectorAll("img[data-pair]").forEach(im => {
+      const k = im.dataset.pair; if (done.has(k)) return;
+      const g = [...body.querySelectorAll(`img[data-pair="${k}"]`)]; if (g.length < 2) return; done.add(k);
+      if (im.dataset.mode === "h") { const mh = Math.min(...g.map(x => x.offsetHeight)); g.forEach(x => x.style.width = (mh * ratioOf(x)) + "px"); }
+      else { const mw = Math.min(...g.map(x => x.offsetWidth)); g.forEach(x => x.style.width = mw + "px"); }
+    });
+  }
+  function tryShrink(el, body) {
+    const ib = el.tagName === "FIGURE" && el.querySelector(".illo-box");
+    if (ib) {  // 장 도입 삽화: 남은 높이에 맞춰 줄임(최소 30mm)
+      const nh = ib.offsetHeight - (body.scrollHeight - body.clientHeight) - 2;
+      if (nh < 113) return false;
+      ib.style.height = nh + "px"; return fits(body);
+    }
+    const shot = el.tagName === "FIGURE" && el.querySelector(".shot-hero");
+    if (shot) {  // 완성 화면 자리: 남은 높이에 맞춰 줄임(최소 24mm)
+      const nh = shot.offsetHeight - (body.scrollHeight - body.clientHeight) - 2;
+      if (nh < 91) return false;
+      const prev = shot.style.height; shot.style.height = nh + "px";
+      if (fits(body)) return true;
+      shot.style.height = prev; return false;
+    }
+    const img = el.tagName === "FIGURE" && el.querySelector("img");
+    if (!img) {  // 그림이 아닌 블록이 넘치면, 그 쪽의 캡처를 함께 줄여 자리를 만든다
+      const pics = [...body.querySelectorAll("figure img")].filter(im => !im.closest("figure.illo"));
+      if (!pics.length) return false;
+      pics.forEach(im => { if (!im.dataset.w0) im.dataset.w0 = im.offsetWidth; });
+      const ov = body.scrollHeight - body.clientHeight, tot = pics.reduce((t, im) => t + im.offsetHeight, 0);
+      const rr = (tot - ov - 2) / tot;
+      if (rr < TH.group || pics.some(im => im.offsetWidth * rr < im.dataset.w0 * 0.62)) return false;  // 원래 크기의 62% 밑으로는 줄이지 않음
+      const pv = pics.map(im => im.style.width);
+      pics.forEach(im => im.style.width = (im.offsetWidth * rr) + "px");
+      if (fits(body)) return true;
+      pics.forEach((im, i) => im.style.width = pv[i]); return false;
+    }
+    const over = body.scrollHeight - body.clientHeight, h = img.offsetHeight, w = img.offsetWidth;
+    const mate = partner(img, body);
+    if (mate) {  // 짝이 같은 쪽에 있으면 둘을 같은 비율로 함께 줄임(원래의 45%까지)
+      const hm = mate.offsetHeight, rp = (h + hm - over - 2) / (h + hm);
+      if (rp >= 0.45 && w * rp >= img.dataset.w0 * 0.45 && mate.offsetWidth * rp >= (mate.dataset.w0 || mate.offsetWidth) * 0.45) {
+        const pv = [img.style.width, mate.style.width];
+        img.style.width = (w * rp) + "px"; mate.style.width = (mate.offsetWidth * rp) + "px";
+        if (fits(body)) return true;
+        img.style.width = pv[0]; mate.style.width = pv[1];
+      }
+    }
+    const ratio = (h - over - 2) / h;
+    const here = el.classList.contains("fit-here");  // 이 그림은 많이 줄여서라도 앞 쪽에 넣음
+    if ((ratio >= TH.single || (here && ratio >= 0.3)) && (here || w * ratio >= (img.dataset.w0 || w) * 0.62)) {
+      const prev = img.style.width;
+      img.style.width = (w * ratio) + "px";
+      if (fits(body)) return true;
+      img.style.width = prev;
+    }
+    // 한 장만 줄여서 안 되면, 그 쪽의 캡처를 모두 같은 비율로 줄여 본다(최소 65%)
+    const all = [...body.querySelectorAll("figure img")];
+    const total = all.reduce((t, im) => t + im.offsetHeight, 0);
+    const r = (total - over - 2) / total;
+    if (all.length < 2 || r < (here ? 0.42 : TH.group)) return false;  // fit-here 그림이 있는 쪽은 함께 더 줄임
+    const prevs = all.map(im => im.style.width);
+    all.forEach(im => im.style.width = (im.offsetWidth * r) + "px");
+    if (fits(body)) return true;
+    all.forEach((im, i) => im.style.width = prevs[i]); return false;
+  }
+  /* 조금(10mm 이하)만 넘치면 그 쪽의 블록·절 제목 위아래 간격을 줄여서 넣는다.
+     실패하면 앞서 줄여 둔 값으로 되돌린다(지우면 먼저 맞춰 넣은 블록이 다시 넘친다) */
+  function squeeze(body) {
+    if (body.scrollHeight - body.clientHeight > 38) return false;
+    const cfg = VARIANTS[vkey], vars = ["--blk", "--h2-b", "--h3-b"], prev = vars.map(v => body.style.getPropertyValue(v));
+    for (const k of [0.75, 0.55]) {
+      body.style.setProperty("--blk", (cfg.blk * k) + "mm");
+      body.style.setProperty("--h2-b", (cfg.h2.b * k) + "mm");
+      body.style.setProperty("--h3-b", (cfg.h3.b * k) + "mm");
+      if (fits(body)) return true;
+    }
+    vars.forEach((v, i) => prev[i] ? body.style.setProperty(v, prev[i]) : body.style.removeProperty(v));
+    return false;
+  }
+  function fillGap(body) {
+    for (const sh of body.querySelectorAll(".shot-hero")) {  // 완성 화면 자리는 남는 높이만큼 키움
+      const last = body.lastElementChild;
+      const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - parseFloat(getComputedStyle(last).marginBottom || 0) - 4;
+      if (free < 12) break;
+      const prev = sh.style.height; sh.style.height = Math.min(sh.offsetHeight + free, 400) + "px";  // 최대 약 105mm
+      if (!fits(body)) sh.style.height = prev;
+    }
+    const imgs = [...body.querySelectorAll("figure img")].filter(im => !partner(im, body));
+    const pairs = [...new Set([...body.querySelectorAll("img[data-pair]")].filter(im => partner(im, body)).map(im => im.dataset.pair))];
+    for (const k of pairs) {  // 짝 캡처는 같은 비율로 함께 키움
+      const g = [...body.querySelectorAll(`img[data-pair="${k}"]`)];
+      const last = body.lastElementChild;
+      const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - parseFloat(getComputedStyle(last).marginBottom || 0) - 4;
+      if (free < 12) break;
+      const H = g.reduce((t, x) => t + x.offsetHeight, 0);
+      const f = Math.min(1 + free / H, ...g.map(x => Math.min(x.parentElement.clientWidth, (x.dataset.w0 || x.offsetWidth) * 1.4) / x.offsetWidth));
+      if (f < 1.03) continue;
+      const pv = g.map(x => x.style.width);
+      g.forEach(x => x.style.width = (x.offsetWidth * f) + "px");
+      if (!fits(body)) g.forEach((x, i) => x.style.width = pv[i]);
+    }
+    for (const img of imgs) {
+      const last = body.lastElementChild;
+      const free = body.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - parseFloat(getComputedStyle(last).marginBottom || 0) - 4;
+      if (free < 12) return;
+      if (!img.dataset.w0) img.dataset.w0 = img.offsetWidth;
+      const w = img.offsetWidth, h = img.offsetHeight;
+      const maxW = Math.min(img.parentElement.clientWidth, img.dataset.w0 * 1.4);
+      const f = Math.min(maxW / w, 1 + free / h);
+      if (f < 1.03) continue;
+      const prev = img.style.width;
+      img.style.width = (w * f) + "px";
+      if (!fits(body)) img.style.width = prev;
+    }
+  }
+  /* 한 쪽에 다 안 들어가는 블록 나누기: 문단은 낱말, 코드는 줄, 목록·표·인용·박스는 항목·행·문단 단위로 앞부분만 남긴다.
+     ponytail: 쪽 끝·쪽 첫머리에 한 줄만 남는 경우(고아·과부 줄)는 조정하지 않음 — 거슬리면 남길 최소 줄 수를 2줄로 검사할 것 */
+  function splitBlock(el, body) {
+    const tag = el.tagName, text = tag === "P" || tag === "PRE";
+    if (!text && !/^(UL|OL|BLOCKQUOTE|TABLE)$/.test(tag) && !el.classList.contains("box")) return null;
+    const box = tag === "TABLE" ? el.tBodies[0] : el;
+    if (!box) return null;
+    const rest = el.cloneNode(false), into = tag === "TABLE" ? rest.appendChild(box.cloneNode(false)) : rest;
+    while (!fits(body) && box.lastChild) into.prepend(box.lastChild);
+    const t = into.firstChild;
+    if (text && t && t.nodeType === 3) {  // 넘어간 글자 덩어리에서 들어갈 만큼만 되돌려 채운다
+      const w = t.data.split(tag === "PRE" ? /(?<=\n)/ : /(?<=\s)/), probe = box.appendChild(document.createTextNode(""));
+      let lo = 0, hi = w.length;
+      while (lo < hi) { const m = (lo + hi + 1) >> 1; probe.data = w.slice(0, m).join(""); if (fits(body)) lo = m; else hi = m - 1; }
+      probe.data = w.slice(0, lo).join(""); t.data = w.slice(lo).join("");
+      if (!t.data) t.remove();
+    }
+    const kept = [...box.childNodes].some(c => !(c.nodeType === 1 && c.classList.contains("act-n")) && c.textContent.trim());
+    if (!kept || !into.hasChildNodes()) {  // 한 줄도 못 넣었으면(또는 다 들어갔으면) 원래대로
+      box.append(...into.childNodes); if (text) box.normalize();
+      return null;
+    }
+    if (tag === "TABLE" && el.tHead) rest.prepend(el.tHead.cloneNode(true));
+    if (tag === "P") el.classList.add("split-a");
+    rest.classList.remove("newpage");
+    return rest;
+  }
+  function paginate() {
+    book.innerHTML = ""; bodies = []; CH = ""; CHTITLE = ""; PARTLBL = "";
+    const holder = document.createElement("div"); holder.append(SRC.content.cloneNode(true));
+    decorate(holder);
+    const chapters = new Map(); let pt = null;  // 파트마다 딸린 장 목록(도비라용)
+    for (const el of holder.children) {
+      if (el.classList.contains("part-src")) chapters.set(pt = el, []);
+      else if (pt && el.classList.contains("ch-head")) chapters.get(pt).push([el.dataset.ch, el.dataset.title]);
+    }
+    const bare = (b, html) => { const pg = b.parentElement; pg.querySelectorAll(".running, .tab, .folio").forEach(e => e.remove()); pg.insertAdjacentHTML("beforeend", html); };
+    const queue = [...holder.children];
+    let body = null;
+    while (queue.length) {
+      const el = queue.shift();
+      if (el.classList.contains("part-src")) {  // 파트 도비라는 오른쪽 쪽에, 그 앞 왼쪽은 빈 면
+        if (body) fillGap(body);
+        body = null; PARTLBL = el.dataset.label; CH = ""; CHTITLE = "";
+        if (bodies.length % 2 === 0) bare(addPage("blank"), "");
+        bare(addPage("blank part"), partCover(el, chapters.get(el)));
+        continue;
+      }
+      if (el.classList.contains("ch-head")) {  // 장은 늘 새 쪽에서 시작
+        if (body) fillGap(body);
+        CH = el.dataset.ch; CHTITLE = el.dataset.title;
+        body = addPage("opener"); body.append(el);
+        continue;
+      }
+      if (!body) body = addPage();
+      const used = body.lastElementChild ? body.lastElementChild.getBoundingClientRect().bottom - body.getBoundingClientRect().top : 0;
+      if (el.classList.contains("newpage") && body.lastElementChild && (el.tagName === "H2" || used > body.clientHeight * 0.5)) {  // STEP 제목은 앞 쪽이 절반 넘게 찼을 때만 새 쪽
+        fillGap(body); body = addPage(); body.append(el); continue;
+      }
+      // 절 제목은 쪽에 남은 공간이 60mm 미만이면 다음 쪽에서 시작
+      if (el.tagName === "H2" && body.lastElementChild) {
+        const left = body.getBoundingClientRect().bottom - body.lastElementChild.getBoundingClientRect().bottom;
+        if (left < 227) { fillGap(body); body = addPage(); }
+      }
+      body.append(el);
+      el.querySelectorAll("img").forEach(im => { if (!im.dataset.w0) im.dataset.w0 = im.offsetWidth; });  // 원래 폭 기억
+      if (fits(body)) continue;
+      const first = body.children.length === 1;
+      const alone = [...body.children].slice(0, -1).every(x => /^H[2345]$/.test(x.tagName));  // 이 쪽에 제목 말고는 이 블록뿐
+      const cuttable = /^(P|PRE|UL|OL|BLOCKQUOTE|TABLE)$/.test(el.tagName) || el.classList.contains("box");
+      if (!first && (cuttable ? squeeze(body) : tryShrink(el, body) || squeeze(body))) continue;  // 글은 그림을 줄이지 않고 나눈다
+      const rest = splitBlock(el, body);
+      if (rest) { queue.unshift(rest); body = addPage(); continue; }
+      if (fits(body) || alone) continue;  // alone: 다음 쪽으로 넘겨도 똑같이 넘치므로 그대로 둔다
+      const carry = [el]; el.remove();
+      while (body.children.length > 1) {
+        const last = body.lastElementChild;
+        const lead = last.tagName === "P" && (last.classList.contains("keep") || (/아래|다음/.test(last.textContent) && last.textContent.length < 60));  // keep: 다음 블록과 같은 쪽에 둠
+        const actLead = last.classList.contains("act") && (carry[0].tagName === "FIGURE" || carry[0].classList.contains("request") || carry[0].classList.contains("in-act"));  // 바로 뒤 그림·요청과 붙은 단계 문단만 함께 넘김
+        if (/^H[2345]$/.test(last.tagName) || last.classList.contains("corner-h") || lead || actLead) { carry.unshift(last); last.remove(); } else break;
+      }
+      fillGap(body);
+      queue.unshift(...carry); body = addPage();
+    }
+    book.querySelectorAll(".spread").forEach(s => s.style.display = "");
+    book.querySelectorAll(".page.opener").forEach(op => {  // 남색 띠를 장 머리말 높이에 맞춤
+      const hd = op.querySelector(".ch-head");
+      if (hd) op.style.setProperty("--band", Math.max(318, Math.ceil(hd.getBoundingClientRect().bottom - op.getBoundingClientRect().top)) + "px");
+    });
+    if (bodies.length % 2) bare(addPage(), "");
+  }
+
+  function applyVars(cfg) {
+    const s = book.style, set = (k, v) => s.setProperty(k, v);
+    const fam = (f, fb) => `"${f}", ${fb}`;
+    const sans = '"Apple SD Gothic Neo", "Malgun Gothic", sans-serif', serif = '"AppleMyungjo", "Batang", serif';
+    const fb = f => /Serif|Hahmlet/.test(f) ? serif : sans;
+    set("--f-body", fam(cfg.body.f, fb(cfg.body.f))); set("--fs-body", cfg.body.size + "pt"); set("--lh-body", cfg.body.lh);
+    set("--f-label", fam(cfg.label, fb(cfg.label)));
+    for (const k of ["h1", "h2", "h3", "h4", "h5"]) {
+      const h = cfg[k];
+      set(`--f-${k}`, fam(h.f, fb(h.f))); set(`--w-${k}`, h.w); set(`--fs-${k}`, h.size + "pt");
+      if (h.b != null) { set(`--${k}-b`, h.b + "mm"); set(`--${k}-a`, h.a + "mm"); }
+    }
+    set("--p-gap", cfg.p + "mm"); set("--blk", cfg.blk + "mm"); set("--hh", cfg.hh + "mm");
+  }
+
+  const spreads = () => [...book.children];
+  function show(i) {
+    const all = spreads();
+    if (!all.length) return;
+    cur = Math.max(0, Math.min(all.length - 1, i || 0));
+    all.forEach((x, k) => x.classList.toggle("on", k === cur));
+    const a = cur * 2 + FIRST_FOLIO;
+    document.getElementById("where").textContent = `${a}–${a + 1}쪽 · ${cur + 1}/${all.length}`;
+    document.getElementById("prev").disabled = cur === 0;
+    document.getElementById("next").disabled = cur === all.length - 1;
+    try { history.replaceState(null, "", "#" + (cur + 1)); } catch (e) {}
+    fit();
+  }
+  function fit() {
+    book.style.zoom = 1;
+    const sp = book.querySelector(".spread.on") || book.firstElementChild;
+    if (!sp) return;
+    const navH = document.querySelector("nav").offsetHeight;
+    const stage = document.getElementById("stage");
+    stage.style.paddingBottom = (navH + 16) + "px";
+    const st = getComputedStyle(stage);
+    const availW = stage.clientWidth - parseFloat(st.paddingLeft) - parseFloat(st.paddingRight);
+    book.style.zoom = Math.min(1.3, availW / book.offsetWidth, (innerHeight - navH - 32) / sp.offsetHeight);
+  }
+
+  function fontsFor(cfg) {
+    const list = [cfg.body, cfg.h1, cfg.h2, cfg.h3, cfg.h4, cfg.h5].map(h => `${h.w || 400} 16px "${h.f}"`);
+    list.push(`700 16px "${cfg.label}"`);
+    if (!document.fonts) return Promise.resolve();
+    // 한글 웹폰트는 글자 묶음별로 나뉘어 있어, 본문에 쓰인 글자를 모두 넘겨야 필요한 묶음이 다 받아진다
+    const chars = [...new Set((SRC.content.textContent + "가나다 Ab12 0123456789").replace(/\s+/g, ""))].join("");
+    const all = Promise.all(list.map(f => document.fonts.load(f, chars).catch(() => {})));
+    return Promise.race([all, new Promise(r => setTimeout(r, 8000))]);
+  }
+
+  const $ = id => document.getElementById(id);
+  const say = (t, bad) => { const s = $("status"); if (s) { s.textContent = t; s.classList.toggle("bad", !!bad); } };
+  let busy = Promise.resolve();
+  /* 템플릿(#src)에 든 원고를 책으로 조판한다 */
+  function render(keepPage) {
+    return busy = busy.then(async () => {
+      const cfg = VARIANTS[vkey], count = SRC.content.childElementCount;
+      book.className = "v-" + vkey;
+      $("empty").hidden = !!count;
+      if (!count) { book.innerHTML = ""; return; }
+      applyVars(cfg);
+      await Promise.all([...SRC.content.querySelectorAll("img")].map(t => new Promise(r => { const i = new Image(); i.onload = i.onerror = r; i.src = t.getAttribute("src"); })));
+      await fontsFor(cfg);
+      book.style.zoom = 1;
+      // 짧은 원고는 줄이기 하한을 바꿔 가며 여백이 가장 적은 배치를 고르고, 긴 원고는 한 번만 나눈다
+      let best = null;
+      if (count <= 300) for (const c of TH_CANDIDATES) { TH = c; paginate(); const sc = gapScore(); if (!best || sc < best.sc) best = { c, sc }; }
+      TH = best ? best.c : TH_CANDIDATES[0]; paginate();
+      book.classList.add("ready");
+      show(keepPage ? cur : 0);
+    }).catch(e => { console.error(e); say("조판 중 오류가 났습니다: " + e.message, true); });
+  }
+
+  addEventListener("resize", fit);
+  // 쪽을 나눈 뒤 글꼴이 늦게 도착하면 글줄이 바뀌어 아래가 잘릴 수 있으므로, 다시 나눈다
+  if (document.fonts) {
+    let refl = null;
+    document.fonts.addEventListener("loadingdone", () => {
+      if (!book.classList.contains("ready")) return;
+      clearTimeout(refl); refl = setTimeout(() => render(true), 300);
+    });
+  }
+  $("prev").onclick = () => show(cur - 1);
+  $("next").onclick = () => show(cur + 1);
+  $("print").onclick = () => print();
+  addEventListener("keydown", e => {
+    if (e.target.closest("textarea, input, summary, button")) return;
+    if (e.key === "ArrowLeft" || e.key === "PageUp") show(cur - 1);
+    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); show(cur + 1); }
+  });
+
+  /* ───────── 원고 올리기 · 저장 (저장한 웹 파일에는 #side가 없어 이 부분은 쉬고 있다) ───────── */
+  const side = $("side");
+  const ASSETS = {};  // 그림: 파일 이름(소문자) → { blob, url }
+  let MD = "", DOCNAME = "", TITLE = "", REPORT = null;
+  const tick = () => new Promise(r => setTimeout(r, 30));
+  const akey = s => { try { s = decodeURIComponent(s); } catch (e) {} return s.split(/[\\/]/).pop().toLowerCase(); };
+  const addAsset = (name, blob) => { const k = akey(name); if (ASSETS[k]) URL.revokeObjectURL(ASSETS[k].url); ASSETS[k] = { blob, url: URL.createObjectURL(blob) }; };
+  const download = (blob, name) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 60000); };
+
+  /* MD → 템플릿 → 조판 */
+  async function build() {
+    say("조판하는 중…"); await tick();
+    const r = mdToBook(MD, { title: DOCNAME }), missing = [];
+    SRC.innerHTML = r.html;
+    SRC.content.querySelectorAll("img").forEach(im => {
+      const src = im.getAttribute("src");
+      if (/^(https?:|data:|blob:)/i.test(src)) return;
+      const a = ASSETS[akey(src)];
+      if (a) { im.setAttribute("src", a.url); im.dataset.asset = akey(src); return; }
+      missing.push(src);
+      im.replaceWith(Object.assign(document.createElement(im.closest("figure") ? "div" : "span"), { className: "shot", textContent: "그림 없음 · " + src }));
+    });
+    TITLE = DOCNAME || r.title || "책 미리보기";  // 저장 파일 이름은 올린 원고 파일 이름을 따른다
+    document.title = TITLE;
+    showInfo(r, missing);
+    await render(false);
+    const pages = book.querySelectorAll(".page .folio").length;
+    if ($("pages")) $("pages").textContent = `· 모두 ${pages}쪽`;
+    $("tools").hidden = $("mdbox").hidden = false;
+    if (!$("status").classList.contains("bad")) say(`조판을 마쳤습니다. (${pages}쪽)`);
+  }
+  function showInfo(r, missing) {
+    const row = keys => keys.map(k => r.stats[k] ? `${k} ${r.stats[k]}` : "").filter(Boolean).join(" · ");
+    let h = `<h2>인식한 구조</h2><p>${row(["파트", "장", "절", "중", "소", "소소"]) || "제목 없음"}</p><p class="dim">${row(["팁", "주의", "박스", "코너", "그림", "표", "코드"])}</p>`;
+    if (REPORT) {
+      h += `<h2>책 화면에서 뺀 편집 흔적</h2><p>메모 ${REPORT.메모}개 · 변경 추적 삭제 ${REPORT.삭제}곳 · 취소선 글자 ${REPORT.취소선}개</p>`;
+      const u = Object.entries(REPORT.모르는스타일);
+      if (u.length) h += `<p class="dim">본문으로 처리한 스타일: ${u.map(([k, v]) => `${esc(k)}(${v})`).join(", ")}</p>`;
+      if (REPORT.못읽은그림) h += `<p class="bad">표시하지 못한 그림·개체 ${REPORT.못읽은그림}개</p>`;
+    }
+    if (missing.length) h += `<p class="bad">찾지 못한 그림 ${missing.length}개: ${esc(missing.slice(0, 5).join(", "))}${missing.length > 5 ? " …" : ""}</p>`;
+    h += `<h2>차례 <span id="pages"></span></h2><ol class="toc-nav">${r.outline.map((o, i) => `<li class="l${o.lv}"><button type="button" data-oi="${i}">${esc([o.no, o.title].filter(Boolean).join(" "))}</button></li>`).join("")}</ol>`;
+    $("info").innerHTML = h;
+  }
+  async function handle(files) {
+    const list = [...files], doc = list.find(f => /\.(docx|md|markdown|txt)$/i.test(f.name)), pics = list.filter(f => /\.(png|jpe?g|gif|svg|webp|bmp)$/i.test(f.name));
+    try {
+      if (!doc && list.some(f => /\.(hwp|hwpx|doc|pdf)$/i.test(f.name))) return say("이 형식은 바로 읽지 못합니다. 한글·Word에서 docx로 저장해 올려 주세요.", true);
+      if (!doc && !pics.length) return say("docx · md · txt 파일을 올려 주세요.", true);
+      if (doc) {
+        for (const k of Object.keys(ASSETS)) { URL.revokeObjectURL(ASSETS[k].url); delete ASSETS[k]; }
+        DOCNAME = doc.name.replace(/\.[^.]+$/, "");
+        say(`${doc.name} 읽는 중… (큰 파일은 잠시 걸립니다)`); await tick();
+        if (/\.docx$/i.test(doc.name)) { const r = await docxToMd(doc); MD = r.md; REPORT = r.report; for (const [n, b] of Object.entries(r.assets)) addAsset(n, b); }
+        else { MD = await doc.text(); REPORT = null; }
+        $("md").value = MD;
+      }
+      for (const f of pics) addAsset(f.name, f);
+      if (MD) await build();
+    } catch (e) { console.error(e); say("파일을 읽지 못했습니다: " + e.message, true); }
+  }
+
+  /* 저장용 그림 줄이기: 큰 비트맵만 폭 1800px 이하 WebP로 다시 담는다(파일이 더 커지면 원본 그대로) */
+  async function slim(blob) {
+    if (blob.size < 150000 || /svg|gif/.test(blob.type)) return blob;
+    try {
+      const bmp = await createImageBitmap(blob), k = Math.min(1, 1800 / bmp.width), c = document.createElement("canvas");
+      c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+      c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+      const out = await new Promise(r => c.toBlob(r, "image/webp", 0.9));
+      return out && out.size < blob.size ? out : blob;
+    } catch (e) { return blob; }
+  }
+  const toDataUrl = blob => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
+  /* 지금 보는 책 화면을 왼쪽 패널 없이 파일 하나로 저장한다. 그림은 파일 안에 넣는다 */
+  async function saveWeb() {
+    say("저장할 파일을 만드는 중…"); await tick();
+    const root = document.documentElement.cloneNode(true), b = root.querySelector("#book"), cache = {};
+    root.querySelector("#side").remove(); root.removeAttribute("data-theme");
+    root.querySelectorAll("script[src]").forEach(s => s.remove());
+    root.querySelector("body").classList.remove("has-side");
+    root.querySelector("title").textContent = TITLE;
+    b.innerHTML = ""; b.removeAttribute("style"); b.removeAttribute("class");
+    for (const im of root.querySelector("#src").content.querySelectorAll("img[data-asset]")) {
+      const k = im.dataset.asset;
+      im.setAttribute("src", cache[k] || (cache[k] = await toDataUrl(await slim(ASSETS[k].blob))));
+      im.removeAttribute("data-asset");
+    }
+    const blob = new Blob(["<!doctype html>\n" + root.outerHTML], { type: "text/html" });
+    download(blob, TITLE.replace(/[\\/:*?"<>|]/g, "_") + ".html");
+    say(`저장했습니다. (${(blob.size / 1048576).toFixed(1)}MB) 이 파일 하나만 보내면 됩니다.`);
+  }
+
+  /* 판형: 쪽 크기를 바꾸고 여백은 기본 판형(174×232) 비율대로 맞춘다. 고른 판형은 저장한 웹 파일에도 그대로 남는다
+     ponytail: 글자 크기·장 도입 띠 높이는 판형과 무관하게 고정 — 작은 판형이 답답하면 VARIANTS 크기도 비율로 줄일 것 */
+  function setTrim(v) {
+    const [w, h] = v.split("x").map(Number), s = document.documentElement.style, mm = n => +n.toFixed(1) + "mm";
+    s.setProperty("--page-w", w + "mm"); s.setProperty("--page-h", h + "mm");
+    s.setProperty("--m-top", mm(21 * h / 232)); s.setProperty("--m-bottom", mm(22 * h / 232));
+    s.setProperty("--m-inner", mm(21 * w / 174)); s.setProperty("--m-outer", mm(18 * w / 174));
+    $("pagesize").textContent = `@page { size: ${w}mm ${h}mm; margin: 0; }`;
+  }
+
+  if (side) {
+    document.body.classList.add("has-side");
+    const trim = $("trim");
+    try { const t = localStorage.getItem("p27_trim"); if ([...trim.options].some(o => o.value === t)) trim.value = t; } catch (e) {}
+    setTrim(trim.value);
+    trim.onchange = () => { setTrim(trim.value); try { localStorage.setItem("p27_trim", trim.value); } catch (e) {} if (MD) build(); };
+    const drop = $("drop");
+    $("file").onchange = e => { handle(e.target.files); e.target.value = ""; };
+    ["dragenter", "dragover"].forEach(t => addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+    ["dragleave", "drop"].forEach(t => addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+    addEventListener("drop", e => handle(e.dataTransfer.files));
+    $("save").onclick = () => saveWeb().catch(e => { console.error(e); say("저장하지 못했습니다: " + e.message, true); });
+    $("savemd").onclick = () => download(new Blob([MD], { type: "text/markdown" }), (DOCNAME || "원고") + ".md");
+    $("rebuild").onclick = () => { MD = $("md").value; build(); };
+    $("info").addEventListener("click", e => {
+      const btn = e.target.closest("[data-oi]"), t = btn && book.querySelector(`[data-oi="${btn.dataset.oi}"]`);
+      if (t) show(spreads().indexOf(t.closest(".spread")));
+    });
+  }
+  // 저장한 웹 파일(또는 주소 뒤 #쪽)로 열었을 때: 들어 있는 원고를 바로 조판
+  cur = (parseInt(location.hash.slice(1)) || 1) - 1;
+  render(true);
+</script>
+
+</body></html>

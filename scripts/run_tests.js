@@ -2,7 +2,7 @@
 /**
  * CI 스모크 테스트 (Node, 의존성 없음)
  *  1. shared/app.js parseAiJson 단위 테스트
- *  2. panel8 교정 규칙 픽스처 40건 채점 (p8_computeTestResults)
+ *  2. panel8 교정 규칙 픽스처 채점 (p8_computeTestResults) — 현재 60건: 최초 40건 + 2026-09-10 정상 문장 20건(test-fixtures.js push). 집계 오류 29·정상 31
  *
  * 사용법: node scripts/run_tests.js   (저장소 루트 기준 상대 경로 자동 해석)
  * 실패 시 exit code 1 → GitHub Actions 실패 처리.
@@ -81,8 +81,8 @@ function makeSandbox() {
   return sandbox;
 }
 
-function loadScript(sandbox, relPath) {
-  const full = path.join(ROOT, relPath);
+function loadScript(sandbox, relPath, root) { // root: 다른 코드 트리(평가용 스냅샷)에서 읽을 때
+  const full = path.join(root || ROOT, relPath);
   const code = fs.readFileSync(full, 'utf8');
   vm.runInContext(code, sandbox, { filename: relPath });
 }
@@ -175,13 +175,19 @@ async function main() {
   testProofreadFixtures(sandbox);
   await require('./test_proofread_review.js')(sandbox);
   await require('./test_structure_review.js');
+  await require('./test_structure_verify.js');
+  await require('./test_profile_link.js')();
   await require('./test_usage_log.js')();
+  await require('./test_api_optimize.js')();
+  await require('./test_ai_coverage.js')();
   await require('./test_stream.js')();
   await require('./test_proof_mismatch.js')();
   await require('./test_subject_overload.js')();
   await require('./test_pdf_extract.js')(sandbox, { pass, fail });
   require('./test_author_search.js');
   require('./test_market_feed.js');
+  require('./test_md2book.js');
+  require('./test_parallel_dup.js');
 
   console.log('\n' + (failures ? `❌ 실패 ${failures}건` : '✅ 전체 통과'));
   process.exit(failures ? 1 : 0);

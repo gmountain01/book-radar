@@ -428,6 +428,8 @@ function _cachedSystem(text) {
   return [{ type: 'text', text: text, cache_control: { type: 'ephemeral' } }];
 }
 
+var CLAUDE_EFFORTS = ['low', 'medium', 'high', 'max']; // output_config.effort 허용 값(claude-sonnet-4-6)
+
 // ━━━ 범용 Claude API 호출 ━━━
 // 모든 패널이 이 함수를 사용해야 함 (panel8·panel10 등)
 // opts: { apiKey, prompt, system?, model?, maxTokens?, temperature?, noPersona?, humanize?, thinking?, tools?, full? }
@@ -437,6 +439,8 @@ function _cachedSystem(text) {
 //   stream: SSE 스트리밍으로 받기. 생략하면 thinking·tools가 있거나 maxTokens ≥ 16000이면 자동(긴 요청이 중간 장비·Node fetch의 5분 제한에 걸리지 않게).
 //           사용량은 message_start(입력·캐시)와 마지막 message_delta(출력 누계)를 합쳐 한 번만 집계한다.
 //   usage: 사용량 기록 꼬리표 { task, batch, attempt, retryReason, runId } — 요청마다 UsageLog(shared/usage-log.js)에 한 건씩 남김
+//   hygieneCache: systemBlocks 호출 전용. false면 맨 뒤 문체 위생 블록에 cache_control을 붙이지 않는다(글자·순서는 동일). 생략하면 붙임(기존 동작)
+//   effort: 선택. 'low'|'medium'|'high'|'max'면 output_config.effort로 보낸다. 생략하면 필드 없음(기존 동작), 그 밖의 값은 무시(경고)
 //   humanize: 기본 true — 독자용 산문에 AI 티 억제 규칙(WRITING_HYGIENE) 적용.
 //             순수 데이터 추출/JSON만 뽑는 호출에서 불필요하면 false로 끌 수 있음(규칙은 자기-범위형이라 켜둬도 안전).
 async function callClaudeApi(opts) {
@@ -454,8 +458,11 @@ async function callClaudeApi(opts) {
   // system을 배열 형태로 전달하면 cache_control 블록 사용 가능
   if (opts.systemBlocks) {
     // 호출부가 직접 구성한 콘텐츠 블록 배열 — cache_control을 세밀하게 지정할 때 사용
+    // hygieneCache:false — 문체 위생 블록의 글자·위치는 그대로 두고 캐시 표시만 뺀다(앞 블록이 호출마다 달라 캐시 쓰기 할증만 붙는 호출용). 생략하면 기존과 같음
     body.system = _humanize
-      ? opts.systemBlocks.concat([{ type: 'text', text: WRITING_HYGIENE, cache_control: { type: 'ephemeral' } }])
+      ? opts.systemBlocks.concat([opts.hygieneCache === false
+        ? { type: 'text', text: WRITING_HYGIENE }
+        : { type: 'text', text: WRITING_HYGIENE, cache_control: { type: 'ephemeral' } }])
       : opts.systemBlocks;
   } else {
     var sysText = '';
@@ -476,6 +483,11 @@ async function callClaudeApi(opts) {
   if (opts.temperature !== undefined && !opts.thinking) body.temperature = opts.temperature;
   if (opts.thinking) body.thinking = opts.thinking;
   if (opts.tools) body.tools = opts.tools;
+  // effort 전달은 여기 한 곳(필드 output_config.effort·허용 값 — 공식 문서 2026-10-13 확인, 미지정은 high와 같음). 값이 없으면 필드를 넣지 않고, 허용 값 밖이면 보내지 않는다
+  if (opts.effort) {
+    if (CLAUDE_EFFORTS.indexOf(opts.effort) >= 0) body.output_config = { effort: opts.effort };
+    else console.warn('[callClaudeApi] 알 수 없는 effort 값을 무시합니다(전달 안 함):', opts.effort);
+  }
   var useStream = opts.stream !== undefined ? !!opts.stream : !!(opts.thinking || opts.tools || mt >= 16000);
   if (useStream) body.stream = true;
   // 서버 도구(웹 검색)는 pause_turn으로 멈출 수 있다 — 받은 내용을 assistant로 붙여 이어서 요청(최대 3번)
@@ -3073,3 +3085,39 @@ function buildDocx(bodyXml, filename) {
 function docxEsc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 window.buildDocx = buildDocx;
 window.docxEsc = docxEsc;
+
+// ━━━ 책 프로필(역할 체계 '분야 확장 계약') — panel13 컨셉의 프로필 칸을 교정(panel8)·구조 검토(panel26) 호출에 같은 문장으로 전달 ━━━
+// 분야·독자·목적은 비어 있으면 AI가 원고에서 추정해도 되는 항목(추정임을 밝히게 함), 편집 방침·보호 영역·사실 검증 기준·변경 허용 수준은
+// AI가 추정하면 안 되는 항목이라 '미지정 — 기본 정책'을 그대로 전달한다. sig는 프로필 전달 필드의 지문(검사 당시 기준 비교용).
+var BookProfile = (function() {
+  var FIELDS = [
+    ['field', '분야·세부 분야', 'guess'], ['reader', '대상 독자', 'guess'], ['purpose', '목적', 'guess'],
+    ['editPolicy', '편집 방침(출판사 표기·저자 문체·용어집·허용어)', 'policy'], ['protect', '보호 영역', 'policy'],
+    ['factBasis', '사실 검증 기준(대상 자료·버전·시점)', 'policy'], ['changeLevel', '변경 허용 수준', 'policy'], ['limits', '알려진 제한', 'policy'],
+  ];
+  var DEFAULT_POLICY = {
+    editPolicy: '미지정 — 기본 정책: 명백한 오류 수정과 문맥 확인을 구분하고 저자 문체·표기를 유지한다',
+    protect: '미지정 — 기본 정책: 코드·명령어·URL·수식·직접 인용·고유명사는 고치지 않는다',
+    factBasis: '미지정 — 기본 정책: 기술 사실은 확정하지 말고 확인 보류로 둔다',
+    changeLevel: '미지정 — 기본 정책: 명백한 오류 수정은 제안하고, 그 밖은 문맥 확인·선택 사항으로 표시한다',
+    limits: '미지정',
+  };
+  function hash(str) { var h = 2166136261 >>> 0; str = String(str || ''); for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return ('0000000' + h.toString(16)).slice(-8); }
+  function load() { try { var c = JSON.parse(localStorage.getItem('ms_concept_v2') || 'null'); return c && typeof c === 'object' ? c : null; } catch (e) { return null; } }
+  var NONE = '프로필 없음 — 분야·독자·목적 미정: IT로 가정하지 말고 원고에서 추정하되 추정임을 밝힐 것. 편집 방침·보호 영역·사실 검증 기준·변경 허용 수준은 기본 정책을 적용한다';
+  function text(c) { // 헤더 없는 줄 묶음 — 호출부가 '## 책 프로필' 같은 제목을 붙인다
+    if (!c) return NONE;
+    var lines = [];
+    if (c.title) lines.push('- 책 제목: ' + String(c.title).trim());
+    FIELDS.forEach(function(f) {
+      var v = String(c[f[0]] || '').trim().replace(/\s*\n+\s*/g, ' / ');
+      if (v) lines.push('- ' + f[1] + ': ' + v);
+      else if (f[2] === 'guess') lines.push('- ' + f[1] + ': 미정 — 원고에서 추정하고 추정임을 밝힐 것');
+      else lines.push('- ' + f[1] + ': ' + DEFAULT_POLICY[f[0]]);
+    });
+    return lines.join('\n');
+  }
+  function sig(c) { return hash(c ? JSON.stringify([c.conceptId || '', c.title || ''].concat(FIELDS.map(function(f) { return String(c[f[0]] || ''); }))) : 'none'); }
+  return { FIELDS: FIELDS, DEFAULT_POLICY: DEFAULT_POLICY, hash: hash, load: load, text: text, sig: sig, NONE: NONE };
+})();
+window.BookProfile = BookProfile;

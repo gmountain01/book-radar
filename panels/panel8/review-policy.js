@@ -61,7 +61,7 @@
   const ruleKey = issue => String(issue.ruleId || issue.type || 'unknown');
   const signature = issue => JSON.stringify([ruleKey(issue), String(issue.found || '')]);
   const occurrence = issue => JSON.stringify([signature(issue), issue.page, issue.start ?? issue.reviewId ?? null]);
-  function empty() { return { common:[], documents:{}, terms:[], documentTerms:{} }; }
+  function empty() { return { common:[], documents:{}, terms:[], documentTerms:{}, documentProfile:{} }; }
   function parse(raw) {
     try {
       const data = JSON.parse(raw);
@@ -71,7 +71,11 @@
         .slice(0,100).map(([key,value]) => [key,strings(value)]));
       // 원고별 허용·용어는 파일 이름으로 묶는다. 예전 버전은 '이름__크기__수정시각'으로 묶어 원고를 고쳐 올리면 허용이 사라졌다 → 이름 키로 합친다
       const byName = m => { const out = {}; for (const [k, v] of Object.entries(m)) { const name = k.replace(/__\d+__\d+$/, ''); out[name] = [...new Set((out[name] || []).concat(v))]; } return out; };
-      return {common:strings(data.common), documents:byName(maps(data.documents)), terms:strings(data.terms), documentTerms:byName(maps(data.documentTerms))};
+      // 원고별 책 프로필 연결(별도 속성 — 허용 목록 배열과 섞지 않는다): { on, conceptId, conceptSig, title }
+      const profiles = x => Object.fromEntries(Object.entries(x && typeof x === 'object' && !Array.isArray(x) ? x : {}).slice(0,100)
+        .filter(([, v]) => v && typeof v === 'object' && !Array.isArray(v))
+        .map(([k, v]) => [k, { on: !!v.on, conceptId: String(v.conceptId || ''), conceptSig: String(v.conceptSig || ''), title: String(v.title || '').slice(0,120) }]));
+      return {common:strings(data.common), documents:byName(maps(data.documents)), terms:strings(data.terms), documentTerms:byName(maps(data.documentTerms)), documentProfile:profiles(data.documentProfile)};
     } catch (_) { return empty(); }
   }
   function termsFor(settings, file) {

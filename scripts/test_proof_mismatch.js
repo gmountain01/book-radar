@@ -33,5 +33,14 @@ module.exports = async function () {
   assert(sg('데이터를 통해서').includes('→ "데이터를 통해"'));
   assert(sg('시스템에서의 ').includes('→ "시스템에서"') && sg('사용자로부터의 ').includes('→ "사용자"'));
   assert(sur.every(i => P8._cleanSuggestion(i) === ''), 'examples must not be auto-applied to the corrected file');
+  // 카드의 원문 줄·수정안 줄: 같은 어절은 그대로 두고 바뀐 어절만 표시한다(두 줄이 같은 앞 문맥에서 시작)
+  const [dA, dB] = P8._wordDiffHtml('이 문장은 다를 수 있습니다.', '이 문장은 다룰 수 있습니다.');
+  assert.equal(dA, '이 문장은 <span class="ctx-found">다를</span> 수 있습니다.');
+  assert.equal(dB, '이 문장은 <span class="diff-add">다룰</span> 수 있습니다.');
+  const [eA, eB] = P8._wordDiffHtml('값을 <b> 넣고 다시 실행을 합니다', '값을 <b> 넣은 뒤 실행합니다');
+  assert(eA.startsWith('값을 &lt;b&gt; <span class="ctx-found">넣고</span>') && eB.startsWith('값을 &lt;b&gt; <span class="diff-add">넣은</span>'), eA + ' / ' + eB);
+  const cx = { before: '…몇 분이 걸릴 수 있으니 ', target: '창을 닫지 말고', after: ' 기다리세요. 이 도구는…' };
+  assert.equal(P8._suggCore('몇 분이 걸릴 수 있으니 창을 닫지 않고 기다리세요.', cx), '창을 닫지 않고'); // 문장 전체를 고쳐 준 수정안: 앞뒤 문맥과 겹치는 부분은 떼고 맞춘다
+  assert.equal(P8._suggCore('창을 닫지 않고', cx), '창을 닫지 않고');
   console.log('PASS: proof mismatch guard — cross-sentence suggestion flagged, word/typo edits untouched');
 };

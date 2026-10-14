@@ -5,6 +5,7 @@ const path = require('path');
 const { makeSandbox, loadScript, ROOT } = require('./run_tests.js');
 
 const sb = makeSandbox();
+loadScript(sb, 'shared/config.js'); loadScript(sb, 'shared/usage-log.js'); loadScript(sb, 'shared/app.js'); // BookProfile(책 프로필)·parseAiJson
 loadScript(sb, 'panels/panel26/panel26.js');
 const { parseOutline, diagnose, cleanReview } = sb.P26;
 
@@ -86,7 +87,9 @@ assert.deepEqual(miss.missing.map(x => [x.item, x.where]), [['보안 설정', ni
 sb.localStorage.setItem('ms_concept_v2', JSON.stringify({ title: '책', reader: '입문자', scope: 'A\nB' }));
 sb.localStorage.setItem('ms_toc_v1', JSON.stringify([{ level: 1, title: '기획 1장', memo: '실습' }, { level: 2, title: '기획 절' }]));
 const { criteriaText } = sb.P26;
-assert.equal(criteriaText({ useConcept: false, useToc: false, memo: '' }), '');
+// 아무것도 고르지 않아도 '프로필 없음(분야 미정, IT로 가정하지 말 것)'은 명시해 보낸다(v2.17.0)
+const ct0 = criteriaText({ useConcept: false, useToc: false, memo: '' });
+assert(ct0.startsWith('### 책 프로필') && ct0.includes('프로필 없음') && !ct0.includes('### 책 컨셉') && !ct0.includes('기획 목차'), ct0);
 const ct = criteriaText({ useConcept: true, useToc: true, memo: '보안은 부록' });
 assert(ct.includes('대상 독자: 입문자') && ct.includes('다루는 범위: A / B'), ct);
 assert(ct.includes('- 기획 1장 (실습)') && ct.includes('  - 기획 절'), ct);
@@ -298,7 +301,7 @@ module.exports = (async () => {
   sb.parseAiJson = s => JSON.parse(s); // app.js는 이 테스트에서 안 읽음
   sb.callClaudeApi = async o => { sent = o.prompt; return JSON.stringify({ items: [], tracking: [{ prev: 'p1', status: '유지', reason: 'r' }] }); };
   const again = await sb.P26.reviewLogic(t, 'k', { useConcept: false, useToc: false, memo: '' }, lr);
-  assert(sent.includes('## 이전 지적') && sent.includes('p1. [A]') && sent.includes('대상 독자가 명시되지 않음'), sent.slice(0, 300));
+  assert(sent.includes('## 이전 지적') && sent.includes('p1. [A]') && sent.includes('프로필 없음'), sent.slice(0, 300));
   assert.equal(again.prevItems[0].no, 'p1');
   assert.equal(again.tracking[0].status, '유지');
   console.log('PASS: structure review — markers/styles/mixed outline, chapter balance, split/promote flags, AI response cleaning, proposed outline ops, re-review tracking');

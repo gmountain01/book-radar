@@ -93,7 +93,7 @@
       acc = hash(acc + p.hash); chars += p.len;
       if (p.cache) bps.push({ at: p.part, prefixHash: acc, prefixChars: chars, ttl: p.ttl || '5m' });
     });
-    return { parts: parts, breakpoints: bps, totalChars: chars, thinking: body.thinking ? body.thinking.type : '', tools: (body.tools || []).map(function (t) { return t.type || t.name; }) };
+    return { parts: parts, breakpoints: bps, totalChars: chars, thinking: body.thinking ? body.thinking.type : '', effort: (body.output_config && body.output_config.effort) || '', tools: (body.tools || []).map(function (t) { return t.type || t.name; }) };
   }
 
   /** callClaudeApi가 HTTP 요청 한 번마다 부른다 */
@@ -235,11 +235,11 @@
     var name = 'api-usage_' + runId + (fmt === 'csv' ? '.csv' : '.json');
     var data;
     if (fmt === 'csv') {
-      var cols = ['callId', 'task', 'batch', 'attempt', 'retryReason', 'part', 'model', 'respModel', 'at', 'ms', 'ok', 'status', 'stopReason', 'input', 'cacheWrite', 'cw5m', 'cw1h', 'cacheRead', 'output', 'thinking', 'webSearches', 'usageMissing', 'estCostUSD', 'error'];
+      var cols = ['callId', 'task', 'batch', 'attempt', 'retryReason', 'part', 'model', 'respModel', 'at', 'ms', 'ok', 'status', 'stopReason', 'input', 'cacheWrite', 'cw5m', 'cw1h', 'cacheRead', 'output', 'thinking', 'webSearches', 'usageMissing', 'estCostUSD', 'error', 'effort', 'cachePoints'];
       var q = function (v) { v = v == null ? '' : String(v); if (/^[=+\-@\t\r]/.test(v) || /^\d+\/\d+$/.test(v)) v = "'" + v; return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
       data = '﻿' + cols.join(',') + '\n' + calls.map(function (c) {
         var u = c.usage || {}, k = cost(c);
-        var row = Object.assign({}, c, { input: u.input, cacheWrite: u.cacheWrite, cw5m: u.cw5m, cw1h: u.cw1h, cacheRead: u.cacheRead, output: u.output, thinking: u.thinking, webSearches: u.webSearches, usageMissing: !c.usage, estCostUSD: k ? k.total.toFixed(6) : '' });
+        var row = Object.assign({}, c, { input: u.input, cacheWrite: u.cacheWrite, cw5m: u.cw5m, cw1h: u.cw1h, cacheRead: u.cacheRead, output: u.output, thinking: u.thinking, webSearches: u.webSearches, usageMissing: !c.usage, estCostUSD: k ? k.total.toFixed(6) : '', effort: c.prompt ? c.prompt.effort : '', cachePoints: c.prompt && c.prompt.breakpoints ? c.prompt.breakpoints.length : '' });
         return cols.map(function (h) { return q(row[h]); }).join(',');
       }).join('\n');
     } else data = JSON.stringify({ summary: s, calls: calls }, null, 1);

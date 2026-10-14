@@ -1,0 +1,4 @@
+/* panel27 — 원고 조판 보기: 패널 전체를 조판 화면(iframe)으로 채운다 */
+.panel.panel27-scope { padding: 0 !important; overflow: hidden; }
+.panel.panel27-scope.active { display: flex; }
+.panel27-scope iframe { flex: 1; width: 100%; min-height: 0; border: 0; }

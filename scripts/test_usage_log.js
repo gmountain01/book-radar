@@ -56,12 +56,20 @@ module.exports = async function () {
   assert(Math.abs(s.cost.noCache - ((3 * 900 + 4200 + 6000) * 3 / M + 3 * 500 * 15 / M)) < 1e-9, 'counterfactual uses same tokens');
   assert.deepEqual([s.cacheReadCallRatio.num, s.cacheReadCallRatio.den], [2, 3], 'read-call ratio over successful calls with breakpoints');
   assert.deepEqual([s.cacheReadInputRatio.num, s.cacheReadInputRatio.den], [6000, 2700 + 4200 + 6000]);
-  // 캐시 진단: 교정 SYS 지점은 같지만, 그 뒤 규칙 참고(배치마다 다름) 다음에 붙는 문체 위생 지점은 매번 다른 접두부 → 경고
+  // 캐시 진단: 교정 SYS·책 프로필 지점(v2.17.0: system#1, 실행 중 고정)은 같지만, 그 뒤 규칙 참고(배치마다 다름) 다음에 붙는 문체 위생 지점은 매번 다른 접두부 → 경고
   const warn = s.diag.filter(d => d.level === 'warn').map(d => d.msg).join('\n');
   if (process.env.DEBUG_USAGE) console.log(JSON.stringify(s.diag, null, 1), calls.map(c => c.ok && c.prompt.parts.map(p => p.part + (p.cache ? '*' : '') + ':' + p.hash).join(' ')));
-  assert(/캐시 지점 2\(system#2\) 앞 내용이 호출마다 다름/.test(warn) && /system#1/.test(warn), warn);
-  assert(!/캐시 지점 1\(system#0\) 앞 내용이 호출마다 다름/.test(warn), 'SYS breakpoint is stable');
-
+  assert(/캐시 지점 3\(system#3\) 앞 내용이 호출마다 다름/.test(warn) && /system#2/.test(warn), warn);
+  assert(!/캐시 지점 1\(system#0\) 앞 내용이 호출마다 다름/.test(warn) && !/캐시 지점 2\(system#1\) 앞 내용이 호출마다 다름/.test(warn), 'SYS·profile breakpoints are stable');
+  // 비교 실험 옵션(AI_TUNE.ragTailCache=false, 기본 아님): 꼬리 뒤 문체 위생 블록의 캐시 표시를 빼면 호출마다 달라지던 캐시 지점 3(system#3)이 없어지고 고정 지점 2개만 남는다
+  P8.AI_TUNE.ragTailCache = false;
+  const run2 = U.begin('교정 도우미 — 교정 실행', { file: 'test.docx' });
+  await P8.checkLinguistic({ filename: 't', total_pages: 15, pages, toc: [] }, KEY, () => {}, () => {});
+  U.end(run2);
+  P8.AI_TUNE.ragTailCache = true;
+  const warn2 = U.summarize(run2).diag.filter(d => d.level === 'warn').map(d => d.msg).join('\n');
+  assert(!/앞 내용이 호출마다 다름/.test(warn2), warn2);
+  assert(U.callsOf(run2).filter(c => c.ok).every(c => c.prompt.breakpoints.map(x => x.at).join() === 'system#0,system#1' && c.prompt.parts.filter(x => /^system/.test(x.part)).length === 4 && c.prompt.effort === ''), 'option off: only SYS·profile breakpoints, 4 system blocks kept');
   // 개인정보: 키·원고 본문은 기록에 없다
   const stored = sb.localStorage.getItem('api_usage_v1');
   assert(!stored.includes('sk-ant') && !stored.includes(SECRET_TEXT), 'no key or manuscript text in log');
