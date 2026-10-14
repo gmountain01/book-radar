@@ -4,6 +4,13 @@
 
 ---
 
+## 2026-10-15 — 커밋·푸시·배포 (v2.17.0~v2.20.4)
+
+- 커밋 160034e(원격 자동 데이터 커밋 6건 위로 rebase), `origin/main` 푸시 70ec0dd..160034e. 미커밋이던 v2.17.0~v2.20.4 전체(교정 프로필 연결, 원고 조판 보기 panel27, 교정 카드 정렬, 네이버 키 자동 갱신, API 최적화 옵션·응답 실패 구분·부분 실패 캐시 보존, 병기 중복 찾기 panel28, 역할 체계 문서, eval/profile 자료·테스트) 42파일.
+- 제외: `data/yes24/2026_books.csv`(처리 결정 대기, 미추적 유지). gitignore 대상(_workspace·eval 결과·API 키)은 포함 안 됨. 스테이징 내용에서 API 키 형식 문자열 검사 — 없음.
+- 푸시 전 `python scripts/check_version.py` OK, `node scripts/run_tests.js` 전체 통과. GitHub Actions CI 성공, Pages 배포 성공. 배포 사이트에서 헤더 v2.20.4·`panels/panel27/book.html?v=313`(200, 인쇄 색 수정 포함) 확인.
+- 저장소는 공개(PUBLIC)다 — 이번에 들어간 `eval/profile/`의 정답셋 검토·정상 문장 자료는 이미 공개돼 있던 `eval/proofread/cases.json`과 같은 샘플 원고(현장학습 조 편성) 인용을 담는다.
+
 ## 2026-10-15 — v2.20.4 (원고 조판 보기 단락 사이 여백 확대) — 커밋·배포 전
 
 사용자 요청: 단락이 바뀔 때 여백을 조금 더. `panels/panel27/book.html` 시안 A 설정 `p`(단락 아래 여백) 1.6 → 2.6mm(본문 한 줄 약 5.7mm의 절반 가까이). 상자·코너 안 단락, 쪽을 넘겨 나뉜 단락의 앞부분은 기존처럼 여백 없음. 제목 위 간격과는 겹쳐 큰 쪽만 적용(제목 앞 간격은 그대로).
