@@ -1,10 +1,26 @@
 /* HWP 5.x 본문 추출 — 의존성: XLSX.CFB(libs/xlsx.full.min.js), 브라우저 DecompressionStream.
  * 문단 텍스트만 순서대로 뽑는다(표 셀 문단 포함). 서식·이미지·각주 번호는 버린다.
  * 개요 문단은 Markdown 제목으로, 글머리 기호는 '- '로 바꾼다. 표는 셀 문단을 순서대로 늘어놓는다(표 구조는 버림).
+ * opts.tables(원고 조판 보기)면 표를 Markdown 표(| 칸 |)로 — 교정 도우미 결과는 그대로 두려고 옵션으로만.
  * 포맷 근거: 한컴 공개 HWP 5.0 문서 형식(레코드 헤더 tag 10bit·level 10bit·size 12bit, PARA_TEXT=67). */
 (function (root) {
   'use strict';
-  const HWPTAG_PARA_SHAPE = 25, HWPTAG_STYLE = 26, HWPTAG_PARA_HEADER = 66, HWPTAG_PARA_TEXT = 67;
+  const HWPTAG_PARA_SHAPE = 25, HWPTAG_STYLE = 26, HWPTAG_PARA_HEADER = 66, HWPTAG_PARA_TEXT = 67,
+    HWPTAG_CTRL_HEADER = 71, HWPTAG_LIST_HEADER = 72, HWPTAG_TABLE = 77, CTRL_TBL = 0x74626c20; // 'tbl '
+
+  /** 셀 [{ r, c, lines }] → Markdown 표(docx2md와 같은 꼴). 합친 칸 자리는 빈칸, 한 칸짜리 표는 [박스]. HWP·HWPX 공용 */
+  function tableMd(cells) {
+    if (!cells.some(x => x.lines.length)) return '';
+    const nr = Math.max(...cells.map(x => x.r)) + 1, nc = Math.max(...cells.map(x => x.c)) + 1;
+    if (nr === 1 && nc === 1) return '[박스]\n' + cells[0].lines.join('\n');
+    const grid = Array.from({ length: nr }, () => Array(nc).fill(''));
+    // 셀 속 표(이미 Markdown 표·[박스])는 칸을 ' · ', 줄을 <br>로 풀어 글자로 넣는다
+    const flat = s => !s.includes('\n') ? s : s.split('\n').filter(l => !/^\|( --- \|)+$/.test(l) && l !== '[박스]')
+      .map(l => l.replace(/^\| | \|$/g, '').split(' | ').filter(Boolean).join(' · ')).filter(Boolean).join('<br>');
+    for (const x of cells) grid[x.r][x.c] = x.lines.map(l => flat(l.trim())).join('<br>').replace(/\|/g, '\\|');
+    const line = row => '| ' + row.join(' | ') + ' |';
+    return [line(grid[0]), '|' + ' --- |'.repeat(nc), ...grid.slice(1).map(line)].join('\n');
+  }
 
   /** 스타일 이름 → 제목 수준(0 [파트] ~ 5 [소소]), 아니면 -1.
    *  출판사 서식은 스타일 이름이 '[장]'·'장제목'·'중제목'처럼 수준을 말해 준다. HWP·HWPX·DOCX 공용.
@@ -67,7 +83,8 @@
     }
   }
 
-  async function extractParagraphs(arrayBuffer) {
+  async function extractParagraphs(arrayBuffer, opts) {
+    const tables = !!(opts && opts.tables);
     const XLSX = root.XLSX;
     if (!XLSX || !XLSX.CFB) throw new Error('XLSX.CFB(libs/xlsx.full.min.js)가 필요합니다');
     if (typeof DecompressionStream === 'undefined') throw new Error('이 브라우저는 압축 해제(DecompressionStream)를 지원하지 않습니다');
@@ -112,7 +129,19 @@
       if (!bytes) break;
       const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
       let level = -1;
+      // 표 안: 표 조종 레코드(CTRL_HEADER 'tbl ')보다 깊은 레코드가 표 몫. 셀 = TABLE 뒤 LIST_HEADER(+8 열, +10 행)
+      const stack = [];
+      const close = () => { const md = tableMd(stack.pop().cells), up = stack[stack.length - 1]; if (md) (up && up.cell ? up.cell.lines : paras).push(md); };
       for (const r of records(bytes)) {
+        if (tables) {
+          while (stack.length && r.level <= stack[stack.length - 1].lv) close();
+          const top = stack[stack.length - 1];
+          if (r.tag === HWPTAG_CTRL_HEADER && r.size >= 4 && dv.getUint32(r.off, true) === CTRL_TBL) { stack.push({ lv: r.level, cells: [], cell: null }); continue; }
+          if (top && r.level === top.lv + 1 && r.tag === HWPTAG_TABLE) { top.ok = true; continue; }
+          if (top && top.ok && r.level === top.lv + 1 && r.tag === HWPTAG_LIST_HEADER && r.size >= 12) {
+            top.cells.push(top.cell = { c: dv.getUint16(r.off + 8, true), r: dv.getUint16(r.off + 10, true), lines: [] }); continue;
+          }
+        }
         if (r.tag === HWPTAG_PARA_HEADER) { // +8 문단 모양 ID, +10 스타일 ID
           const sl = styleLv[dv.getUint8(r.off + 10)] ?? -1;
           if (sl >= 0) styled = true;
@@ -120,15 +149,18 @@
         }
         if (r.tag !== HWPTAG_PARA_TEXT) continue;
         let t = paraText(bytes, r.off, r.size).replace(/\s+$/, '');
+        const cell = stack.length && stack[stack.length - 1].cell;
+        if (cell) { if (t.trim()) cell.lines.push(t.trim()); continue; }
         if (level >= 0 && t.trim()) t = '#'.repeat(Math.min(level + 1, 6)) + ' ' + t.trim();
         else t = t.replace(/^(\s*)[•·▪◦●○■□]\s*/, '$1- ');
         paras.push(t);
       }
+      while (stack.length) close();
     }
     if (!paras.length) throw new Error('HWP 본문을 찾지 못했습니다');
     paras.depthIsLevel = styled; // 이름으로 수준을 정했으면 # 개수 = 수준+1 ([파트] #, [장] ## …)
     return paras;
   }
 
-  root.P8Hwp5 = { extractParagraphs, styleLevel };
+  root.P8Hwp5 = { extractParagraphs, styleLevel, tableMd };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -188,6 +188,7 @@ async function main() {
   require('./test_market_feed.js');
   require('./test_md2book.js');
   require('./test_parallel_dup.js');
+  require('./test_hwp_table.js');
 
   console.log('\n' + (failures ? `❌ 실패 ${failures}건` : '✅ 전체 통과'));
   process.exit(failures ? 1 : 0);

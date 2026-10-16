@@ -819,12 +819,13 @@ function parseTocFromPages(pages) {
 async function extractFile(file, opts) {
   const ext = file.name.split('.').pop().toLowerCase();
   const review = !!(opts && opts.review);
+  const tables = !!(opts && opts.tables); // 원고 조판 보기(panel27): HWP·HWPX 표를 Markdown 표로. 교정·구조 검토는 그대로
   const meta = { format: ext, images: 0, footnotes: 0, sup: 0, sub: 0, nestedLists: 0, comments: 0, limits: [] };
   let result;
   if (ext === 'pdf')  result = await extractPDF(file);
   else if (ext === 'docx') result = await extractDOCX(file, review && meta);
-  else if (ext === 'hwpx') result = await extractHWPX(file, review && meta);
-  else if (ext === 'hwp')  result = await extractHWP(file);
+  else if (ext === 'hwpx') result = await extractHWPX(file, review && meta, tables);
+  else if (ext === 'hwp')  result = await extractHWP(file, tables);
   else if (ext === 'doc')  result = await extractDOC(file);
   else if (ext === 'txt' || ext === 'md') result = await extractTXT(file, review && meta);
   else throw new Error(`지원하지 않는 파일 형식: .${ext}\n지원 형식: PDF, DOCX, HWPX, HWP, DOC, TXT`);
@@ -1087,7 +1088,7 @@ function _htmlToMdRich(html, meta) {
 /** HWPX (ZIP+XML) → JSZip으로 압축 풀고 hp:t 요소에서 텍스트 추출
  *  토큰 절감: 머리글(header)/바닥글(footer)/각주(footnote)/미주(endnote) 영역 제외
  */
-async function extractHWPX(file, meta) {
+async function extractHWPX(file, meta, tables) {
   if (typeof JSZip === 'undefined') throw new Error('JSZip 라이브러리를 로드할 수 없습니다. 인터넷 연결을 확인하세요.');
   const ab = await file.arrayBuffer();
   let zip;
@@ -1124,7 +1125,10 @@ async function extractHWPX(file, meta) {
 
   let fullText = '';
   for (const fname of sectionFiles) {
-    const xml = await zip.files[fname].async('string');
+    // <hp:t> 안의 탭·줄바꿈·특수 공백 태그를 글자로 바꾸고 다른 표시 태그는 지운다 — 남겨 두면 아래 글자 읽기([^<]*)가
+    // 그 <hp:t> 전체를 놓쳐 '제목<탭>쪽'인 차례 줄이나 탭이 든 본문 문단이 통째로 빠진다
+    const xml = (await zip.files[fname].async('string')).replace(/(<(?:hp:)?t(?:\s[^>]*)?>)([\s\S]*?)(<\/(?:hp:)?t>)/g, (m, a, s, b) => !s.includes('<') ? m : a + s
+      .replace(/<(?:hp:)?tab\b[^>]*\/>/g, '\t').replace(/<(?:hp:)?(?:lineBreak|fwSpace|nbSpace)\b[^>]*\/>/g, ' ').replace(/<[^>]*>/g, '') + b);
     // 검토용: 각주·미주는 지우지 않고 참조 자리에 [^각주: 내용]으로, 그림은 자리 표시로 (아래 제거 규칙보다 먼저)
     let srcXml = xml;
     if (meta) {
@@ -1134,12 +1138,26 @@ async function extractHWPX(file, meta) {
         .replace(/<(?:hp:)?pic\b[^>]*>[\s\S]*?<\/(?:hp:)?pic>/gi, m => { const cap = inner(m).slice(0, 80); return `<hp:t>[그림 ${++meta.images}${cap ? ': ' + cap : ''} — 이미지 내용은 전달되지 않음]</hp:t>`; });
     }
     // 머리글·바닥글·각주·미주 영역 제거 (토큰 절감)
-    const bodyXml = srcXml
+    let bodyXml = srcXml
       .replace(/<(?:hp:)?header[^>]*>[\s\S]*?<\/(?:hp:)?header>/gi, '')
       .replace(/<(?:hp:)?footer[^>]*>[\s\S]*?<\/(?:hp:)?footer>/gi, '')
       .replace(/<(?:hp:)?footnote[^>]*>[\s\S]*?<\/(?:hp:)?footnote>/gi, '')
       .replace(/<(?:hp:)?endnote[^>]*>[\s\S]*?<\/(?:hp:)?endnote>/gi, '')
       .replace(/<(?:hp:)?headerFooter[^>]*>[\s\S]*?<\/(?:hp:)?headerFooter>/gi, '');
+    // 표 → Markdown 표 한 덩어리(<hp:t>)로 바꿔 둔다. 안쪽 표부터 — 바깥 표의 셀에는 안쪽 표가 글자로 들어간다
+    if (tables) {
+      const TBL = /<(?:hp:)?tbl\b(?:(?!<(?:hp:)?tbl\b)[\s\S])*?<\/(?:hp:)?tbl>/g;
+      const tText = x => (x.match(/<(?:hp:)?t(?:\s[^>]*)?>([^<]*)<\/(?:hp:)?t>/g) || []).map(m => m.replace(/<[^>]+>/g, '')).join('').trim();
+      const toMd = x => {
+        const cells = (x.match(/<(?:hp:)?tc\b[\s\S]*?<\/(?:hp:)?tc>/g) || []).map(tc => ({
+          c: +((tc.match(/\bcolAddr="(\d+)"/) || [])[1] || 0), r: +((tc.match(/\browAddr="(\d+)"/) || [])[1] || 0),
+          lines: (tc.match(/<(?:hp:)?p(?:\s[^>]*)?>[\s\S]*?<\/(?:hp:)?p>/g) || []).map(tText).filter(Boolean),
+        }));
+        const md = window.P8Hwp5 ? window.P8Hwp5.tableMd(cells) : cells.map(c => c.lines.join(' ')).join('\n\n');
+        return '<hp:t>\n\n' + md.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '\n\n</hp:t>'; // 문단 글자 뒤에 붙어도 표가 따로 서게
+      };
+      while (TBL.test(bodyXml)) { TBL.lastIndex = 0; bodyXml = bodyXml.replace(TBL, toMd); }
+    }
     // <hp:p> 단위로 문단 구분하여 텍스트 추출
     const paragraphs = bodyXml.match(/<(?:hp:)?p(?:\s[^>]*)?>[\s\S]*?<\/(?:hp:)?p>/gi) || [];
     const lines = [];
@@ -1164,9 +1182,9 @@ async function extractHWPX(file, meta) {
 }
 
 /** HWP 5.x 바이너리 — hwp5.js(XLSX.CFB + DecompressionStream)로 문단 추출 */
-async function extractHWP(file) {
+async function extractHWP(file, tables) {
   if (!window.P8Hwp5) throw new Error('HWP 추출기(hwp5.js)를 불러오지 못했습니다. 새로고침 후 다시 시도하세요.');
-  const paras = await window.P8Hwp5.extractParagraphs(await file.arrayBuffer());
+  const paras = await window.P8Hwp5.extractParagraphs(await file.arrayBuffer(), { tables });
   // 문단마다 빈 줄로 구분해야 textToExtracted가 ~1500자 페이지로 나눈다
   const out = textToExtracted(file.name, _compressForTokens(paras.filter(t => t.trim()).join('\n\n')));
   out.depthIsLevel = !!paras.depthIsLevel;

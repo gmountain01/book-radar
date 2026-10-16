@@ -193,4 +193,26 @@ assert.ok(!r.html.includes("btoc")); has(r.html, "<p class=\"lead\">이 문단�
 r = mdToBook("목차\n1장 시작하기\n2장 다음\n\\newpage\n[장] 1장 시작하기\n\n본문.\n\n[장] 2장 다음\n\n본문.\n");  // \newpage에서 차례가 끝나고 쪽 나눔이 남는다
 assert.ok(!/btoc-t">[^<]*ewpage/.test(r.html)); assert.strictEqual((r.html.match(/btoc-row[^"]*" data-ref/g) || []).length, 2); has(r.html, "newpage");
 
+// 표로 짠 차례(HWP·HWPX에서 Markdown 표로 온 것): '목차' 뒤 표·첫 줄이 '목차'인 표 모두 줄 차례와 같은 차례가 된다. 보통 표는 그대로
+const rowsOf = r => r.html.match(/btoc-row[^>]*><span class="btoc-no">[^<]*<\/span><span class="btoc-t">[^<]*/g);
+const tblAfter = mdToBook("목차\n\n| 1장 시작하기 | 23 |\n| --- | --- |\n| 1-1 준비 | 25 |\n| 2장 다음 | 31 |\n\n" + BODY);
+const tblIn = mdToBook("| 목차 |  |\n| --- | --- |\n| 1장 시작하기<br>1-1 준비<br>2장 다음 | 23<br>25<br>31 |\n\n" + BODY);
+assert.deepStrictEqual(rowsOf(tblAfter), rowsOf(plainToc)); assert.deepStrictEqual(rowsOf(tblIn), rowsOf(plainToc));
+assert.deepStrictEqual(tblIn.outline, noToc.outline);
+has(mdToBook("설명\n\n| 1장 시작하기 | 23 |\n| --- | --- |\n\n" + BODY).html, "<table");
+
+// 괄호로 싼 차례 줄('<목 차>' — docx에서 오면 \<·&lt;로도 온다)과 '표 목차'도 차례 줄. 제목 글자는 띄어 쓴 '목 차'만 붙인다
+for (const [w, word] of [["<목 차>", "목차"], ["\\<목 차\\>", "목차"], ["**〈차례〉**", "차례"], ["&lt;표 목차&gt;", "표 목차"], ["표 차 례", "표 차례"]]) {
+  const t = mdToBook(w + "\n1장 시작하기\n1-1 준비\n2장 다음\n\n" + BODY);
+  assert.deepStrictEqual(rowsOf(t), rowsOf(plainToc), w); has(t.html, `<b>${word}</b></div>`);
+}
+
+// 논문식 차례(I. → 1. → 가.): 단계는 번호 꼴로, 번호를 떼어 본문 제목과 맞춘다. 다른 차례 줄('<표 목차>')에서 끝나고 표 목차는 따로. 제목 뒤 되풀이 '차례'는 항목 아님
+const thesis = mdToBook("<목  차>\n\n차례\n\nI. 서론 1\n\n1. 연구 문제 2\n\n가. 용어 3\n\nII. 방법 4\n\n1. 대상 4\n\n<표 목차>\n\n<표 1> 첫 표\n\n<표 2> 둘째 표\n\n" +
+  "# 서론\n\n## 연구 문제\n\n### 용어\n\n본문.\n\n<표 1> 첫 표\n\n# 방법\n\n## 대상\n\n<표 2> 둘째 표\n\n끝.\n");
+assert.deepStrictEqual([...thesis.html.matchAll(/btoc-row (l\d)[^>]*><span class="btoc-no">([^<]*)<\/span><span class="btoc-t">([^<]*)/g)].map(m => m.slice(1).join(" ")),
+  ["l1 I 서론", "l2 1 연구 문제", "l3 가 용어", "l1 II 방법", "l2 1 대상", "l1  &lt;표 1&gt; 첫 표", "l1  &lt;표 2&gt; 둘째 표"]);
+assert.strictEqual((thesis.html.match(/btoc-title/g) || []).length, 2); has(thesis.html, "<b>표 목차</b>");
+assert.strictEqual((thesis.html.match(/btoc-row[^"]*" data-ref/g) || []).length, 5);  // 차례 5줄 모두 본문 제목과 이어짐(쪽 번호)
+
 console.log("md2book: 모든 점검 통과");

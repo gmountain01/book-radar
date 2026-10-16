@@ -81,15 +81,39 @@
   const HEADKIND = /^(lv\d|trouble|apply)$/;
 
   /* 책 전체 차례: '차례'·'목차'·'CONTENTS' 한 줄 뒤의 장·절 목록. 원고의 쪽 번호(…… 23)는 버리고 조판 결과로 다시 단다 */
-  const TOCW = /^\s*(?:#{1,6}\s+)?(?:[-*+]\s+)?(?:\*\*|__)?\s*(목\s*차|차\s*례|(?:table\s+of\s+)?contents)\s*(?:\*\*|__)?\s*#*\s*$/i;
+  // 차례 줄: '목차'·'차 례'·'CONTENTS'에 더해 괄호로 싼 '<목 차>'·'〈차례〉'와 '표 목차'·'그림 차례'·'List of Tables'도
+  const TOCW = /^\s*(?:#{1,6}\s+)?(?:[-*+]\s+)?(?:\*\*|__)?\s*(?:\\?[<〈《【\[(]|&lt;)?\s*((?:(?:표|그림|도표|사진)\s*)?(?:목\s*차|차\s*례)|(?:table\s+of\s+)?contents|list\s+of\s+(?:tables|figures))\s*(?:\\?[>〉》】\])]|&gt;)?\s*(?:\*\*|__)?\s*#*\s*$/i;
   const TOCPG = /(?:\s*(?:[.·…‥・ㆍ_\-–—]\s*){2,}|\s{2,}|\s+[-–—]\s*|\s+p\.\s*)(?:\d{1,4}|[ivxlc]{1,6})\s*$|\s*[.·…‥・ㆍ]{3,}\s*$/i;
   const TAILNO = /\s+\d{1,4}$/;  // 공백 한 칸 뒤 쪽 번호: 차례 항목 절반 이상에 있고 떼어야 본문 제목과 더 맞을 때만('GPT 4'·'장제목 1' 보호)
   const nt = s => plain(s).replace(/[\s\p{P}\p{S}]/gu, "").toLowerCase();       // 맞대 볼 제목 글자
   const nn = s => String(s || "").toLowerCase().replace(/\d+/g, d => +d).replace(/[^0-9a-z가-힣]+/g, "-");  // 1.1 = 1-1, 01 = 1
 
+  /* 차례를 표로 짠 원고(HWP·HWPX·Word): '목차' 줄 바로 뒤의 표나 첫 줄이 '목차'인 표는 항목 줄로 풀어 아래 차례 읽기에 맡긴다.
+     칸에 여러 줄(<br>)이 있으면 같은 순번끼리 한 항목, 숫자만 있는 칸(원고 쪽 번호)은 버린다 */
+  function untableToc(L) {
+    const out = [], cells = s => s.trim().replace(/^\||\|$/g, "").split(/(?<!\\)\|/).map(c => c.trim().replace(/\\\|/g, "|"));
+    let prev = "";
+    for (let k = 0; k < L.length; k++) {
+      if (!(L[k].trim().startsWith("|") && L[k + 1] !== undefined && R.sep.test(L[k + 1]))) { out.push(L[k]); if (L[k].trim()) prev = L[k]; continue; }
+      let e = k; while (e < L.length && L[e].trim().startsWith("|")) e++;
+      const rows = L.slice(k, e).filter((s, n) => n !== 1).map(cells), head = rows[0].filter(Boolean).join(" "), wordIn = TOCW.test(head);
+      if (!wordIn && !TOCW.test(prev)) { out.push(...L.slice(k, e)); prev = L[e - 1]; k = e - 1; continue; }
+      if (wordIn) { out.push(head, ""); rows.shift(); }
+      for (const r of rows) {
+        const parts = r.map(c => c.split(/<br\s*\/?>/i).map(x => x.trim()));
+        for (let n = 0; n < Math.max(...parts.map(p => p.length)); n++) {
+          const t = parts.map(p => p[n] || "").filter(x => x && !/^\d{1,4}$/.test(x)).join(" ");
+          if (t) out.push(t, "");
+        }
+      }
+      prev = ""; k = e - 1;
+    }
+    return out;
+  }
+
   /* 1단계: 줄 → 블록 */
   function tokenize(md) {
-    const L = String(md).replace(/^﻿/, "").replace(/\r\n?/g, "\n").replace(/\t/g, "    ").split("\n");
+    const L = untableToc(String(md).replace(/^﻿/, "").replace(/\r\n?/g, "\n").replace(/\t/g, "    ").split("\n"));
     const out = [], fm = {};
     let i = 0;
     if (L[0] === "---") {
@@ -117,6 +141,7 @@
       for (let j = k + 1; j < L.length && ents.length < 500; j++) {
         const s = L[j];
         if (blank(s) || /^\s*\d{1,4}\s*$/.test(s)) continue;
+        if (TOCW.test(s)) { if (ents.length) break; continue; }  // 다른 차례 줄('<표 목차>')에서 끝, 제목 바로 뒤 되풀이('차    례' 다음 '차례')는 건너뜀
         if (R.fence.test(s) || R.hr.test(s) || R.quote.test(s) || R.img.test(s) || R.comment.test(s) || tagOf(s) || tableAt(j) || /^\s*\\newpage\s*$/.test(s)) break;
         const a = R.atx.exec(s);
         if (a && first && !first.atx) break;
@@ -134,19 +159,19 @@
       }
       if (ents.length < 2) return null;
       const body = new Set([...L.slice(0, k), ...L.slice(end)].map(s => { const g = tagOf(s), a = R.atx.exec(s); return nt(g ? g.rest : a ? a[2] : s); }));  // 차례 밖 줄(제목 후보)
-      const tail = ents.filter(e => !e.pg && TAILNO.test(e.t)), bare = e => nt(e.t.replace(TAILNO, ""));
-      if (tail.length * 2 >= ents.length && tail.filter(e => body.has(bare(e))).length > tail.filter(e => body.has(e.key)).length)  // 떼어야 본문 제목과 더 맞을 때만
+      const inBody = t => body.has(nt(t)) || body.has(nt(t.replace(/^(?:[IVX]{1,5}|[Ⅰ-Ⅻ]|\d{1,2}|[가-하])[.)]\s+/, "")));  // 논문식 번호('I. '·'가. ')를 뗀 제목도 본다
+      const tail = ents.filter(e => !e.pg && TAILNO.test(e.t));
+      if (tail.length * 2 >= ents.length && tail.filter(e => inBody(e.t.replace(TAILNO, ""))).length > tail.filter(e => inBody(e.t)).length)  // 떼어야 본문 제목과 더 맞을 때만
         for (const e of tail) { e.t = e.t.replace(TAILNO, ""); e.key = nt(e.t); e.pat = RX.findIndex(r => r.test(e.t)); }
-      if (ents.filter(e => e.pat >= 0 || body.has(e.key)).length < 2) return null;
-      return { t: "toc", word: /[가-힣]/.test(w) ? w.replace(/\s+/g, "") : w.replace(/\s+/g, " "), ents, end };
+      if (ents.filter(e => e.pat >= 0 || inBody(e.t)).length < 2) return null;
+      return { t: "toc", word: /[가-힣]/.test(w) ? w.replace(/\s+/g, " ").replace(/([목차]) ([차례])/g, "$1$2") : w.replace(/\s+/g, " "), ents, end };
     };
 
     while (i < L.length) {
       const s = L[i]; let m, g;
       if (blank(s)) { i++; continue; }
       if ((m = R.comment.exec(s))) { if (/pagebreak|새쪽|쪽나눔/i.test(m[1])) out.push({ t: "newpage" }); i++; continue; }
-      if (TOCW.test(s) && (g = tocAt(i))) { out.push(g); i = g.end; continue; }
-      if ((m = R.fence.exec(s))) {
+      if (TOCW.test(s) && (g = tocAt(i))) { out.push(g); i = g.end; continue; }      if ((m = R.fence.exec(s))) {
         const close = new RegExp("^ {0,3}" + m[1][0] + "{" + m[1].length + ",}\\s*$"), buf = [];
         for (i++; i < L.length && !close.test(L[i]); i++) buf.push(L[i]);
         i++; out.push({ t: "code", info: m[2].trim(), text: buf.join("\n") }); continue;
@@ -275,7 +300,12 @@
         return heads[k];
       };
       const set = (e, lv) => { e.lv = lv; e.info = lv <= 2 ? parseHead(lv, e.t) : { no: "", title: e.t }; e.no = lv === 0 ? e.info.label : e.info.no; };
+      // 논문식 번호(I. → 1. → 가.·1)): 로마 숫자 항목이 둘 이상인 차례에서만 번호 꼴로 단계를 정하고, 번호를 떼어 본문 제목과 맞춘다
+      const LAD = [[/^([IVX]{1,5}|[Ⅰ-Ⅻ])\.\s*(.+)$/, 1], [/^(\d{1,2})\.\s*(.+)$/, 2], [/^([가-하])\.\s*(.+)$/, 3], [/^(\d{1,2})\)\s*(.+)$/, 3]];
+      const thesis = b.ents.filter(e => LAD[0][0].test(e.t)).length >= 2;
       for (const e of b.ents) {
+        const lad = thesis && LAD.find(([re]) => re.test(e.t));
+        if (lad) { const m = lad[0].exec(e.t); e.lv = lad[1]; e.no = m[1]; e.info = { no: m[1], title: m[2] }; e.h = find(e); continue; }
         while (stack.length && stack[stack.length - 1].ind >= e.ind) stack.pop();
         const par = stack[stack.length - 1];
         let lv = e.pat >= 0 ? e.pat : par ? par.lv + 1 : 1;

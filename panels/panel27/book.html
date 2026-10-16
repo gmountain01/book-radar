@@ -500,8 +500,8 @@
 
 <aside id="side">
   <h1>원고 조판 보기</h1>
-  <label id="drop" for="file"><b>원고 파일 올리기</b><span>여기에 끌어다 놓거나 눌러서 고르세요</span><small>.docx · .md · .txt<br>그림 파일을 함께 올리면 파일 이름으로 연결합니다</small></label>
-  <input id="file" type="file" multiple accept=".docx,.md,.markdown,.txt,image/*" hidden>
+  <label id="drop" for="file"><b>원고 파일 올리기</b><span>여기에 끌어다 놓거나 눌러서 고르세요</span><small>.docx · .hwpx · .hwp · .md · .txt<br>그림 파일을 함께 올리면 파일 이름으로 연결합니다</small></label>
+  <input id="file" type="file" multiple accept=".docx,.hwpx,.hwp,.md,.markdown,.txt,image/*" hidden>
   <label id="trimrow">판형
     <select id="trim">
       <option value="174x232">크라운 변형판 · 174 × 232 (기본)</option>
@@ -564,7 +564,7 @@ AI에게 넣을 문장
 조판 결과로 자동으로 답니다.</pre>
   </details>
 </aside>
-<div id="empty" hidden><b>원고를 올리면 여기에 책으로 보입니다</b><span>왼쪽에서 docx · md · txt 파일을 올려 주세요</span></div>
+<div id="empty" hidden><b>원고를 올리면 여기에 책으로 보입니다</b><span>왼쪽에서 docx · hwpx · hwp · md · txt 파일을 올려 주세요</span></div>
 <div id="stage"><div id="book"></div></div>
 <nav>
   <button id="prev" type="button" aria-label="이전 펼침">◀</button>
@@ -1034,16 +1034,32 @@ AI에게 넣을 문장
     h += `<h2>차례 <span id="pages"></span></h2><ol class="toc-nav">${r.outline.map((o, i) => `<li class="l${o.lv}"><button type="button" data-oi="${i}">${esc([o.no, o.title].filter(Boolean).join(" "))}</button></li>`).join("")}</ol>`;
     $("info").innerHTML = h;
   }
+  /* HWP·HWPX는 대시보드의 원고 읽기(교정 도우미 P8Extract)를 빌려 쓴다 — file://에서는 부모 창을 직접 못 만지므로 postMessage로 주고받는다 */
+  function hwpToMd(file) {
+    if (parent === window) return Promise.reject(new Error("HWP·HWPX는 대시보드 안에서만 읽습니다. 한글에서 docx로 저장해 올려 주세요."));
+    return new Promise((res, rej) => {
+      const id = Math.random().toString(36).slice(2), t = setTimeout(() => { removeEventListener("message", on); rej(new Error("원고 읽기 응답이 없습니다. 대시보드를 새로고침해 주세요.")); }, 120000);
+      function on(e) {
+        const d = e.data;
+        if (e.source !== parent || !d || d.type !== "p27-extracted" || d.id !== id) return;
+        clearTimeout(t); removeEventListener("message", on);
+        d.error ? rej(new Error(d.error)) : res(d.md);
+      }
+      addEventListener("message", on);
+      parent.postMessage({ type: "p27-extract", id, file }, "*");
+    });
+  }
   async function handle(files) {
-    const list = [...files], doc = list.find(f => /\.(docx|md|markdown|txt)$/i.test(f.name)), pics = list.filter(f => /\.(png|jpe?g|gif|svg|webp|bmp)$/i.test(f.name));
+    const list = [...files], doc = list.find(f => /\.(docx|hwpx?|md|markdown|txt)$/i.test(f.name)), pics = list.filter(f => /\.(png|jpe?g|gif|svg|webp|bmp)$/i.test(f.name));
     try {
-      if (!doc && list.some(f => /\.(hwp|hwpx|doc|pdf)$/i.test(f.name))) return say("이 형식은 바로 읽지 못합니다. 한글·Word에서 docx로 저장해 올려 주세요.", true);
-      if (!doc && !pics.length) return say("docx · md · txt 파일을 올려 주세요.", true);
+      if (!doc && list.some(f => /\.(doc|pdf)$/i.test(f.name))) return say("이 형식은 바로 읽지 못합니다. 한글·Word에서 docx로 저장해 올려 주세요.", true);
+      if (!doc && !pics.length) return say("docx · hwpx · hwp · md · txt 파일을 올려 주세요.", true);
       if (doc) {
         for (const k of Object.keys(ASSETS)) { URL.revokeObjectURL(ASSETS[k].url); delete ASSETS[k]; }
         DOCNAME = doc.name.replace(/\.[^.]+$/, "");
         say(`${doc.name} 읽는 중… (큰 파일은 잠시 걸립니다)`); await tick();
         if (/\.docx$/i.test(doc.name)) { const r = await docxToMd(doc); MD = r.md; REPORT = r.report; for (const [n, b] of Object.entries(r.assets)) addAsset(n, b); }
+        else if (/\.hwpx?$/i.test(doc.name)) { MD = await hwpToMd(doc); REPORT = null; }
         else { MD = await doc.text(); REPORT = null; }
         $("md").value = MD;
       }
