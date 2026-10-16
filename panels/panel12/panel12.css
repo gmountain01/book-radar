@@ -3,16 +3,17 @@
    scoped under .panel12-scope
    ══════════════════════════════════════════════════════ */
 .panel12-scope {
-  --ms-bg: #fafaf8;
-  --ms-surface: #ffffff;
-  --ms-border: #e5e3db;
-  --ms-border2: #d0cdc4;
-  --ms-text: #1a1917;
-  --ms-text2: #56544e;
-  --ms-text3: #9b9890;
-  --ms-accent: #3B3F8C;
-  --ms-accent-light: #eeedfb;
-  font-family: 'Pretendard',  sans-serif;
+  /* A안: 자체 옛 색 변수를 공통 토큰에 연결(보라 하나). --ms-text3은 흰 바탕 4.5:1 이상인 --muted */
+  --ms-bg: var(--bg);
+  --ms-surface: var(--surface);
+  --ms-border: var(--border);
+  --ms-border2: var(--border2);
+  --ms-text: var(--text);
+  --ms-text2: var(--text2);
+  --ms-text3: var(--muted);
+  --ms-accent: var(--accent);
+  --ms-accent-light: var(--accent-light);
+  font-family: var(--font-ui);
   background: var(--ms-bg);
   padding: 0 !important;
   overflow: hidden;
@@ -22,29 +23,29 @@
 /* Layout */
 .panel12-scope .ms-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: var(--col-w, 320px) 1fr;
   height: 100%;
 }
 
 /* ── Sidebar (목차 트리) ── */
 .panel12-scope .ms-sidebar {
-  background: var(--ms-surface);
-  border-right: 1px solid var(--ms-border);
+  background: var(--col-bg);
+  border-right: var(--col-border);
   display: flex; flex-direction: column;
   overflow: hidden;
 }
 .panel12-scope .ms-sidebar-header {
-  padding: 16px 16px 12px;
+  padding: var(--col-pad) var(--col-pad) 12px; gap: 8px; flex-wrap: wrap;
   border-bottom: 1px solid var(--ms-border);
   display: flex; align-items: center; justify-content: space-between;
 }
 .panel12-scope .ms-sidebar-title {
-  font-size: 14px; font-weight: 700; color: var(--ms-text);
+  font-size: var(--fs-h2); white-space: nowrap; font-weight: 700; color: var(--ms-text);
 }
 .panel12-scope .ms-sidebar-btns { display: flex; gap: 4px; }
 .panel12-scope .ms-sb-btn {
-  padding: 3px 8px; font-size: 11px; border: 1px solid var(--ms-border);
-  border-radius: 4px; background: none; color: var(--ms-text2);
+  padding: 3px 8px; font-size: 12px; border: 1px solid var(--ms-border2);
+  border-radius: var(--r-sm); background: none; color: var(--ms-text2); white-space: nowrap;
   cursor: pointer; font-family: inherit;
 }
 .panel12-scope .ms-sb-btn:hover { background: var(--ms-accent-light); color: var(--ms-accent); }
@@ -54,50 +55,58 @@
 }
 .panel12-scope .ms-tree-item {
   display: flex; align-items: center; gap: 6px;
-  padding: 5px 12px 5px calc(12px + var(--indent, 0px));
-  font-size: 12px; color: var(--ms-text2); cursor: pointer;
+  padding: 6px var(--col-pad) 6px calc(var(--col-pad) - 2px + var(--indent, 0px));
+  font-size: var(--fs-body); color: var(--ms-text2); cursor: pointer;
   border-left: 2px solid transparent; transition: all 0.1s;
 }
-.panel12-scope .ms-tree-item:hover { background: #f5f4f0; }
+.panel12-scope .ms-tree-item:hover { background: var(--surface2); }
 .panel12-scope .ms-tree-item.active {
   background: var(--ms-accent-light); color: var(--ms-accent);
   border-left-color: var(--ms-accent); font-weight: 600;
 }
 .panel12-scope .ms-tree-item .ms-level {
-  font-size: 9px; font-weight: 700; color: var(--ms-text3);
+  font-size: 11px; font-weight: 700; color: var(--ms-text3);
   min-width: 16px; text-align: center;
 }
 .panel12-scope .ms-tree-item .ms-tree-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .panel12-scope .ms-tree-item .ms-tree-del {
-  font-size: 10px; color: var(--ms-text3); opacity: 0; cursor: pointer; padding: 2px;
+  font-size: 12px; color: var(--text2); opacity: 0; cursor: pointer; padding: 2px 4px;
 }
-.panel12-scope .ms-tree-item:hover .ms-tree-del { opacity: 1; }
-.panel12-scope .ms-tree-item .ms-tree-del:hover { color: #c23d2f; }
+.panel12-scope .ms-tree-item:hover .ms-tree-del,
+.panel12-scope .ms-tree-item.active .ms-tree-del { opacity: 1; }
+@media (hover: none) { .panel12-scope .ms-tree-item .ms-tree-del { opacity: 1; } }
+.panel12-scope .ms-tree-item .ms-tree-del:hover { color: var(--red-text); }
+/* 사이드바 초기화 버튼(panel12.js 인라인 옛 빨강) */
+.panel12-scope .ms-sb-btn[onclick^="msReset"] { color: var(--red-text) !important; }
 
 /* ── Editor Main ── */
 .panel12-scope .ms-editor {
-  padding: 32px 40px;
+  padding: var(--page-pad);
   overflow-y: auto; height: 100%;
 }
 .panel12-scope .ms-editor-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 24px; gap: 12px;
+  margin-bottom: 20px; gap: 8px 12px; flex-wrap: wrap;
 }
 .panel12-scope .ms-editor-title {
-  font-size: 18px; font-weight: 700; color: var(--ms-text);
+  font-size: var(--fs-title); font-weight: 700; color: var(--ms-text); min-width: 0; flex: 1 1 260px; letter-spacing: -.02em;
 }
-.panel12-scope .ms-editor-actions { display: flex; gap: 8px; }
+.panel12-scope .ms-editor-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .panel12-scope .ms-btn {
-  padding: 7px 16px; font-size: 12px; border-radius: 6px;
-  border: 1px solid var(--ms-border); background: var(--ms-surface);
-  color: var(--ms-text2); cursor: pointer; font-family: inherit; font-weight: 500;
-  transition: all 0.15s;
+  height: 34px; padding: 0 12px; font-size: 13.5px; border-radius: var(--r-ctl);
+  border: 1px solid var(--ms-border2); background: var(--ms-surface);
+  color: var(--ms-text); cursor: pointer; font-family: inherit; font-weight: 500;
+  transition: all 0.15s; white-space: nowrap;
 }
 .panel12-scope .ms-btn:hover { border-color: var(--ms-accent); color: var(--ms-accent); }
 .panel12-scope .ms-btn-primary {
   background: var(--ms-accent); color: #fff; border-color: var(--ms-accent);
 }
-.panel12-scope .ms-btn-primary:hover { background: #2d3070; }
+.panel12-scope .ms-btn-primary { font-weight: 600; }
+.panel12-scope .ms-btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+/* AI 초안: panel12.js 인라인 보라 채움 → 보조형(주요는 .docx) */
+.panel12-scope .ms-btn[onclick^="msAiDraft"] { background: var(--ms-surface) !important; color: var(--accent) !important; border-color: var(--accent); font-weight: 600; }
+.panel12-scope .ms-btn[onclick^="msAiDraft"]:hover { background: var(--accent-light) !important; }
 
 /* ── Section Card ── */
 .panel12-scope .ms-section {
@@ -108,13 +117,13 @@
 }
 .panel12-scope .ms-section-header {
   padding: 10px 16px;
-  background: #f8f7f4;
+  background: rgba(0,0,0,.025);
   border-bottom: 1px solid var(--ms-border);
   display: flex; align-items: center; gap: 8px;
 }
 .panel12-scope .ms-section-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
-  text-transform: uppercase; color: var(--ms-text3);
+  font-size: 12px; font-weight: 700; letter-spacing: 0;
+  color: var(--ms-text3);
 }
 .panel12-scope .ms-section-body { padding: 16px; }
 
@@ -124,7 +133,10 @@
   color: var(--ms-text); font-family: inherit;
   padding: 4px 0;
 }
-.panel12-scope .ms-input-title::placeholder { color: var(--ms-border2); }
+.panel12-scope .ms-input-title::placeholder { color: var(--placeholder); }
+/* 본문 편집 칸은 테두리 없는 편집 영역 — 초점 때만 링으로 위치를 보인다 */
+.panel12-scope .ms-input-title:focus,
+.panel12-scope .ms-textarea:focus { border-radius: 4px; box-shadow: 0 0 0 3px var(--accent-light) !important; }
 
 .panel12-scope .ms-textarea {
   width: 100%; min-height: 80px; font-size: 14px;
@@ -132,13 +144,13 @@
   color: var(--ms-text); font-family: inherit; line-height: 1.8;
   padding: 4px 0;
 }
-.panel12-scope .ms-textarea::placeholder { color: var(--ms-border2); }
+.panel12-scope .ms-textarea::placeholder { color: var(--placeholder); }
 .panel12-scope .ms-textarea-body { min-height: 200px; }
 
 /* ── Word count ── */
 .panel12-scope .ms-wordcount {
-  font-size: 10px; color: var(--ms-text3); text-align: right;
-  padding: 4px 16px 8px; font-family:  monospace;
+  font-size: 12px; color: var(--ms-text3); text-align: right;
+  padding: 4px 16px 8px; font-variant-numeric: tabular-nums;
 }
 
 /* ── Empty state ── */
@@ -148,7 +160,7 @@
   gap: 8px;
 }
 .panel12-scope .ms-empty-icon { font-size: 32px; }
-.panel12-scope .ms-empty-text { font-size: 13px; }
+.panel12-scope .ms-empty-text { font-size: 14px; color: var(--ms-text2); }
 
 /* ── Footer bar ── */
 /* ── Style selector bar ── */
@@ -157,7 +169,7 @@
 }
 .panel12-scope .ms-style-chip {
   display: flex; align-items: center; gap: 5px;
-  padding: 5px 12px; font-size: 11px; border-radius: 20px;
+  padding: 5px 12px; font-size: 12.5px; border-radius: var(--r-pill);
   border: 1px solid var(--ms-border); background: var(--ms-surface);
   color: var(--ms-text2); cursor: pointer; font-family: inherit;
   transition: all 0.15s;
@@ -176,12 +188,14 @@
   padding: 8px 16px;
   border-top: 1px solid var(--ms-border);
   display: flex; align-items: center; justify-content: space-between;
-  font-size: 10px; color: var(--ms-text3);
-  font-family:  monospace;
-  gap: 8px;
+  font-size: 12px; color: var(--ms-text3);
+  font-variant-numeric: tabular-nums;
+  gap: 8px; flex-wrap: wrap;
 }
 
 @media(max-width:768px){
   .panel12-scope .ms-layout{grid-template-columns:1fr!important;}
   .panel12-scope .ms-sidebar{display:none!important;}
+  .panel12-scope .ms-editor{padding:20px var(--page-pad-sm);}
+  .panel12-scope .ms-editor-title{flex-basis:100%;}
 }

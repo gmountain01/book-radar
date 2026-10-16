@@ -1,35 +1,49 @@
-/* panel13 — 컨셉 작성 */
+/* panel13 — 컨셉 작성 (A안: 옛 색 → 공통 토큰, 라벨·입력·초점 규칙 통일) */
 .panel13-scope {
-  font-family: 'Pretendard',  sans-serif;
-  background: #fafaf8; padding: 0 !important; overflow-y: auto;
+  font-family: var(--font-ui);
+  background: var(--bg); padding: 0 !important; overflow-y: auto;
 }
-.panel13-scope .cp-wrap { max-width: 720px; margin: 0 auto; padding: 32px 40px 60px; }
-.panel13-scope .cp-header { margin-bottom: 28px; }
-.panel13-scope .cp-title { font-size: 20px; font-weight: 700; color: #1a1917; }
-.panel13-scope .cp-sub { font-size: 12px; color: #9b9890; margin-top: 4px; }
-.panel13-scope .cp-body { display: flex; flex-direction: column; gap: 24px; }
-.panel13-scope .cp-section { background: #fff; border: 1px solid #e5e3db; border-radius: 10px; padding: 20px; }
-.panel13-scope .cp-section-title { font-size: 13px; font-weight: 700; color: #3B3F8C; margin-bottom: 14px; letter-spacing: -0.3px; }
-.panel13-scope .cp-field { margin-bottom: 12px; }
+.panel13-scope .cp-wrap { max-width: calc(var(--page-max-text,920px) + 2 * var(--page-pad)); margin: 0 auto; padding: var(--page-pad) var(--page-pad) 60px; }
+.panel13-scope .cp-header { margin-bottom: 24px; }
+.panel13-scope .cp-title { font-size: var(--fs-title); font-weight: 700; color: var(--text); letter-spacing: -.02em; }
+.panel13-scope .cp-sub { font-size: var(--fs-sub); color: var(--text2); margin-top: 4px; line-height: 1.55; }
+.panel13-scope .cp-sub code { font-size: 12px; }
+.panel13-scope .cp-body { display: flex; flex-direction: column; gap: 20px; }
+.panel13-scope .cp-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-box); padding: 20px; }
+.panel13-scope .cp-section-title { font-size: var(--fs-h2); font-weight: 700; color: var(--text); margin-bottom: 14px; letter-spacing: -.01em; }
+/* 구역 제목 옆 설명(panel13.js 인라인 #777 — 흰 바탕 4.48:1) */
+.panel13-scope .cp-section-title small { font-size: var(--fs-sub); color: var(--muted) !important; line-height: 1.5; }
+.panel13-scope .cp-field { margin-bottom: 14px; }
 .panel13-scope .cp-field:last-child { margin-bottom: 0; }
-.panel13-scope .cp-label { display: block; font-size: 11px; font-weight: 600; color: #56544e; margin-bottom: 4px; }
+.panel13-scope .cp-label { display: block; font-size: var(--fs-sub); font-weight: 600; color: var(--text2); margin-bottom: 4px; }
 .panel13-scope .cp-input {
-  width: 100%; padding: 8px 10px; font-size: 13px;
-  border: 1px solid #e5e3db; border-radius: 6px;
-  color: #1a1917; font-family: inherit; outline: none; transition: border-color 0.15s;
+  width: 100%; min-height: 36px; padding: 7px 10px; font-size: 14px;
+  border: 1px solid var(--border2); border-radius: var(--r-ctl); background: var(--surface);
+  color: var(--text); font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s;
 }
-.panel13-scope .cp-input:focus { border-color: #3B3F8C; }
-.panel13-scope .cp-input::placeholder { color: #c6c4ba; }
+.panel13-scope .cp-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+.panel13-scope .cp-input::placeholder { color: var(--placeholder); }
 .panel13-scope .cp-textarea { resize: vertical; line-height: 1.7; min-height: 40px; }
+/* 동작 줄: .docx 다운로드 = 주요(채움), AI 초안 = 보조(테두리), 초기화 = 위험-보조 */
 .panel13-scope .cp-dl-btn {
-  padding: 7px 16px; font-size: 12px; border-radius: 6px;
-  border: 1px solid #3B3F8C; background: #3B3F8C; color: #fff;
-  cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s;
+  height: 38px; padding: 0 16px; font-size: 14px; border-radius: var(--r-ctl);
+  border: 1px solid var(--accent); background: var(--accent); color: #fff;
+  cursor: pointer; font-family: inherit; font-weight: 600; transition: all .15s; white-space: nowrap;
 }
-.panel13-scope .cp-dl-btn:hover { background: #2d3070; }
+.panel13-scope .cp-dl-btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+/* AI 초안 버튼은 panel13.js가 인라인으로 보라 채움을 넣는다 → 보조형으로 덮어씀(마크업 정리 시 인라인 삭제 후 이 규칙도 단순화) */
+.panel13-scope .cp-dl-btn[onclick^="cpAiDraft"] { background: var(--surface) !important; color: var(--accent) !important; }
+.panel13-scope .cp-dl-btn[onclick^="cpAiDraft"]:hover { background: var(--accent-light) !important; }
 .panel13-scope .cp-reset-btn {
-  padding: 7px 16px; font-size: 12px; border-radius: 6px;
-  border: 1px solid #f0c0bc; background: #fff; color: #c23d2f;
-  cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s;
+  height: 38px; padding: 0 16px; font-size: 14px; border-radius: var(--r-ctl);
+  border: 1px solid var(--red-bd); background: var(--surface); color: var(--red-text);
+  cursor: pointer; font-family: inherit; font-weight: 500; transition: all .15s; white-space: nowrap;
 }
-.panel13-scope .cp-reset-btn:hover { background: #fdf0ee; }
+.panel13-scope .cp-reset-btn:hover { background: var(--red-bg); border-color: var(--red); }
+
+@media (max-width: 768px) {
+  .panel13-scope .cp-wrap { padding: 20px var(--page-pad-sm) 40px; }
+  .panel13-scope .cp-section { padding: 16px; }
+  /* 동작 줄(인라인 flex)이 좁은 폭에서 넘치지 않게 */
+  .panel13-scope .cp-wrap > div[style*="flex-end"] { flex-wrap: wrap; }
+}

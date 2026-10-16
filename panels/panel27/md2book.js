@@ -80,6 +80,13 @@
   };
   const HEADKIND = /^(lv\d|trouble|apply)$/;
 
+  /* 책 전체 차례: '차례'·'목차'·'CONTENTS' 한 줄 뒤의 장·절 목록. 원고의 쪽 번호(…… 23)는 버리고 조판 결과로 다시 단다 */
+  const TOCW = /^\s*(?:#{1,6}\s+)?(?:[-*+]\s+)?(?:\*\*|__)?\s*(목\s*차|차\s*례|(?:table\s+of\s+)?contents)\s*(?:\*\*|__)?\s*#*\s*$/i;
+  const TOCPG = /(?:\s*(?:[.·…‥・ㆍ_\-–—]\s*){2,}|\s{2,}|\s+[-–—]\s*|\s+p\.\s*)(?:\d{1,4}|[ivxlc]{1,6})\s*$|\s*[.·…‥・ㆍ]{3,}\s*$/i;
+  const TAILNO = /\s+\d{1,4}$/;  // 공백 한 칸 뒤 쪽 번호: 차례 항목 절반 이상에 있고 떼어야 본문 제목과 더 맞을 때만('GPT 4'·'장제목 1' 보호)
+  const nt = s => plain(s).replace(/[\s\p{P}\p{S}]/gu, "").toLowerCase();       // 맞대 볼 제목 글자
+  const nn = s => String(s || "").toLowerCase().replace(/\d+/g, d => +d).replace(/[^0-9a-z가-힣]+/g, "-");  // 1.1 = 1-1, 01 = 1
+
   /* 1단계: 줄 → 블록 */
   function tokenize(md) {
     const L = String(md).replace(/^﻿/, "").replace(/\r\n?/g, "\n").replace(/\t/g, "    ").split("\n");
@@ -91,7 +98,7 @@
     }
     const blank = s => s === undefined || !s.trim();
     const tableAt = k => L[k].includes("|") && L[k + 1] !== undefined && L[k + 1].includes("|") && L[k + 1].includes("-") && R.sep.test(L[k + 1]);
-    const starts = k => { const s = L[k]; return blank(s) || R.fence.test(s) || R.atx.test(s) || R.hr.test(s) || R.li.test(s) || R.quote.test(s) || !!tagOf(s) || tableAt(k) || R.img.test(s) || R.comment.test(s); };
+    const starts = k => { const s = L[k]; return blank(s) || (TOCW.test(s) && !!tocAt(k)) || R.fence.test(s) || R.atx.test(s) || R.hr.test(s) || R.li.test(s) || R.quote.test(s) || !!tagOf(s) || tableAt(k) || R.img.test(s) || R.comment.test(s); };
     const head = (depth, text) => { const g = tagOf(text); return g && HEADKIND.test(g.kind) ? { t: "h", depth, kind: g.kind, text: g.rest } : { t: "h", depth, text }; };
     const para = (first, body) => {
       const buf = [first];
@@ -103,11 +110,42 @@
       out.push({ t: "p", lines: buf, body });
     };
     const boxOf = (g, lines) => ({ t: "box", kind: g.kind, name: g.name, first: g.rest, lines });
+    /* 차례 줄 뒤의 항목을 모은다. 끝: 첫 항목이나 이미 모은 장·절 항목이 다시 나옴(본문 시작) · 태그 줄·[새쪽] · 문장 같은 줄 · (항목이 # 아닌데) # 제목 · 코드·표·그림 등.
+       차례로 인정: 항목 2개 이상이 구조 문구(마당·장·절)이거나 뒤 본문의 제목 줄과 같아야 한다(본문 속 '### 목차' 소제목+목록은 그대로 본문) */
+    const tocAt = k => {
+      const w = TOCW.exec(L[k])[1], ents = [], seen = new Set(); let first = null, end = k + 1;
+      for (let j = k + 1; j < L.length && ents.length < 500; j++) {
+        const s = L[j];
+        if (blank(s) || /^\s*\d{1,4}\s*$/.test(s)) continue;
+        if (R.fence.test(s) || R.hr.test(s) || R.quote.test(s) || R.img.test(s) || R.comment.test(s) || tagOf(s) || tableAt(j) || /^\s*\\newpage\s*$/.test(s)) break;
+        const a = R.atx.exec(s);
+        if (a && first && !first.atx) break;
+        const m = /^( *)(?:([-*+•·▪◦])\s+|(\d{1,3}[.)])\s+)?(.*)$/.exec(a ? a[2] : s);
+        const t0 = plain(m[4]).trim(); let t = t0.replace(TOCPG, "").trim(); const pg = t !== t0;
+        if (!t) continue;
+        if (m[3] && !RX.some(r => r.test(t))) t = m[3] + " " + t;
+        const key = nt(t), pat = RX.findIndex(r => r.test(t));
+        if (first && (key === first.key || (pat >= 0 && seen.has(key)))) break;
+        if (pat < 0 && !pg && (t.length > 60 || /[.。]$/.test(t) || (/[!?]$/.test(t) && t.length > 40))) break;
+        const e = { ind: a ? (a[1].length - 1) * 2 : m[1].length, t, pat, key, pg, atx: !!a };
+        if (!first) first = e;
+        seen.add(key); if (!pg) seen.add(nt(t.replace(TAILNO, "")));
+        ents.push(e); end = j + 1;
+      }
+      if (ents.length < 2) return null;
+      const body = new Set([...L.slice(0, k), ...L.slice(end)].map(s => { const g = tagOf(s), a = R.atx.exec(s); return nt(g ? g.rest : a ? a[2] : s); }));  // 차례 밖 줄(제목 후보)
+      const tail = ents.filter(e => !e.pg && TAILNO.test(e.t)), bare = e => nt(e.t.replace(TAILNO, ""));
+      if (tail.length * 2 >= ents.length && tail.filter(e => body.has(bare(e))).length > tail.filter(e => body.has(e.key)).length)  // 떼어야 본문 제목과 더 맞을 때만
+        for (const e of tail) { e.t = e.t.replace(TAILNO, ""); e.key = nt(e.t); e.pat = RX.findIndex(r => r.test(e.t)); }
+      if (ents.filter(e => e.pat >= 0 || body.has(e.key)).length < 2) return null;
+      return { t: "toc", word: /[가-힣]/.test(w) ? w.replace(/\s+/g, "") : w.replace(/\s+/g, " "), ents, end };
+    };
 
     while (i < L.length) {
       const s = L[i]; let m, g;
       if (blank(s)) { i++; continue; }
       if ((m = R.comment.exec(s))) { if (/pagebreak|새쪽|쪽나눔/i.test(m[1])) out.push({ t: "newpage" }); i++; continue; }
+      if (TOCW.test(s) && (g = tocAt(i))) { out.push(g); i = g.end; continue; }
       if ((m = R.fence.exec(s))) {
         const close = new RegExp("^ {0,3}" + m[1][0] + "{" + m[1].length + ",}\\s*$"), buf = [];
         for (i++; i < L.length && !close.test(L[i]); i++) buf.push(L[i]);
@@ -224,7 +262,37 @@
     let part = null, partLabel = "", ch = null, lead = false, corner = false, np = false;
     const push = h => out.push(h);
     const cls = (...c) => { const a = c.filter(Boolean); if (corner) a.push("in-corner"); if (np) { a.push("newpage"); np = false; } return a.length ? ` class="${a.join(" ")}"` : ""; };
-    const mark = (lv, no, title) => { outline.push({ lv, no, title }); return ` data-oi="${outline.length - 1}"`; };
+    const heads = [], hasToc = toks.some(b => b.t === "toc");  // 차례 항목의 쪽 번호를 찾아 줄 본문 제목들
+    const mark = (lv, no, title) => { outline.push({ lv, no, title }); heads.push({ lv, no, title, sel: `[data-oi="${outline.length - 1}"]` }); return ` data-oi="${outline.length - 1}"`; };
+    const tk = (lv, title) => { if (!hasToc) return ""; heads.push({ lv, no: "", title: plain(title), sel: `[data-tk="${heads.length}"]` }); return ` data-tk="${heads.length - 1}"`; };  // 중·소·소소(차례가 있을 때만 표시)
+    const tocHtml = b => {  // 단계: 문구(마당·장·절) > 목록 들여쓰기 > 본문에서 찾은 제목의 단계 > 장. 들여 쓴 항목은 부모보다 한 단계 아래, 앞 장과 번호가 같은 '4장 요약'은 절
+      const stack = []; let prevCh = null, ptr = 0;
+      const find = e => {  // 같은 제목(번호가 둘 다 있으면 번호도 같아야), 또는 번호까지 붙은 제목 전체. 앞에서 찾은 곳 다음부터 먼저 본다
+        const raw = nt(e.t), t = nt(e.info.title);
+        const ok = h => { const x = nt(h.title); return x === raw || (x === t && !(e.no && h.no && nn(e.no) !== nn(h.no))); };
+        let k = heads.findIndex((h, i) => i >= ptr && ok(h)); if (k < 0) k = heads.findIndex(ok);
+        if (k >= 0) ptr = k + 1;
+        return heads[k];
+      };
+      const set = (e, lv) => { e.lv = lv; e.info = lv <= 2 ? parseHead(lv, e.t) : { no: "", title: e.t }; e.no = lv === 0 ? e.info.label : e.info.no; };
+      for (const e of b.ents) {
+        while (stack.length && stack[stack.length - 1].ind >= e.ind) stack.pop();
+        const par = stack[stack.length - 1];
+        let lv = e.pat >= 0 ? e.pat : par ? par.lv + 1 : 1;
+        if (par && lv <= par.lv) lv = par.lv + 1;
+        set(e, Math.min(3, lv));
+        if (e.lv === 1 && e.info.no && nn(e.info.no) === prevCh) set(e, 2), e.info = { no: "", title: e.t }, e.no = "";
+        e.h = find(e);
+        if (e.pat < 0 && !par && e.h && e.h.lv !== e.lv) set(e, Math.min(3, e.h.lv));  // 번호 없는 줄은 본문 제목의 단계를 따른다
+        if (e.lv === 1) prevCh = nn(e.info.no);
+        stack.push({ ind: e.ind, lv: e.lv });
+      }
+      const rows = b.ents.map((e, i) => {
+        const keep = e.lv <= 1 && b.ents[i + 1] && b.ents[i + 1].lv > e.lv;  // 마당·장 줄은 딸린 첫 줄과 같은 쪽에
+        return `<div class="btoc-row l${e.lv}${keep ? " keep" : ""}"${e.h ? ` data-ref="${esc(e.h.sel)}"` : ""}><span class="btoc-no">${esc(e.no)}</span><span class="btoc-t">${esc(e.info.title)}</span><span class="btoc-ld"></span><span class="btoc-pg"></span></div>`;
+      });
+      return `<div class="btoc-title">${/[가-힣]/.test(b.word) ? '<span class="btoc-lbl">CONTENTS</span>' : ""}<b>${esc(b.word)}</b></div>\n` + rows.join("\n");
+    };
     const closeCorner = () => { if (!corner) return; corner = false; const k = out.length - 1; if (typeof out[k] === "string") out[k] = out[k].replace("in-corner", "in-corner corner-end"); };
     const flushPart = () => {
       if (!part) return;
@@ -252,11 +320,12 @@
         else if (b.lv === 3) {
           stats.중++;
           const m = b.cls === "step" && STEP.exec(b.text.trim());
-          push(m ? `<h3${cls("step")}><span class="step-meta"><span class="step-no"><small>STEP</small> <b>${m[1]}</b></span></span><span class="step-title">${esc(plain(m[2]))}</span></h3>` : `<h3${cls(b.cls)}>${esc(plain(b.text))}</h3>`);
-        } else if (b.lv === 4) { stats.소++; push(`<h4${cls()}>${esc(plain(b.text))}</h4>`); }
-        else { stats.소소++; push(`<h5${cls()}>${esc(plain(b.text))}</h5>`); }
+          push(m ? `<h3${cls("step")}${tk(3, m[2])}><span class="step-meta"><span class="step-no"><small>STEP</small> <b>${m[1]}</b></span></span><span class="step-title">${esc(plain(m[2]))}</span></h3>` : `<h3${cls(b.cls)}${tk(3, b.text)}>${esc(plain(b.text))}</h3>`);
+        } else if (b.lv === 4) { stats.소++; push(`<h4${cls()}${tk(4, b.text)}>${esc(plain(b.text))}</h4>`); }
+        else { stats.소소++; push(`<h5${cls()}${tk(5, b.text)}>${esc(plain(b.text))}</h5>`); }
         continue;
       }
+      if (b.t === "toc") { closeCorner(); flushPart(); lead = false; push({ toString: () => tocHtml(b) }); continue; }  // 차례: 장·통계·outline에 넣지 않는다
       if (b.t === "sub") { if (part) part.sub = b.text; continue; }
       if (b.t === "newpage") { np = true; continue; }
       if (b.t === "cornerEnd") { closeCorner(); continue; }

@@ -340,8 +340,17 @@
       pending = [];
       // 문단 기호가 삭제된 문단은 다음 문단과 합쳐지고, 합친 문단은 뒤 문단의 스타일을 따른다(Word에서 변경 내용을 적용한 결과와 같음)
       if (kid(kid(pPr, "w:rPr"), "w:del")) { pending = acc; return; }
-      const kind = kindOf(st, pPr);
       const has = acc.some(a => a.text && a.text.trim()), imgs = acc.filter(a => a.img);
+      const toc = /^(?:toc|목차)\s*(\d)$/i.exec(st.name || "");
+      if (toc && has) {  // Word 차례(TOC 1·2… 스타일): '제목<탭>쪽' 한 줄씩, 수준만큼 들여 쓴다. 앞에 차례 제목 문단이 없으면 넣는다
+        count(report.스타일, st.name);
+        const parts = acc.map(a => a.br ? " " : a.text || "").join("").split("\t"), pg = parts.length > 1 && /^\s*\d{1,4}\s*$/.test(parts[parts.length - 1]) ? parts.pop().trim() : "";
+        const prev = blocks[blocks.length - 1];
+        if (!prev || (prev.g !== "toc" && !/^\s*(목\s*차|차\s*례|(table\s+of\s+)?contents)\s*$/i.test(prev.s.replace(/^#+\s*/, "")))) emit("차례");
+        emit("  ".repeat(+toc[1] - 1) + parts.join(" ").replace(/\s+/g, " ").trim() + (pg ? "\t" + pg : ""), "toc");
+        return;
+      }
+      const kind = kindOf(st, pPr);
       if (kind) count(report.스타일, st.name);
       if (kind === "code") { if (has || (blocks.length && blocks[blocks.length - 1].g === "code")) emit(lineOf2(acc, "code"), "code"); }
       else if (kind === "코너") {

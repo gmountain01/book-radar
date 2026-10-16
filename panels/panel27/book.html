@@ -420,38 +420,68 @@
   #book .part-cover .pc-desc + .pc-desc { margin-top: 2.4mm; }
 
   /* ───────── 왼쪽 올리기 패널 (저장한 웹 파일에는 들어가지 않는다) ───────── */
-  #side { position: fixed; left: 0; top: 0; bottom: 0; z-index: 11; width: 320px; overflow: auto; padding: 18px 16px 24px; background: var(--bar); color: var(--bar-fg); border-right: 1px solid var(--bar-line); font-size: 13px; line-height: 1.6; word-break: keep-all; }
-  body.has-side #stage { padding-left: calc(320px + 16px); }
-  body.has-side nav { left: 320px; }
-  #side h1 { margin: 0 0 12px; font-size: 16px; }
-  #side h2 { margin: 16px 0 4px; font-size: 12px; color: var(--bar-muted); letter-spacing: .04em; }
+  /* 2026-10-16 대시보드와 같은 왼쪽 열: 폭 290(대시보드 왼쪽 열 공통 폭), 흰 바탕+오른쪽 1px 선, 앱 글꼴(Pretendard 계열)·강조색 #4F46B8,
+     글자 단계 열 제목 16 / 구역 13 / 항목 14. 화면 전용 — 저장한 웹 파일에는 #side가 없고, 인쇄에서는 숨는다 */
+  #side { --side-w: 290px; --acc: #4F46B8; --acc-light: #e3e5f9; --side-sub: #52525B;
+          position: fixed; left: 0; top: 0; bottom: 0; z-index: 11; width: var(--side-w); overflow: auto; padding: 16px 16px 24px; background: var(--bar); color: var(--bar-fg); border-right: 1px solid var(--bar-line); border-radius: 0;
+          font-family: "Pretendard", "Pretendard Variable", "Inter", "Noto Sans KR", var(--ui); font-size: 14px; line-height: 1.6; word-break: keep-all; }
+  :root[data-theme="dark"] #side { --side-sub: var(--bar-muted); }
+  body.has-side #stage { padding-left: calc(290px + 16px); }
+  body.has-side nav { left: 290px; }
+  #side h1 { margin: 0 0 12px; font-size: 16px; font-weight: 700; }
+  #side h2 { margin: 16px 0 4px; font-size: 13px; font-weight: 600; color: var(--side-sub); }
   #side p { margin: 0 0 4px; }
-  #side .dim { color: var(--bar-muted); }
+  #side .dim { color: var(--side-sub); }
   #side .bad, #status.bad { color: #d9480f; }
   #drop { display: grid; gap: 2px; padding: 20px 14px; border: 2px dashed var(--bar-line); border-radius: 10px; background: var(--btn); text-align: center; cursor: pointer; }
-  #drop.over { border-color: #1f6fd1; background: rgba(31,111,209,.1); }
+  #drop.over { border-color: var(--acc); background: rgba(79,70,184,.08); }
   #drop b { font-size: 14px; }
-  #drop small, #drop span { color: var(--bar-muted); }
-  #trimrow { display: grid; gap: 4px; margin-top: 12px; font-size: 12px; font-weight: 600; color: var(--bar-muted); }
-  #trim { width: 100%; padding: 7px 8px; border: 1px solid var(--bar-line); border-radius: 6px; background: var(--btn); color: var(--bar-fg); font: inherit; font-size: 13px; }
+  #drop small, #drop span { color: var(--side-sub); font-size: 13px; }
+  #trimrow { display: grid; gap: 4px; margin-top: 12px; font-size: 13px; font-weight: 600; color: var(--side-sub); }
+  #trim { width: 100%; padding: 7px 8px; border: 1px solid var(--bar-line); border-radius: 8px; background: var(--bar); color: var(--bar-fg); font: inherit; font-size: 14px; font-weight: 400; }
   #status { min-height: 1.6em; margin: 8px 0 0 !important; font-weight: 600; }
   #tools { display: grid; gap: 6px; margin-top: 10px; }
-  #side button { padding: 8px 12px; border: 1px solid var(--bar-line); border-radius: 6px; background: var(--btn); color: var(--bar-fg); font: inherit; cursor: pointer; }
-  #side button.primary { border-color: #1f6fd1; background: #1f6fd1; color: #fff; font-weight: 700; }
-  #side button:focus-visible, #drop:focus-within { outline: 2px solid #2f5bd3; outline-offset: 2px; }
+  #side button { padding: 8px 12px; border: 1px solid var(--bar-line); border-radius: 8px; background: var(--btn); color: var(--bar-fg); font: inherit; cursor: pointer; }
+  #side button.primary { border-color: var(--acc); background: var(--acc); color: #fff; font-weight: 700; }
+  #side button:focus-visible, #drop:focus-within, #trim:focus-visible, #side summary:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
   .toc-nav { list-style: none; margin: 0; padding: 0; max-height: 44vh; overflow: auto; border: 1px solid var(--bar-line); border-radius: 8px; }
-  .toc-nav button { display: block; width: 100%; padding: 4px 8px !important; border: 0 !important; border-radius: 0 !important; background: none !important; text-align: left; }
-  .toc-nav button:hover { background: var(--btn) !important; }
-  .toc-nav .l0 button { font-weight: 800; }
-  .toc-nav .l1 button { font-weight: 700; padding-left: 14px !important; }
-  .toc-nav .l2 button { padding-left: 26px !important; color: var(--bar-muted); }
+  .toc-nav button { display: block; width: 100%; padding: 4px 8px !important; border: 0 !important; border-radius: 0 !important; background: none !important; text-align: left; font-size: 14px !important; }
+  .toc-nav button:hover { background: var(--acc-light) !important; color: var(--acc); }
+  .toc-nav .l0 button { font-weight: 700; }
+  .toc-nav .l1 button { font-weight: 600; padding-left: 14px !important; }
+  .toc-nav .l2 button { padding-left: 26px !important; color: var(--side-sub); font-size: 13px !important; }
   #side details { margin-top: 14px; }
   #side summary { cursor: pointer; font-weight: 600; }
   #md { width: 100%; height: 260px; margin: 8px 0 6px; padding: 8px; border: 1px solid var(--bar-line); border-radius: 6px; background: var(--btn); color: var(--bar-fg); font: 12px/1.5 "IBM Plex Mono", monospace; resize: vertical; }
-  #side pre.rules { margin: 8px 0 0; padding: 10px; border-radius: 6px; background: var(--btn); font: 11.5px/1.6 "IBM Plex Mono", monospace; white-space: pre-wrap; }
-  #empty { position: fixed; inset: 0 0 0 320px; display: grid; place-content: center; gap: 6px; text-align: center; color: var(--bar-muted); pointer-events: none; }
+  #side pre.rules { margin: 8px 0 0; padding: 10px; border-radius: 6px; background: var(--btn); font: 11.5px/1.6 "IBM Plex Mono", "Noto Sans KR", monospace; white-space: pre-wrap; }
+  #empty { position: fixed; inset: 0 0 0 290px; display: grid; place-content: center; gap: 6px; text-align: center; color: var(--bar-muted); pointer-events: none; }
   #empty b { font-size: 18px; color: var(--bar-fg); }
   #empty[hidden] { display: none; }
+
+  /* ── 책 차례(원고의 '차례' 목록): 새 쪽에서 시작, 마당 줄은 남색 띠, 장 번호는 장 도입과 같은 명조, 쪽 번호는 조판 뒤에 채움 ── */
+  #book .btoc-title { margin: 4mm 0 8mm; }
+  #book .btoc-lbl { display: block; margin-bottom: 1.6mm; font-family: var(--f-label); font-size: 8pt; font-weight: 800; letter-spacing: .4em; color: var(--c2); }
+  #book .btoc-title b { display: block; font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 26pt; line-height: 1.15; letter-spacing: -0.02em; color: var(--c1); }
+  #book .btoc-title::after { content: ""; display: block; width: 18mm; height: .9mm; margin-top: 5mm; background: var(--c2); }
+  #book .btoc-row { display: flex; align-items: flex-end; gap: 2mm; margin: 0; line-height: 1.5; text-align: left; break-inside: avoid; }
+  #book .btoc-no { flex: none; align-self: flex-start; }
+  #book .btoc-t { flex: 0 1 auto; min-width: 0; }  /* 긴 제목은 제 칸 안에서 꺾여 번호 뒤로 들여 맞춰진다 */
+  #book .btoc-ld { flex: 1 0 4mm; margin-bottom: .42em; border-bottom: .35mm dotted var(--muted); }
+  #book .btoc-pg { flex: none; width: 8mm; text-align: right; font-family: var(--f-label); font-size: 8pt; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
+  #book .btoc-row:not(.has-pg) .btoc-ld { visibility: hidden; }
+  #book .btoc-row.l0 { margin: 5mm 0 2.4mm; padding: 1.8mm 3mm; border-radius: .8mm; background: var(--c1); color: #fff; align-items: center; }
+  #book .btoc-row.l0 .btoc-no { align-self: center; font-family: var(--f-label); font-size: 7.5pt; font-weight: 800; letter-spacing: .08em; color: var(--c2); }
+  #book .btoc-row.l0 .btoc-t { font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 11pt; }
+  #book .btoc-row.l0 .btoc-ld { margin-bottom: 0; border-color: rgba(255,255,255,.35); align-self: center; }
+  #book .btoc-row.l0 .btoc-pg { color: #fff; }
+  #book .btoc-row.l1 { margin-top: 3.4mm; font-size: 10pt; font-weight: 700; color: var(--ink); }
+  #book .btoc-row.l1 .btoc-no { width: 9mm; font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 12.5pt; line-height: 1.2; color: var(--c1); }
+  #book .btoc-row.l0 + .btoc-row.l1, #book .btoc-title + .btoc-row { margin-top: 0; }
+  #book .btoc-row.l2 { margin-top: 1mm; padding-left: 11mm; font-size: 9pt; color: var(--ink2); }
+  #book .btoc-row.l2 .btoc-no { min-width: 8mm; font-family: var(--f-label); font-size: 7.6pt; line-height: 1.75; color: var(--muted); }
+  #book .btoc-row.l3 { margin-top: .4mm; padding-left: 24mm; font-size: 8.2pt; color: var(--muted); }
+  #book .btoc-row.l3 .btoc-no { display: none; }
+  #book .btoc-row.l1 + .btoc-row.l2 { margin-top: 1.4mm; }
 
   /* 인쇄 · PDF: 책 쪽만, 판형 그대로 한 쪽씩 */
   @media print {
@@ -496,23 +526,29 @@
     <button id="rebuild" type="button">고친 내용으로 다시 조판</button>
   </details>
   <details><summary>MD 작성 규칙</summary>
-<pre class="rules">[파트] 첫째 마당. 제목      (PART 2 제목도 가능)
+<pre class="rules">[파트] 첫째 마당. 제목
+       (PART 2 제목도 가능)
 [장] 3장 제목
 [절] 3-1 제목
 [중] 중제목
 [소] 소제목
 [소소] 소소제목
-[본문] 제목처럼 보이지만 본문인 줄
+[본문] 제목처럼 보이는 본문 줄
 
-# 만 써도 됩니다. 가장 얕은 #이 장,
-그 아래가 차례로 절 · 중 · 소 · 소소입니다.
+# 만 써도 됩니다.
+가장 얕은 #이 장, 그 아래가
+차례로 절 · 중 · 소 · 소소입니다.
 "3장 …", "3-1 …", "STEP 1 …"처럼
 문구가 있으면 그 단계로 봅니다.
 
-[TIP] 팁 한 줄        [주의] 주의할 점
-[박스]                [코너] [한 걸음 더!] 제목
-박스 안 첫 줄          코너 본문 …
-박스 안 둘째 줄        [/코너]
+[TIP] 팁 한 줄
+[주의] 주의할 점
+[박스]
+박스 안 첫 줄
+박스 안 둘째 줄
+[코너] [한 걸음 더!] 제목
+코너 본문 …
+[/코너]
 
 ![설명](그림.png){width=70%}
 [캡션] 그림 설명
@@ -520,7 +556,12 @@
 AI에게 넣을 문장
 ```
 - [ ] 체크리스트 항목
-[새쪽]  다음 블록을 새 쪽에서 시작</pre>
+[새쪽] 다음 블록을 새 쪽에서 시작
+
+차례 (또는 목차) 한 줄 뒤에
+장·절 목록을 쓰면 차례 쪽으로
+조판합니다. 원고의 쪽 번호는 버리고
+조판 결과로 자동으로 답니다.</pre>
   </details>
 </aside>
 <div id="empty" hidden><b>원고를 올리면 여기에 책으로 보입니다</b><span>왼쪽에서 docx · md · txt 파일을 올려 주세요</span></div>
@@ -803,6 +844,11 @@ AI에게 넣을 문장
         bare(addPage("blank part"), partCover(el, chapters.get(el)));
         continue;
       }
+      if (el.classList.contains("btoc-title")) {  // 책 차례는 새 쪽에서 시작(면주·측면 탭 없음)
+        if (body) fillGap(body);
+        CH = CHTITLE = PARTLBL = ""; body = addPage("toc"); body.append(el);
+        continue;
+      }
       if (el.classList.contains("ch-head")) {  // 장은 늘 새 쪽에서 시작
         if (body) fillGap(body);
         CH = el.dataset.ch; CHTITLE = el.dataset.title;
@@ -832,9 +878,10 @@ AI에게 넣을 문장
       const carry = [el]; el.remove();
       while (body.children.length > 1) {
         const last = body.lastElementChild;
-        const lead = last.tagName === "P" && (last.classList.contains("keep") || (/아래|다음/.test(last.textContent) && last.textContent.length < 60));  // keep: 다음 블록과 같은 쪽에 둠
+        const lead = last.classList.contains("keep") || (last.tagName === "P" && /아래|다음/.test(last.textContent) && last.textContent.length < 60);  // keep: 다음 블록과 같은 쪽에 둠(캡션·코드 제목·차례의 마당·장 줄)
         const actLead = last.classList.contains("act") && (carry[0].tagName === "FIGURE" || carry[0].classList.contains("request") || carry[0].classList.contains("in-act"));  // 바로 뒤 그림·요청과 붙은 단계 문단만 함께 넘김
-        if (/^H[2345]$/.test(last.tagName) || last.classList.contains("corner-h") || lead || actLead) { carry.unshift(last); last.remove(); } else break;
+        const tocTail = carry.length === 1 && el.classList.contains("btoc-row") && last.classList.contains("btoc-row") && !(queue[0] && queue[0].classList.contains("btoc-row"));  // 차례 마지막 쪽에 한 줄만 남지 않게
+        if (/^H[2345]$/.test(last.tagName) || last.classList.contains("corner-h") || lead || actLead || tocTail) { carry.unshift(last); last.remove(); } else break;
       }
       fillGap(body);
       queue.unshift(...carry); body = addPage();
@@ -845,6 +892,11 @@ AI에게 넣을 문장
       if (hd) op.style.setProperty("--band", Math.max(318, Math.ceil(hd.getBoundingClientRect().bottom - op.getBoundingClientRect().top)) + "px");
     });
     if (bodies.length % 2) bare(addPage(), "");
+    const pages = [...book.querySelectorAll(".page")];  // 차례 쪽 번호 = 그 제목이 실제로 놓인 쪽(못 찾으면 비움)
+    book.querySelectorAll(".btoc-row[data-ref]").forEach(r => {
+      const t = book.querySelector(r.dataset.ref);
+      if (t) { r.querySelector(".btoc-pg").textContent = pages.indexOf(t.closest(".page")) + FIRST_FOLIO; r.classList.add("has-pg"); }
+    });
   }
 
   function applyVars(cfg) {

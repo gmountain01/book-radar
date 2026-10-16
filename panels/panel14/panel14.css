@@ -1,80 +1,103 @@
-/* panel14 — 목차 작성 */
+/* panel14 — 목차 작성 (A안: 옛 색 → 공통 토큰, 행 동작은 초점·터치에서도 보이게, 쪽수 칸 크기) */
 .panel14-scope {
-  font-family: 'Pretendard',  sans-serif;
-  background: #fafaf8; padding: 0 !important; overflow-y: auto;
+  font-family: var(--font-ui);
+  background: var(--bg); padding: 0 !important; overflow-y: auto;
 }
-.panel14-scope .tc-wrap { max-width: 800px; margin: 0 auto; padding: 32px 40px 60px; }
+.panel14-scope .tc-wrap { max-width: calc(var(--page-max-text,920px) + 2 * var(--page-pad)); margin: 0 auto; padding: var(--page-pad) var(--page-pad) 60px; }
 .panel14-scope .tc-header { margin-bottom: 20px; }
-.panel14-scope .tc-title { font-size: 20px; font-weight: 700; color: #1a1917; }
-.panel14-scope .tc-sub { font-size: 12px; color: #9b9890; margin-top: 4px; }
-.panel14-scope .tc-meta { font-size: 11px; color: #56544e; margin-top: 6px; font-family:  monospace; }
+.panel14-scope .tc-title { font-size: var(--fs-title); font-weight: 700; color: var(--text); letter-spacing: -.02em; }
+.panel14-scope .tc-sub { font-size: var(--fs-sub); color: var(--text2); margin-top: 4px; line-height: 1.55; }
+.panel14-scope .tc-meta { font-size: var(--fs-sub); color: var(--text2); margin-top: 6px; font-variant-numeric: tabular-nums; }
 
-.panel14-scope .tc-toolbar { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.panel14-scope .tc-toolbar { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
 .panel14-scope .tc-btn {
-  padding: 5px 12px; font-size: 11px; border-radius: 5px;
-  border: 1px solid #e5e3db; background: #fff; color: #56544e;
-  cursor: pointer; font-family: inherit; transition: all 0.15s;
+  height: 32px; padding: 0 12px; font-size: 13px; border-radius: var(--r-ctl);
+  border: 1px solid var(--border2); background: var(--surface); color: var(--text);
+  cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap;
 }
-.panel14-scope .tc-btn:hover { border-color: #3B3F8C; color: #3B3F8C; }
-.panel14-scope .tc-btn-apply { background: #3B3F8C; color: #fff; border-color: #3B3F8C; }
-.panel14-scope .tc-btn-apply:hover { background: #2d3070; }
-.panel14-scope .tc-btn-upload { background: #f0efe8; border: 1.5px dashed #b0ada5; color: #6B6860; display: inline-flex; align-items: center; gap: 4px; }
-.panel14-scope .tc-btn-upload:hover { border-color: #3B3F8C; color: #3B3F8C; background: #eeedf8; }
+.panel14-scope .tc-btn:hover { border-color: var(--accent); color: var(--accent); }
+.panel14-scope .tc-btn-apply { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+.panel14-scope .tc-btn-apply:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+.panel14-scope .tc-btn-upload { background: var(--surface2); border: 1px dashed var(--border2); color: var(--text2); display: inline-flex; align-items: center; gap: 4px; }
+.panel14-scope .tc-btn-upload:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.panel14-scope .tc-btn-upload:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ── Row ── */
 .panel14-scope .tc-list { display: flex; flex-direction: column; gap: 2px; }
 .panel14-scope .tc-row {
   display: flex; align-items: center; gap: 6px;
-  padding: 6px 10px 6px calc(10px + var(--indent, 0px));
-  border: 1px solid transparent; border-radius: 6px;
-  cursor: pointer; transition: all 0.1s;
+  padding: 5px 8px 5px calc(10px + var(--indent, 0px));
+  border: 1px solid transparent; border-radius: var(--r-sm);
+  cursor: pointer; transition: background .1s, border-color .1s;
 }
-.panel14-scope .tc-row:hover { background: #f5f4f0; }
-.panel14-scope .tc-row.active { background: #eeedfb; border-color: #c4bef4; }
+.panel14-scope .tc-row:hover { background: var(--surface2); }
+.panel14-scope .tc-row.active { background: var(--accent-light); border-color: var(--accent-border); }
 
 .panel14-scope .tc-num {
-  font-size: 10px; font-weight: 700; color: #9b9890;
-  min-width: 36px; font-family:  monospace;
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  min-width: 36px; font-variant-numeric: tabular-nums; flex-shrink: 0;
 }
-.panel14-scope .tc-lv1 .tc-num { color: #3B3F8C; font-size: 11px; }
+.panel14-scope .tc-lv1 .tc-num { color: var(--accent); font-size: 12.5px; }
 
 .panel14-scope .tc-title-input {
-  flex: 1; border: none; outline: none; background: none;
-  font-size: 13px; color: #1a1917; font-family: inherit; padding: 2px 4px;
+  flex: 1; min-width: 0; border: none; outline: none; background: none;
+  font-size: 14px; color: var(--text); font-family: inherit; padding: 3px 6px; border-radius: 4px;
 }
-.panel14-scope .tc-lv1 .tc-title-input { font-weight: 700; font-size: 14px; }
+.panel14-scope .tc-lv1 .tc-title-input { font-weight: 700; font-size: 15px; }
 .panel14-scope .tc-lv2 .tc-title-input { font-weight: 600; }
-.panel14-scope .tc-title-input:focus { background: #fff; border-radius: 3px; box-shadow: 0 0 0 1px #c4bef4; }
+.panel14-scope .tc-title-input::placeholder { color: var(--placeholder); }
+/* 제목 칸은 테두리 없는 편집 칸이라 초점 때만 테두리+링 */
+.panel14-scope .tc-title-input:focus { background: var(--surface); box-shadow: 0 0 0 1px var(--accent), 0 0 0 4px var(--accent-light) !important; }
 
 .panel14-scope .tc-pages-input {
-  width: 40px; border: 1px solid #e5e3db; border-radius: 4px;
-  text-align: center; font-size: 11px; padding: 2px;
-  font-family:  monospace; color: #56544e; outline: none;
+  width: 52px; height: 28px; border: 1px solid var(--border2); border-radius: var(--r-sm); background: var(--surface);
+  text-align: right; font-size: 12.5px; padding: 0 6px; flex-shrink: 0;
+  font-family: inherit; font-variant-numeric: tabular-nums; color: var(--text); outline: none;
 }
-.panel14-scope .tc-pages-input:focus { border-color: #3B3F8C; }
-.panel14-scope .tc-pages-label { font-size: 9px; color: #9b9890; font-family:  monospace; }
+.panel14-scope .tc-pages-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+.panel14-scope .tc-pages-label { font-size: 12px; color: var(--muted); flex-shrink: 0; }
 
-.panel14-scope .tc-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
-.panel14-scope .tc-row:hover .tc-actions { opacity: 1; }
+/* 행 동작: 마우스를 올렸을 때뿐 아니라 행 안에 초점이 있을 때·터치 기기에서도 보인다 */
+.panel14-scope .tc-actions { display: flex; gap: 2px; opacity: 0; transition: opacity .15s; flex-shrink: 0; }
+.panel14-scope .tc-row:hover .tc-actions,
+.panel14-scope .tc-row:focus-within .tc-actions,
+.panel14-scope .tc-row.active .tc-actions { opacity: 1; }
+@media (hover: none) { .panel14-scope .tc-actions { opacity: 1; } }
 .panel14-scope .tc-act {
-  font-size: 10px; padding: 2px 4px; cursor: pointer; color: #9b9890;
-  border-radius: 3px; transition: all 0.1s;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 26px; height: 26px; font-size: 12px; padding: 0 4px; cursor: pointer; color: var(--text2);
+  border-radius: var(--r-sm); transition: all .1s;
 }
-.panel14-scope .tc-act:hover { background: #e5e3db; color: #1a1917; }
-.panel14-scope .tc-del:hover { background: #fdf0ee; color: #c0392b; }
+.panel14-scope .tc-act:hover { background: var(--surface2); color: var(--text); }
+.panel14-scope .tc-del:hover { background: var(--red-bg); color: var(--red-text); }
 
 /* ── Memo ── */
 .panel14-scope .tc-memo-section {
-  margin-top: 20px; background: #fff; border: 1px solid #e5e3db;
-  border-radius: 8px; padding: 14px;
+  margin-top: 20px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-box); padding: 14px 16px;
 }
 .panel14-scope .tc-memo-label {
-  font-size: 10px; font-weight: 600; color: #9b9890; margin-bottom: 6px;
-  letter-spacing: 0.5px; text-transform: uppercase;
+  font-size: var(--fs-sub); font-weight: 600; color: var(--text2); margin-bottom: 6px;
 }
 .panel14-scope .tc-memo {
-  width: 100%; min-height: 60px; border: none; outline: none;
-  font-size: 13px; color: #1a1917; font-family: inherit;
-  line-height: 1.7; resize: vertical; background: none;
+  width: 100%; min-height: 60px; border: 1px solid var(--border2); border-radius: var(--r-ctl); outline: none;
+  font-size: 14px; color: var(--text); font-family: inherit; padding: 8px 10px;
+  line-height: 1.7; resize: vertical; background: var(--surface);
 }
-.panel14-scope .tc-memo::placeholder { color: #c6c4ba; }
+.panel14-scope .tc-memo:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+.panel14-scope .tc-memo::placeholder { color: var(--placeholder); }
+
+@media (max-width: 768px) {
+  .panel14-scope .tc-wrap { padding: 20px var(--page-pad-sm) 40px; }
+  .panel14-scope .tc-row { padding-right: 4px; gap: 4px; }
+  .panel14-scope .tc-num { min-width: 28px; }
+  .panel14-scope .tc-pages-input { width: 58px; }
+  /* 좁은 폭: 동작 다섯 개는 선택한 행에서만(초점·선택 시) 보여 제목 칸 폭을 지킨다 */
+  .panel14-scope .tc-actions { display: none; }
+  .panel14-scope .tc-row.active .tc-actions,
+  .panel14-scope .tc-row:focus-within .tc-actions { display: flex; opacity: 1; }
+  .panel14-scope .tc-row.active,
+  .panel14-scope .tc-row:focus-within { flex-wrap: wrap; }
+  .panel14-scope .tc-row.active .tc-actions,
+  .panel14-scope .tc-row:focus-within .tc-actions { width: 100%; justify-content: flex-end; }
+}

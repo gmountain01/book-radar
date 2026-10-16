@@ -135,4 +135,62 @@ assert.deepStrictEqual(parseHead(0, "셋째 마당. 트레이닝"), { kind: "마
 assert.deepStrictEqual(parseHead(1, "14장 RAG와 지식 그래프"), { no: "14", title: "RAG와 지식 그래프" });
 assert.deepStrictEqual(parseHead(2, "12-3 KV 캐시"), { no: "12-3", title: "KV 캐시" });
 
+// 8) 책 차례: 차례 항목은 장·절·outline·통계에 넣지 않고, 차례 블록(btoc)으로 — 단계·원고 쪽 번호 제거·실제 제목 연결
+const BODY = "1장 시작하기\n\n본문입니다.\n\n1-1 준비\n\n내용.\n\n2장 다음\n\n끝.\n";
+const plainToc = mdToBook("목차\n1장 시작하기 …… 23\n1-1 준비 ····· 25\n2장 다음\t31\n\n" + BODY), noToc = mdToBook(BODY);
+assert.deepStrictEqual(plainToc.outline, noToc.outline); assert.deepStrictEqual(plainToc.stats, noToc.stats);
+assert.strictEqual(plainToc.title, noToc.title);
+has(plainToc.html, '<div class="btoc-title"><span class="btoc-lbl">CONTENTS</span><b>목차</b></div>');
+has(plainToc.html, '<div class="btoc-row l1 keep" data-ref="[data-oi=&quot;0&quot;]"><span class="btoc-no">1</span><span class="btoc-t">시작하기</span>');
+has(plainToc.html, '<div class="btoc-row l2" data-ref="[data-oi=&quot;1&quot;]"><span class="btoc-no">1-1</span><span class="btoc-t">준비</span>');
+has(plainToc.html, '<div class="btoc-row l1" data-ref="[data-oi=&quot;2&quot;]"><span class="btoc-no">2</span><span class="btoc-t">다음</span>');
+assert.ok(!/23|25|31/.test(plainToc.html.split('<div class="ch-head"')[0]), "원고 쪽 번호가 남음");
+assert.strictEqual((plainToc.html.match(/class="ch-head"/g) || []).length, 2);
+assert.strictEqual((plainToc.html.match(/ data-oi="/g) || []).length, 3);       // 차례 줄에는 data-oi가 없다(data-ref만)
+
+r = mdToBook("# 차례\n\n- 첫째 마당 기초\n  - 1장 시작하기\n    - 1-1 준비\n      - 세부 항목\n  - 1장 핵심 요약\n- 찾아보기\n\n# 첫째 마당 기초\n\n## 1장 시작하기\n\n### 1-1 준비\n\n#### 세부 항목\n\n본문.\n\n[절] 1장 핵심 요약\n");
+assert.strictEqual(lv(r), "0122"); assert.strictEqual(r.stats.장, 1);
+assert.deepStrictEqual([...r.html.matchAll(/btoc-row (l\d)/g)].map(m => m[1]), ["l0", "l1", "l2", "l3", "l2", "l1"]);
+has(r.html, '<span class="btoc-no">첫째 마당</span><span class="btoc-t">기초</span>');
+has(r.html, '<div class="btoc-row l3" data-ref="[data-tk=&quot;3&quot;]">'); has(r.html, '<h3 data-tk="3">세부 항목</h3>');
+has(r.html, '<div class="btoc-row l2" data-ref="[data-oi=&quot;3&quot;]"><span class="btoc-no"></span><span class="btoc-t">1장 핵심 요약</span>');  // 앞 장과 번호가 같은 '1장 …'은 절
+has(r.html, '<div class="btoc-row l1"><span class="btoc-no"></span><span class="btoc-t">찾아보기</span>');           // 본문에 없는 항목은 쪽 번호 없음
+
+r = mdToBook("CONTENTS\n\nPART 1 Basics   3\nCHAPTER 1 Hello ..... 5\n1.1 Setup   7\n\n[파트] PART 1 Basics\n\n[장] CHAPTER 1 Hello\n\n[절] 1.1 Setup\n\n본문.\n");
+assert.strictEqual(lv(r), "012");
+has(r.html, '<div class="btoc-title"><b>CONTENTS</b></div>');
+assert.deepStrictEqual([...r.html.matchAll(/btoc-row (l\d)[^>]*data-ref/g)].map(m => m[1]), ["l0", "l1", "l2"]);
+
+r = mdToBook("차례\n\n1장 시작하기\n1-1 준비\n\n[장] 머리말\n\n머리말 본문입니다.\n");   // [장] 태그에서 차례가 끝난다
+assert.strictEqual(lv(r), "1"); assert.strictEqual((r.html.match(/btoc-row/g) || []).length, 2);
+has(r.html, '<p class="lead">머리말 본문입니다.</p>');
+
+r = mdToBook("차례\n\n이 줄은 차례 다음에 오는 긴 본문 문장으로, 목차 항목이 아니라 그냥 글입니다.\n");  // 항목이 2개 미만이면 차례로 보지 않음
+assert.ok(!r.html.includes("btoc"));
+
+// 9) QA 후속: 첫 항목이 본문에 없어도 장 제목이 다시 나오면 끝 / 공백 한 칸 쪽 번호(대다수일 때만) / '— 23'·'p.23' / 본문 속 '### 목차'·문단 중간 '목차'는 본문
+r = mdToBook("차례\n\n머리말\n1장 시작\n2장 다음\n\n1장 시작\n\n본문입니다.\n\n2장 다음\n\n끝.\n");
+assert.strictEqual(lv(r), "11"); assert.strictEqual((r.html.match(/btoc-row/g) || []).length, 3);
+assert.ok(!r.html.includes("<h1></h1>"));
+r = mdToBook("목차\n1장 시작하기 23\n1-1 GPT 4 써 보기 25\n2장 다음 31\n\n" + BODY.replace("1-1 준비", "1-1 GPT 4 써 보기"));
+has(r.html, '<span class="btoc-t">시작하기</span>'); has(r.html, '<span class="btoc-t">GPT 4 써 보기</span>');
+assert.strictEqual((r.html.match(/btoc-row[^"]*" data-ref/g) || []).length, 3);
+r = mdToBook("목차\n1장 GPT 4\n1-1 준비\n2장 다음\n\n1장 GPT 4\n\n본문.\n\n1-1 준비\n\n2장 다음\n");   // 끝 숫자가 적으면 제목 그대로
+has(r.html, '<span class="btoc-t">GPT 4</span>');
+r = mdToBook("목차\n1장 장제목 1 ....... 3\n2장 장제목 2 ....... 9\n\n[장] 1장 장제목 1\n\n[장] 2장 장제목 2\n");  // 점선 쪽 번호를 지운 뒤 남은 제목 끝 숫자는 그대로
+has(r.html, '<span class="btoc-t">장제목 1</span>');
+r = mdToBook("[장] 1장 장제목 1\n\n본문.\n\n[장] 2장 장제목 2\n\n본문.\n\n목차\n\n1장 장제목 1\n2장 장제목 2\n");  // 끝 숫자가 제목의 일부(쪽 번호 아님)
+has(r.html, '<span class="btoc-t">장제목 2</span>'); assert.strictEqual((r.html.match(/btoc-row[^"]*" data-ref/g) || []).length, 2);
+r = mdToBook("목차\n1장 장제목 1 ....... 3\n2장 장제목 2 ....... 9\n\n[장] 1장 장제목 1\n\n[장] 2장 장제목 2\n");
+assert.strictEqual((r.html.match(/btoc-row[^"]*" data-ref/g) || []).length, 2);
+r = mdToBook("목차\n1장 시작하기 — 23\n1-1 준비 p.25\n2장 다음 p. 31\n\n" + BODY);
+assert.strictEqual((r.html.match(/btoc-row[^"]*" data-ref/g) || []).length, 3);
+r = mdToBook("# 원고 쓰기\n\n## 쓰는 법\n\n### 목차\n\n- 장 제목\n- 절 제목\n\n본문.\n");
+assert.ok(!r.html.includes("btoc")); has(r.html, "<h3>목차</h3>"); assert.strictEqual(r.stats.중, 1);
+r = mdToBook("# 원고 쓰기\n\n이 문단은 이어 쓴 줄이고\n목차\n짧은 줄 하나\n짧은 줄 둘\n");
+assert.ok(!r.html.includes("btoc")); has(r.html, "<p class=\"lead\">이 문단은 이어 쓴 줄이고 목차 짧은 줄 하나 짧은 줄 둘</p>");
+
+r = mdToBook("목차\n1장 시작하기\n2장 다음\n\\newpage\n[장] 1장 시작하기\n\n본문.\n\n[장] 2장 다음\n\n본문.\n");  // \newpage에서 차례가 끝나고 쪽 나눔이 남는다
+assert.ok(!/btoc-t">[^<]*ewpage/.test(r.html)); assert.strictEqual((r.html.match(/btoc-row[^"]*" data-ref/g) || []).length, 2); has(r.html, "newpage");
+
 console.log("md2book: 모든 점검 통과");

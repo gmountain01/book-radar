@@ -1,53 +1,64 @@
-/* panel15 — 앞부속 작성 */
+/* panel15 — 앞부속 작성 (A안: 옛 색 → 공통 토큰, 입력·초점·버튼 규칙 통일, 좁은 화면 탭 가로 스크롤) */
 .panel15-scope {
-  font-family: 'Pretendard',  sans-serif;
-  background: #fafaf8; padding: 0 !important; overflow-y: auto;
+  font-family: var(--font-ui);
+  background: var(--bg); padding: 0 !important; overflow-y: auto;
 }
-.panel15-scope .fm-wrap { max-width: 760px; margin: 0 auto; padding: 32px 40px 60px; }
-.panel15-scope .fm-header { margin-bottom: 24px; }
-.panel15-scope .fm-title { font-size: 20px; font-weight: 700; color: #1a1917; }
-.panel15-scope .fm-sub { font-size: 12px; color: #9b9890; margin-top: 4px; }
+.panel15-scope .fm-wrap { max-width: calc(var(--page-max-text,920px) + 2 * var(--page-pad)); margin: 0 auto; padding: var(--page-pad) var(--page-pad) 60px; }
+.panel15-scope .fm-header { margin-bottom: 20px; }
+.panel15-scope .fm-title { font-size: var(--fs-title); font-weight: 700; color: var(--text); letter-spacing: -.02em; }
+.panel15-scope .fm-sub { font-size: var(--fs-sub); color: var(--text2); margin-top: 4px; line-height: 1.55; }
 
-/* tabs */
-.panel15-scope .fm-tabs { display: flex; gap: 0; border-bottom: 1px solid #e5e3db; margin-bottom: 24px; }
+/* tabs — 밑줄형 */
+.panel15-scope .fm-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
 .panel15-scope .fm-tab {
-  padding: 9px 18px; font-size: 12px; font-weight: 500; color: #9b9890;
-  border: none; background: none; cursor: pointer; font-family: inherit;
-  border-bottom: 2px solid transparent; transition: all 0.15s;
+  padding: 9px 14px; font-size: var(--fs-body); font-weight: 500; color: var(--text2);
+  border: none; background: none; cursor: pointer; font-family: inherit; white-space: nowrap;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s;
 }
-.panel15-scope .fm-tab:hover { color: #56544e; }
-.panel15-scope .fm-tab.active { color: #3B3F8C; border-bottom-color: #3B3F8C; font-weight: 600; }
+.panel15-scope .fm-tab:hover { color: var(--text); }
+.panel15-scope .fm-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
 
 /* card */
 .panel15-scope .fm-card {
-  background: #fff; border: 1px solid #e5e3db; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-box);
   padding: 24px; margin-bottom: 16px;
 }
-.panel15-scope .fm-card-title {
-  font-size: 14px; font-weight: 700; color: #3B3F8C; margin-bottom: 6px;
-}
-.panel15-scope .fm-card-desc { font-size: 11px; color: #9b9890; margin-bottom: 14px; }
+.panel15-scope .fm-card-title { font-size: var(--fs-h2); font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.panel15-scope .fm-card-desc { font-size: var(--fs-sub); color: var(--text2); margin-bottom: 14px; line-height: 1.55; }
 
 .panel15-scope .fm-textarea {
-  width: 100%; min-height: 120px; border: 1px solid #e5e3db; border-radius: 6px;
-  padding: 10px 12px; font-size: 13px; color: #1a1917; font-family: inherit;
-  line-height: 1.8; resize: vertical; outline: none;
+  width: 100%; min-height: 120px; border: 1px solid var(--border2); border-radius: var(--r-ctl);
+  padding: 10px 12px; font-size: 14px; color: var(--text); font-family: inherit; background: var(--surface);
+  line-height: 1.8; resize: vertical; outline: none; transition: border-color .15s, box-shadow .15s;
 }
-.panel15-scope .fm-textarea:focus { border-color: #3B3F8C; }
-.panel15-scope .fm-textarea::placeholder { color: #c6c4ba; }
+.panel15-scope .fm-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+.panel15-scope .fm-textarea::placeholder { color: var(--placeholder); }
 
 .panel15-scope .fm-wordcount {
-  font-size: 10px; color: #9b9890; text-align: right; margin-top: 4px;
-  font-family:  monospace;
+  font-size: 12px; color: var(--muted); text-align: right; margin-top: 4px;
+  font-variant-numeric: tabular-nums;
 }
 
-/* actions */
-.panel15-scope .fm-actions { display: flex; gap: 8px; margin-top: 20px; }
+/* actions: .docx 다운로드 = 주요(채움), AI 초안 = 보조(테두리), 나머지 기본, 초기화 = 위험-보조 */
+.panel15-scope .fm-actions { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; align-items: center; }
 .panel15-scope .fm-btn {
-  padding: 8px 16px; font-size: 12px; border-radius: 6px;
-  border: 1px solid #e5e3db; background: #fff; color: #56544e;
-  cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s;
+  height: 38px; padding: 0 16px; font-size: 14px; border-radius: var(--r-ctl);
+  border: 1px solid var(--border2); background: var(--surface); color: var(--text);
+  cursor: pointer; font-family: inherit; font-weight: 500; transition: all .15s; white-space: nowrap;
 }
-.panel15-scope .fm-btn:hover { border-color: #3B3F8C; color: #3B3F8C; }
-.panel15-scope .fm-btn-primary { background: #3B3F8C; color: #fff; border-color: #3B3F8C; }
-.panel15-scope .fm-btn-primary:hover { background: #2d3070; }
+.panel15-scope .fm-btn:hover { border-color: var(--accent); color: var(--accent); }
+.panel15-scope .fm-btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+.panel15-scope .fm-btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+/* AI 초안·초기화는 panel15.js 인라인 색(보라 채움, 옛 빨강 #c23d2f) → 보조형·위험-보조로 덮어씀 */
+.panel15-scope .fm-btn[onclick^="fmAiDraft"] { background: var(--surface) !important; color: var(--accent) !important; border-color: var(--accent) !important; font-weight: 600; }
+.panel15-scope .fm-btn[onclick^="fmAiDraft"]:hover { background: var(--accent-light) !important; }
+.panel15-scope .fm-btn[onclick^="fmReset"] { color: var(--red-text) !important; border-color: var(--red-bd) !important; }
+.panel15-scope .fm-btn[onclick^="fmReset"]:hover { background: var(--red-bg); border-color: var(--red) !important; }
+
+@media (max-width: 768px) {
+  .panel15-scope .fm-wrap { padding: 20px var(--page-pad-sm) 40px; }
+  .panel15-scope .fm-card { padding: 16px; }
+  /* 탭 7개는 줄바꿈 없이 가로로 넘겨 본다(전에는 탭마다 한 글자씩 세로로 꺾였다) */
+  .panel15-scope .fm-tabs { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  .panel15-scope .fm-tab { flex: 0 0 auto; }
+}

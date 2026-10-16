@@ -41,7 +41,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.08);
     }
     .yt-scope .logo h1{ font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
-    .yt-scope .logo span{ font-size: 11px; color: rgba(255,255,255,0.35); }
+    .yt-scope .logo span{ font-size: 12px; color: var(--side-muted); }
     .yt-scope .nav-list{ padding: 12px 0; flex: 1; }
     .yt-scope .nav-item{
       display: flex;
@@ -49,7 +49,7 @@
       gap: 10px;
       padding: 10px 20px;
       cursor: pointer;
-      color: rgba(255,255,255,0.5);
+      color: var(--side-text);
       font-size: 13.5px;
       font-weight: 500;
       transition: all 0.15s;
@@ -74,7 +74,7 @@
       width: 100%;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.55);
+      color: var(--side-text);
       padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
@@ -126,7 +126,7 @@
     }
     .yt-scope .btn:disabled{ opacity: 0.6; cursor: not-allowed; }
     .yt-scope .btn-primary{ background: var(--accent); color: #fff; }
-    .yt-scope .btn-primary:hover:not(:disabled){ background: var(--accent-light); transform: translateY(-1px); }
+    .yt-scope .btn-primary:hover:not(:disabled){ background: var(--accent-hover); }
     .yt-scope .btn-secondary{ background: #fff; color: var(--text); border: 1.5px solid var(--border); }
     .yt-scope .btn-secondary:hover:not(:disabled){ background: var(--bg); }
     .yt-scope .btn-danger{ background: var(--danger); color: #fff; }
@@ -137,8 +137,8 @@
     /* ── Trend Keywords ── */
     .yt-scope .trend-section{ margin-bottom: 18px; padding: 14px 16px; background: var(--card-bg); border-radius: var(--radius); border: 1px solid #E5E7EB; }
     .yt-scope .trend-header{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .yt-scope .trend-label{ font-size: 12px; font-weight: 700; color: #374151; }
-    .yt-scope .trend-refresh{ font-size: 11px; color: #6B7280; background: none; border: 1px solid #E5E7EB; border-radius: 6px; padding: 3px 8px; cursor: pointer; transition: background 0.1s; }
+    .yt-scope .trend-label{ font-size: 13px; font-weight: 700; color: var(--text); }
+    .yt-scope .trend-refresh{ font-size: 12px; color: var(--text2); background: none; border: 1px solid #E5E7EB; border-radius: 6px; padding: 3px 8px; cursor: pointer; transition: background 0.1s; }
     .yt-scope .trend-refresh:hover{ background: var(--bg); color: var(--accent); }
     .yt-scope .kw-chips-wrap{ display: flex; flex-wrap: wrap; gap: 7px; min-height: 28px; }
     .yt-scope .kw-chip{
@@ -154,7 +154,7 @@
       white-space: nowrap;
     }
     .yt-scope .kw-chip:hover{ background: #3F3794; color: #fff; border-color: #3F3794; }
-    .yt-scope .kw-loading{ font-size: 12px; color: #9CA3AF; align-self: center; }
+    .yt-scope .kw-loading{ font-size: 12px; color: var(--text-muted); align-self: center; }
 
     /* ── Search ── */
     .yt-scope .search-bar{ display: flex; gap: 10px; margin-bottom: 24px; }
@@ -255,7 +255,7 @@
     .yt-scope .score-pts{ font-weight: 700; color: var(--accent); }
     .yt-scope .score-reason{
       font-size: 12px;
-      color: #6B7280;
+      color: var(--text2);
       margin-top: 3px;
       padding-left: 4px;
       border-left: 2px solid #E5E7EB;
@@ -512,7 +512,7 @@
     .yt-scope .quality-score-header{ display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
     .yt-scope .quality-total-wrap{ display: flex; align-items: baseline; gap: 3px; flex-shrink: 0; }
     .yt-scope .quality-total-num{ font-size: 32px; font-weight: 800; line-height: 1; }
-    .yt-scope .quality-total-label{ font-size: 14px; color: #9CA3AF; }
+    .yt-scope .quality-total-label{ font-size: 14px; color: var(--text-muted); }
     .yt-scope .quality-bar-outer{ flex: 1; height: 8px; background: #E5E7EB; border-radius: 4px; overflow: hidden; }
     .yt-scope .quality-bar-inner{ height: 100%; border-radius: 4px; transition: width 0.7s ease; }
     .yt-scope .quality-breakdown{ display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
@@ -593,7 +593,7 @@
       flex-wrap: wrap;
       gap: 6px;
       font-size: 12px;
-      color: #6B7280;
+      color: var(--text2);
     }
     .yt-scope .sim-score-wrap{
       display: flex;
@@ -611,7 +611,7 @@
     }
     .yt-scope .sim-score-fill{ height: 100%; border-radius: 3px; transition: width 0.6s ease; }
     .yt-scope .sim-score-num{ font-size: 13px; font-weight: 700; }
-    .yt-scope .sim-score-wrap .tag{ font-size: 10px; padding: 2px 7px; }
+    .yt-scope .sim-score-wrap .tag{ font-size: 11px; padding: 2px 7px; }
 
     /* 슈퍼 루키 */
     .yt-scope .rookie-info-bar{
@@ -619,7 +619,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
-      color: #6B7280;
+      color: var(--text2);
       margin-bottom: 16px;
       padding: 10px 14px;
       background: var(--bg);
@@ -680,12 +680,12 @@
       flex-wrap: wrap;
       gap: 6px;
       font-size: 12px;
-      color: #6B7280;
+      color: var(--text2);
       margin-bottom: 8px;
     }
     .yt-scope .kr-badge{ color: #1d4ed8; font-weight: 600; }
     .yt-scope .rookie-score-row{ display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-    .yt-scope .rookie-label{ font-size: 11px; color: #9CA3AF; white-space: nowrap; }
+    .yt-scope .rookie-label{ font-size: 11px; color: var(--text-muted); white-space: nowrap; }
     .yt-scope .rookie-bar-wrap{ display: flex; align-items: center; gap: 6px; flex: 1; }
     .yt-scope .rookie-bar{ flex: 1; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden; }
     .yt-scope .rookie-bar-fill{ height: 100%; border-radius: 3px; transition: width 0.7s ease; }
@@ -698,7 +698,7 @@
       border-bottom: 1px solid var(--border);
     }
     .yt-scope .ch-stat-item{ display: flex; flex-direction: column; gap: 2px; }
-    .yt-scope .ch-stat-lbl{ font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+    .yt-scope .ch-stat-lbl{ font-size: 12px; font-weight: 600; color: var(--text-muted); }
     .yt-scope .ch-stat-val{ font-size: 14px; font-weight: 700; color: var(--text); }
 
     /* ── Misc ── */
@@ -710,7 +710,7 @@
     /* 출판 적합도 배지 */
     .yt-scope .publish-tier-1 { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
     .yt-scope .publish-tier-2 { background: #DBEAFE; color: #1E40AF; border: 1px solid #BFDBFE; }
-    .yt-scope .publish-tier-3 { background: #F3F4F6; color: #6B7280; border: 1px solid #E5E7EB; }
+    .yt-scope .publish-tier-3 { background: #F3F4F6; color: var(--text2); border: 1px solid #E5E7EB; }
 
 /* 모바일 탭바 (데스크톱 숨김) */
 .yt-mobile-tabs{display:none;}
@@ -805,7 +805,7 @@
       flex-wrap: wrap;
       gap: 6px;
       font-size: 11px;
-      color: #6B7280;
+      color: var(--text2);
     }
     .yt-scope .score-bar-wrap{
       display: flex;
@@ -836,3 +836,66 @@
     }
 
 /* ═══════ 유튜버 분석 끝 ═══════ */
+
+/* ── unify.css에서 이관(2026-10-16): 화면 변화 없이 옮김. 이 파일 맨 끝에 있어야 기존과 같은 우선순위 ── */
+/* ═══════════════════════════════════════════════════════════════════
+   5. panel7 (유튜버 분석) — 자체 토큰 덮어쓰기
+   ═══════════════════════════════════════════════════════════════════ */
+.yt-scope{
+  --sidebar-bg: var(--sidebar-dark) !important;
+  --accent: #4F46B8 !important;
+  --accent-light: #e3e5f9 !important;
+  --bg: #FAFAFA !important;
+  --card-bg: #FFFFFF !important;
+  --text: #18181B !important;
+  --text-muted: #71717A !important;
+  --border: #E4E4E7 !important;
+  --radius: 10px !important;
+  --danger: #EF4444 !important;
+  --success: #16A34A !important;
+  --warning: #F59E0B !important;
+  font-family: 'Pretendard','Inter','Noto Sans KR',sans-serif !important;
+}
+/* 2026-10-16: 보라 바탕 위 흰 35~55% 글자 대비 2.5 → 공통 어두운 바탕(활성 표시는 보라 유지) */
+.yt-scope #sidebar{ background: var(--sidebar-dark) !important; }
+.yt-scope .nav-item.active{ border-left-color: var(--side-active-bar) !important; background: var(--side-active-bg) !important; }
+.yt-scope .kw-chip{
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border2) !important;
+  font-weight: 500 !important;
+}
+.yt-scope .kw-chip:hover{
+  background: var(--accent-light) !important;
+  color: var(--accent) !important;
+  border-color: var(--accent-border) !important;
+}
+/* 사이드바 쿼터 표시: JS 인라인 9~11px·투명도 .4~.7(대비 약 2.5) → 12/11px·공통 사이드바 글자색 */
+.yt-scope #yt-quota-display{ color: var(--side-text) !important; font-size: 12px !important; }
+.yt-scope #yt-quota-display span, .yt-scope #yt-quota-display [title] > div:first-child{ opacity: 1 !important; font-size: 11px !important; }
+.yt-scope #yt-quota-display span + span{ color: var(--side-muted); }
+.yt-scope #toast{ background: #18181B !important; }
+
+/* ── 2026-10-16 레이아웃 통일: 메뉴형 왼쪽 열 = 흰 바탕 --col-nav-w(검정 바탕 해제), 본문 여백 --page-pad ── */
+.yt-scope #sidebar{ background: var(--col-bg) !important; border-right: var(--col-border); width: var(--col-w,320px); min-width: var(--col-w,320px); }
+.yt-scope .logo{ padding: var(--col-pad); border-bottom: 1px solid var(--border); }
+.yt-scope .logo h1{ font-size: var(--fs-h2); font-weight: 700; color: var(--text); letter-spacing: 0; }
+.yt-scope .logo span{ font-size: var(--fs-small); color: var(--muted); }
+.yt-scope .nav-list{ padding: 8px 0; }
+.yt-scope .nav-item{ color: var(--text); font-size: var(--fs-body); padding: 9px var(--col-pad) 9px calc(var(--col-pad) - 3px); }
+.yt-scope .nav-item:hover{ color: var(--text); background: var(--surface2); }
+.yt-scope .nav-item.active{ color: var(--accent); background: var(--accent-light) !important; border-left-color: var(--accent) !important; font-weight: 600; }
+.yt-scope .sidebar-footer{ padding: 12px var(--col-pad); border-top: 1px solid var(--border); scrollbar-color: var(--border2) transparent; }
+.yt-scope .sidebar-footer::-webkit-scrollbar-thumb { background: var(--border2); }
+.yt-scope .api-key-btn{ background: var(--surface); border: 1px solid var(--border2); color: var(--text); font-size: var(--fs-sub); }
+.yt-scope .api-key-btn:hover{ background: var(--accent-light); color: var(--accent); border-color: var(--accent-border); }
+/* 쿼터 표시: 흰 바탕용 글자색, 막대 바탕(JS 인라인 흰 12%)은 회색으로 */
+.yt-scope #yt-quota-display{ color: var(--text2) !important; font-size: var(--fs-small) !important; }
+.yt-scope #yt-quota-display span + span{ color: var(--muted); }
+.yt-scope #yt-quota-display [title] > div:nth-child(2){ background: var(--surface2) !important; }
+.yt-scope .sidebar-footer :focus-visible{ outline-color: var(--accent); }
+.yt-scope #yt-main{ padding: var(--page-pad) var(--page-pad) 48px !important; }
+.yt-scope .panel-header h2{ font-size: var(--fs-title); font-weight: 700; }
+.yt-scope .panel-header p{ font-size: var(--fs-sub); color: var(--text2); }
+.yt-scope .kw-chip{ font-size: var(--fs-sub) !important; }
+@media(max-width:768px){ .yt-scope #yt-main{ padding: var(--page-pad-sm) !important; } }

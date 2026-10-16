@@ -1,32 +1,47 @@
 /* ===== 저자 미팅 자료 탭 전용 스타일 ===== */
-.meet-wrap{display:grid;grid-template-columns:380px 1fr;flex:1;min-height:0;overflow:hidden;}
+/* 주의: 인쇄 팝업(panel6.js meetDownloadPdf)이 이 파일을 읽는다. 편집 화면 규칙은 .meet-* 폼 클래스로만 쓰고,
+   문서 클래스(.meet-doc·.md-*)·요소 선택자·@media print는 건드리지 않는다 */
+.meet-wrap{display:grid;grid-template-columns:var(--col-w,320px) 1fr;flex:1;min-height:0;overflow:hidden;}
 @media(max-width:900px){.meet-wrap{grid-template-columns:1fr;}}
-.meet-form-panel{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
-.meet-form-header{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);background:var(--sidebar-dark);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.meet-form-header span{font-size:.7rem;font-weight:700;}
-.meet-form-tag{font-size:.62rem;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;}
-.meet-form-body{flex:1;min-height:0;overflow-y:auto;padding:1rem 1.1rem;display:block;}
-.meet-section{margin-bottom:.9rem;}
-.meet-section-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
-.meet-field{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.4rem;}
-.meet-field label{font-size:.68rem;font-weight:600;color:var(--muted);}
-.meet-field input[type=text],.meet-field input[type=date],.meet-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);resize:vertical;transition:border-color .15s,box-shadow .15s;}
-.meet-field input:focus,.meet-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
-.meet-field-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.4rem;}
-/* 미리보기 */
-.meet-preview-area{background:#EEEDEA;padding:1.5rem;overflow-y:auto;height:100%;}
-.meet-preview-hint{text-align:center;font-size:.72rem;color:#999;margin-bottom:.8rem;letter-spacing:.04em;}
-.meet-doc-mode-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:.6rem 1.2rem;background:var(--surface2);border-bottom:1px solid var(--border);margin-bottom:.5rem;border-radius:12px;}
-.meet-mode-btn{height:36px;padding:0 14px;font-size:13px;font-weight:600;border:1.5px solid var(--border2);border-radius:8px;background:var(--surface);cursor:pointer;transition:all .15s;font-family:inherit;color:var(--muted);}
+.meet-form-panel{background:var(--col-bg);border-right:var(--col-border);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.meet-form-header{padding:.9rem 1.1rem;border-bottom:1px solid var(--border);background:var(--sidebar-dark);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.meet-form-header span{font-size:var(--fs-h2);font-weight:700;letter-spacing:-.01em;}
+.meet-form-header .meet-form-tag{font-size:11px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:6px;font-weight:700;letter-spacing:.04em;}
+/* 폼 본문이 스크롤 영역이고, 그 맨 끝의 동작 줄(.meet-action-bar)을 아래에 붙여 둔다 */
+.meet-form-body{flex:1;min-height:0;overflow-y:auto;padding:var(--col-pad) var(--col-pad) 0;display:block;}
+.meet-section{margin-bottom:1.25rem;}
+.meet-section-title{font-size:var(--fs-sub);font-weight:600;color:var(--text2);text-transform:none;letter-spacing:-.01em;margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);}
+.meet-section > div[style]:not(.meet-field){font-size:var(--fs-sub) !important;color:var(--text2) !important;line-height:1.55;}
+.meet-field{display:flex;flex-direction:column;gap:4px;margin-bottom:.6rem;min-width:0;}
+.meet-field label{font-size:var(--fs-sub);font-weight:600;color:var(--text2);}
+/* 라벨 옆 보조 글(index.html 인라인 9.5px #888) */
+.meet-field label span[style]{font-size:12px !important;color:var(--muted) !important;}
+.meet-field input,.meet-field textarea,.meet-field select,.meet-select{width:100%;min-height:36px;border:1px solid var(--border2);border-radius:var(--r-ctl);padding:7px 10px;font-size:14px;font-family:inherit;color:var(--text);resize:vertical;transition:border-color .15s,box-shadow .15s;}
+.meet-field textarea{line-height:1.6;}
+.meet-select{cursor:pointer;background:var(--surface);}
+.meet-field input:focus,.meet-field textarea:focus,.meet-field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.meet-field-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:0;}
+/* 미리보기: 중립 회색 바탕, 위에 문서 모드 줄 */
+/* 본문 안쪽 여백 공통 32 */
+.meet-preview-area{background:#ECECEE;padding:32px;overflow-y:auto;height:100%;}
+.meet-preview-hint{text-align:center;font-size:12.5px;color:var(--text2);margin-bottom:.8rem;}
+.meet-doc-mode-bar{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap;padding:.6rem .75rem;background:var(--surface);border:1px solid var(--border);margin-bottom:1rem;border-radius:var(--r-box);}
+.meet-mode-btn{height:36px;padding:0 12px;font-size:var(--fs-sub);font-weight:600;border:1px solid var(--border2);border-radius:var(--r-ctl);background:var(--surface);cursor:pointer;transition:all .15s;font-family:inherit;color:var(--text2);white-space:nowrap;}
+.meet-mode-btn:hover{border-color:var(--accent);color:var(--accent);}
 .meet-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-/* 미팅 액션 버튼 바 */
-.meet-action-bar{display:flex;gap:8px;align-items:center;padding:.5rem 0 1rem;}
-.meet-act-primary{height:40px;padding:0 20px;font-size:10px;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s;}
-.meet-act-dl{flex:1;background:var(--accent);color:#fff;box-shadow:var(--accent-shadow);}
-.meet-act-dl:hover{background:var(--accent-hover);box-shadow:0 4px 12px rgba(59,63,140,.25);}
-.meet-act-secondary{height:36px;padding:0 18px;font-size:13px;font-weight:500;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s;}
-.meet-act-secondary:hover{border-color:var(--red);color:var(--red);}
-.meet-mode-hint{font-size:.68rem;color:#999;flex:1;}
+/* 모드 설명은 버튼 뒤 남는 폭을 쓰되, 좁으면 다음 줄 전체로(한 글자씩 꺾이지 않게) */
+.meet-mode-hint{font-size:var(--fs-small);color:var(--text2);flex:1 1 220px;min-width:0;line-height:1.5;}
+/* 미팅 액션 버튼 바: 폼 스크롤 영역 아래에 고정. 주요 = PDF 다운로드, AI 자동 완성 = 보조, 초기화 = 조용한 버튼 */
+.meet-action-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;position:sticky;bottom:0;z-index:2;background:var(--surface);border-top:1px solid var(--border);margin:0 calc(-1 * var(--col-pad));padding:.6rem var(--col-pad);}
+/* 저자 제안서(.form-action)와 같은 높이·버튼 크기 */
+.meet-action-bar button{height:40px;font-size:13px;padding:0 12px;flex:1 1 auto;}
+.meet-act-primary{height:40px;padding:0 14px;font-size:14px;font-weight:700;border:none;border-radius:var(--r-ctl);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+.meet-action-bar .ai-gen-btn{background:var(--surface);color:var(--text);border:1px solid var(--border2);box-shadow:none;}
+.meet-action-bar .ai-gen-btn:hover:not(:disabled){background:var(--accent-light);color:var(--accent);border-color:var(--accent);box-shadow:none;}
+.meet-act-dl{flex:1;background:var(--accent);color:#fff;}
+.meet-act-dl:hover{background:var(--accent-hover);}
+.meet-act-secondary{height:40px;padding:0 14px;font-size:14px;font-weight:500;border:1px solid var(--border2);border-radius:var(--r-ctl);background:var(--surface);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+.meet-act-secondary:hover{border-color:var(--red);color:var(--red-text);}
 /* A4 미팅 문서 */
 .meet-doc{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.16);font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:12.5px;line-height:1.65;color:#1a1a18;}
 .md-header{background:var(--sidebar-dark);padding:28px 44px 22px;display:flex;justify-content:space-between;align-items:flex-end;}
@@ -49,11 +64,14 @@
 .md-memo-box{background:#fffbf0;border:1px solid #f0e6c0;border-radius:6px;padding:12px 16px;font-size:11.5px;line-height:1.8;white-space:pre-line;}
 .md-footer{margin-top:auto;border-top:1px solid #e8e8e8;padding:16px 44px;display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#bbb;}
 .meet-checklist{display:flex;flex-direction:column;gap:.45rem;}
-.meet-check-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
-.meet-check-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);flex-shrink:0;cursor:pointer;}
-.meet-check-row label{font-size:.76rem;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;}
-.meet-check-row input[type=text]{flex:1;min-width:0;border:1px solid var(--border);border-radius:5px;padding:.25rem .5rem;font-size:.73rem;font-family:inherit;color:var(--text);}
-.meet-select{width:100%;border:1px solid var(--border);border-radius:8px;padding:.42rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);cursor:pointer;transition:border-color .15s,box-shadow .15s;}
+.meet-check-row{display:flex;align-items:center;gap:.4rem .5rem;flex-wrap:wrap;}
+.meet-check-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;cursor:pointer;}
+.meet-check-row label{font-size:var(--fs-body);font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;}
+.meet-check-row input[type=text]{flex:1 1 140px;min-width:0;min-height:32px;border:1px solid var(--border2);border-radius:var(--r-ctl);padding:5px 10px;font-size:14px;font-family:inherit;color:var(--text);}
+.meet-check-row input[type=text]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+/* 결과 요약 모드의 생성 버튼(index.html 인라인 파랑 #2563eb) → 보라 하나로 */
+.meet-section .meet-act-primary[onclick^="generateMeetingSummary"]{background:var(--accent) !important;}
+.meet-section .meet-act-primary[onclick^="generateMeetingSummary"]:hover{background:var(--accent-hover) !important;}
 .md-agenda-item{padding:4px 10px;font-size:11.5px;border-left:3px solid #2563eb;margin-bottom:3px;background:#f0f7ff;}
 .md-check-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11.5px;}
 .md-check-item .check-icon{font-size:13px;flex-shrink:0;}
@@ -63,10 +81,38 @@
 .md-terms-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;}
 .md-concept-box{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:8px 12px;font-size:11.5px;font-style:italic;color:#444;margin:6px 0;}
 
+/* 900 이하: 폼이 화면 절반 높이에 갇히지 않게 폼 → 미리보기 순서로 이어서 스크롤, 동작 줄은 화면 아래에 붙인다.
+   min-width:300px — 문서 검사(Playwright 요소 캡처)가 좁은 폭으로 다시 배치할 때 걸리지 않게 */
+@media(min-width:300px) and (max-width:900px){
+  .meet-wrap{display:block;overflow-y:auto;}
+  /* 폼은 화면 62%까지만, 그 안에서 스크롤 — 아래 미리보기의 문서 모드 버튼(폼 내용도 바꿈)이 첫 화면 가까이 오게 */
+  .meet-form-panel{max-height:62vh;overflow:hidden;border-right:none;border-bottom:1px solid var(--border);}
+  .meet-form-body{overflow-y:auto;}
+  .meet-preview-area{height:auto;overflow-x:auto;overflow-y:visible;}
+}
+
 @media(max-width:768px){
   .meet-wrap{grid-template-columns:1fr!important;}
   .meet-doc-view{display:none!important;}
   .meet-field-row{grid-template-columns:1fr!important;}
+
+  .meet-action-bar button{flex:1 1 auto;padding:0 10px;}
   .md-info-grid{grid-template-columns:1fr!important;}
   .md-terms-grid{grid-template-columns:1fr!important;}
 }
+
+/* ── unify.css에서 이관(2026-10-16): 화면 변화 없이 옮김. 이 파일 맨 끝에 있어야 기존과 같은 우선순위 ── */
+.meet-form-header{
+  background: var(--sidebar-dark) !important;
+  color: #fff;
+}
+.meet-form-header .meet-form-tag{
+  background: var(--accent) !important;
+  color: #fff;
+}
+
+/* 왼쪽 열 공통: 앱 메뉴 옆에 붙어 화면 아래까지, 각진 모서리(unify.css 공통 10px 둥글기보다 우선) */
+.meet-wrap > .meet-form-panel, .meet-form-header{border-radius:0;}
+
+/* 290 열: 날짜 칸은 두 칸에 넣으면 값이 잘려 그 줄만 한 칸으로 */
+.meet-field-row:has(input[type=date]){grid-template-columns:1fr;}
