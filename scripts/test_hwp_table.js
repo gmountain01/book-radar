@@ -10,4 +10,6 @@ assert.strictEqual(tableMd([C(0, 0, '상자', '내용')]), '[박스]\n상자\n�
 assert.strictEqual(tableMd([C(0, 0), C(0, 1)]), '');                                          // 빈 표는 버림
 const inner = tableMd([C(0, 0, '안1'), C(0, 1, '안2'), C(1, 0, '안3')]);
 assert.strictEqual(tableMd([C(0, 0, '안쪽'), C(0, 1, inner)]), '| 안쪽 | 안1 · 안2<br>안3 |\n| --- | --- |'); // 셀 속 표는 글자로 풀기
+assert.strictEqual(tableMd([C(0, 0, '# 주석', 'x = 1')]), '[박스]\n\\# 주석\nx = 1');          // 상자 속 코드 주석은 제목이 아님
+assert.deepStrictEqual(['# a', '  ## b', '#include', 'x # y'].map(globalThis.P8Hwp5.escHash), ['\\# a', '  \\## b', '#include', 'x # y']);
 console.log('  ✓ HWP·HWPX 표 → Markdown 표 점검 통과');

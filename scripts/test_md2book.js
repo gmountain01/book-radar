@@ -215,4 +215,12 @@ assert.deepStrictEqual([...thesis.html.matchAll(/btoc-row (l\d)[^>]*><span class
 assert.strictEqual((thesis.html.match(/btoc-title/g) || []).length, 2); has(thesis.html, "<b>표 목차</b>");
 assert.strictEqual((thesis.html.match(/btoc-row[^"]*" data-ref/g) || []).length, 5);  // 차례 5줄 모두 본문 제목과 이어짐(쪽 번호)
 
+// 한 칸 표([박스])에 넣은 코드: 코드로 조판, 속의 '## 절차'·'# 주석'은 제목이 아님. 글 상자는 그대로
+const codeBox = mdToBook("[장] 1장 스킬\n\n[박스]\n---\nname: weekly\\_report\n---\n## 절차\n1. 지표를 가져온다.\n\n[박스]\ntools/\n├── SKILL.md      # 절차\n└── run.py\n\n[박스]\n**참고: 표기**\n이 책은 대문자를 씁니다.\n");
+assert.strictEqual(lv(codeBox), "1");
+assert.strictEqual((codeBox.html.match(/<pre class="code">/g) || []).length, 2);
+has(codeBox.html, "name: weekly_report\n---\n## 절차"); has(codeBox.html, "├── SKILL.md      # 절차");
+has(codeBox.html, '<div class="box"><p><strong>참고: 표기</strong></p>');
+assert.ok(!/<pre class="code">/.test(mdToBook("[박스]\n[1단계] 데이터를 모은다.\n[2단계] 정리한다.\n마지막으로 확인한다.\n").html));  // 대괄호 머리 글 상자는 코드 아님
+
 console.log("md2book: 모든 점검 통과");

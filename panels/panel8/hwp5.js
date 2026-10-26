@@ -8,11 +8,14 @@
   const HWPTAG_PARA_SHAPE = 25, HWPTAG_STYLE = 26, HWPTAG_PARA_HEADER = 66, HWPTAG_PARA_TEXT = 67,
     HWPTAG_CTRL_HEADER = 71, HWPTAG_LIST_HEADER = 72, HWPTAG_TABLE = 77, CTRL_TBL = 0x74626c20; // 'tbl '
 
+  // 조판 보기: 본문·상자 줄 머리의 '#'(코드 주석 등)이 Markdown 제목으로 읽히지 않게 '\#'로
+  const escHash = s => s.replace(/^(\s*)(#{1,6}(?:\s|$))/, '$1\\$2');
+
   /** 셀 [{ r, c, lines }] → Markdown 표(docx2md와 같은 꼴). 합친 칸 자리는 빈칸, 한 칸짜리 표는 [박스]. HWP·HWPX 공용 */
   function tableMd(cells) {
     if (!cells.some(x => x.lines.length)) return '';
     const nr = Math.max(...cells.map(x => x.r)) + 1, nc = Math.max(...cells.map(x => x.c)) + 1;
-    if (nr === 1 && nc === 1) return '[박스]\n' + cells[0].lines.join('\n');
+    if (nr === 1 && nc === 1) return '[박스]\n' + cells[0].lines.map(escHash).join('\n');
     const grid = Array.from({ length: nr }, () => Array(nc).fill(''));
     // 셀 속 표(이미 Markdown 표·[박스])는 칸을 ' · ', 줄을 <br>로 풀어 글자로 넣는다
     const flat = s => !s.includes('\n') ? s : s.split('\n').filter(l => !/^\|( --- \|)+$/.test(l) && l !== '[박스]')
@@ -153,6 +156,7 @@
         if (cell) { if (t.trim()) cell.lines.push(t.trim()); continue; }
         if (level >= 0 && t.trim()) t = '#'.repeat(Math.min(level + 1, 6)) + ' ' + t.trim();
         else t = t.replace(/^(\s*)[•·▪◦●○■□]\s*/, '$1- ');
+        if (tables && level < 0) t = escHash(t);
         paras.push(t);
       }
       while (stack.length) close();
@@ -162,5 +166,5 @@
     return paras;
   }
 
-  root.P8Hwp5 = { extractParagraphs, styleLevel, tableMd };
+  root.P8Hwp5 = { extractParagraphs, styleLevel, tableMd, escHash };
 })(typeof window !== 'undefined' ? window : globalThis);

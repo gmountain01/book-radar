@@ -391,7 +391,7 @@
         rows.push(row);
       }
       if (!rows.some(r => r.some(c => c.length))) return;
-      if (rows.length === 1 && rows[0].length === 1) { emit("[박스]\n" + rows[0][0].join("\n")); return; }  // 한 칸짜리 표는 상자로 쓴 것
+      if (rows.length === 1 && rows[0].length === 1) { emit("[박스]\n" + rows[0][0].map(s => s.replace(/^(#{1,6}(?:\s|$))/, "\\$1")).join("\n")); return; }  // 한 칸짜리 표는 상자로 쓴 것
       const n = Math.max(...rows.map(r => r.length)), line = r => "| " + Array.from({ length: n }, (x, k) => (r[k] || []).join("<br>").replace(/\|/g, "\\|")).join(" | ") + " |";
       emit([line(rows[0]), "|" + " --- |".repeat(n), ...rows.slice(1).map(line)].join("\n"));
     }

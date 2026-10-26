@@ -79,6 +79,10 @@
     img: /^\s*(?:!\[[^\]]*\]\([^)]*\)(?:\{[^}]*\})?\s*)+$/, setext: /^ {0,3}(=+|-+)\s*$/, comment: /^\s*<!--(.*?)-->\s*$/,
   };
   const HEADKIND = /^(lv\d|trouble|apply)$/;
+  /* 제목 없는 [박스]가 코드인지(Word·HWP에서 코드를 한 칸 표에 넣은 원고): 첫 줄이 '{'·'['·'---', 폴더 트리 줄, 또는 절반 넘는 줄이 코드 꼴 */
+  const CODELN = /^\s*(?:[{}\[\]][\s,]*$|[\]}]|["'][^"']+["']\s*:|(?:def|class|import|from|return|const|let|var|function|public|private|#include|SELECT|INSERT)\b|[$>]\s)|[{;]\s*$|[├└│]/;
+  const looksCode = ls => ls.length > 0 && (/^\s*(?:[{\[]|---)\s*$/.test(ls[0]) || ls.some(s => /[├└]──/.test(s)) || ls.filter(s => CODELN.test(s)).length * 2 > ls.length);
+  const MDESC = /\\([\\`*_{}\[\]()#+\-.!|~>^=<])/g;  // 코드로 옮길 때 Markdown 이스케이프(\_ \*)를 푼다
 
   /* 책 전체 차례: '차례'·'목차'·'CONTENTS' 한 줄 뒤의 장·절 목록. 원고의 쪽 번호(…… 23)는 버리고 조판 결과로 다시 단다 */
   // 차례 줄: '목차'·'차 례'·'CONTENTS'에 더해 괄호로 싼 '<목 차>'·'〈차례〉'와 '표 목차'·'그림 차례'·'List of Tables'도
@@ -197,8 +201,9 @@
         if (g.kind === "newpage" || g.kind === "cornerEnd") { out.push({ t: g.kind }); continue; }
         if (/^(corner|cap|meta|sub)$/.test(g.kind)) { out.push({ t: g.kind, text: g.rest, name: g.name }); continue; }
         if (g.kind === "body") { para(g.rest, true); continue; }
-        const buf = [];
-        while (i < L.length && !blank(L[i]) && !tagOf(L[i]) && !R.atx.test(L[i]) && !R.fence.test(L[i])) buf.push(L[i++]);
+        const buf = [], box = g.kind === "box";  // [박스] 속 '## 절차' 같은 줄은 코드·글의 일부라 상자를 끊지 않는다
+        while (i < L.length && !blank(L[i]) && !tagOf(L[i]) && !(R.atx.test(L[i]) && !box) && !R.fence.test(L[i])) buf.push(L[i++]);
+        if (box && !g.rest && looksCode(buf)) { out.push({ t: "code", info: "", text: buf.map(s => s.replace(MDESC, "$1")).join("\n") }); continue; }  // 한 칸 표에 넣은 코드
         out.push(boxOf(g, buf)); continue;
       }
       if (R.li.test(s)) {

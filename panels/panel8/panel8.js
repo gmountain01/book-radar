@@ -1170,7 +1170,8 @@ async function extractHWPX(file, meta, tables) {
       const st = (pTag.match(/\bstyleIDRef="(\d+)"/) || [])[1];
       if (styleLv[st] !== undefined) styled = true;
       const lv = styleLv[st] !== undefined ? styleLv[st] : pr !== undefined ? outlineLevel[pr] : undefined;
-      lines.push(lv !== undefined ? '#'.repeat(Math.min(lv + 1, 6)) + ' ' + lineText : lineText.replace(/^[•·▪◦●○■□]\s*/, '- '));
+      const body = lineText.replace(/^[•·▪◦●○■□]\s*/, '- ');
+      lines.push(lv !== undefined ? '#'.repeat(Math.min(lv + 1, 6)) + ' ' + lineText : tables && window.P8Hwp5 ? window.P8Hwp5.escHash(body) : body);
     }
     // 문단을 빈 줄로 구분 — 줄바꿈 한 번이면 섹션 전체가 한 페이지로 뭉친다
     if (lines.length) fullText += lines.join('\n\n') + '\n\n';
