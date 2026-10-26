@@ -26790,6 +26790,51 @@
       "firstSeen": "2026-01-09"
     },
     {
+      "name": "김진규",
+      "books": [
+        {
+          "title": "끝까지 만드는 바이브코딩 1",
+          "pub": "BOOKK(부크크)",
+          "bestRank": 111,
+          "days": 1,
+          "lastDate": "2026-10-23",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "끝까지 만드는 바이브코딩 2",
+          "pub": "BOOKK(부크크)",
+          "bestRank": 112,
+          "days": 1,
+          "lastDate": "2026-10-23",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "끝까지 만드는 바이브코딩 2 - 내 프로그램을 실제 서비스로 키우다",
+          "pub": "부크크(bookk)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-12"
+        }
+      ],
+      "pubs": [
+        "BOOKK(부크크)",
+        "부크크(bookk)"
+      ],
+      "count": 3,
+      "bestRank": 111,
+      "totalDays": 2,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "바이브코딩/노코드"
+      ],
+      "firstSeen": "2026-10-23"
+    },
+    {
       "name": "김미혜",
       "books": [
         {
@@ -49914,41 +49959,6 @@
         "AI/LLM 일반"
       ],
       "firstSeen": "2026-01-08"
-    },
-    {
-      "name": "김진규",
-      "books": [
-        {
-          "title": "끝까지 만드는 바이브코딩 1",
-          "pub": "BOOKK(부크크)",
-          "bestRank": 111,
-          "days": 1,
-          "lastDate": "2026-10-23",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "끝까지 만드는 바이브코딩 2",
-          "pub": "BOOKK(부크크)",
-          "bestRank": 112,
-          "days": 1,
-          "lastDate": "2026-10-23",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "BOOKK(부크크)"
-      ],
-      "count": 2,
-      "bestRank": 111,
-      "totalDays": 2,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [
-        "바이브코딩/노코드"
-      ],
-      "firstSeen": "2026-10-23"
     },
     {
       "name": "임백준",
@@ -135702,6 +135712,59 @@
       "firstSeen": "2026-09-14"
     },
     {
+      "name": "에듀채널 편집부",
+      "books": [
+        {
+          "title": "정보기기운용기능사 필기 예상문제집 - 2027 최신 출제기준 반영",
+          "pub": "스터디채널",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-08-15"
+        },
+        {
+          "title": "컴퓨터시스템기사 필기 예상문제집 - 2027 최신 출제기준 반영",
+          "pub": "스터디채널",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-08-15"
+        },
+        {
+          "title": "임베디드기사 필기 예상문제집 - 2027 최신 출제기준 반영",
+          "pub": "스터디채널",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-22"
+        },
+        {
+          "title": "전자출판기능사 필기 예상문제집 - 2027 최신 출제기준 반영",
+          "pub": "스터디채널",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-23"
+        }
+      ],
+      "pubs": [
+        "스터디채널"
+      ],
+      "count": 4,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 4,
+      "source": "new",
+      "topics": [
+        "로봇/IoT/하드웨어"
+      ],
+      "firstSeen": "2026-10-02"
+    },
+    {
       "name": "영진정보연구소",
       "books": [
         {
@@ -135886,50 +135949,6 @@
       "source": "new",
       "topics": [],
       "firstSeen": "2026-09-18"
-    },
-    {
-      "name": "에듀채널 편집부",
-      "books": [
-        {
-          "title": "정보기기운용기능사 필기 예상문제집 - 2027 최신 출제기준 반영",
-          "pub": "스터디채널",
-          "bestRank": 999,
-          "days": 0,
-          "lastDate": "",
-          "new": true,
-          "pubDate": "2026-08-15"
-        },
-        {
-          "title": "컴퓨터시스템기사 필기 예상문제집 - 2027 최신 출제기준 반영",
-          "pub": "스터디채널",
-          "bestRank": 999,
-          "days": 0,
-          "lastDate": "",
-          "new": true,
-          "pubDate": "2026-08-15"
-        },
-        {
-          "title": "임베디드기사 필기 예상문제집 - 2027 최신 출제기준 반영",
-          "pub": "스터디채널",
-          "bestRank": 999,
-          "days": 0,
-          "lastDate": "",
-          "new": true,
-          "pubDate": "2026-10-22"
-        }
-      ],
-      "pubs": [
-        "스터디채널"
-      ],
-      "count": 3,
-      "bestRank": 999,
-      "totalDays": 0,
-      "newCount": 3,
-      "source": "new",
-      "topics": [
-        "로봇/IoT/하드웨어"
-      ],
-      "firstSeen": "2026-10-02"
     },
     {
       "name": "나재철",
@@ -143247,10 +143266,36 @@
         "자격증/취업"
       ],
       "firstSeen": "2026-10-24"
+    },
+    {
+      "name": "고민환",
+      "books": [
+        {
+          "title": "코딩은 몰라도 논문은 씁니다 - 클로드코드 스킬로 끝내는 텍스트마이닝 논문",
+          "pub": "동국대학교출판부",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-26"
+        }
+      ],
+      "pubs": [
+        "동국대학교출판부"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반"
+      ],
+      "firstSeen": "2026-10-26"
     }
   ],
   "totalRows": 57728,
-  "totalAuthors": 4682,
-  "totalBooks": 7191,
+  "totalAuthors": 4683,
+  "totalBooks": 7194,
   "generated": "2026-10-24"
 }
