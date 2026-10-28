@@ -1128,6 +1128,184 @@
       "firstSeen": "2026-01-01"
     },
     {
+      "name": "Mojang AB",
+      "books": [
+        {
+          "title": "마인크래프트 블록 완벽 가이드",
+          "pub": "영진닷컴",
+          "bestRank": 12,
+          "days": 60,
+          "lastDate": "2026-09-25",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 초보자 가이드 New Edition",
+          "pub": "영진닷컴",
+          "bestRank": 15,
+          "days": 34,
+          "lastDate": "2026-10-26",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 몹 완벽 가이드",
+          "pub": "영진닷컴",
+          "bestRank": 24,
+          "days": 41,
+          "lastDate": "2026-10-10",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 서바이벌 챌린지 영웅편",
+          "pub": "영진닷컴",
+          "bestRank": 29,
+          "days": 11,
+          "lastDate": "2026-07-30",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 건축 가이드 미니 프로젝트",
+          "pub": "영진닷컴",
+          "bestRank": 30,
+          "days": 10,
+          "lastDate": "2026-06-21",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 건축 가이드 미니 프로젝트 2",
+          "pub": "영진닷컴",
+          "bestRank": 35,
+          "days": 4,
+          "lastDate": "2026-07-17",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 건축 아이디어 북",
+          "pub": "영진닷컴",
+          "bestRank": 42,
+          "days": 12,
+          "lastDate": "2026-10-11",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 아카데미: 좀비 아웃브레이크!",
+          "pub": "영진닷컴",
+          "bestRank": 48,
+          "days": 9,
+          "lastDate": "2026-10-10",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 마법과 물약 가이드",
+          "pub": "영진닷컴",
+          "bestRank": 53,
+          "days": 3,
+          "lastDate": "2026-09-24",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 멋진 기지 만들기",
+          "pub": "영진닷컴",
+          "bestRank": 56,
+          "days": 5,
+          "lastDate": "2026-09-24",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 놀라운 건축설계도",
+          "pub": "영진닷컴",
+          "bestRank": 70,
+          "days": 11,
+          "lastDate": "2026-10-20",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 건축 가이드 마법 프로젝트",
+          "pub": "영진닷컴",
+          "bestRank": 79,
+          "days": 13,
+          "lastDate": "2026-08-01",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 건축 가이드 미니 프로젝트 4",
+          "pub": "영진닷컴",
+          "bestRank": 87,
+          "days": 9,
+          "lastDate": "2026-09-29",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 건축 가이드 미니 프로젝트 3",
+          "pub": "영진닷컴",
+          "bestRank": 117,
+          "days": 4,
+          "lastDate": "2026-06-21",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "월드 오브 마인크래프트",
+          "pub": "영진닷컴",
+          "bestRank": 151,
+          "days": 4,
+          "lastDate": "2026-05-22",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 서바이벌 챌린지 모험편",
+          "pub": "영진닷컴",
+          "bestRank": 160,
+          "days": 6,
+          "lastDate": "2026-07-30",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 1일 1페이지 아이디어 북",
+          "pub": "영진닷컴",
+          "bestRank": 170,
+          "days": 4,
+          "lastDate": "2026-08-23",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "마인크래프트 탐험가 백과사전 - 마인크래프트 생물 군계 완전 정복 가이드",
+          "pub": "영진.com(영진닷컴)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-15"
+        }
+      ],
+      "pubs": [
+        "영진.com(영진닷컴)",
+        "영진닷컴"
+      ],
+      "count": 18,
+      "bestRank": 12,
+      "totalDays": 240,
+      "newCount": 1,
+      "source": "both",
+      "topics": [],
+      "firstSeen": "2026-01-01"
+    },
+    {
       "name": "이정화",
       "books": [
         {
@@ -1308,174 +1486,6 @@
         "비전공자/교양"
       ],
       "firstSeen": "2026-01-16"
-    },
-    {
-      "name": "Mojang AB",
-      "books": [
-        {
-          "title": "마인크래프트 블록 완벽 가이드",
-          "pub": "영진닷컴",
-          "bestRank": 12,
-          "days": 60,
-          "lastDate": "2026-09-25",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 초보자 가이드 New Edition",
-          "pub": "영진닷컴",
-          "bestRank": 15,
-          "days": 34,
-          "lastDate": "2026-10-26",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 몹 완벽 가이드",
-          "pub": "영진닷컴",
-          "bestRank": 24,
-          "days": 41,
-          "lastDate": "2026-10-10",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 서바이벌 챌린지 영웅편",
-          "pub": "영진닷컴",
-          "bestRank": 29,
-          "days": 11,
-          "lastDate": "2026-07-30",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 건축 가이드 미니 프로젝트",
-          "pub": "영진닷컴",
-          "bestRank": 30,
-          "days": 10,
-          "lastDate": "2026-06-21",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 건축 가이드 미니 프로젝트 2",
-          "pub": "영진닷컴",
-          "bestRank": 35,
-          "days": 4,
-          "lastDate": "2026-07-17",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 건축 아이디어 북",
-          "pub": "영진닷컴",
-          "bestRank": 42,
-          "days": 12,
-          "lastDate": "2026-10-11",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 아카데미: 좀비 아웃브레이크!",
-          "pub": "영진닷컴",
-          "bestRank": 48,
-          "days": 9,
-          "lastDate": "2026-10-10",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 마법과 물약 가이드",
-          "pub": "영진닷컴",
-          "bestRank": 53,
-          "days": 3,
-          "lastDate": "2026-09-24",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 멋진 기지 만들기",
-          "pub": "영진닷컴",
-          "bestRank": 56,
-          "days": 5,
-          "lastDate": "2026-09-24",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 놀라운 건축설계도",
-          "pub": "영진닷컴",
-          "bestRank": 70,
-          "days": 11,
-          "lastDate": "2026-10-20",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 건축 가이드 마법 프로젝트",
-          "pub": "영진닷컴",
-          "bestRank": 79,
-          "days": 13,
-          "lastDate": "2026-08-01",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 건축 가이드 미니 프로젝트 4",
-          "pub": "영진닷컴",
-          "bestRank": 87,
-          "days": 9,
-          "lastDate": "2026-09-29",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 건축 가이드 미니 프로젝트 3",
-          "pub": "영진닷컴",
-          "bestRank": 117,
-          "days": 4,
-          "lastDate": "2026-06-21",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "월드 오브 마인크래프트",
-          "pub": "영진닷컴",
-          "bestRank": 151,
-          "days": 4,
-          "lastDate": "2026-05-22",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 서바이벌 챌린지 모험편",
-          "pub": "영진닷컴",
-          "bestRank": 160,
-          "days": 6,
-          "lastDate": "2026-07-30",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "마인크래프트 1일 1페이지 아이디어 북",
-          "pub": "영진닷컴",
-          "bestRank": 170,
-          "days": 4,
-          "lastDate": "2026-08-23",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "영진닷컴"
-      ],
-      "count": 17,
-      "bestRank": 12,
-      "totalDays": 240,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [],
-      "firstSeen": "2026-01-01"
     },
     {
       "name": "김기태",
@@ -2133,16 +2143,25 @@
           "lastDate": "",
           "new": true,
           "pubDate": "2026-11-01"
+        },
+        {
+          "title": "2027 이공자 ITQ OA Master [한글 2022(한글 2020 포함)+파워포인트 2021+엑셀 2021]",
+          "pub": "아소미디어(아카데미소프트)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-01"
         }
       ],
       "pubs": [
         "아소미디어(아카데미소프트)",
         "아카데미소프트"
       ],
-      "count": 15,
+      "count": 16,
       "bestRank": 96,
       "totalDays": 4,
-      "newCount": 14,
+      "newCount": 15,
       "source": "both",
       "topics": [
         "AI/LLM 일반",
@@ -2559,6 +2578,140 @@
         "AI/LLM 일반",
         "파이썬",
         "엑셀/오피스"
+      ],
+      "firstSeen": "2026-01-01"
+    },
+    {
+      "name": "이석현",
+      "books": [
+        {
+          "title": "AI 생존 지도",
+          "pub": "여림재",
+          "bestRank": 8,
+          "days": 47,
+          "lastDate": "2026-10-04",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "이게 되네? AI 실무 올인원 미친 활용법 71제",
+          "pub": "골든래빗",
+          "bestRank": 12,
+          "days": 63,
+          "lastDate": "2026-10-26",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "실무에 바로 쓰는 일잘러의 챗GPT 프롬프트 74가지",
+          "pub": "제이펍",
+          "bestRank": 36,
+          "days": 33,
+          "lastDate": "2026-10-26",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "바이브 코딩",
+          "pub": "아이콕스(iCox)",
+          "bestRank": 45,
+          "days": 21,
+          "lastDate": "2026-07-18",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "챗GPT, 글쓰기 코치가 되어 줘",
+          "pub": "제이펍",
+          "bestRank": 91,
+          "days": 5,
+          "lastDate": "2026-07-01",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "기초부터 배운다! 3D 게임 프로그래밍",
+          "pub": "프린트F",
+          "bestRank": 122,
+          "days": 9,
+          "lastDate": "2026-08-01",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "AI, 결국 인간이 써야 한다",
+          "pub": "아이콕스(iCox)",
+          "bestRank": 122,
+          "days": 2,
+          "lastDate": "2026-03-31",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "NEW 한 권으로 끝내는 노션",
+          "pub": "애드앤미디어",
+          "bestRank": 124,
+          "days": 1,
+          "lastDate": "2026-06-30",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "1인 앱 개발, 커서 AI와 함께 배우기",
+          "pub": "아이콕스(iCox)",
+          "bestRank": 146,
+          "days": 7,
+          "lastDate": "2026-05-01",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "[큰글자도서] AI 생존 지도 - 질문 자본가의 시대",
+          "pub": "여림재",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-15"
+        },
+        {
+          "title": "[큰글자도서] 실무에 바로 쓰는 일잘러의 챗GPT 프롬프트 74가지 - 업무와 일상을 바꾸는 챗GPT 활용법",
+          "pub": "제이펍",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-15"
+        },
+        {
+          "title": "[큰글자도서] 챗GPT, 글쓰기 코치가 되어 줘 - 단어를 확장하고, 문장을 다듬고, 긴 글을 완성하는 챗GPT 글쓰기 수업",
+          "pub": "제이펍",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-15"
+        }
+      ],
+      "pubs": [
+        "골든래빗",
+        "아이콕스(iCox)",
+        "애드앤미디어",
+        "여림재",
+        "제이펍",
+        "프린트F"
+      ],
+      "count": 12,
+      "bestRank": 8,
+      "totalDays": 188,
+      "newCount": 3,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반",
+        "바이브코딩/노코드",
+        "프롬프트/활용",
+        "앱개발/모바일",
+        "게임개발"
       ],
       "firstSeen": "2026-01-01"
     },
@@ -4243,113 +4396,6 @@
       "firstSeen": "2026-01-01"
     },
     {
-      "name": "이석현",
-      "books": [
-        {
-          "title": "AI 생존 지도",
-          "pub": "여림재",
-          "bestRank": 8,
-          "days": 47,
-          "lastDate": "2026-10-04",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "이게 되네? AI 실무 올인원 미친 활용법 71제",
-          "pub": "골든래빗",
-          "bestRank": 12,
-          "days": 63,
-          "lastDate": "2026-10-26",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "실무에 바로 쓰는 일잘러의 챗GPT 프롬프트 74가지",
-          "pub": "제이펍",
-          "bestRank": 36,
-          "days": 33,
-          "lastDate": "2026-10-26",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "바이브 코딩",
-          "pub": "아이콕스(iCox)",
-          "bestRank": 45,
-          "days": 21,
-          "lastDate": "2026-07-18",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "챗GPT, 글쓰기 코치가 되어 줘",
-          "pub": "제이펍",
-          "bestRank": 91,
-          "days": 5,
-          "lastDate": "2026-07-01",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "기초부터 배운다! 3D 게임 프로그래밍",
-          "pub": "프린트F",
-          "bestRank": 122,
-          "days": 9,
-          "lastDate": "2026-08-01",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "AI, 결국 인간이 써야 한다",
-          "pub": "아이콕스(iCox)",
-          "bestRank": 122,
-          "days": 2,
-          "lastDate": "2026-03-31",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "NEW 한 권으로 끝내는 노션",
-          "pub": "애드앤미디어",
-          "bestRank": 124,
-          "days": 1,
-          "lastDate": "2026-06-30",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "1인 앱 개발, 커서 AI와 함께 배우기",
-          "pub": "아이콕스(iCox)",
-          "bestRank": 146,
-          "days": 7,
-          "lastDate": "2026-05-01",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "골든래빗",
-        "아이콕스(iCox)",
-        "애드앤미디어",
-        "여림재",
-        "제이펍",
-        "프린트F"
-      ],
-      "count": 9,
-      "bestRank": 8,
-      "totalDays": 188,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [
-        "AI/LLM 일반",
-        "바이브코딩/노코드",
-        "프롬프트/활용",
-        "앱개발/모바일",
-        "게임개발"
-      ],
-      "firstSeen": "2026-01-01"
-    },
-    {
       "name": "장희영",
       "books": [
         {
@@ -5546,6 +5592,96 @@
         "컴퓨터과학/기초"
       ],
       "firstSeen": "2026-02-27"
+    },
+    {
+      "name": "렉스기획팀",
+      "books": [
+        {
+          "title": "코딩 챌린지 창의·코딩놀이 Lesson 1",
+          "pub": "REXmedia(렉스미디어)",
+          "bestRank": 67,
+          "days": 3,
+          "lastDate": "2026-07-17",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "특강스쿨 픽슬러",
+          "pub": "REXmedia(렉스미디어)",
+          "bestRank": 72,
+          "days": 2,
+          "lastDate": "2026-08-01",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "단계학습 한글2022 기본&실무프로젝트",
+          "pub": "REXmedia(렉스미디어)",
+          "bestRank": 102,
+          "days": 7,
+          "lastDate": "2026-05-01",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "스마트정보화 21 윈도우11&인터넷 엣지",
+          "pub": "REXmedia(렉스미디어)",
+          "bestRank": 129,
+          "days": 5,
+          "lastDate": "2026-08-03",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "스마트정보화 22 윈도우11&인터넷 엣지&한글2022",
+          "pub": "REXmedia(렉스미디어)",
+          "bestRank": 130,
+          "days": 4,
+          "lastDate": "2026-02-26",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "코딩 챌린지 창의코딩놀이 Lesson3",
+          "pub": "REXmedia(렉스미디어)",
+          "bestRank": 131,
+          "days": 1,
+          "lastDate": "2026-07-17",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "코딩 챌린지 창의·코딩놀이 Lesson 2",
+          "pub": "REXmedia(렉스미디어)",
+          "bestRank": 139,
+          "days": 1,
+          "lastDate": "2026-07-17",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "코딩 챌린지 게임만들기",
+          "pub": "렉스미디어닷넷",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-23"
+        }
+      ],
+      "pubs": [
+        "REXmedia(렉스미디어)",
+        "렉스미디어닷넷"
+      ],
+      "count": 8,
+      "bestRank": 67,
+      "totalDays": 23,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "엑셀/오피스"
+      ],
+      "firstSeen": "2026-01-07"
     },
     {
       "name": "이선영",
@@ -7146,86 +7282,6 @@
         "엑셀/오피스"
       ],
       "firstSeen": "2026-01-02"
-    },
-    {
-      "name": "렉스기획팀",
-      "books": [
-        {
-          "title": "코딩 챌린지 창의·코딩놀이 Lesson 1",
-          "pub": "REXmedia(렉스미디어)",
-          "bestRank": 67,
-          "days": 3,
-          "lastDate": "2026-07-17",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "특강스쿨 픽슬러",
-          "pub": "REXmedia(렉스미디어)",
-          "bestRank": 72,
-          "days": 2,
-          "lastDate": "2026-08-01",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "단계학습 한글2022 기본&실무프로젝트",
-          "pub": "REXmedia(렉스미디어)",
-          "bestRank": 102,
-          "days": 7,
-          "lastDate": "2026-05-01",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "스마트정보화 21 윈도우11&인터넷 엣지",
-          "pub": "REXmedia(렉스미디어)",
-          "bestRank": 129,
-          "days": 5,
-          "lastDate": "2026-08-03",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "스마트정보화 22 윈도우11&인터넷 엣지&한글2022",
-          "pub": "REXmedia(렉스미디어)",
-          "bestRank": 130,
-          "days": 4,
-          "lastDate": "2026-02-26",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "코딩 챌린지 창의코딩놀이 Lesson3",
-          "pub": "REXmedia(렉스미디어)",
-          "bestRank": 131,
-          "days": 1,
-          "lastDate": "2026-07-17",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "코딩 챌린지 창의·코딩놀이 Lesson 2",
-          "pub": "REXmedia(렉스미디어)",
-          "bestRank": 139,
-          "days": 1,
-          "lastDate": "2026-07-17",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "REXmedia(렉스미디어)"
-      ],
-      "count": 7,
-      "bestRank": 67,
-      "totalDays": 23,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [
-        "엑셀/오피스"
-      ],
-      "firstSeen": "2026-01-07"
     },
     {
       "name": "이수미",
@@ -16851,6 +16907,61 @@
       "firstSeen": "2026-03-03"
     },
     {
+      "name": "이상민",
+      "books": [
+        {
+          "title": "MS 365의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 94,
+          "days": 10,
+          "lastDate": "2026-08-08",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "자바의 신 VOL.2",
+          "pub": "로드북",
+          "bestRank": 118,
+          "days": 2,
+          "lastDate": "2026-05-24",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "자바의 신 VOL.1",
+          "pub": "로드북",
+          "bestRank": 176,
+          "days": 2,
+          "lastDate": "2026-06-20",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "로드북",
+        "리더북스"
+      ],
+      "count": 4,
+      "bestRank": 94,
+      "totalDays": 14,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-01-09"
+    },
+    {
       "name": "윤관식",
       "books": [
         {
@@ -17344,6 +17455,61 @@
         "AI 에이전트/RAG"
       ],
       "firstSeen": "2026-01-06"
+    },
+    {
+      "name": "김혜영",
+      "books": [
+        {
+          "title": "브랜드 아파트 가치와 AI 분석",
+          "pub": "커뮤니케이션북스",
+          "bestRank": 75,
+          "days": 3,
+          "lastDate": "2026-09-05",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "AI와 자서전 쓰기",
+          "pub": "커뮤니케이션북스",
+          "bestRank": 88,
+          "days": 4,
+          "lastDate": "2026-07-04",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "AI와 자서전 쓰기 (큰글자책)",
+          "pub": "커뮤니케이션북스",
+          "bestRank": 124,
+          "days": 1,
+          "lastDate": "2026-03-19",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스",
+        "커뮤니케이션북스"
+      ],
+      "count": 4,
+      "bestRank": 75,
+      "totalDays": 8,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-03-19"
     },
     {
       "name": "이초연",
@@ -23879,6 +24045,52 @@
       "firstSeen": "2026-01-06"
     },
     {
+      "name": "김홍순",
+      "books": [
+        {
+          "title": "초보로",
+          "pub": "홍릉",
+          "bestRank": 52,
+          "days": 8,
+          "lastDate": "2026-08-08",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "MS 365의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 94,
+          "days": 10,
+          "lastDate": "2026-08-08",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스",
+        "홍릉"
+      ],
+      "count": 3,
+      "bestRank": 52,
+      "totalDays": 18,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-01-09"
+    },
+    {
       "name": "일등박사",
       "books": [
         {
@@ -24409,49 +24621,6 @@
       "source": "bestseller",
       "topics": [],
       "firstSeen": "2026-03-05"
-    },
-    {
-      "name": "이상민",
-      "books": [
-        {
-          "title": "MS 365의 모든 것",
-          "pub": "리더북스",
-          "bestRank": 94,
-          "days": 10,
-          "lastDate": "2026-08-08",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "자바의 신 VOL.2",
-          "pub": "로드북",
-          "bestRank": 118,
-          "days": 2,
-          "lastDate": "2026-05-24",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "자바의 신 VOL.1",
-          "pub": "로드북",
-          "bestRank": 176,
-          "days": 2,
-          "lastDate": "2026-06-20",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "로드북",
-        "리더북스"
-      ],
-      "count": 3,
-      "bestRank": 94,
-      "totalDays": 14,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [],
-      "firstSeen": "2026-01-09"
     },
     {
       "name": "이기준",
@@ -25043,50 +25212,6 @@
         "AI/LLM 일반"
       ],
       "firstSeen": "2026-01-12"
-    },
-    {
-      "name": "김혜영",
-      "books": [
-        {
-          "title": "브랜드 아파트 가치와 AI 분석",
-          "pub": "커뮤니케이션북스",
-          "bestRank": 75,
-          "days": 3,
-          "lastDate": "2026-09-05",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "AI와 자서전 쓰기",
-          "pub": "커뮤니케이션북스",
-          "bestRank": 88,
-          "days": 4,
-          "lastDate": "2026-07-04",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "AI와 자서전 쓰기 (큰글자책)",
-          "pub": "커뮤니케이션북스",
-          "bestRank": 124,
-          "days": 1,
-          "lastDate": "2026-03-19",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "커뮤니케이션북스"
-      ],
-      "count": 3,
-      "bestRank": 75,
-      "totalDays": 8,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [
-        "AI/LLM 일반"
-      ],
-      "firstSeen": "2026-03-19"
     },
     {
       "name": "최선신",
@@ -37738,40 +37863,6 @@
       "firstSeen": "2026-02-26"
     },
     {
-      "name": "김홍순",
-      "books": [
-        {
-          "title": "초보로",
-          "pub": "홍릉",
-          "bestRank": 52,
-          "days": 8,
-          "lastDate": "2026-08-08",
-          "new": false,
-          "pubDate": ""
-        },
-        {
-          "title": "MS 365의 모든 것",
-          "pub": "리더북스",
-          "bestRank": 94,
-          "days": 10,
-          "lastDate": "2026-08-08",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "리더북스",
-        "홍릉"
-      ],
-      "count": 2,
-      "bestRank": 52,
-      "totalDays": 18,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [],
-      "firstSeen": "2026-01-09"
-    },
-    {
       "name": "정태일",
       "books": [
         {
@@ -39571,6 +39662,43 @@
       "firstSeen": "2026-02-28"
     },
     {
+      "name": "박근혜",
+      "books": [
+        {
+          "title": "전국 1등급 족보로 완성하는 디지털교육연구대회",
+          "pub": "길벗",
+          "bestRank": 8,
+          "days": 12,
+          "lastDate": "2026-04-14",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "길벗",
+        "리더북스"
+      ],
+      "count": 2,
+      "bestRank": 8,
+      "totalDays": 12,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-03-31"
+    },
+    {
       "name": "문병용",
       "books": [
         {
@@ -41346,6 +41474,42 @@
       "firstSeen": "2026-03-13"
     },
     {
+      "name": "강현욱",
+      "books": [
+        {
+          "title": "MS 365의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 94,
+          "days": 10,
+          "lastDate": "2026-08-08",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스"
+      ],
+      "count": 2,
+      "bestRank": 94,
+      "totalDays": 10,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-01-09"
+    },
+    {
       "name": "박지은",
       "books": [
         {
@@ -42025,6 +42189,43 @@
         "AI/LLM 일반"
       ],
       "firstSeen": "2026-02-02"
+    },
+    {
+      "name": "권현중",
+      "books": [
+        {
+          "title": "초보로",
+          "pub": "홍릉",
+          "bestRank": 52,
+          "days": 8,
+          "lastDate": "2026-08-08",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스",
+        "홍릉"
+      ],
+      "count": 2,
+      "bestRank": 52,
+      "totalDays": 8,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-03-18"
     },
     {
       "name": "이현주",
@@ -44081,6 +44282,42 @@
         "AI/LLM 일반"
       ],
       "firstSeen": "2026-01-31"
+    },
+    {
+      "name": "박태순",
+      "books": [
+        {
+          "title": "문제 해결 중심의 C 프로그래밍",
+          "pub": "21세기사",
+          "bestRank": 88,
+          "days": 6,
+          "lastDate": "2026-03-12",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "AI와 함께 살아간다는 것 - AI의 도움을 받되 나를 넘겨주지 않는 법",
+          "pub": "시간의물레",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-11-02"
+        }
+      ],
+      "pubs": [
+        "21세기사",
+        "시간의물레"
+      ],
+      "count": 2,
+      "bestRank": 88,
+      "totalDays": 6,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반"
+      ],
+      "firstSeen": "2026-02-11"
     },
     {
       "name": "나종회",
@@ -50265,6 +50502,43 @@
       "firstSeen": "2026-01-15"
     },
     {
+      "name": "김태환",
+      "books": [
+        {
+          "title": "인생 유니티 교과서",
+          "pub": "성안당",
+          "bestRank": 104,
+          "days": 2,
+          "lastDate": "2026-03-31",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "철학과 인공지능 - AI세대 갓띵 치트키",
+          "pub": "부크크(bookk)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-15"
+        }
+      ],
+      "pubs": [
+        "부크크(bookk)",
+        "성안당"
+      ],
+      "count": 2,
+      "bestRank": 104,
+      "totalDays": 2,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반",
+        "게임개발"
+      ],
+      "firstSeen": "2026-03-01"
+    },
+    {
       "name": "한정민",
       "books": [
         {
@@ -54321,6 +54595,44 @@
         "보안/해킹"
       ],
       "firstSeen": "2026-10-23"
+    },
+    {
+      "name": "강은영",
+      "books": [
+        {
+          "title": "워드프레스 기초/중급/상급 통합본",
+          "pub": "BOOKK(부크크)",
+          "bestRank": 184,
+          "days": 1,
+          "lastDate": "2026-08-23",
+          "new": false,
+          "pubDate": ""
+        },
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "BOOKK(부크크)",
+        "리더북스"
+      ],
+      "count": 2,
+      "bestRank": 184,
+      "totalDays": 1,
+      "newCount": 1,
+      "source": "both",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용",
+        "엑셀/오피스"
+      ],
+      "firstSeen": "2026-08-23"
     },
     {
       "name": "김나연",
@@ -74646,30 +74958,6 @@
       "firstSeen": "2026-01-08"
     },
     {
-      "name": "박근혜",
-      "books": [
-        {
-          "title": "전국 1등급 족보로 완성하는 디지털교육연구대회",
-          "pub": "길벗",
-          "bestRank": 8,
-          "days": 12,
-          "lastDate": "2026-04-14",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "길벗"
-      ],
-      "count": 1,
-      "bestRank": 8,
-      "totalDays": 12,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [],
-      "firstSeen": "2026-03-31"
-    },
-    {
       "name": "원지영",
       "books": [
         {
@@ -78354,30 +78642,6 @@
       "firstSeen": "2026-01-04"
     },
     {
-      "name": "강현욱",
-      "books": [
-        {
-          "title": "MS 365의 모든 것",
-          "pub": "리더북스",
-          "bestRank": 94,
-          "days": 10,
-          "lastDate": "2026-08-08",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "리더북스"
-      ],
-      "count": 1,
-      "bestRank": 94,
-      "totalDays": 10,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [],
-      "firstSeen": "2026-01-09"
-    },
-    {
       "name": "김상철",
       "books": [
         {
@@ -80451,30 +80715,6 @@
     },
     {
       "name": "오승영",
-      "books": [
-        {
-          "title": "초보로",
-          "pub": "홍릉",
-          "bestRank": 52,
-          "days": 8,
-          "lastDate": "2026-08-08",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "홍릉"
-      ],
-      "count": 1,
-      "bestRank": 52,
-      "totalDays": 8,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [],
-      "firstSeen": "2026-03-18"
-    },
-    {
-      "name": "권현중",
       "books": [
         {
           "title": "초보로",
@@ -85970,30 +86210,6 @@
         "보안/해킹"
       ],
       "firstSeen": "2026-01-01"
-    },
-    {
-      "name": "박태순",
-      "books": [
-        {
-          "title": "문제 해결 중심의 C 프로그래밍",
-          "pub": "21세기사",
-          "bestRank": 88,
-          "days": 6,
-          "lastDate": "2026-03-12",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "21세기사"
-      ],
-      "count": 1,
-      "bestRank": 88,
-      "totalDays": 6,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [],
-      "firstSeen": "2026-02-11"
     },
     {
       "name": "나중채",
@@ -105414,32 +105630,6 @@
       "source": "bestseller",
       "topics": [],
       "firstSeen": "2026-01-28"
-    },
-    {
-      "name": "김태환",
-      "books": [
-        {
-          "title": "인생 유니티 교과서",
-          "pub": "성안당",
-          "bestRank": 104,
-          "days": 2,
-          "lastDate": "2026-03-31",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "성안당"
-      ],
-      "count": 1,
-      "bestRank": 104,
-      "totalDays": 2,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [
-        "게임개발"
-      ],
-      "firstSeen": "2026-03-01"
     },
     {
       "name": "프라모드 세달라지",
@@ -130610,32 +130800,6 @@
       "firstSeen": "2026-07-24"
     },
     {
-      "name": "강은영",
-      "books": [
-        {
-          "title": "워드프레스 기초/중급/상급 통합본",
-          "pub": "BOOKK(부크크)",
-          "bestRank": 184,
-          "days": 1,
-          "lastDate": "2026-08-23",
-          "new": false,
-          "pubDate": ""
-        }
-      ],
-      "pubs": [
-        "BOOKK(부크크)"
-      ],
-      "count": 1,
-      "bestRank": 184,
-      "totalDays": 1,
-      "newCount": 0,
-      "source": "bestseller",
-      "topics": [
-        "엑셀/오피스"
-      ],
-      "firstSeen": "2026-08-23"
-    },
-    {
       "name": "변아롱",
       "books": [
         {
@@ -138059,6 +138223,43 @@
       "firstSeen": "2026-10-02"
     },
     {
+      "name": "박은경",
+      "books": [
+        {
+          "title": "60+를 위한 AI 문해력 - 스마트폰부터 생성형 AI까지, 새로운 세상을 배우는 가장 쉬운 방법",
+          "pub": "숲과교육",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-01"
+        },
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스",
+        "숲과교육"
+      ],
+      "count": 2,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 2,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-10-02"
+    },
+    {
       "name": "류지현",
       "books": [
         {
@@ -138584,6 +138785,72 @@
         "웹개발"
       ],
       "firstSeen": "2026-10-23"
+    },
+    {
+      "name": "김영철",
+      "books": [
+        {
+          "title": "3D 프린팅 완전정복 초급편 - 처음 켜는 날부터 첫 출력 성공까지",
+          "pub": "부크크(bookk)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-14"
+        },
+        {
+          "title": "3D 프린팅 완전정복 중급편 - 실패를 진단하고 완성도를 높이는 법",
+          "pub": "부크크(bookk)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-14"
+        }
+      ],
+      "pubs": [
+        "부크크(bookk)"
+      ],
+      "count": 2,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 2,
+      "source": "new",
+      "topics": [],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "김선아",
+      "books": [
+        {
+          "title": "3D 프린팅 완전정복 초급편 - 처음 켜는 날부터 첫 출력 성공까지",
+          "pub": "부크크(bookk)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-14"
+        },
+        {
+          "title": "3D 프린팅 완전정복 중급편 - 실패를 진단하고 완성도를 높이는 법",
+          "pub": "부크크(bookk)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-14"
+        }
+      ],
+      "pubs": [
+        "부크크(bookk)"
+      ],
+      "count": 2,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 2,
+      "source": "new",
+      "topics": [],
+      "firstSeen": "2026-10-28"
     },
     {
       "name": "데니스 마그다",
@@ -141922,32 +142189,6 @@
       "firstSeen": "2026-10-02"
     },
     {
-      "name": "박은경",
-      "books": [
-        {
-          "title": "60+를 위한 AI 문해력 - 스마트폰부터 생성형 AI까지, 새로운 세상을 배우는 가장 쉬운 방법",
-          "pub": "숲과교육",
-          "bestRank": 999,
-          "days": 0,
-          "lastDate": "",
-          "new": true,
-          "pubDate": "2026-10-01"
-        }
-      ],
-      "pubs": [
-        "숲과교육"
-      ],
-      "count": 1,
-      "bestRank": 999,
-      "totalDays": 0,
-      "newCount": 1,
-      "source": "new",
-      "topics": [
-        "AI/LLM 일반"
-      ],
-      "firstSeen": "2026-10-02"
-    },
-    {
       "name": "데이터코드연구소",
       "books": [
         {
@@ -144057,10 +144298,403 @@
         "AI/LLM 일반"
       ],
       "firstSeen": "2026-10-27"
+    },
+    {
+      "name": "신승배",
+      "books": [
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "김형수",
+      "books": [
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "한지호",
+      "books": [
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "이정서",
+      "books": [
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "최상민",
+      "books": [
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "장은미",
+      "books": [
+        {
+          "title": "Microsoft 수업 설계 플로우 - 현장에서 바로 쓰는 AI 활용 수업의 모든 것",
+          "pub": "리더북스",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-27"
+        }
+      ],
+      "pubs": [
+        "리더북스"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "송재희",
+      "books": [
+        {
+          "title": "AI와 함께 살아간다는 것 - AI의 도움을 받되 나를 넘겨주지 않는 법",
+          "pub": "시간의물레",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-11-02"
+        }
+      ],
+      "pubs": [
+        "시간의물레"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "앤절라 시루치",
+      "books": [
+        {
+          "title": "미디어 커뮤니케이션 연구를 위한 UX 리서치 교과서 - 논문 작성과 디자인 실무를 모두 잡는 유저 리서치",
+          "pub": "유엑스리뷰",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-30"
+        }
+      ],
+      "pubs": [
+        "유엑스리뷰"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "우르슐라 프루흐니에프스카",
+      "books": [
+        {
+          "title": "미디어 커뮤니케이션 연구를 위한 UX 리서치 교과서 - 논문 작성과 디자인 실무를 모두 잡는 유저 리서치",
+          "pub": "유엑스리뷰",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-30"
+        }
+      ],
+      "pubs": [
+        "유엑스리뷰"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "지병석",
+      "books": [
+        {
+          "title": "AI 디스토피아 - 우리가 만들 세상을 보라",
+          "pub": "부크크(bookk)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-10"
+        }
+      ],
+      "pubs": [
+        "부크크(bookk)"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "임상묵",
+      "books": [
+        {
+          "title": "매일 30초 엑셀 레벨업 - 엑셀 실무에 필요한 스킬을 획득했습니다.",
+          "pub": "길벗",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-31"
+        }
+      ],
+      "pubs": [
+        "길벗"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "엑셀/오피스"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "이경상",
+      "books": [
+        {
+          "title": "포텐 폭발, AI 분신테크",
+          "pub": "지식노마드",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-23"
+        }
+      ],
+      "pubs": [
+        "지식노마드"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "공혜원 외",
+      "books": [
+        {
+          "title": "파도를 건너는 법 - AI로 일하는 방식을 다시 쓴 여성 리더 10인의 기록",
+          "pub": "나무달팽이",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-01"
+        }
+      ],
+      "pubs": [
+        "나무달팽이"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "김성남",
+      "books": [
+        {
+          "title": "발달장애인 지원을 위한 AI 활용 레시피 - 부모와 종사자를 위한 실천 가이드",
+          "pub": "쌤스토리",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-17"
+        }
+      ],
+      "pubs": [
+        "쌤스토리"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반",
+        "프롬프트/활용"
+      ],
+      "firstSeen": "2026-10-28"
+    },
+    {
+      "name": "AI아키엠연구소대표 황민",
+      "books": [
+        {
+          "title": "AI 유튜브 채널 운영 실전편 - 주제 선정부터 쇼츠·롱폼 제작, 썸네일·성과 분석까지",
+          "pub": "부크크(bookk)",
+          "bestRank": 999,
+          "days": 0,
+          "lastDate": "",
+          "new": true,
+          "pubDate": "2026-10-14"
+        }
+      ],
+      "pubs": [
+        "부크크(bookk)"
+      ],
+      "count": 1,
+      "bestRank": 999,
+      "totalDays": 0,
+      "newCount": 1,
+      "source": "new",
+      "topics": [
+        "AI/LLM 일반"
+      ],
+      "firstSeen": "2026-10-28"
     }
   ],
   "totalRows": 57928,
-  "totalAuthors": 4705,
-  "totalBooks": 7239,
+  "totalAuthors": 4722,
+  "totalBooks": 7274,
   "generated": "2026-10-26"
 }
