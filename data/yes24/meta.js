@@ -1,1 +1,1 @@
-window.YES24_META = {"last_date": "2026-11-02", "total_days": 304, "missing_days": 2};
+window.YES24_META = {"last_date": "2026-11-03", "total_days": 305, "missing_days": 2};
