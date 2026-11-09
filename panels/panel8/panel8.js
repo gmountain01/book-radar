@@ -258,40 +258,6 @@ function fmtDate(ts) {
   return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
 
-/** 이 원고에 책 프로필(panel13 컨셉) 연결 — 기본 꺼짐. 저장된 연결은 컨셉 ID가 같을 때만 복원하고, 다른 컨셉으로 바뀌었으면 풀고 알린다 */
-function renderProfileLink() {
-  const el = document.getElementById('p8_profileRow');
-  if (!el || !currentDocKey || typeof BookProfile === 'undefined') { if (el) el.hidden = true; return; }
-  const c = BookProfile.load();
-  const link = (_reviewSettings.documentProfile || {})[currentDocKey];
-  let note = '';
-  if (link && link.on && c && c.conceptId && link.conceptId !== c.conceptId) { // 공용 컨셉이 다른 책으로 바뀜 → 연결 해제
-    const next = P8Review.parse(JSON.stringify(_reviewSettings));
-    next.documentProfile[currentDocKey] = { ...link, on: false };
-    saveReviewSettings(next);
-    note = `이전에 연결한 컨셉 “${link.title}”이 다른 컨셉으로 바뀌어 연결을 풀었습니다`;
-    if (typeof showToast === 'function') showToast(note, 'yellow');
-  }
-  const cur = (_reviewSettings.documentProfile || {})[currentDocKey];
-  const on = !!(cur && cur.on && c && c.conceptId === cur.conceptId);
-  const changed = on && cur.conceptSig !== BookProfile.sig(c);
-  el.hidden = false;
-  el.innerHTML = `<label class="rules-label">📘 책 프로필 연결</label>
-    <label style="display:flex;gap:8px;align-items:flex-start;font-size:.85rem;cursor:pointer">
-      <input type="checkbox" ${on ? 'checked' : ''} ${c && c.title ? '' : 'disabled'} onchange="p8_setProfileLink(this.checked)">
-      <span>${c && c.title ? `이 원고에 컨셉 “${esc(c.title)}”${c.field ? `(분야 ${esc(c.field)})` : '(분야 미정)'}의 편집 프로필을 AI 검사 기준으로 전달`
-        : '저장된 컨셉이 없습니다 — 컨셉 작성 패널에서 먼저 작성'}<br>
-      <small style="color:#666">연결하지 않으면 '프로필 없음(분야 미정, IT로 가정하지 말 것)'으로 전달합니다. 다른 책의 컨셉이 섞이지 않도록 원고마다 직접 고릅니다.${changed ? ' <b style="color:#a65">컨셉 내용이 연결 이후 바뀌었습니다 — 이전 검사 결과는 이전 기준으로 표시됩니다.</b>' : ''}${note ? ' <b style="color:#a65">' + esc(note) + '</b>' : ''}</small></span>
-    </label>`;
-}
-window.p8_setProfileLink = function(checked) {
-  if (!currentDocKey || typeof BookProfile === 'undefined') return;
-  const c = BookProfile.load();
-  const next = P8Review.parse(JSON.stringify(_reviewSettings));
-  next.documentProfile[currentDocKey] = { on: !!(checked && c), conceptId: c ? c.conceptId || '' : '', conceptSig: c ? BookProfile.sig(c) : '', title: c ? c.title || '' : '' };
-  if (saveReviewSettings(next)) { renderProfileLink(); if (allIssues.length) p8_applyFilters(); }
-};
-
 function renderCacheInfo(file) {
   const el = document.getElementById('p8_cacheInfo');
   if (!file) { el.innerHTML = ''; return; }
@@ -371,7 +337,6 @@ function setFile(f) {
     if (nameEl) nameEl.textContent = '✓ ' + f.name;
     if (btnEl)  btnEl.disabled = false;
     renderCacheInfo(f);
-    renderProfileLink();
   } catch(e) {
     console.error('[panel8] setFile 오류:', e);
     alert('파일 첨부 중 오류가 발생했습니다.\n' + e.message);
@@ -2700,23 +2665,16 @@ rulesChunks = parseRulesIntoChunks(DEFAULT_RULES_MD);
 // 겹쳐 실행해도 서로 덮어쓰지 않고, 사용자 규칙 본문·우선 적용·프로필 문장은 crit 안의 스냅샷을 쓴다(실행 중 바꿔도 보낸 내용과 지문이 같다).
 // 그 실행이 만든 지적에는 critSig, AI가 만든 수정안에는 suggSig를 붙인다. 적용 가능 여부는 항목의 지문을 '지금' 기준과 종류별로 비교한다.
 const P8_RULES_VERSION = 1, P8_PROMPT_VERSION = 1, P8_AI_MODEL = 'claude-sonnet-4-6';
-function _linkedConcept() { // 이 원고에 명시적으로 연결한 컨셉만(ID가 같을 때) — 공용 컨셉이 다른 책으로 바뀌면 연결 해제
-  const link = currentDocKey && _reviewSettings.documentProfile && _reviewSettings.documentProfile[currentDocKey];
-  if (!link || !link.on || typeof BookProfile === 'undefined') return null;
-  const c = BookProfile.load();
-  return c && c.conceptId && c.conceptId === link.conceptId ? c : null;
-}
 function buildCriteria() {
   const hash = typeof BookProfile !== 'undefined' ? BookProfile.hash : (x => String(x.length));
-  const c = _linkedConcept();
-  const profileText = typeof BookProfile !== 'undefined' ? BookProfile.text(c) : '(프로필 모듈 없음)';
+  const profileText = typeof BookProfile !== 'undefined' ? BookProfile.NONE : '(프로필 모듈 없음)'; // 책 프로필 연결은 뺐다(v2.21.9) — 늘 기본 정책
   const ruleText = `규칙 v${P8_RULES_VERSION}` + (_hasUserRules ? ` · 사용자 규칙 ${_userRulesText.length}자${_userRulesPriority ? '(우선 적용)' : ''}` : ' · 사용자 규칙 없음');
   const ruleSig = hash([P8_RULES_VERSION, _hasUserRules ? _userRulesText : '', !!_userRulesPriority].join('|'));
   const aiSig = hash([ruleSig, P8_PROMPT_VERSION, profileText, P8_AI_MODEL].join('|'));
-  return { ruleSig, aiSig, profileText, profileOn: !!c, conceptId: c ? c.conceptId : '',
+  return { ruleSig, aiSig, profileText,
     rulesVer: P8_RULES_VERSION, promptVer: P8_PROMPT_VERSION, model: P8_AI_MODEL,
     rules: { has: !!_hasUserRules, text: _hasUserRules ? _userRulesText : '', priority: !!_userRulesPriority }, // 호출에 실제로 쓰는 스냅샷
-    rule: { text: ruleText, at: Date.now() }, ai: { text: ruleText + ` · 지시문 v${P8_PROMPT_VERSION} · ${c ? '프로필 “' + (c.title || '') + '”' + (c.field ? '(분야 ' + c.field + ')' : '(분야 미정)') : '프로필 없음(분야 미정 전달)'}`, at: Date.now() } };
+    rule: { text: ruleText, at: Date.now() }, ai: { text: ruleText + ` · 지시문 v${P8_PROMPT_VERSION} · 프로필 없음(분야 미정 전달)`, at: Date.now() } };
 }
 const _profileBlock = crit => '## 책 프로필\n' + (crit || buildCriteria()).profileText;
 /** 항목이 지금 기준으로 유효한가: 규칙 항목은 ruleSig, AI 항목은 aiSig로 지적을, AI가 만든 수정안(source 'surface+ai')은 suggSig로 수정안을 따로 본다.
@@ -2735,7 +2693,7 @@ function _criteriaDict(prev, crit) { // 캐시에 남길 '검사에 실제로 �
   const a = crit || buildCriteria(), d = { ...(prev || {}) };
   const userRules = a.rules.has ? { text: a.rules.text, priority: a.rules.priority } : null;
   d[a.ruleSig] = { kind: 'rule', text: a.rule.text, at: a.rule.at, rulesVer: a.rulesVer, userRules };
-  d[a.aiSig] = { kind: 'ai', text: a.ai.text, at: a.ai.at, rulesVer: a.rulesVer, promptVer: a.promptVer, model: a.model, profileText: a.profileText, conceptId: a.conceptId, userRules };
+  d[a.aiSig] = { kind: 'ai', text: a.ai.text, at: a.ai.at, rulesVer: a.rulesVer, promptVer: a.promptVer, model: a.model, profileText: a.profileText, userRules };
   return d;
 }
 
@@ -5353,6 +5311,6 @@ document.addEventListener('DOMContentLoaded', () => {
     groupTextIntoLines, _joinLinesSmartly, _buildPdfPage, _stripPdfRepeatingRegions, _extractJoins, _tagPdfItems,
     callClaude, AI_TUNE, renderResults, _setFailedPages: a => _setCoverage({ v: 1, status: a && a.length ? 'partial' : 'complete', checked: [], failed: a && a.length ? [{ pages: a.slice(), reason: 'api' }] : [] }),
     _coverage: () => _aiCoverage, _setCoverage, _coverageOf, _coverageFromCache, _failSummary, _jsonObjectClosed, getCache, setCache, _issues: () => allIssues,
-    _setFile: f => { selectedFile = f; currentFileKey = f ? getCacheKey(f) : null; currentDocKey = f ? f.name : currentDocKey; }, buildCriteria, validForApply, _criteriaDict, _setUserRules: (text, priority) => { _hasUserRules = !!text; _userRulesText = text || ''; if (priority != null) _userRulesPriority = !!priority; }, _profileBlock, renderProfileLink, _settings: () => _reviewSettings, _setDocKey: k => { currentDocKey = k; },
+    _setFile: f => { selectedFile = f; currentFileKey = f ? getCacheKey(f) : null; currentDocKey = f ? f.name : currentDocKey; }, buildCriteria, validForApply, _criteriaDict, _setUserRules: (text, priority) => { _hasUserRules = !!text; _userRulesText = text || ''; if (priority != null) _userRulesPriority = !!priority; }, _profileBlock, _settings: () => _reviewSettings, _setDocKey: k => { currentDocKey = k; },
     _setPdfFlags: o => { if (o && 'keepWs' in o) PDF_KEEP_WS = !!o.keepWs; if (o && 'useTags' in o) PDF_USE_TAGS = !!o.useTags; return { keepWs: PDF_KEEP_WS, useTags: PDF_USE_TAGS }; } };
 })();

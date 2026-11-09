@@ -36,7 +36,6 @@
 .panel8-scope .rules-drop:hover, .panel8-scope .rules-drop.over{border-color:var(--accent);background:var(--accent-light)}
 .panel8-scope .rules-drop span:first-child{font-size:var(--fs-body);color:var(--text)}
 .panel8-scope .rules-hint{font-size:var(--fs-sub);color:var(--muted)}
-.panel8-scope #p8_profileRow small[style]{color:var(--text2) !important}
 
 .panel8-scope .btn-start{width:100%;margin-top:18px;padding:11px;background:var(--accent);
            color:#fff;border:1px solid var(--accent);border-radius:var(--r-ctl);font-size:var(--fs-base);

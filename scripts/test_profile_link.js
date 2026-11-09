@@ -31,61 +31,45 @@ module.exports = async function run() {
   P13.resetNoConfirm(); const id3 = P13.data().conceptId; assert(id3 && id3 !== id2 && P13.data().title === '', '초기화 = 새 책 = 새 ID');
   console.log('  ✓ 컨셉 ID 생성·유지·초기화');
 
-  // ── 3. review-policy: documentProfile은 허용 목록과 분리, 옛 설정도 보정 ──
-  const parsed = R.parse(JSON.stringify({ common: ['["a","b"]'], documents: { '원고.docx': ['["t","f"]'] }, documentProfile: { '원고.docx': { on: true, conceptId: 'c1', conceptSig: 's', title: 'T', extra: 1 }, bad: 'x' } }));
-  assert.deepEqual(Object.keys(parsed.documentProfile), ['원고.docx']);
-  assert(parsed.documentProfile['원고.docx'].on === true && parsed.documentProfile['원고.docx'].conceptId === 'c1' && parsed.documentProfile['원고.docx'].extra === undefined);
-  assert.deepEqual(parsed.documents['원고.docx'], ['["t","f"]'], '허용 목록 배열은 그대로');
-  assert.deepEqual(R.parse('{}').documentProfile, {}, '없으면 빈 객체');
-  assert(R.allowed({ type: '오탈자', ruleId: 't', found: 'f' }, parsed, '원고.docx', new Set()), '허용 판정은 영향 없음');
-  console.log('  ✓ 설정 저장 형식');
-
-  // ── 4. panel8: 원고 연결(명시적)·컨셉 교체 감지·기준 지문 ──
+  // ── 3·4. panel8: 책 프로필 연결은 뺐다(v2.21.9) — 컨셉·옛 연결 설정이 있어도 늘 '프로필 없음' ──
   setConcept({ conceptId: 'cA', title: '책 A', field: 'IT/프로그래밍' });
   E._setDocKey('원고.docx');
-  sb.p8_setProfileLink(false);
-  const off = E.buildCriteria(); assert(!off.profileOn && off.profileText.includes('프로필 없음'), '연결 안 하면 프로필 없음 전달');
-  sb.p8_setProfileLink(true);
-  const on = E.buildCriteria(); assert(on.profileOn && on.conceptId === 'cA' && on.profileText.includes('IT/프로그래밍') && on.aiSig !== off.aiSig && on.ruleSig === off.ruleSig, '프로필은 AI 지문만 바꾼다');
-  setConcept({ conceptId: 'cB', title: '책 B', field: '인문' }); // 공용 컨셉이 다른 책으로 바뀜
-  E.renderProfileLink();
-  assert(!E._settings().documentProfile['원고.docx'].on && !E.buildCriteria().profileOn, '컨셉 ID가 다르면 연결 해제');
-  sb.p8_setProfileLink(true); const sigB = E.buildCriteria().aiSig;
-  setConcept({ conceptId: 'cB', title: '책 B', field: '인문', editPolicy: '한글 표기 우선' }); // 같은 컨셉의 내용만 바뀜
-  assert(E.buildCriteria().profileOn && E.buildCriteria().aiSig !== sigB, '같은 ID는 연결 유지, 내용이 바뀌면 AI 지문 변경');
-  console.log('  ✓ 원고↔프로필 연결·교체 감지');
+  assert(!('documentProfile' in R.parse(JSON.stringify({ documentProfile: { '원고.docx': { on: true } } }))), '옛 연결 설정은 버린다');
+  const none = E.buildCriteria();
+  assert(none.profileText === BP.NONE && !none.profileText.includes('IT/프로그래밍') && typeof sb.p8_setProfileLink === 'undefined', '컨셉이 있어도 프로필 없음 전달');
+  setConcept({ conceptId: 'cB', title: '책 B', field: '인문' });
+  assert(E.buildCriteria().aiSig === none.aiSig, '컨셉을 바꿔도 AI 지문 불변');
+  console.log('  ✓ 프로필 연결 없음(늘 기본 정책)');
 
-  // ── 5. 검사 기준 고정: 실행별 지역 객체(crit) — 실행 중 프로필·사용자 규칙을 바꿔도 호출 내용·지문 불변, 겹친 실행은 서로 독립 ──
-  const fixed = E.buildCriteria(); // 실행 A 시작(프로필 인문, 사용자 규칙 없음)
-  setConcept({ conceptId: 'cB', title: '책 B', field: '경영', editPolicy: '한글 표기 우선' }); // 검사 도중 프로필 변경
+  // ── 5. 검사 기준 고정: 실행별 지역 객체(crit) — 실행 중 사용자 규칙을 바꿔도 호출 내용·지문 불변, 겹친 실행은 서로 독립 ──
+  const fixed = E.buildCriteria(); // 실행 A 시작(사용자 규칙 없음)
   E._setUserRules('## 사용자 규칙 A\n- 외래어는 한글로', true);                             // 검사 도중 사용자 규칙 업로드
   const later = E.buildCriteria(); // 실행 B 시작(바뀐 값)
-  assert(fixed.profileText.includes('인문') && !fixed.rules.has && later.profileText.includes('경영') && later.rules.has && later.rules.text.includes('규칙 A'), '스냅샷은 실행마다 따로');
-  assert(E._profileBlock(fixed).includes('인문') && E._profileBlock(later).includes('경영'));
+  assert(!fixed.rules.has && later.rules.has && later.rules.text.includes('규칙 A') && fixed.aiSig !== later.aiSig, '스냅샷은 실행마다 따로');
+  assert(E._profileBlock(fixed).includes('프로필 없음'));
   const calls = [];
   sb.callClaudeApi = async o => { calls.push(o); return JSON.stringify({ issues: [{ type: '문법', severity: 'low', found: '핵심 문장', suggestion: '핵심 문장이다', description: 'd', page: 1 }] }); };
   await E.callClaude('sk-ant-test', '본문', '규칙 참고', { task: 't' }, fixed);
   await E.callClaude('sk-ant-test', '본문', '규칙 참고', { task: 't' }, later);
   const tA = calls[0].systemBlocks.map(b => b.text), tB = calls[1].systemBlocks.map(b => b.text);
-  assert(tA[0].startsWith('You are a professional Korean book editor') && !/IT\/tech publishing/.test(tA[0]) && tA[1].startsWith('## 책 프로필') && tA[1].includes('인문') && tA[2].startsWith('## 📋 교정 규칙 참고') && tA.length === 3, '실행 A: SYS → 프로필(인문) → RAG, 사용자 규칙 블록 없음(실행 중 올린 규칙은 안 보냄)');
-  assert(tB[0].startsWith('## 📋 사용자 교정 규칙') && tB[0].includes('규칙 A') && tB[2].includes('경영') && tB.length === 4, '실행 B: 규칙(우선) → SYS → 프로필(경영) → RAG');
+  assert(tA[0].startsWith('You are a professional Korean book editor') && !/IT\/tech publishing/.test(tA[0]) && tA[1].startsWith('## 책 프로필') && tA[1].includes('프로필 없음') && tA[2].startsWith('## 📋 교정 규칙 참고') && tA.length === 3, '실행 A: SYS → 프로필 없음 → RAG, 사용자 규칙 블록 없음(실행 중 올린 규칙은 안 보냄)');
+  assert(tB[0].startsWith('## 📋 사용자 교정 규칙') && tB[0].includes('규칙 A') && tB[2].includes('프로필 없음') && tB.length === 4, '실행 B: 규칙(우선) → SYS → 프로필 없음 → RAG');
   assert(calls[0].noPersona === true && calls[0].humanize === true, '페르소나 끔·위생 규칙 현재 값 유지');
   // AI 검사·다시 쓰기 사슬도 crit을 쓴다: 지적 critSig = 그 실행의 aiSig, 전송 블록도 그 실행 값
   calls.length = 0;
   const lingA = await E.checkLinguistic({ pages: [{ page: 1, text: '핵심 문장. 본문입니다. 이 쪽은 검사 대상이 되도록 스무 글자를 넘긴다.' }] }, 'sk-ant-test', null, null, null, fixed);
-  assert(lingA.issues.length === 1 && lingA.issues[0].critSig === fixed.aiSig && lingA.issues[0].critSig !== later.aiSig && calls[0].systemBlocks.some(b => b.text.includes('인문')) && !calls[0].systemBlocks.some(b => b.text.includes('규칙 A')), 'AI 검사: 실행 A 기준으로 호출·지문');
+  assert(lingA.issues.length === 1 && lingA.issues[0].critSig === fixed.aiSig && lingA.issues[0].critSig !== later.aiSig && !calls[0].systemBlocks.some(b => b.text.includes('규칙 A')), 'AI 검사: 실행 A 기준으로 호출·지문');
   calls.length = 0;
   sb.callClaudeApi = async o => { calls.push(o); return JSON.stringify([{ i: 0, text: '책과 배를 곁들여 먹었다.' }]); };
   const rw = { type: '조사중복', found: '책을 읽고 배를 먹고 밥을 먹었다.', sentence: '책을 읽고 배를 먹고 밥을 먹었다.', needsRewrite: true, description: 'd', page: 1, source: 'surface', critSig: fixed.ruleSig };
   const nRw = await E._rewriteParticleRepeats([rw], 'sk-ant-test', fixed);
-  assert(nRw === 1 && rw.source === 'surface+ai' && rw.suggSig === fixed.aiSig && calls[0].system.includes('인문') && !calls[0].system.includes('규칙 A'), '다시 쓰기: 실행 A의 프로필·규칙 스냅샷, suggSig = 실행 A의 AI 지문');
+  assert(nRw === 1 && rw.source === 'surface+ai' && rw.suggSig === fixed.aiSig && calls[0].system.includes('프로필 없음') && !calls[0].system.includes('규칙 A'), '다시 쓰기: 실행 A의 규칙 스냅샷, suggSig = 실행 A의 AI 지문');
   // 캐시 기준 사전: 지문 → 전문(프로필 문장·사용자 규칙 본문·우선 적용·버전·모델)
   const dict = E._criteriaDict(E._criteriaDict({ old: { kind: 'rule' } }, fixed), later);
   assert(dict.old && dict[fixed.ruleSig].kind === 'rule' && dict[fixed.ruleSig].userRules === null && dict[fixed.aiSig].profileText === fixed.profileText && dict[fixed.aiSig].promptVer === 1 && dict[fixed.aiSig].model === 'claude-sonnet-4-6', '실행 A 기준 전문');
-  assert(dict[later.aiSig].profileText.includes('경영') && dict[later.aiSig].userRules.text.includes('규칙 A') && dict[later.aiSig].userRules.priority === true && dict[later.ruleSig].userRules.text.includes('규칙 A'), '실행 B 기준 전문(사용자 규칙 본문 포함)');
-  assert(JSON.parse(JSON.stringify(dict))[fixed.aiSig].profileText.includes('인문'), '캐시 왕복 뒤에도 전문 유지');
+  assert(dict[later.aiSig].userRules.text.includes('규칙 A') && dict[later.aiSig].userRules.priority === true && dict[later.ruleSig].userRules.text.includes('규칙 A'), '실행 B 기준 전문(사용자 규칙 본문 포함)');
+  assert(JSON.parse(JSON.stringify(dict))[fixed.aiSig].profileText === fixed.profileText, '캐시 왕복 뒤에도 전문 유지');
   E._setUserRules('', true); // 사용자 규칙 제거(기본값 복원)
-  setConcept({ conceptId: 'cB', title: '책 B', field: '인문', editPolicy: '한글 표기 우선' });
   console.log('  ✓ 검사 기준 고정(실행별 객체)·프롬프트 블록·캐시 기준 전문');
 
   // ── 6. 항목별 유효성: 규칙/AI 종류별 비교, 규칙 수정안 vs AI 수정안 ──
@@ -101,11 +85,6 @@ module.exports = async function run() {
   assert(!sv.ok && sv.suggOnly, 'AI 수정안만 옛 기준이면 수정안만 무효');
   const sn = v({ source: 'surface+ai', critSig: now.ruleSig, suggestion: '옛 캐시의 AI 수정안' });
   assert(!sn.ok && sn.suggOnly && /미기록/.test(sn.why), 'suggSig 없는 AI 수정안(옛 캐시 승계)은 지적이 유효해도 수정안은 무효');
-  // 프로필만 바뀌면: 규칙 항목·규칙 수정안은 유효, AI 지적·AI 수정안은 무효
-  setConcept({ conceptId: 'cB', title: '책 B', field: '문학' });
-  const now2 = E.buildCriteria();
-  assert(now2.ruleSig === now.ruleSig && now2.aiSig !== now.aiSig);
-  assert(E.validForApply({ source: 'surface', critSig: now.ruleSig }, now2).ok && !E.validForApply({ source: 'ai', critSig: now.aiSig }, now2).ok && !E.validForApply({ source: 'surface+ai', critSig: now.ruleSig, suggSig: now.aiSig }, now2).ok);
   // 사용자 규칙이 바뀌면 규칙 항목도 무효
   const before = E.buildCriteria().ruleSig; sb.p8_toggleRulesPriority(false); assert(E.buildCriteria().ruleSig !== before, '사용자 규칙 우선 적용을 바꾸면 규칙 지문도 바뀐다'); sb.p8_toggleRulesPriority(true); assert(E.buildCriteria().ruleSig === before); // 기본값 true
   console.log('  ✓ 항목별 유효성(규칙/AI/수정안)');

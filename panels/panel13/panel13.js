@@ -87,7 +87,7 @@ function render() {
           _field('keywords', '핵심 키워드', '쉼표로 구분 — 예: 바이브코딩, AI, 앱개발, 비개발자', 'input') +
           _field('memo', '자유 메모', '추가로 정리하고 싶은 아이디어, 참고 사항', 'textarea', 4) +
         '</div>' +
-        '<div class="cp-section"><div class="cp-section-title">편집 프로필 <small style="font-weight:400;color:#777">— 교정 도우미·원고 구조 검토의 AI 검사 기준으로 전달됩니다(원고에서 직접 연결했을 때만)</small></div>' +
+        '<div class="cp-section"><div class="cp-section-title">편집 프로필 <small style="font-weight:400;color:#777">— 원고 구조 검토에서 판단 기준으로 “컨셉 작성 내용”을 골랐을 때만 AI에 전달됩니다</small></div>' +
           _field('field', '분야·세부 분야', '예: IT/프로그래밍, 인문/역사, 경영/실무, 문학/소설 — 비우면 AI가 원고에서 추정(추정 표시)', 'input') +
           _field('purpose', '목적', '예: 입문 학습, 전문가 참고, 논증 이해, 서사 감상 — 비우면 추정', 'input') +
           _field('editPolicy', '편집 방침', '출판사 표기 기준·저자 문체·용어집·허용어 — 비우면 기본 정책(AI가 추정하지 않음)', 'textarea', 2) +
@@ -95,7 +95,7 @@ function render() {
           _field('factBasis', '사실 검증 기준', '예: 공식 문서 v2.1(2026-03), 원전 ○○ 번역본 — 비우면 기술 사실은 확인 보류', 'input') +
           _field('changeLevel', '변경 허용 수준', '미지정(기본 정책)', 'select', 0, ['', '명백한 오류 수정', '문맥 검토', '선택적 윤문', '저자 확인']) +
           _field('limits', '알려진 제한', '예: 원고 일부만 제공, 표·그림 누락, 출처 미제공', 'textarea', 2) +
-          '<div class="cp-sub" style="margin-top:6px">컨셉 ID <code>' + escHtml(data.conceptId || '') + '</code> — 교정·구조 검토가 이 컨셉을 연결할 때 쓰는 값. 초기화하면 새 ID가 생깁니다.</div>' +
+          '<div class="cp-sub" style="margin-top:6px">컨셉 ID <code>' + escHtml(data.conceptId || '') + '</code> — 구조 검토 결과가 어느 컨셉 기준인지 확인할 때 쓰는 값. 초기화하면 새 ID가 생깁니다.</div>' +
         '</div>' +
       '</div>' +
       '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">' +
